@@ -56,11 +56,11 @@
 </head>
 <body>
     <div class="container">
-        <h2 style="color: #075E54;">WhatsApp'a Giri? Yap</h2>
+        <h2 style="color: #075E54;">Giriş Sayfası</h2>
         <form onsubmit="return checkLogin()">
             <input type="text" id="kullaniciAdi" name="kullaniciAdi" placeholder="Kullan?c? Ad?" required>
             <input type="password" id="sifre" name="sifre" placeholder="?ifre" required>
-            <input type="submit" value="Giri? Yap">
+            <input type="submit" value="Giriş Yap">
         </form>
 
         <div class="iframe-container" id="iframeContainer" style="display: none;">
@@ -73,16 +73,16 @@
             var kullaniciAdi = document.getElementById("kullaniciAdi").value;
             var sifre = document.getElementById("sifre").value;
 
-            // Kullan?c? ad? ve ?ifreyi kontrol et
-            if (kullaniciAdi === "demo" && sifre === "2091") {
-                // Do?ru ise, iframe'i g?ster ve adresi y�kle
+            // Kullanıcı adı ve şifreyi kontrol et
+            if (kullaniciAdi === "demo" && sifre === "******") {
+                // Do?ru ise, iframe'i g?ster ve adresi yükle
                 document.getElementById("iframeContainer").style.display = "block";
                 document.getElementById("myFrame").src = "https://my.cbox.ws/yedek";
                 // Form g?ndermeyi engelle
                 return false;
             } else {
                 // Yanl?? ise, kullan?c?y? uyar
-                alert("Kullan?c? ad? veya ?ifre yanl??.");
+                alert("Kullanıcı adı veya şifre yanlış.");
                 // Form g?ndermeyi engelle
                 return false;
             }
