@@ -3,90 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Sayfası</title>
+    <title>Sayfa Yapım Aşamasındadır</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #25D366;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            text-align: center;
         }
-        .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 300px;
+        h1 {
+            font-size: 36px;
+            margin-top: 50px;
         }
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #128C7E;
-            color: #fff;
-            cursor: pointer;
-        }
-        input[type="submit"]:hover {
-            background-color: #075E54;
-        }
-        .iframe-container {
-            width: 100%;
-            height: 300px;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        p {
+            font-size: 24px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2 style="color: #075E54;">Giriş Sayfası</h2>
-        <form onsubmit="return checkLogin()">
-            <input type="text" id="kullaniciAdi" name="kullaniciAdi" placeholder="Kullanıcı Adı" required>
-            <input type="password" id="sifre" name="sifre" placeholder="Şifre" required>
-            <input type="submit" value="Giriş Yap">
-        </form>
-
-        <div class="iframe-container" id="iframeContainer" style="display: none;">
-            <iframe src="" id="myFrame"></iframe>
-        </div>
-    </div>
+    <h1>Sayfa Yapım Aşamasındadır</h1>
+    <p>Büyük bir heyecanla yeni özellikler üzerinde çalışıyoruz. Lütfen yakında tekrar ziyaret edin!</p>
+    <p>Tarih ve Saat: <span id="dateTime"></span></p>
 
     <script>
-        function checkLogin() {
-            var kullaniciAdi = document.getElementById("kullaniciAdi").value;
-            var sifre = document.getElementById("sifre").value;
-
-            // Kullanıcı adı ve şifreyi kontrol et
-            if (kullaniciAdi === "demo" && sifre === "******") {
-                // Do?ru ise, iframe'i g?ster ve adresi yükle
-                document.getElementById("iframeContainer").style.display = "block";
-                document.getElementById("myFrame").src = "https://my.cbox.ws/yedek";
-                // Form g?ndermeyi engelle
-                return false;
-            } else {
-                // Yanl?? ise, kullan?c?y? uyar
-                alert("Kullanıcı adı veya şifre yanlış.");
-                // Form g?ndermeyi engelle
-                return false;
-            }
-        }
+        // Tarih ve saat bilgisini alarak gösterme
+        var currentDateTime = new Date();
+        var date = currentDateTime.toLocaleDateString('tr-TR');
+        var time = currentDateTime.toLocaleTimeString('tr-TR');
+        document.getElementById('dateTime').innerText = date + ' ' + time;
     </script>
 </body>
 </html>
