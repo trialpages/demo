@@ -3,10 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yapım Aşamasında</title>
-<body>
+<title>İzmir İftar Vaktine Kalan Süre</title>
 <style>
-<iframe src="https://my.cbox.ws/yedek" height="500" width="500" allowfullscreen="" frameborder="0"></iframe>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 50px;
+  }
+  h1 {
+    font-size: 36px;
+    color: #333;
+  }
+  #countdown {
+    font-size: 48px;
+    color: #f00; /* Kırmızı renk */
+  }
 </style>
+</head>
+<body>
+
+<h1>İzmir İftar Vaktine Kalan Süre</h1>
+<p>Şu anda iftar vaktine kalan süre:</p>
+
+<div id="countdown"></div>
+
+<script>
+  // İzmir'deki iftar vakti saat 19:00 olarak varsayalım
+  var iftarVakti = new Date();
+  iftarVakti.setHours(19, 0, 0); // Saati ayarla: 19:00
+  
+  // Şu anki zamanı al
+  var suankiZaman = new Date();
+  
+  // İftar vaktine kalan süreyi hesapla
+  var kalanSure = iftarVakti - suankiZaman;
+  
+  // Kalan süreyi saat, dakika ve saniyeye çevir
+  var saat = Math.floor(kalanSure / (1000 * 60 * 60));
+  var dakika = Math.floor((kalanSure % (1000 * 60 * 60)) / (1000 * 60));
+  var saniye = Math.floor((kalanSure % (1000 * 60)) / 1000);
+  
+  // Kalan süreyi ekrana yazdır
+  document.getElementById("countdown").innerHTML = saat + " saat " + dakika + " dakika " + saniye + " saniye";
+</script>
+
 </body>
 </html>
+
