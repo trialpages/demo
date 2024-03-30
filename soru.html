@@ -1,73 +1,55 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ramazan Bilgi Yarışması</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 50px;
-  }
-  h1 {
-    color: #333;
-  }
-  #quizContainer {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  .question {
-    font-size: 20px;
-    margin-bottom: 10px;
-  }
-  .answer {
-    margin-bottom: 20px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notlar ve Duyurular</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .post {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+        .post:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .post h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .post p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
-
-<h1>Ramazan Bilgi Yarışması</h1>
-
-<div id="quizContainer">
-  <div class="question">1. Ramazan ayı kaç gündür?</div>
-  <div class="answer"><input type="text" id="answer1" placeholder="Cevabınız"></div>
-
-  <div class="question">2. Oruç hangi saatler arasında tutulur?</div>
-  <div class="answer"><input type="text" id="answer2" placeholder="Cevabınız"></div>
-
-  <div class="question">3. Ramazan'ın başlangıcı ve sonunu belirleyen ayet hangisidir?</div>
-  <div class="answer"><input type="text" id="answer3" placeholder="Cevabınız"></div>
-
-  <!-- Diğer sorular buraya eklenebilir -->
-
-  <button onclick="checkAnswers()">Cevapları Kontrol Et</button>
-</div>
-
-<div id="result" style="display: none; margin-top: 20px;">
-  <h2>Sonuç</h2>
-  <p id="score"></p>
-</div>
-
-<script>
-  function checkAnswers() {
-    var correctAnswers = ["30", "imsak ve iftar", "Bakara 185", /* Diğer doğru cevaplar buraya eklenebilir */];
-    var userAnswers = [];
-    for (var i = 1; i <= 10; i++) {
-      userAnswers.push(document.getElementById("answer" + i).value.trim().toLowerCase());
-    }
-    var correctCount = 0;
-    for (var i = 0; i < 10; i++) {
-      if (userAnswers[i] === correctAnswers[i].toLowerCase()) {
-        correctCount++;
-      }
-    }
-    var resultText = "Toplam doğru cevap: " + correctCount + "/10";
-    document.getElementById("score").innerHTML = resultText;
-    document.getElementById("result").style.display = "block";
-  }
-</script>
-
+    <div class="container">
+        <div class="post">
+            <h2>Başlık 1</h2>
+            <p>Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
+        </div>
+        <div class="post">
+            <h2>Başlık 2</h2>
+            <p>Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz.</p>
+        </div>
+        <!-- İstediğiniz kadar post ekleyebilirsiniz -->
+    </div>
 </body>
 </html>
