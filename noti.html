@@ -6,31 +6,34 @@
     <title>Anlık Bildirimler</title>
 </head>
 <body>
-    <h1>Anlık Bildirimler</h1>
+    <h1>Notifications</h1>
     
     <!-- JavaScript kodu -->
     <script>
-        // Belirli aralıklarla yeni mesajları kontrol etme fonksiyonu
-        function checkForNewMessages() {
-            // AJAX kullanarak hedef sayfayı yükleme
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", "https://my.cbox.ws/yedek", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    // Sayfa içeriğini kontrol etme
-                    var pageContent = xhr.responseText;
-                    // Yeni mesajların varlığını kontrol etme (örneğin, bir belirteç aracılığıyla)
-                    if (pageContent.includes("Yeni Mesaj")) {
-                        // Yeni mesaj geldiğinde bildirim gönderme
-                        new Notification("Yeni mesaj var!");
-                    }
-                }
-            };
-            xhr.send();
-        }
+        // WebSocket bağlantısı oluşturma
+        var socket = new WebSocket("wss://my.cbox.ws/yedek");
 
-        // Belirli aralıklarla yeni mesajları kontrol et
-        setInterval(checkForNewMessages, 5000); // Örneğin, 5 saniyede bir kontrol edebilirsiniz
+        // Bağlantı başlatıldığında
+        socket.onopen = function(event) {
+            console.log("WebSocket bağlantısı başlatıldı.");
+        };
+
+        // Mesaj alındığında
+        socket.onmessage = function(event) {
+            // Yeni mesaj geldiğinde bildirim gönderme
+            new Notification("Yeni mesaj var!");
+            console.log("Yeni mesaj alındı: " + event.data);
+        };
+
+        // Hata oluştuğunda
+        socket.onerror = function(error) {
+            console.error("WebSocket hatası: " + error);
+        };
+
+        // Bağlantı kapandığında
+        socket.onclose = function(event) {
+            console.log("WebSocket bağlantısı kapatıldı.");
+        };
     </script>
 </body>
 </html>
