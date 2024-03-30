@@ -37,17 +37,42 @@
             font-size: 14px;
             line-height: 1.5;
         }
+        .read-more {
+            color: blue;
+            cursor: pointer;
+        }
+        .full-content {
+            display: none;
+        }
     </style>
+    <script>
+        function toggleContent(postId) {
+            var content = document.getElementById(postId);
+            var readMoreLink = document.getElementById("read-more-" + postId);
+
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                readMoreLink.innerText = "Kısalt";
+            } else {
+                content.style.display = "none";
+                readMoreLink.innerText = "Devamını Oku";
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="post">
-            <h2>Başlık 1</h2>
-            <p>Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
+            <h2>Önemli Duyurular</h2>
+            <p>Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
+            <p class="full-content" id="content-1">Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz. Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
+            <span id="read-more-1" class="read-more" onclick="toggleContent('content-1')">Devamını Oku</span>
         </div>
         <div class="post">
             <h2>Başlık 2</h2>
             <p>Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz.</p>
+            <p class="full-content" id="content-2">Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz. Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz.</p>
+            <span id="read-more-2" class="read-more" onclick="toggleContent('content-2')">Devamını Oku</span>
         </div>
         <!-- İstediğiniz kadar post ekleyebilirsiniz -->
     </div>
