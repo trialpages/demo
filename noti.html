@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildirim Merkezi</title>
+    <script>
+        // Takip edilecek sayfanın URL'si
+        var targetUrl = "https://my.cbox.ws/yedek";
+
+        // Yeni mesajların kontrol edilmesi fonksiyonu
+        function checkForNewMessages() {
+            // AJAX kullanarak hedef sayfayı yükleme
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", targetUrl, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Sayfa içeriğini kontrol etme
+                    var pageContent = xhr.responseText;
+                    // Yeni mesajların varlığını kontrol etme (örneğin, bir belirteç aracılığıyla)
+                    if (pageContent.includes("Yeni Mesaj")) {
+                        // Yeni mesaj geldiğinde bildirim gönderme
+                        var notification = new Notification("Yeni mesaj var!");
+                    }
+                }
+            };
+            xhr.send();
+        }
+
+        // Belirli aralıklarla yeni mesajları kontrol etme
+        setInterval(checkForNewMessages, 5000); // Örneğin, 5 saniyede bir kontrol edebilirsiniz
+    </script>
+</head>
+<body>
+    <h1>Bildirim Merkezi</h1>
+    <p>Belirli bir web sayfasını takip ederek yeni mesaj geldiğinde bildirim gönderir.</p>
+</body>
+</html>
