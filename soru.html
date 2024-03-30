@@ -36,10 +36,10 @@
         .post p {
             font-size: 14px;
             line-height: 1.5;
-        }
-        .read-more {
-            color: blue;
             cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .full-content {
             display: none;
@@ -63,18 +63,6 @@
 <body>
     <div class="container">
         <div class="post">
-            <h2>Önemli Duyurular</h2>
-            <p>Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
-            <p class="full-content" id="content-1">Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz. Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
-            <span id="read-more-1" class="read-more" onclick="toggleContent('content-1')">Devamını Oku</span>
-        </div>
-        <div class="post">
-            <h2>Başlık 2</h2>
-            <p>Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz.</p>
-            <p class="full-content" id="content-2">Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz. Bu bir başka not veya duyurudur. İstediğiniz kadar not veya duyuru ekleyebilirsiniz.</p>
-            <span id="read-more-2" class="read-more" onclick="toggleContent('content-2')">Devamını Oku</span>
-        </div>
-        <!-- İstediğiniz kadar post ekleyebilirsiniz -->
-    </div>
-</body>
-</html>
+            <h2>Başlık 1</h2>
+            <p onclick="toggleContent('content-1')">Bu bir not veya duyurudur. Buraya not veya duyurunuzun içeriğini yazabilirsiniz.</p>
+            <p class="full-content" id="content-1" style="display: none;">Bu bir not veya duyurudur. Buraya n
