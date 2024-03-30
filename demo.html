@@ -28,9 +28,13 @@
 <div id="countdown"></div>
 
 <script>
-  // İzmir'deki iftar vakti saat 19:00 olarak varsayalım
+  // Diyanet İşleri Başkanlığı'nın namaz vakitlerini almak için bir API kullanılabilir.
+  // Ancak bu örnekte basit bir örnek olarak sabit bir iftar vakti belirleyeceğiz.
+  // Gerçek uygulamada API'ler kullanılabilir.
+
+  // İzmir'deki varsayılan iftar vaktini saat 19:40 olarak varsayalım.
   var iftarVakti = new Date();
-  iftarVakti.setHours(19, 0, 0); // Saati ayarla: 19:00
+  iftarVakti.setHours(19, 4, 0); // Saati ayarla: 19:40
   
   // Şu anki zamanı al
   var suankiZaman = new Date();
@@ -49,4 +53,3 @@
 
 </body>
 </html>
-
