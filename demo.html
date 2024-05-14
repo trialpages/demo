@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paylaşımlarım</title>
+</head>
+<body>
+
+<div>
+    <textarea id="tweetContent" placeholder="Notunuzu buraya yazın..." rows="4" cols="50"></textarea>
+</div>
+<div>
+    <input type="text" id="linkInput" placeholder="Linki buraya yapıştırın...">
+</div>
+<div>
+    <button onclick="tweet()">Paylaş</button>
+</div>
+
+<script>
+    function tweet() {
+        var tweetContent = document.getElementById("tweetContent").value;
+        var linkInput = document.getElementById("linkInput").value;
+
+        // Twitter paylaşım linki oluşturma
+        var twitterURL = "https://twitter.com/intent/tweet";
+        var textParam = encodeURIComponent(tweetContent);
+        var urlParam = encodeURIComponent(linkInput);
+        var hashtags = encodeURIComponent("html,web");
+
+        var finalURL = `${twitterURL}?text=${textParam}&url=${urlParam}&hashtags=${hashtags}`;
+
+        // Paylaşım penceresini açma
+        window.open(finalURL, "_blank");
+    }
+</script>
+
+</body>
+</html>
