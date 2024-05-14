@@ -1,39 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zaman Tüneli</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-  }
-  .post {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  .post h2 {
-    margin-top: 0;
-  }
-  .post p {
-    margin-bottom: 5px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Style Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .note {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .note h2 {
+            font-size: 20px;
+            color: #385898;
+            margin-bottom: 10px;
+        }
+        .note p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .read-more {
+            color: #385898;
+            cursor: pointer;
+        }
+        .full-content {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleContent(noteId) {
+            var content = document.getElementById(noteId);
+            var readMoreLink = document.getElementById("read-more-" + noteId);
+
+            if (content.style.display === "none") {
+                content.style.display = "block";
+                readMoreLink.innerText = "Kısalt";
+            } else {
+                content.style.display = "none";
+                readMoreLink.innerText = "Devamını Oku";
+            }
+        }
+    </script>
 </head>
 <body>
+    <div class="container">
+        <div class="note">
+            <h2>Başlık 1</h2>
+            <p onclick="toggleContent('content-1')">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum felis eu libero ultricies, vel placerat lorem eleifend. Proin eget risus nec nisi lacinia dapibus.</p>
+            <p class="full-content" id="content-1" style="display: none;">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum fermentum felis eu libero ultricies, vel placerat lorem eleifend. Proin eget risus nec nisi lacinia dapibus. Fusce at ipsum a justo tincidunt mollis. Nulla facilisi. Vivamus nec nunc sed sapien cursus sollicitudin eget ut purus. Sed quis est ut justo posuere ullamcorper. In hac habitasse platea dictumst.</p>
+            <span id="read-more-1" class="read-more" onclick="toggleContent('content-1')">Devamını Oku</span>
+        </div>
 
-<div class="post">
-  <h2>17 Nisan 2024</h2>
-  <p>Bu bir zaman tüneli gönderisidir.</p>
-</div>
-
-<div class="post">
-  <h2>15 Nisan 2024</h2>
-  <p>Bu da başka bir zaman tüneli gönderisidir.</p>
-</div>
-
-<!-- Daha fazla gönderi eklemek için yukarıdaki <div class="post">...</div> örneklerini kopyalayabilirsiniz -->
-
+        <div class="note">
+            <h2>Başlık 2</h2>
+            <p onclick="toggleContent('content-2')">Sed euismod mi quis odio interdum tempus. Donec viverra, odio et mollis bibendum, dolor ipsum aliquet velit, a tempor nulla purus et sem.</p>
+            <p class="full-content" id="content-2" style="display: none;">Sed euismod mi quis odio interdum tempus. Donec viverra, odio et mollis bibendum, dolor ipsum aliquet velit, a tempor nulla purus et sem. Fusce posuere velit vitae magna tincidunt, vitae efficitur velit porta. Maecenas tristique tortor sed mauris dapibus dapibus. Integer dictum mauris nec massa ultricies tincidunt. Cras quis metus eu metus convallis pulvinar.</p>
+            <span id="read-more-2" class="read-more" onclick="toggleContent('content-2')">Devamını Oku</span>
+        </div>
+    </div>
 </body>
 </html>
