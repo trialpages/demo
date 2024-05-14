@@ -1,39 +1,39 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paylaşımlarım</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zaman Tüneli</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  .post {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .post h2 {
+    margin-top: 0;
+  }
+  .post p {
+    margin-bottom: 5px;
+  }
+</style>
 </head>
 <body>
 
-<div>
-    <textarea id="tweetContent" placeholder="Notunuzu buraya yazın..." rows="4" cols="50"></textarea>
-</div>
-<div>
-    <input type="text" id="linkInput" placeholder="Linki buraya yapıştırın...">
-</div>
-<div>
-    <button onclick="tweet()">Paylaş</button>
+<div class="post">
+  <h2>17 Nisan 2024</h2>
+  <p>Bu bir zaman tüneli gönderisidir.</p>
 </div>
 
-<script>
-    function tweet() {
-        var tweetContent = document.getElementById("tweetContent").value;
-        var linkInput = document.getElementById("linkInput").value;
+<div class="post">
+  <h2>15 Nisan 2024</h2>
+  <p>Bu da başka bir zaman tüneli gönderisidir.</p>
+</div>
 
-        // Twitter paylaşım linki oluşturma
-        var twitterURL = "https://twitter.com/intent/tweet";
-        var textParam = encodeURIComponent(tweetContent);
-        var urlParam = encodeURIComponent(linkInput);
-        var hashtags = encodeURIComponent("html,web");
-
-        var finalURL = `${twitterURL}?text=${textParam}&url=${urlParam}&hashtags=${hashtags}`;
-
-        // Paylaşım penceresini açma
-        window.open(finalURL, "_blank");
-    }
-</script>
+<!-- Daha fazla gönderi eklemek için yukarıdaki <div class="post">...</div> örneklerini kopyalayabilirsiniz -->
 
 </body>
 </html>
