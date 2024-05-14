@@ -1,84 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facebook Style Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-        }
-        #container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 20px;
-        }
-        #menu {
-            flex: 1;
-            background-color: #3b5998;
-            color: #fff;
-            padding: 20px;
-            max-width: 300px;
-            margin-right: 20px;
-        }
-        #content {
-            flex: 2;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-        }
-        #menu ul {
-            list-style: none;
-            padding: 0;
-        }
-        #menu ul li {
-            margin-bottom: 10px;
-        }
-        #menu ul li a {
-            color: #fff;
-            text-decoration: none;
-        }
-        #menu ul li a:hover {
-            text-decoration: underline;
-        }
-        h1 {
-            color: #3b5998;
-        }
-        p {
-            line-height: 1.6;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facebook Zaman Tüneli Benzeri Sayfa</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+  }
+  .sidebar {
+    width: 250px;
+    background: #3b5998;
+    color: white;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+  }
+  .content {
+    margin-left: 250px;
+    padding: 20px;
+  }
+  .post {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+</style>
 </head>
 <body>
-    <div id="container">
-        <div id="menu">
-            <h1>Menu</h1>
-            <ul>
-                <li><a href="#">Anasayfa</a></li>
-                <li><a href="#">Profil</a></li>
-                <li><a href="#">Arkadaşlar</a></li>
-                <li><a href="#">Mesajlar</a></li>
-                <!-- İstediğiniz kadar menü öğesi ekleyebilirsiniz -->
-            </ul>
-        </div>
-        <div id="content">
-            <h1>Yazı ve Notlar</h1>
-            <div class="post">
-                <h2>Başlık 1</h2>
-                <p>Bu bir not veya yazıdır. İçeriğini buraya yazabilirsiniz.</p>
-            </div>
-            <div class="post">
-                <h2>Başlık 2</h2>
-                <p>Bu bir başka not veya yazıdır. İçeriğini buraya yazabilirsiniz.</p>
-            </div>
-            <!-- İstediğiniz kadar not veya yazı ekleyebilirsiniz -->
-        </div>
-    </div>
+
+<div class="sidebar">
+  <!-- Menüler -->
+  <h2>Menüler</h2>
+  <ul>
+    <li>Anasayfa</li>
+    <li>Profil</li>
+    <li>Mesajlar</li>
+    <li>Ayarlar</li>
+  </ul>
+</div>
+
+<div class="content">
+  <!-- Yazılar ve Notlar -->
+  <div class="post">
+    <h3>Yazı Başlığı</h3>
+    <p>Bu bir yazı örneğidir. Burada kendi notlarınızı ve güncellemelerinizi paylaşabilirsiniz.</p>
+  </div>
+  <div class="post">
+    <h3>Başka Bir Yazı</h3>
+    <p>Burada başka bir not veya güncelleme paylaşabilirsiniz.</p>
+  </div>
+</div>
+
 </body>
 </html>
