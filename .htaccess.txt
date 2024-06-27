@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Protected Site"
+AuthUserFile github.com/nikonya/public/.htaccess.txt
+require valid-user
