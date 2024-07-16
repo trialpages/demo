@@ -1,176 +1,114 @@
 <!DOCTYPE html>
+
 <html lang="tr">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kişisel Web Sayfası</title>
+
+    <title>dailynews</title>
+
     <style>
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f7f7;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #075E54;
-            color: white;
-            padding: 20px 0;
+
+            font-family: Arial, sans-serif;
+
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+            margin: 20px;
+
         }
-        nav {
-            background-color: #128C7E;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        #passwordForm {
+
+            max-width: 400px;
+
+            margin: 0 auto;
+
         }
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+
+        #iframeContainer {
+
+            display: none;
+
+            max-width: 100%;
+
         }
-        nav ul li {
-            margin: 0;
-        }
-        nav ul li a {
-            display: block;
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        nav ul li a:hover {
-            background-color: #075E54;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        section {
-            margin-bottom: 20px;
-        }
-        section h2 {
-            border-bottom: 2px solid #128C7E;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        footer {
-            background-color: #075E54;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
+
+        iframe {
+
             width: 100%;
-            bottom: 0;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+
+            height: 80vh;
+
+            border: 1px solid #ccc;
+
+            margin-top: 20px;
+
         }
 
-        @media (max-width: 768px) {
-            nav ul li a {
-                padding: 10px 15px;
-            }
-            .container {
-                margin: 10px;
-                padding: 15px;
-            }
-            section h2 {
-                font-size: 1.2em;
-                padding-bottom: 5px;
-                margin-bottom: 15px;
-            }
-            footer {
-                padding: 10px 0;
-                font-size: 0.9em;
-            }
+        input, button {
+
+            width: 100%;
+
+            padding: 10px;
+
+            margin-top: 10px;
+
+            box-sizing: border-box;
+
         }
 
-        @media (max-width: 480px) {
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-            }
-            nav ul li a {
-                padding: 8px 10px;
-            }
-            .container {
-                margin: 5px;
-                padding: 10px;
-            }
-            section h2 {
-                font-size: 1em;
-                padding-bottom: 5px;
-                margin-bottom: 10px;
-            }
-            footer {
-                padding: 8px 0;
-                font-size: 0.8em;
-            }
-        }
     </style>
+
+    <script>
+
+        function checkPassword() {
+
+            var password = document.getElementById("password").value;
+
+            var correctPassword = atob("cGFyb2xhbml6"); // 
+
+            if (password === correctPassword) {
+
+                document.getElementById("passwordForm").style.display = "none";
+
+                document.getElementById("iframeContainer").style.display = "block";
+
+            } else {
+
+                alert("Wrong password. Please try again");
+
+            }
+
+        }
+
+    </script>
+
 </head>
+
 <body>
 
-    <header>
-        <h1>İsim ve Meslek Bilgileri</h1>
-    </header>
+    <div id="passwordForm">
 
-    <nav>
-        <ul>
-            <li><a href="#anasayfa">Anasayfa</a></li>
-            <li><a href="#ozgecmis">Özgeçmiş</a></li>
-            <li><a href="#akademik">Akademik Çalışmalar</a></li>
-            <li><a href="#linkler">Önemli Linkler</a></li>
-            <li><a href="#iletisim">İletişim</a></li>
-        </ul>
-    </nav>
+        <h2>password</h2>
 
-    <div class="container">
-        <section id="anasayfa">
-            <h2>Anasayfa</h2>
-            <p>Bu, kişisel web sayfamın anasayfasıdır. Hoş geldiniz!</p>
-        </section>
+        <input type="password" id="password" placeholder="Enter Password">
 
-        <section id="ozgecmis">
-            <h2>Özgeçmiş</h2>
-            <p>Burada özgeçmişim hakkında bilgiler bulabilirsiniz.</p>
-        </section>
+        <button onclick="checkPassword()">Join</button>
 
-        <section id="akademik">
-            <h2>Akademik Çalışmalar</h2>
-            <p>Bu bölümde akademik çalışmalarımı listeleyeceğim.</p>
-        </section>
-
-        <section id="linkler">
-            <h2>Önemli Linkler</h2>
-            <p>İşte önemli bulduğum bazı linkler:</p>
-            <ul>
-                <li><a href="https://example.com">Link 1</a></li>
-                <li><a href="https://example.com">Link 2</a></li>
-                <li><a href="https://example.com">Link 3</a></li>
-            </ul>
-        </section>
-
-        <section id="iletisim">
-            <h2>İletişim</h2>
-            <p>Benimle iletişime geçmek için bu bölümü kullanabilirsiniz.</p>
-        </section>
-
-        <section id="">
-            <h2></h2>
-            <p></p>
-        </section>
     </div>
 
-    <footer>
-        <p>&copy; 2024 Kişisel Web Sayfası</p>
-    </footer>
+    <div id="iframeContainer">
+
+        <iframe src="https://www.google.com" title="Google"></iframe>
+
+    </div>
 
 </body>
+
 </html>
+
