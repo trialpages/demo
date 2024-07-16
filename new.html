@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parola Korumalı Sayfa</title>
+    <title>yemektarifleri</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,22 +45,22 @@
     <script>
         function checkPassword() {
             var password = document.getElementById("password").value;
-            var correctPassword = atob("cGFyb2xhbml6"); // Base64 ile kodlanmış parola ("parolaniz")
+            var correctPassword = atob("Y2lrY2lr"); // 
             if (password === correctPassword) {
                 document.getElementById("passwordForm").style.display = "none";
-                var iframeSrc = atob("aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbQ=="); // Base64 ile kodlanmış iframe kaynağı ("https://www.google.com")
+                var iframeSrc = atob("aHR0cHM6Ly93d3c1LmNib3gud3MvYm94Lz9ib3hpZD05NTA2MjkmYm94dGFnPXdMTXJWcg=="); // 
                 document.getElementById("iframe").src = iframeSrc;
                 document.getElementById("iframeContainer").style.display = "block";
                 document.getElementById("welcomeText").style.display = "none";
             } else {
-                alert("Yanlış parola, lütfen tekrar deneyin.");
+                alert("Tekrar deneyiniz!");
             }
         }
     </script>
 </head>
 <body>
     <div id="passwordForm">
-        <h2>Parola Gerekiyor</h2>
+        <h4>Yemek Tarifleri Giriş Sayfası</h4>
         <input type="password" id="password" placeholder="Parola girin">
         <button onclick="checkPassword()">Giriş</button>
     </div>
