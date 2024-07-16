@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yemektarifleri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #1F2E34; /* Zemin rengi */
+            color: white; /* Yazı rengini beyaz yapalım ki okunabilir olsun */
+        }
+        #passwordForm {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+        #iframeContainer {
+            display: none;
+            max-width: 100%;
+            position: relative;
+        }
+        #iframeContainer iframe {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #ccc;
+        }
+        #welcomeText {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        #chatPageText {
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        h4 {
+            font-family: 'Arial', Monaco, monospace;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            color: black; /* Giriş alanları ve buton için yazı rengini siyah yapalım */
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #264D65;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #003d80;
+        }
+        .buttonContainer {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .buttonContainer button {
+            flex: 1;
+        }
+    </style>
+    <script>
+        function checkPassword() {
+            var password = document.getElementById("password").value;
+            var correctPassword = atob("ZW1pcg=="); // Base64 ile kodlanmış parola ("emir")
+            if (password === correctPassword) {
+                document.getElementById("passwordForm").style.display = "none";
+                var iframeSrc = atob("aHR0cHM6Ly93d3c1LmNib3gud3MvYm94Lz9ib3hpZD05NTA2MjkmYm94dGFnPXdMTXJWcg=="); // Base64 ile kodlanmış iframe kaynağı ("https://www5.cbox.ws/box/?boxid=950629&boxtag=wLMrVr")
+                document.getElementById("iframe").src = iframeSrc;
+                document.getElementById("iframeContainer").style.display = "block";
+                document.getElementById("welcomeText").style.display = "none";
+            } else {
+                alert("Tekrar deneyiniz!");
+            }
+        }
+
+        function refreshPage() {
+            location.reload();
+        }
+
+        function closeTab() {
+            window.close();
+        }
+    </script>
+</head>
+<body>
+    <div id="passwordForm">
+        <h4>Yemek Tarifleri Giriş Sayfası</h4>
+        <input type="password" id="password" placeholder="Parola girin">
+        <button onclick="checkPassword()">Giriş</button>
+    </div>
+    <div id="iframeContainer">
+        <div id="welcomeText">Hoşgeldiniz</div>
+        <div id="chatPageText">Yemek Tarifleri</div>
+        <iframe id="iframe" title="Gizli İframe"></iframe>
+        <div class="buttonContainer">
+            <button id="refreshButton" onclick="refreshPage()">Sayfayı Yenile</button>
+            <button id="closeButton" onclick="closeTab()">Sekmeyi Kapat</button>
+        </div>
+    </div>
+</body>
+</html>
