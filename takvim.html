@@ -19,7 +19,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 250px;
         }
         .container h1 {
             font-size: 1.5em;
@@ -28,7 +28,7 @@
             text-align: center;
         }
         .container input, .container button {
-            width: 100%;
+            width: 80%;
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ddd;
@@ -58,6 +58,7 @@
 
 <div class="container">
     <h1>Tarih Çevirici</h1>
+    <h3>(Lütfen çevirmek istediğiniz tarihi seçiniz)</h3>
     <input type="date" id="inputDate" placeholder="Tarih girin">
     <button onclick="convertDate()">Çevir</button>
     <div class="results" id="results"></div>
