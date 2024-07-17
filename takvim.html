@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarih Çevirici</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .container h1 {
+            font-size: 1.5em;
+            color: #075E54;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container input, .container button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .container button {
+            background-color: #128C7E;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .container button:hover {
+            background-color: #075E54;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Tarih Çevirici</h1>
+    <input type="date" id="inputDate" placeholder="Tarih girin">
+    <button onclick="convertDate()">Çevir</button>
+    <div class="results" id="results"></div>
+</div>
+
+<script>
+    function convertDate() {
+        const inputDate = document.getElementById('inputDate').value;
+        if (!inputDate) {
+            alert("Lütfen bir tarih girin.");
+            return;
+        }
+
+        const date = new Date(inputDate);
+        const miladi = date.toLocaleDateString('tr-TR');
+        
+        const hicriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        }).format(date);
+        
+        const rumiDate = getRumiDate(date);
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `
+            <div class="result"><strong>Miladi:</strong> ${miladi}</div>
+            <div class="result"><strong>Hicri:</strong> ${hicriDate}</div>
+            <div class="result"><strong>Rumi:</strong> ${rumiDate}</div>
+        `;
+    }
+
+    function getRumiDate(date) {
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const rumiYear = year - 584;
+        return `${day}.${month}.${rumiYear}`;
+    }
+</script>
+
+</body>
+</html>
