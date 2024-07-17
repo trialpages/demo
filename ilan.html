@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üniversitelerin Akademik Personel İlanları</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Üniversitelerin Akademik Personel İlanları</h1>
+        <ul id="job-list">
+            <!-- İlan başlıkları burada yer alacak -->
+        </ul>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const jobList = document.getElementById('job-list');
+            
+            fetch('https://www.resmigazete.gov.tr/ilanlar/eskiilanlar/2024/07/20240717-4.htm')
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    
+                    // İlanları ayıklayın
+                    const announcements = doc.querySelectorAll('a'); // İlan başlıklarını seçin
+                    announcements.forEach(announcement => {
+                        if (announcement.innerText.includes('Üniversite')) { // Üniversite ilanlarını filtreleyin
+                            const li = document.createElement('li');
+                            li.textContent = announcement.innerText;
+                            jobList.appendChild(li);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Veri çekme hatası:', error);
+                });
+        });
+    </script>
+</body>
+</html>
