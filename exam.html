@@ -6,7 +6,7 @@
     <title>Sınav Uygulaması</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
             text-align: center;
             padding: 20px;
@@ -41,12 +41,18 @@
             display: none;
             width: 800px;
             height: 600px;
-            background-color: white;
-            border: 2px solid #000;
+            background-color: #fff;
+            border: 10px solid #d4af37;
             padding: 20px;
             box-sizing: border-box;
             text-align: center;
             position: relative;
+        }
+        #certificate h1 {
+            margin: 0;
+            padding: 10px;
+            font-size: 36px;
+            color: #d4af37;
         }
         #certificate h2 {
             margin: 0;
@@ -55,6 +61,7 @@
         }
         #certificate p {
             font-size: 18px;
+            margin: 20px 0;
         }
         #downloadButton {
             background-color: #007bff;
@@ -97,9 +104,10 @@
     </div>
 
     <div id="certificate">
-        <h2>Sertifika</h2>
+        <h2>İslam Hukuku Alan Bilgisi Sınavı</h2>
+        <h1>Sertifika</h1>
         <p>Sayın <span id="certName"></span> <span id="certSurname"></span></p>
-        <p>"İslam Hukuku Araştırmaları Platformu tarafından hazırlanan alan bilgisi sınavında gösterdiğiniz başarı sebebiyle bu sertifikayı almaya hak kazandınız."</p>
+        <p>"İslam Hukuku Araştırmaları Platformu" tarafından online düzenlenen İslam Hukuku Alan Bilgisi sınavında başarılı olmuştur.</p>
         <p>İslam Hukuku Araştırmaları Platformu</p>
     </div>
     <button id="downloadButton" class="hidden">Sertifikayı İndir</button>
