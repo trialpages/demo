@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sınav Uygulaması</title>
+    <title>İslam Hukuku Alan Bilgisi Sınav Uygulaması</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&display=swap');
+
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f0f0f0;
             text-align: center;
             padding: 20px;
         }
+
         #formContainer, #testContainer, #resultContainer {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
+
         input[type="text"], button {
             width: 100%;
             padding: 10px;
@@ -26,17 +30,21 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
         button {
             background-color: #28a745;
             color: white;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #218838;
         }
+
         .hidden {
             display: none;
         }
+
         #certificate {
             display: none;
             width: 800px;
@@ -48,24 +56,78 @@
             text-align: center;
             position: relative;
         }
-        #certificate h1 {
-            margin: 0;
-            padding: 10px;
-            font-size: 36px;
-            color: #d4af37;
-        }
+
         #certificate h2 {
-            margin: 0;
-            padding: 10px;
+            font-family: 'Playfair Display', serif;
             font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
         }
+
+        #certificate h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 48px;
+            color: #d4af37;
+            margin: 0;
+        }
+
         #certificate p {
+            font-family: 'Playfair Display', serif;
             font-size: 18px;
+            color: #555;
             margin: 20px 0;
         }
+
+        #certificate .ribbon {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            margin-left: -50px;
+        }
+
+        #certificate .ribbon::before, #certificate .ribbon::after {
+            content: '';
+            position: absolute;
+            display: block;
+            border: 5px solid #d4af37;
+        }
+
+        #certificate .ribbon::before {
+            top: 0;
+            left: 0;
+            border-width: 0 45px 45px 0;
+            border-color: transparent #d4af37 transparent transparent;
+        }
+
+        #certificate .ribbon::after {
+            bottom: 0;
+            right: 0;
+            border-width: 45px 0 0 45px;
+            border-color: transparent transparent transparent #d4af37;
+        }
+
+        #certificate .ribbon span {
+            position: absolute;
+            display: block;
+            width: 100px;
+            padding: 10px 0;
+            background-color: #d4af37;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+            top: 25px;
+            left: -5px;
+            transform: rotate(-45deg);
+        }
+
         #downloadButton {
             background-color: #007bff;
         }
+
         #downloadButton:hover {
             background-color: #0056b3;
         }
@@ -73,24 +135,36 @@
 </head>
 <body>
     <div id="formContainer">
-        <h2>İsim ve Soyisim Girin</h2>
+        <h3>İslam Hukuku Alan Bilgisi Sınavı</h3>
+        <h5>Sertifikada kullanılmak üzere isim ve soyisim girin</h5>
         <input type="text" id="name" placeholder="İsim">
         <input type="text" id="surname" placeholder="Soyisim">
         <button onclick="startExam()">Sınava Giriş Yap</button>
     </div>
 
     <div id="testContainer" class="hidden">
-        <h2>Test Sınavı</h2>
+        <h2>İslam Hukuku Alan Bilgisi Sınavı</h2>
         <form id="examForm">
             <div>
-                <p>Soru 1: 2 + 2 = ?</p>
+                <p>Soru 1: Aşağıdakilerden hangisi dört rakamıdır?</p>
                 <input type="radio" name="q1" value="correct"> 4<br>
                 <input type="radio" name="q1" value="wrong"> 5<br>
+                <input type="radio" name="q1" value="wrong"> 6<br>
+                <input type="radio" name="q1" value="wrong"> 7<br>
             </div>
             <div>
                 <p>Soru 2: 3 + 5 = ?</p>
-                <input type="radio" name="q2" value="correct"> 8<br>
-                <input type="radio" name="q2" value="wrong"> 9<br>
+                <input type="radio" name="q1" value="correct"> 8<br>
+                <input type="radio" name="q1" value="wrong"> 6<br>
+                <input type="radio" name="q1" value="wrong"> 7<br>
+                <input type="radio" name="q1" value="wrong"> 9<br>
+            </div>
+            <div>
+                <p>Soru 3: Aşağıdakilerden hangisi ilk İslam Hukuk Usulü eserini yazan müctehiddir?</p>
+                <input type="radio" name="q1" value="correct"> İmam Şafii<br>
+                <input type="radio" name="q1" value="wrong"> Ebu Hanife<br>
+                <input type="radio" name="q1" value="wrong"> İmam Malik<br>
+                <input type="radio" name="q1" value="wrong"> Ahmed b. Hanbel<br>
             </div>
             <!-- 18 soru daha ekleyin -->
             <button type="button" onclick="submitExam()">Sınavı Bitir</button>
@@ -100,10 +174,11 @@
     <div id="resultContainer" class="hidden">
         <h2>Sonuçlar</h2>
         <p id="resultText"></p>
-        <button id="certificateButton" class="hidden" onclick="generateCertificate()">Tebrikler. Sertifikanızı almak için tıklayınız</button>
+        <button id="certificateButton" class="hidden" onclick="generateCertificate()">Tebrikler! Sertifikanızı almak için tıklayınız</button>
     </div>
 
     <div id="certificate">
+        <div class="ribbon"><span>Sertifika</span></div>
         <h2>İslam Hukuku Alan Bilgisi Sınavı</h2>
         <h1>Sertifika</h1>
         <p>Sayın <span id="certName"></span> <span id="certSurname"></span></p>
