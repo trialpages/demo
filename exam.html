@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sınav Uygulaması</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 20px;
+        }
+        #formContainer, #testContainer, #resultContainer {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer">
+        <h2>İsim ve Soyisim Girin</h2>
+        <input type="text" id="name" placeholder="İsim">
+        <input type="text" id="surname" placeholder="Soyisim">
+        <button onclick="startExam()">Sınava Giriş Yap</button>
+    </div>
+
+    <div id="testContainer" style="display: none;">
+        <h2>Test Sınavı</h2>
+        <form id="examForm">
+            <div>
+                <p>Soru 1: 2 + 2 = ?</p>
+                <input type="radio" name="q1" value="correct"> 4<br>
+                <input type="radio" name="q1" value="wrong"> 5<br>
+            </div>
+            <div>
+                <p>Soru 2: 3 + 5 = ?</p>
+                <input type="radio" name="q2" value="correct"> 8<br>
+                <input type="radio" name="q2" value="wrong"> 9<br>
+            </div>
+            <!-- 18 soru daha ekleyin -->
+            <button type="button" onclick="submitExam()">Sınavı Bitir</button>
+        </form>
+    </div>
+
+    <div id="resultContainer" style="display: none;">
+        <h2>Sonuçlar</h2>
+        <p id="resultText"></p>
+        <button id="certificateButton" style="display: none;" onclick="downloadCertificate()">Tebrikler. Sertifikanızı almak için tıklayınız</button>
+    </div>
+
+    <script>
+        function startExam() {
+            document.getElementById("formContainer").style.display = "none";
+            document.getElementById("testContainer").style.display = "block";
+        }
+
+        function submitExam() {
+            const questions = 2; // Toplam soru sayısı (20)
+            const correctAnswers = document.querySelectorAll('input[type="radio"][value="correct"]:checked').length;
+            const wrongAnswers = questions - correctAnswers;
+            const resultText = `Doğru Cevaplar: ${correctAnswers}, Yanlış Cevaplar: ${wrongAnswers}`;
+
+            document.getElementById("testContainer").style.display = "none";
+            document.getElementById("resultText").innerText = resultText;
+            document.getElementById("resultContainer").style.display = "block";
+
+            if (correctAnswers / questions >= 0.7) {
+                document.getElementById("certificateButton").style.display = "block";
+            } else {
+                document.getElementById("resultText").innerText += "\nSertifika almaya hak kazanamadınız.";
+            }
+        }
+
+        function downloadCertificate() {
+            const name = document.getElementById("name").value;
+            const surname = document.getElementById("surname").value;
+            const certificateText = `Tebrikler ${name} ${surname},\nBaşarıyla sertifika kazandınız!`;
+
+            const link = document.createElement('a');
+            link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(certificateText);
+            link.download = 'sertifika.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
