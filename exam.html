@@ -3,221 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İslam Hukuku Alan Bilgisi Sınav Uygulaması</title>
+    <title>Günlük Quiz</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&display=swap');
-
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #f0f0f0;
-            text-align: center;
+            margin: 0;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        #formContainer, #testContainer, #resultContainer {
-            max-width: 500px;
-            margin: 0 auto;
+        h1 {
+            color: #4CAF50;
+        }
+        .quiz-container {
+            background-color: white;
             padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
         }
-
-        input[type="text"], button {
-            width: 90%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+        .question {
+            margin-bottom: 20px;
         }
-
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options li {
+            margin-bottom: 10px;
+        }
         button {
-            background-color: #28a745;
+            background-color: #4CAF50;
             color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
             cursor: pointer;
         }
-
         button:hover {
-            background-color: #218838;
+            background-color: #45a049;
         }
-
-        .hidden {
-            display: none;
-        }
-
-        #certificate {
-            display: none;
-            width: 800px;
-            height: 600px;
-            background-color: #fff;
-            border: 10px solid #d4af37;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-            position: relative;
-        }
-
-        #certificate h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        #certificate h1 {
-            font-family: 'Great Vibes', cursive;
-            font-size: 48px;
-            color: #d4af37;
-            margin: 0;
-        }
-
-        #certificate p {
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            color: #555;
-            margin: 20px 0;
-        }
-
-        #certificate .ribbon {
-            width: 100px;
-            height: 100px;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            margin-left: -50px;
-        }
-
-        #certificate .ribbon::before, #certificate .ribbon::after {
-            content: '';
-            position: absolute;
-            display: block;
-            border: 5px solid #d4af37;
-        }
-
-        #certificate .ribbon::before {
-            top: 0;
-            left: 0;
-            border-width: 0 45px 45px 0;
-            border-color: transparent #d4af37 transparent transparent;
-        }
-
-        #certificate .ribbon::after {
-            bottom: 0;
-            right: 0;
-            border-width: 45px 0 0 45px;
-            border-color: transparent transparent transparent #d4af37;
-        }
-
-        #certificate .ribbon span {
-            position: absolute;
-            display: block;
-            width: 100px;
-            padding: 10px 0;
-            background-color: #d4af37;
-            color: white;
-            font-family: 'Playfair Display', serif;
-            font-size: 18px;
-            text-align: center;
-            font-weight: bold;
-            top: 25px;
-            left: -5px;
-            transform: rotate(-45deg);
-        }
-
-        #downloadButton {
-            background-color: #007bff;
-        }
-
-        #downloadButton:hover {
-            background-color: #0056b3;
+        #result {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="formContainer">
-        <h3>İslam Hukuku Alan Bilgisi Sınavı</h3>
-        <h5>Sertifikada kullanılmak üzere isim ve soyisim girin</h5>
-        <input type="text" id="name" placeholder="İsim">
-        <input type="text" id="surname" placeholder="Soyisim">
-        <button onclick="startExam()">Sınava Giriş Yap</button>
+    <h1>Günlük Quiz</h1>
+    <div class="quiz-container" id="quiz">
+        <div class="question" id="question"></div>
+        <ul class="options" id="options"></ul>
+        <button onclick="nextQuestion()">Sonraki Soru</button>
+        <div id="result"></div>
     </div>
 
-    <div id="testContainer" class="hidden">
-        <h2>İslam Hukuku Alan Bilgisi Sınavı</h2>
-        <form id="examForm">
-           <div>
-                <p>Soru 1: 2 + 2 = ?</p>
-                <input type="radio" name="q1" value="correct"> 4<br>
-                <input type="radio" name="q1" value="wrong"> 5<br>
-            </div>
-            <div>
-                <p>Soru 2: 3 + 5 = ?</p>
-                <input type="radio" name="q2" value="correct"> 8<br>
-                <input type="radio" name="q2" value="wrong"> 9<br>
-            </div>
-            <!-- 18 soru daha ekleyin -->
-            <button type="button" onclick="submitExam()">Sınavı Bitir</button>
-        </form>
-    </div>
-
-    <div id="resultContainer" class="hidden">
-        <h2>Sonuçlar</h2>
-        <p id="resultText"></p>
-        <button id="certificateButton" class="hidden" onclick="generateCertificate()">Tebrikler! Sertifikanızı almak için tıklayınız</button>
-    </div>
-
-    <div id="certificate">
-        <div class="ribbon"><span>Sertifika</span></div>
-        <h2>İslam Hukuku Alan Bilgisi Sınavı</h2>
-        <h1>Sertifika</h1>
-        <p>Sayın <span id="certName"></span> <span id="certSurname"></span></p>
-        <p>"İslam Hukuku Araştırmaları Platformu" tarafından online düzenlenen İslam Hukuku Alan Bilgisi sınavında başarılı olmuştur.</p>
-        <p>İslam Hukuku Araştırmaları Platformu</p>
-    </div>
-    <button id="downloadButton" class="hidden">Sertifikayı İndir</button>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.3/html2canvas.min.js"></script>
     <script>
-        function startExam() {
-            document.getElementById("formContainer").style.display = "none";
-            document.getElementById("testContainer").style.display = "block";
+        const quizData = [
+            {
+                question: "İslam Miras Hukukunda kocanın payı nedir?",
+                options: ["1/4", "1/2", "1/8", "1/6"],
+                correct: "1/2"
+            },
+            {
+                question: "İslam Miras Hukukunda kız kardeşin payı nedir?",
+                options: ["1/4", "1/2", "1/8", "1/6"],
+                correct: "1/2"
+            },
+            {
+                question: "İslam Miras Hukukunda annenin payı nedir?",
+                options: ["1/3", "1/6", "1/8", "1/4"],
+                correct: "1/6"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const optionsElement = document.getElementById('options');
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            questionElement.innerHTML = currentQuestion.question;
+            optionsElement.innerHTML = '';
+
+            currentQuestion.options.forEach(option => {
+                const li = document.createElement('li');
+                li.innerHTML = `<input type="radio" name="option" value="${option}"> ${option}`;
+                optionsElement.appendChild(li);
+            });
         }
 
-        function submitExam() {
-            const questions = 2; // Toplam soru sayısı (20)
-            const correctAnswers = document.querySelectorAll('input[type="radio"][value="correct"]:checked').length;
-            const wrongAnswers = questions - correctAnswers;
-            const resultText = `Doğru Cevaplar: ${correctAnswers}, Yanlış Cevaplar: ${wrongAnswers}`;
+        function nextQuestion() {
+            const options = document.getElementsByName('option');
+            let selectedOption;
+            for (const option of options) {
+                if (option.checked) {
+                    selectedOption = option.value;
+                    break;
+                }
+            }
 
-            document.getElementById("testContainer").style.display = "none";
-            document.getElementById("resultText").innerText = resultText;
-            document.getElementById("resultContainer").style.display = "block";
+            if (selectedOption === quizData[currentQuestionIndex].correct) {
+                score++;
+            }
 
-            if (correctAnswers / questions >= 0.7) {
-                document.getElementById("certificateButton").style.display = "block";
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
             } else {
-                document.getElementById("resultText").innerText += "\nSertifika almaya hak kazanamadınız.";
+                showResult();
             }
         }
 
-        function generateCertificate() {
-            const name = document.getElementById("name").value;
-            const surname = document.getElementById("surname").value;
-            document.getElementById("certName").innerText = name;
-            document.getElementById("certSurname").innerText = surname;
-
-            const certificate = document.getElementById("certificate");
-            certificate.style.display = "block";
-
-            html2canvas(certificate).then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL("image/jpeg");
-                link.download = 'sertifika.jpg';
-                link.click();
-
-                certificate.style.display = "none";
-            });
+        function showResult() {
+            const quizElement = document.getElementById('quiz');
+            quizElement.innerHTML = `<h2>Sonuç</h2><p>Doğru cevap sayısı: ${score}/${quizData.length}</p>`;
         }
+
+        loadQuestion();
     </script>
 </body>
 </html>
