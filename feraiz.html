@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miras Paylaşımı Hesaplayıcı</title>
+</head>
+<body>
+    <h1>Miras Paylaşımı Hesaplayıcı</h1>
+    <form id="inheritanceForm">
+        <label for="totalEstate">Toplam Miras (TL): </label>
+        <input type="number" id="totalEstate" name="totalEstate" required><br><br>
+
+        <label for="spouse">Eş (Koca veya Karı): </label>
+        <select id="spouse" name="spouse">
+            <option value="none">Yok</option>
+            <option value="husband">Koca</option>
+            <option value="wife">Karı</option>
+        </select><br><br>
+
+        <label for="children">Çocuk Sayısı: </label>
+        <input type="number" id="children" name="children" required><br><br>
+
+        <label for="parents">Anne/Baba Durumu: </label>
+        <select id="parents" name="parents">
+            <option value="none">Yok</option>
+            <option value="father">Baba</option>
+            <option value="mother">Anne</option>
+        </select><br><br>
+
+        <button type="button" onclick="calculateInheritance()">Hesapla</button>
+    </form>
+
+    <h2>Sonuç</h2>
+    <div id="result"></div>
+
+    <script>
+        function calculateInheritance() {
+            const totalEstate = document.getElementById('totalEstate').value;
+            const spouse = document.getElementById('spouse').value;
+            const children = document.getElementById('children').value;
+            const parents = document.getElementById('parents').value;
+
+            let spouseShare = 0;
+            let childrenShare = 0;
+            let parentsShare = 0;
+            let remainingEstate = totalEstate;
+
+            // Spouse Share
+            if (spouse === 'husband') {
+                if (children > 0) {
+                    spouseShare = totalEstate * 0.25;
+                } else {
+                    spouseShare = totalEstate * 0.5;
+                }
+            } else if (spouse === 'wife') {
+                if (children > 0) {
+                    spouseShare = totalEstate * 0.125;
+                } else {
+                    spouseShare = totalEstate * 0.25;
+                }
+            }
+            remainingEstate -= spouseShare;
+
+            // Children Share
+            if (children > 0) {
+                if (children == 1) {
+                    childrenShare = remainingEstate * 0.5;
+                } else {
+                    childrenShare = remainingEstate * 0.67;
+                }
+                remainingEstate -= childrenShare;
+            }
+
+            // Parents Share
+            if (parents === 'father') {
+                parentsShare = remainingEstate * 0.16;
+            } else if (parents === 'mother') {
+                parentsShare = remainingEstate * 0.33;
+            }
+            remainingEstate -= parentsShare;
+
+            // Result
+            document.getElementById('result').innerHTML = `
+                <p>Toplam Miras: ${totalEstate} TL</p>
+                <p>Eş Payı: ${spouseShare.toFixed(2)} TL</p>
+                <p>Çocuk Payı: ${childrenShare.toFixed(2)} TL</p>
+                <p>Anne/Baba Payı: ${parentsShare.toFixed(2)} TL</p>
+                <p>Kalan Miras: ${remainingEstate.toFixed(2)} TL</p>
+            `;
+        }
+    </script>
+</body>
+</html>
