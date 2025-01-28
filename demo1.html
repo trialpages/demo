@@ -20,7 +20,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 300px;
+            width: 400px;
         }
         .login-container h2 {
             margin-bottom: 20px;
@@ -76,7 +76,7 @@
         if (password === correctPassword) {
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('iframeContainer').style.display = 'block';
-            document.getElementById('contentFrame').src = "https://my.cbox.ws";
+            document.getElementById('contentFrame').src = "https://my.cbox.ws/n3ws";
         } else {
             alert("Hatalı Parola! Lütfen tekrar deneyin.");
         }
