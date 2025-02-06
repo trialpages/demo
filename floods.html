@@ -3,48 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flood Metne Dönüştürücü</title>
-</head>
-<body>
-    <h2>Flood'u Metne Dönüştür</h2>
-    <label for="tweetLink">İlk Tweet Linkini Gir:</label>
-    <input type="text" id="tweetLink" placeholder="https://x.com/kullanici/status/123456789">
-    <button onclick="getFlood()">Dönüştür</button>
-    <h3>Sonuç:</h3>
-    <p id="result"></p>
-
+    <title>Flood Birleştirici</title>
     <script>
         async function getFlood() {
-            let tweetUrl = document.getElementById("tweetLink").value;
-            let tweetIdMatch = tweetUrl.match(/status\/(\d+)/);
-
-            if (!tweetIdMatch) {
-                alert("Geçerli bir tweet bağlantısı girin.");
-                return;
-            }
-
-            let tweetId = tweetIdMatch[1];
-            let username = tweetUrl.split("/")[3]; // Kullanıcı adını al
-
-            let nitterUrl = `https://nitter.net/${username}/status/${tweetId}`;
-
-            document.getElementById("result").innerText = "Flood alınıyor...";
+            const tweetUrl = document.getElementById('tweetUrl').value;
+            const tweetId = tweetUrl.split('/').pop();
 
             try {
-                let response = await fetch(nitterUrl);
-                let text = await response.text();
-                
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(text, "text/html");
+                const response = await fetch(`https://api.twitter.com/2/tweets/${tweetId}?expansions=author_id&tweet.fields=conversation_id`, {
+                    headers: {
+                        'Authorization': 'Bearer YOUR_TWITTER_BEARER_TOKEN'
+                    }
+                });
+                const data = await response.json();
 
-                let tweets = doc.querySelectorAll('.tweet-content');  
-                let floodText = Array.from(tweets).map(t => t.innerText).join("\n\n");
+                const conversationId = data.data.conversation_id;
+                const userId = data.data.author_id;
 
-                document.getElementById("result").innerText = floodText || "Flood alınamadı.";
+                const threadResponse = await fetch(`https://api.twitter.com/2/tweets/search/recent?query=conversation_id:${conversationId} from:${userId}&tweet.fields=text`, {
+                    headers: {
+                        'Authorization': 'Bearer YOUR_TWITTER_BEARER_TOKEN'
+                    }
+                });
+                const threadData = await threadResponse.json();
+
+                let fullText = '';
+                threadData.data.forEach(tweet => {
+                    fullText += tweet.text + '\n\n';
+                });
+
+                document.getElementById('fullText').innerText = fullText;
             } catch (error) {
-                document.getElementById("result").innerText = "Flood alınırken hata oluştu.";
+                console.error('Hata:', error);
             }
         }
     </script>
+</head>
+<body>
+    <h1>Flood Birleştirici</h1>
+    <input type="text" id="tweetUrl" placeholder="Floodun ilk tweetinin linkini buraya yapıştırın">
+    <button onclick="getFlood()">Floodu Birleştir</button>
+    <pre id="fullText"></pre>
 </body>
 </html>
