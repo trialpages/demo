@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film URL Bulucu</title>
+</head>
+<body>
+    <h2>Film URL Bulucu</h2>
+    <input type="text" id="siteUrl" placeholder="Film sitesinin URL'sini girin">
+    <button onclick="findVideoUrl()">Bul</button>
+    <p>Bulunan Video URL'leri:</p>
+    <ul id="results"></ul>
+
+    <script>
+        async function findVideoUrl() {
+            let siteUrl = document.getElementById("siteUrl").value;
+            let results = document.getElementById("results");
+            results.innerHTML = "<li>İşleniyor...</li>";
+
+            try {
+                let response = await fetch(siteUrl);
+                let html = await response.text();
+
+                // Video URL'lerini ayıkla
+                let videoUrls = [...html.matchAll(/https?:\/\/[^\"\'\s]+?\.(mp4|m3u8)/g)].map(match => match[0]);
+
+                results.innerHTML = "";
+                if (videoUrls.length > 0) {
+                    videoUrls.forEach(url => {
+                        let li = document.createElement("li");
+                        let a = document.createElement("a");
+                        a.href = url;
+                        a.textContent = url;
+                        a.target = "_blank";
+                        li.appendChild(a);
+                        results.appendChild(li);
+                    });
+                } else {
+                    results.innerHTML = "<li>Video bulunamadı.</li>";
+                }
+            } catch (error) {
+                results.innerHTML = "<li>Hata oluştu: " + error.message + "</li>";
+            }
+        }
+    </script>
+</body>
+</html>
