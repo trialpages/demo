@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Metne Dönüştürücü</title>
+</head>
+<body>
+    <h2>Flood'u Metne Dönüştür</h2>
+    <label for="tweetLink">İlk Tweet Linkini Gir:</label>
+    <input type="text" id="tweetLink" placeholder="https://x.com/kullanici/status/123456789">
+    <button onclick="getFlood()">Dönüştür</button>
+    <h3>Sonuç:</h3>
+    <p id="result"></p>
+
+    <script>
+        async function getFlood() {
+            let tweetUrl = document.getElementById("tweetLink").value;
+            if (!tweetUrl.includes("status/")) {
+                alert("Geçerli bir tweet bağlantısı girin.");
+                return;
+            }
+
+            document.getElementById("result").innerText = "Flood alınıyor...";
+
+            try {
+                let response = await fetch(tweetUrl);
+                let text = await response.text();
+                
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(text, "text/html");
+
+                let tweets = doc.querySelectorAll('article div[lang]');
+                let floodText = Array.from(tweets).map(t => t.innerText).join("\n\n");
+
+                document.getElementById("result").innerText = floodText || "Flood alınamadı.";
+            } catch (error) {
+                document.getElementById("result").innerText = "Flood alınırken hata oluştu.";
+            }
+        }
+    </script>
+</body>
+</html>
