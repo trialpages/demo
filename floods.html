@@ -16,21 +16,28 @@
     <script>
         async function getFlood() {
             let tweetUrl = document.getElementById("tweetLink").value;
-            if (!tweetUrl.includes("status/")) {
+            let tweetIdMatch = tweetUrl.match(/status\/(\d+)/);
+
+            if (!tweetIdMatch) {
                 alert("Geçerli bir tweet bağlantısı girin.");
                 return;
             }
 
+            let tweetId = tweetIdMatch[1];
+            let username = tweetUrl.split("/")[3]; // Kullanıcı adını al
+
+            let nitterUrl = `https://nitter.net/${username}/status/${tweetId}`;
+
             document.getElementById("result").innerText = "Flood alınıyor...";
 
             try {
-                let response = await fetch(tweetUrl);
+                let response = await fetch(nitterUrl);
                 let text = await response.text();
                 
                 let parser = new DOMParser();
                 let doc = parser.parseFromString(text, "text/html");
 
-                let tweets = doc.querySelectorAll('article div[lang]');
+                let tweets = doc.querySelectorAll('.tweet-content');  
                 let floodText = Array.from(tweets).map(t => t.innerText).join("\n\n");
 
                 document.getElementById("result").innerText = floodText || "Flood alınamadı.";
