@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radyo Yayını</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .player {
+            margin-top: 50px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            background: #25D366;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #1DA851;
+        }
+    </style>
+</head>
+<body>
+    <div class="player">
+        <h2>Canlı Radyo Yayını</h2>
+        <audio id="radio" controls>
+            <source src="https://www.youtube.com/watch?v=5J-w9AHKHsc" type="audio/mpeg">
+            Tarayıcınız ses öğesini desteklemiyor.
+        </audio>
+        <br>
+        <button onclick="document.getElementById('radio').play()">▶ Başlat</button>
+        <button onclick="document.getElementById('radio').pause()">⏸ Durdur</button>
+    </div>
+</body>
+</html>
