@@ -85,20 +85,32 @@
 
     const phoneGrid = document.querySelector(".phone-grid");
 
-    phoneGrid.addEventListener("mousedown", (e) => {
-        if (e.target.dataset.key) {
-            isDrawing = true;
-            userSequence = [e.target.dataset.key];
-            e.target.classList.add("active");
-        }
-    });
+    // Fare ve dokunmatik olaylarını dinle
+    phoneGrid.addEventListener("mousedown", startDrawing);
+    phoneGrid.addEventListener("touchstart", startDrawing);
 
-    phoneGrid.addEventListener("mouseover", (e) => {
-        if (isDrawing && e.target.dataset.key) {
-            const key = e.target.dataset.key;
-            if (!userSequence.includes(key)) {
+    phoneGrid.addEventListener("mouseover", draw);
+    phoneGrid.addEventListener("touchmove", draw);
+
+    document.addEventListener("mouseup", endDrawing);
+    document.addEventListener("touchend", endDrawing);
+
+    function startDrawing(e) {
+        e.preventDefault();
+        isDrawing = true;
+        const key = getKeyFromEvent(e);
+        if (key) {
+            userSequence = [key];
+            document.querySelector(`[data-key="${key}"]`).classList.add("active");
+        }
+    }
+
+    function draw(e) {
+        if (isDrawing) {
+            const key = getKeyFromEvent(e);
+            if (key && !userSequence.includes(key)) {
                 userSequence.push(key);
-                e.target.classList.add("active");
+                document.querySelector(`[data-key="${key}"]`).classList.add("active");
 
                 // Çizgi çizme
                 const activeKeys = document.querySelectorAll(".active");
@@ -127,9 +139,9 @@
                 }
             }
         }
-    });
+    }
 
-    document.addEventListener("mouseup", () => {
+    function endDrawing() {
         if (isDrawing) {
             isDrawing = false;
 
@@ -143,7 +155,7 @@
                 resetGrid();
             }
         }
-    });
+    }
 
     function resetGrid() {
         userSequence = [];
@@ -152,6 +164,16 @@
         });
         lines.forEach((line) => line.remove());
         lines = [];
+    }
+
+    function getKeyFromEvent(e) {
+        if (e.type.startsWith("touch")) {
+            const touch = e.touches[0];
+            const element = document.elementFromPoint(touch.clientX, touch.clientY);
+            return element ? element.dataset.key : null;
+        } else {
+            return e.target.dataset.key;
+        }
     }
 </script>
 
