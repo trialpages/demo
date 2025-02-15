@@ -25,29 +25,21 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-        }
-        .phone-grid div {
-            width: 60px;
-            height: 60px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
         }
-        .phone-grid div::after {
-            content: "";
-            width: 10px;
-            height: 10px;
+        .phone-grid div {
+            width: 20px;
+            height: 20px;
             background-color: #333;
             border-radius: 50%;
+            position: relative;
         }
         .line {
             position: absolute;
             height: 2px;
             background-color: #007bff;
             transform-origin: 0 0;
+            z-index: 1;
         }
         .iframe-container {
             display: none;
@@ -101,7 +93,6 @@
         const key = getKeyFromEvent(e);
         if (key) {
             userSequence = [key];
-            document.querySelector(`[data-key="${key}"]`).classList.add("active");
         }
     }
 
@@ -110,13 +101,12 @@
             const key = getKeyFromEvent(e);
             if (key && !userSequence.includes(key)) {
                 userSequence.push(key);
-                document.querySelector(`[data-key="${key}"]`).classList.add("active");
 
                 // Çizgi çizme
-                const activeKeys = document.querySelectorAll(".active");
-                if (activeKeys.length > 1) {
-                    const prevKey = activeKeys[activeKeys.length - 2];
-                    const currentKey = activeKeys[activeKeys.length - 1];
+                const activeKeys = document.querySelectorAll(`[data-key]`);
+                if (userSequence.length > 1) {
+                    const prevKey = document.querySelector(`[data-key="${userSequence[userSequence.length - 2]}"]`);
+                    const currentKey = document.querySelector(`[data-key="${key}"]`);
 
                     const prevRect = prevKey.getBoundingClientRect();
                     const currentRect = currentKey.getBoundingClientRect();
@@ -159,9 +149,6 @@
 
     function resetGrid() {
         userSequence = [];
-        document.querySelectorAll(".phone-grid div").forEach((div) => {
-            div.classList.remove("active");
-        });
         lines.forEach((line) => line.remove());
         lines = [];
     }
