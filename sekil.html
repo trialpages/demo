@@ -16,38 +16,33 @@
             flex-direction: column;
         }
 
-        h2 {
-            margin-bottom: 20px;
-        }
-
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 60px);
-            grid-template-rows: repeat(3, 60px);
-            gap: 15px;
+            grid-template-columns: repeat(3, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 20px;
             background-color: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            touch-action: none; /* Dokunmatik için */
         }
 
         .grid-item {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background-color: #ddd;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
-            font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
+            position: relative;
         }
 
         .grid-item.active {
             background-color: #4CAF50;
-            color: white;
         }
 
         #message {
@@ -58,15 +53,19 @@
 
         #frame-container {
             display: none;
-            margin-top: 20px;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: white;
+            z-index: 10;
         }
 
         iframe {
-            width: 400px;
-            height: 300px;
+            width: 100%;
+            height: 100%;
             border: none;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
         }
     </style>
 </head>
@@ -74,16 +73,16 @@
 
     <h2>Deseni Çizerek Giriş Yapın</h2>
     
-    <div class="grid-container">
-        <div class="grid-item" data-num="1"></div>
-        <div class="grid-item" data-num="2"></div>
-        <div class="grid-item" data-num="3"></div>
-        <div class="grid-item" data-num="4"></div>
-        <div class="grid-item" data-num="5"></div>
-        <div class="grid-item" data-num="6"></div>
-        <div class="grid-item" data-num="7"></div>
-        <div class="grid-item" data-num="8"></div>
-        <div class="grid-item" data-num="9"></div>
+    <div class="grid-container" id="pattern-grid">
+        <div class="grid-item" data-key="a"></div>
+        <div class="grid-item" data-key="b"></div>
+        <div class="grid-item" data-key="c"></div>
+        <div class="grid-item" data-key="d"></div>
+        <div class="grid-item" data-key="e"></div>
+        <div class="grid-item" data-key="f"></div>
+        <div class="grid-item" data-key="g"></div>
+        <div class="grid-item" data-key="h"></div>
+        <div class="grid-item" data-key="i"></div>
     </div>
 
     <p id="message"></p>
@@ -94,31 +93,60 @@
 
     <script>
         let pattern = [];
-        const correctPattern = [2, 5, 6, 8];
+        const correctPattern = ["b", "e", "f", "h"]; // Şifreli desen
 
-        document.querySelectorAll('.grid-item').forEach(item => {
-            item.addEventListener('click', function () {
-                let num = parseInt(this.getAttribute('data-num'));
+        let isDrawing = false;
 
-                if (!pattern.includes(num)) {
-                    pattern.push(num);
-                    this.classList.add('active');
+        document.getElementById("pattern-grid").addEventListener("touchstart", startPattern);
+        document.getElementById("pattern-grid").addEventListener("mousedown", startPattern);
+
+        document.getElementById("pattern-grid").addEventListener("touchmove", movePattern);
+        document.getElementById("pattern-grid").addEventListener("mousemove", movePattern);
+
+        document.addEventListener("touchend", endPattern);
+        document.addEventListener("mouseup", endPattern);
+
+        function startPattern(event) {
+            isDrawing = true;
+            pattern = [];
+            document.querySelectorAll('.grid-item').forEach(i => i.classList.remove('active'));
+        }
+
+        function movePattern(event) {
+            if (!isDrawing) return;
+            
+            let touch = event.touches ? event.touches[0] : event;
+            let element = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (element && element.classList.contains('grid-item')) {
+                let key = element.getAttribute('data-key');
+                
+                if (key && !pattern.includes(key)) {
+                    pattern.push(key);
+                    element.classList.add('active');
                 }
+            }
+        }
 
-                if (pattern.length === correctPattern.length) {
-                    if (JSON.stringify(pattern) === JSON.stringify(correctPattern)) {
-                        document.getElementById("message").textContent = "Başarılı giriş! Sayfa açılıyor...";
-                        document.getElementById("message").style.color = "green";
-                        document.getElementById("frame-container").style.display = "block";
-                    } else {
-                        document.getElementById("message").textContent = "Yanlış desen, tekrar deneyin!";
-                        document.getElementById("message").style.color = "red";
-                        pattern = [];
-                        document.querySelectorAll('.grid-item').forEach(i => i.classList.remove('active'));
-                    }
-                }
-            });
-        });
+        function endPattern() {
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            if (JSON.stringify(pattern) === JSON.stringify(correctPattern)) {
+                document.getElementById("message").textContent = "Başarılı giriş! Yönlendiriliyor...";
+                document.getElementById("message").style.color = "green";
+                
+                // Tam ekran sayfa göster
+                document.getElementById("frame-container").style.display = "block";
+            } else {
+                document.getElementById("message").textContent = "Yanlış desen, tekrar deneyin!";
+                document.getElementById("message").style.color = "red";
+
+                // Deseni sıfırla
+                pattern = [];
+                document.querySelectorAll('.grid-item').forEach(i => i.classList.remove('active'));
+            }
+        }
     </script>
 
 </body>
