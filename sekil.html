@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Şekil Çizerek Giriş</title>
+    <title>Giriş Sayfası</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,39 +20,34 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 300px;
-        }
-        .login-container h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: #333;
         }
         .phone-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            margin-bottom: 20px;
         }
         .phone-grid div {
             width: 60px;
             height: 60px;
             background-color: #e0e0e0;
-            border-radius: 8px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
+            position: relative;
         }
-        .phone-grid div.active {
+        .phone-grid div::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+        }
+        .line {
+            position: absolute;
+            height: 2px;
             background-color: #007bff;
-            color: #fff;
-        }
-        .draw-instructions {
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #666;
+            transform-origin: 0 0;
         }
         .iframe-container {
             display: none;
@@ -65,20 +60,16 @@
 <body>
 
 <div class="login-container" id="loginContainer">
-    <h2>Şekil Çizerek Giriş</h2>
-    <div class="draw-instructions">
-        Telefon ahizesindeki tuşları kullanarak 2 -> 5 -> 6 -> 8 yönlerini çizin.
-    </div>
     <div class="phone-grid">
-        <div data-key="1">1</div>
-        <div data-key="2">2</div>
-        <div data-key="3">3</div>
-        <div data-key="4">4</div>
-        <div data-key="5">5</div>
-        <div data-key="6">6</div>
-        <div data-key="7">7</div>
-        <div data-key="8">8</div>
-        <div data-key="9">9</div>
+        <div data-key="1"></div>
+        <div data-key="2"></div>
+        <div data-key="3"></div>
+        <div data-key="4"></div>
+        <div data-key="5"></div>
+        <div data-key="6"></div>
+        <div data-key="7"></div>
+        <div data-key="8"></div>
+        <div data-key="9"></div>
     </div>
 </div>
 
@@ -89,23 +80,67 @@
 <script>
     const correctSequence = ["2", "5", "6", "8"]; // Doğru tuş sırası
     let userSequence = [];
+    let isDrawing = false;
+    let lines = [];
 
     const phoneGrid = document.querySelector(".phone-grid");
-    phoneGrid.addEventListener("click", (e) => {
-        if (e.target.dataset.key) {
-            const key = e.target.dataset.key;
-            userSequence.push(key);
-            e.target.classList.add("active");
 
-            if (userSequence.length === correctSequence.length) {
-                if (JSON.stringify(userSequence) === JSON.stringify(correctSequence)) {
-                    document.getElementById("loginContainer").style.display = "none";
-                    document.getElementById("iframeContainer").style.display = "block";
-                    document.getElementById("contentFrame").src = "https://my.cbox.ws";
-                } else {
-                    alert("Hatalı Şekil! Lütfen tekrar deneyin.");
-                    resetGrid();
+    phoneGrid.addEventListener("mousedown", (e) => {
+        if (e.target.dataset.key) {
+            isDrawing = true;
+            userSequence = [e.target.dataset.key];
+            e.target.classList.add("active");
+        }
+    });
+
+    phoneGrid.addEventListener("mouseover", (e) => {
+        if (isDrawing && e.target.dataset.key) {
+            const key = e.target.dataset.key;
+            if (!userSequence.includes(key)) {
+                userSequence.push(key);
+                e.target.classList.add("active");
+
+                // Çizgi çizme
+                const activeKeys = document.querySelectorAll(".active");
+                if (activeKeys.length > 1) {
+                    const prevKey = activeKeys[activeKeys.length - 2];
+                    const currentKey = activeKeys[activeKeys.length - 1];
+
+                    const prevRect = prevKey.getBoundingClientRect();
+                    const currentRect = currentKey.getBoundingClientRect();
+
+                    const line = document.createElement("div");
+                    line.classList.add("line");
+                    line.style.width = `${Math.hypot(
+                        currentRect.left - prevRect.left,
+                        currentRect.top - prevRect.top
+                    )}px`;
+                    line.style.transform = `rotate(${Math.atan2(
+                        currentRect.top - prevRect.top,
+                        currentRect.left - prevRect.left
+                    )}rad)`;
+                    line.style.top = `${prevRect.top + prevRect.height / 2}px`;
+                    line.style.left = `${prevRect.left + prevRect.width / 2}px`;
+
+                    phoneGrid.appendChild(line);
+                    lines.push(line);
                 }
+            }
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        if (isDrawing) {
+            isDrawing = false;
+
+            // Doğrulama
+            if (JSON.stringify(userSequence) === JSON.stringify(correctSequence)) {
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("iframeContainer").style.display = "block";
+                document.getElementById("contentFrame").src = "https://my.cbox.ws";
+            } else {
+                alert("Hatalı Şekil! Lütfen tekrar deneyin.");
+                resetGrid();
             }
         }
     });
@@ -115,6 +150,8 @@
         document.querySelectorAll(".phone-grid div").forEach((div) => {
             div.classList.remove("active");
         });
+        lines.forEach((line) => line.remove());
+        lines = [];
     }
 </script>
 
