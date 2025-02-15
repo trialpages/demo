@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Kısaltıcı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            margin: auto;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #25d366;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1ebe57;
+        }
+        .short-link {
+            margin-top: 15px;
+            font-size: 14px;
+            word-break: break-all;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Link Kısaltıcı</h2>
+        <input type="text" id="longUrl" placeholder="Uzun linki girin...">
+        <button onclick="shortenLink()">Kısalt</button>
+        <p class="short-link" id="shortenedUrl"></p>
+    </div>
+
+    <script>
+        function shortenLink() {
+            let longUrl = document.getElementById("longUrl").value.trim();
+            if (longUrl === "") {
+                alert("Lütfen bir link girin!");
+                return;
+            }
+            let shortCode = Math.random().toString(36).substring(7);
+            let shortUrl = window.location.origin + "/s/" + shortCode;
+            
+            document.getElementById("shortenedUrl").innerHTML = 
+                `Kısaltılmış Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>`;
+        }
+    </script>
+</body>
+</html>
