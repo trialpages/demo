@@ -3,166 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Sayfası</title>
+    <title>Desen ile Giriş</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            background-color: #f0f0f0;
             margin: 0;
+            flex-direction: column;
         }
-        .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+
+        h2 {
+            margin-bottom: 20px;
         }
-        .phone-grid {
+
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            position: relative;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 15px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-        .phone-grid div {
-            width: 20px;
-            height: 20px;
-            background-color: #333;
+
+        .grid-item {
+            width: 60px;
+            height: 60px;
+            background-color: #ddd;
             border-radius: 50%;
-            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
         }
-        .line {
-            position: absolute;
-            height: 2px;
-            background-color: #007bff;
-            transform-origin: 0 0;
-            z-index: 1;
+
+        .grid-item.active {
+            background-color: #4CAF50;
+            color: white;
         }
-        .iframe-container {
+
+        #message {
+            margin-top: 15px;
+            color: red;
+            font-weight: bold;
+        }
+
+        #frame-container {
             display: none;
-            width: 100%;
-            height: 100vh;
+            margin-top: 20px;
+        }
+
+        iframe {
+            width: 400px;
+            height: 300px;
             border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
-<div class="login-container" id="loginContainer">
-    <div class="phone-grid">
-        <div data-key="1"></div>
-        <div data-key="2"></div>
-        <div data-key="3"></div>
-        <div data-key="4"></div>
-        <div data-key="5"></div>
-        <div data-key="6"></div>
-        <div data-key="7"></div>
-        <div data-key="8"></div>
-        <div data-key="9"></div>
+    <h2>Deseni Çizerek Giriş Yapın</h2>
+    
+    <div class="grid-container">
+        <div class="grid-item" data-num="1"></div>
+        <div class="grid-item" data-num="2"></div>
+        <div class="grid-item" data-num="3"></div>
+        <div class="grid-item" data-num="4"></div>
+        <div class="grid-item" data-num="5"></div>
+        <div class="grid-item" data-num="6"></div>
+        <div class="grid-item" data-num="7"></div>
+        <div class="grid-item" data-num="8"></div>
+        <div class="grid-item" data-num="9"></div>
     </div>
-</div>
 
-<div class="iframe-container" id="iframeContainer">
-    <iframe src="" id="contentFrame" width="100%" height="100%"></iframe>
-</div>
+    <p id="message"></p>
 
-<script>
-    const correctSequence = ["2", "5", "6", "8"]; // Doğru tuş sırası
-    let userSequence = [];
-    let isDrawing = false;
-    let lines = [];
+    <div id="frame-container">
+        <iframe src="https://my.cbox.ws"></iframe>
+    </div>
 
-    const phoneGrid = document.querySelector(".phone-grid");
+    <script>
+        let pattern = [];
+        const correctPattern = [2, 5, 6, 8];
 
-    // Fare ve dokunmatik olaylarını dinle
-    phoneGrid.addEventListener("mousedown", startDrawing);
-    phoneGrid.addEventListener("touchstart", startDrawing);
+        document.querySelectorAll('.grid-item').forEach(item => {
+            item.addEventListener('click', function () {
+                let num = parseInt(this.getAttribute('data-num'));
 
-    phoneGrid.addEventListener("mouseover", draw);
-    phoneGrid.addEventListener("touchmove", draw);
-
-    document.addEventListener("mouseup", endDrawing);
-    document.addEventListener("touchend", endDrawing);
-
-    function startDrawing(e) {
-        e.preventDefault();
-        isDrawing = true;
-        const key = getKeyFromEvent(e);
-        if (key) {
-            userSequence = [key];
-        }
-    }
-
-    function draw(e) {
-        if (isDrawing) {
-            const key = getKeyFromEvent(e);
-            if (key && !userSequence.includes(key)) {
-                userSequence.push(key);
-
-                // Çizgi çizme
-                const activeKeys = document.querySelectorAll(`[data-key]`);
-                if (userSequence.length > 1) {
-                    const prevKey = document.querySelector(`[data-key="${userSequence[userSequence.length - 2]}"]`);
-                    const currentKey = document.querySelector(`[data-key="${key}"]`);
-
-                    const prevRect = prevKey.getBoundingClientRect();
-                    const currentRect = currentKey.getBoundingClientRect();
-
-                    const line = document.createElement("div");
-                    line.classList.add("line");
-                    line.style.width = `${Math.hypot(
-                        currentRect.left - prevRect.left,
-                        currentRect.top - prevRect.top
-                    )}px`;
-                    line.style.transform = `rotate(${Math.atan2(
-                        currentRect.top - prevRect.top,
-                        currentRect.left - prevRect.left
-                    )}rad)`;
-                    line.style.top = `${prevRect.top + prevRect.height / 2}px`;
-                    line.style.left = `${prevRect.left + prevRect.width / 2}px`;
-
-                    phoneGrid.appendChild(line);
-                    lines.push(line);
+                if (!pattern.includes(num)) {
+                    pattern.push(num);
+                    this.classList.add('active');
                 }
-            }
-        }
-    }
 
-    function endDrawing() {
-        if (isDrawing) {
-            isDrawing = false;
-
-            // Doğrulama
-            if (JSON.stringify(userSequence) === JSON.stringify(correctSequence)) {
-                document.getElementById("loginContainer").style.display = "none";
-                document.getElementById("iframeContainer").style.display = "block";
-                document.getElementById("contentFrame").src = "https://my.cbox.ws";
-            } else {
-                alert("Hatalı Şekil! Lütfen tekrar deneyin.");
-                resetGrid();
-            }
-        }
-    }
-
-    function resetGrid() {
-        userSequence = [];
-        lines.forEach((line) => line.remove());
-        lines = [];
-    }
-
-    function getKeyFromEvent(e) {
-        if (e.type.startsWith("touch")) {
-            const touch = e.touches[0];
-            const element = document.elementFromPoint(touch.clientX, touch.clientY);
-            return element ? element.dataset.key : null;
-        } else {
-            return e.target.dataset.key;
-        }
-    }
-</script>
+                if (pattern.length === correctPattern.length) {
+                    if (JSON.stringify(pattern) === JSON.stringify(correctPattern)) {
+                        document.getElementById("message").textContent = "Başarılı giriş! Sayfa açılıyor...";
+                        document.getElementById("message").style.color = "green";
+                        document.getElementById("frame-container").style.display = "block";
+                    } else {
+                        document.getElementById("message").textContent = "Yanlış desen, tekrar deneyin!";
+                        document.getElementById("message").style.color = "red";
+                        pattern = [];
+                        document.querySelectorAll('.grid-item').forEach(i => i.classList.remove('active'));
+                    }
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
