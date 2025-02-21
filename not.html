@@ -15,12 +15,25 @@
         .message {
             font-size: 24px;
             margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .refresh-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .refresh-button:hover {
+            background-color: #ff4c4c;
         }
     </style>
 </head>
 <body>
-    <h1>Sevgilime Özel Aşk Mesajları</h1>
     <div class="message" id="loveMessage"></div>
+    <button class="refresh-button" onclick="displayMessage()">Yenile</button>
 
     <script>
         const loveMessages = [
@@ -33,6 +46,7 @@
             "Seninle her an, bir ömre bedel.",
             "Kalbinin sesi, benim için en güzel melodi.",
             "Seni sevmek, benim için bir tutku.",
+            "Seninle her şey daha güzel, seninle her şey daha anlamlı.",
             "Seninle her şey daha güzel, seninle her şey daha anlamlı."
         ];
 
@@ -46,9 +60,8 @@
             messageElement.textContent = getRandomMessage();
         }
 
-        // Sayfa yüklendiğinde ve her yenilendiğinde yeni bir mesaj göster
+        // Sayfa yüklendiğinde ilk mesajı göster
         window.onload = displayMessage;
-        window.onbeforeunload = displayMessage;
     </script>
 </body>
 </html>
