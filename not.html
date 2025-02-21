@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sevgilime Özel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+            padding: 50px;
+        }
+        .message {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sevgilime Özel Aşk Mesajları</h1>
+    <div class="message" id="loveMessage"></div>
+
+    <script>
+        const loveMessages = [
+            "Seni seviyorum, bir ömür boyu seninle olmak istiyorum.",
+            "Gözlerine her baktığımda, hayatımın anlamını buluyorum.",
+            "Sen benim her şeyimsin, kalbim hep seninle atıyor.",
+            "Aşkımız bir masal gibi, sonsuza kadar devam etsin.",
+            "Seni sevmek, hayatımın en güzel duygusu.",
+            "Her nefesimde sen varsın, her düşüncemde sen...",
+            "Seninle her an, bir ömre bedel.",
+            "Kalbinin sesi, benim için en güzel melodi.",
+            "Seni sevmek, benim için bir tutku.",
+            "Seninle her şey daha güzel, seninle her şey daha anlamlı."
+        ];
+
+        function getRandomMessage() {
+            const randomIndex = Math.floor(Math.random() * loveMessages.length);
+            return loveMessages[randomIndex];
+        }
+
+        function displayMessage() {
+            const messageElement = document.getElementById('loveMessage');
+            messageElement.textContent = getRandomMessage();
+        }
+
+        // Sayfa yüklendiğinde ve her yenilendiğinde yeni bir mesaj göster
+        window.onload = displayMessage;
+        window.onbeforeunload = displayMessage;
+    </script>
+</body>
+</html>
