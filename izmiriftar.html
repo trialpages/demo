@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İzmir'de İftar Saatine Kalan Süre</title>
+    <title>İzmir'de Ramazan'a Kalan Süre</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,8 +35,8 @@
 <body>
 
 <div class="container">
-    <h2>İzmir'de İftar Saatine Kalan Süre</h2>
-    <div class="timer" id="timer">00:00:00</div>
+    <h2>İzmir'de Ramazan'a Kalan Süre</h2>
+    <div class="timer" id="timer">00 Gün 00 Saat 00 Dakika 00 Saniye</div>
     <div class="date-info" id="date-info"></div>
 </div>
 
@@ -44,21 +44,23 @@
     const firstRamadanDate = new Date('2025-03-01T00:00:00'); // Ramazan'ın ilk günü
     const iftarTimes = [
         new Date('2025-03-01T19:11:00'), // 1 Mart 2025 iftar saati
-        new Date('2025-03-02T19:12:00'), // 2 Mart 2025 iftar saati
-        // ... diğer günlerin iftar saatleri eklenebilir
+        // Diğer günlerin iftar saatleri buraya eklenebilir
     ];
     let currentDay = 0; // Ramazan'ın başlangıcına kadar 0 olacak, başladıktan sonra 1. günü olacak
-    const miladiDate = new Date();
-    const hicriDate = '1 Ramazan 1446'; // Hicri tarih (örnek olarak Ramazan'ın ilk günü)
-    
+
     function updateTimer() {
         const now = new Date();
         let timeDiff;
 
         if (now < firstRamadanDate) {
             timeDiff = firstRamadanDate - now;
-            document.getElementById('date-info').textContent = `Ramazan'ın ilk gününe kalan süre\nMiladi Tarih: ${firstRamadanDate.toLocaleDateString()}\nHicri Tarih: ${hicriDate}`;
-            document.getElementById('timer').textContent = '00:00:00';
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = `${days} Gün ${hours.toString().padStart(2, '0')} Saat ${minutes.toString().padStart(2, '0')} Dakika ${seconds.toString().padStart(2, '0')} Saniye`;
+            document.getElementById('date-info').textContent = `Ramazan'ın ilk gününe kalan süre: ${days} gün`;
         } else {
             const iftarTime = iftarTimes[currentDay];
             timeDiff = iftarTime - now;
@@ -69,12 +71,11 @@
                 const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
                 document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('date-info').textContent = `Ramazan'ın ${currentDay + 1}. günü\nİftar Vakti: ${iftarTime.toLocaleTimeString()}`;
             } else {
                 document.getElementById('timer').textContent = 'İftar vakti geldi!';
                 currentDay += 1; // Bir sonraki güne geç
             }
-
-            document.getElementById('date-info').textContent = `Ramazan'ın ${currentDay + 1}. günü\nMiladi Tarih: ${miladiDate.toLocaleDateString()}\nHicri Tarih: ${hicriDate}\nİftar Vakti: ${iftarTime.toLocaleTimeString()}`;
         }
     }
 
