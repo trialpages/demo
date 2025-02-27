@@ -28,6 +28,7 @@
         .date-info {
             font-size: 1.2em;
             margin-bottom: 10px;
+            display: block;
         }
     </style>
 </head>
@@ -40,6 +41,7 @@
 </div>
 
 <script>
+    const firstRamadanDate = new Date('2025-03-01T00:00:00'); // Ramazan'ın ilk günü
     const iftarTime = new Date('2025-03-01T19:11:00'); // İzmir için 1 Mart 2025 iftar saati
     const ramadanDay = 1; // Ramazan'ın 1. günü
     const miladiDate = new Date('2025-03-01');
@@ -47,7 +49,15 @@
 
     function updateTimer() {
         const now = new Date();
-        const timeDiff = iftarTime - now;
+        let timeDiff;
+
+        if (now < firstRamadanDate) {
+            timeDiff = firstRamadanDate - now;
+            document.getElementById('date-info').textContent = `Ramazan'ın ilk gününe kalan süre | Miladi Tarih: ${miladiDate.toLocaleDateString()} | Hicri Tarih: ${hicriDate}`;
+        } else {
+            timeDiff = iftarTime - now;
+            document.getElementById('date-info').textContent = `Ramazan'ın ${ramadanDay}. günü\nMiladi Tarih: ${miladiDate.toLocaleDateString()}\nHicri Tarih: ${hicriDate}\nİftar Vakti: ${iftarTime.toLocaleTimeString()}`;
+        }
 
         if (timeDiff > 0) {
             const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -58,8 +68,6 @@
         } else {
             document.getElementById('timer').textContent = 'İftar vakti geldi!';
         }
-
-        document.getElementById('date-info').textContent = `Ramazan'ın ${ramadanDay}. günü | Miladi Tarih: ${miladiDate.toLocaleDateString()} | Hicri Tarih: ${hicriDate} | İftar Vakti: ${iftarTime.toLocaleTimeString()}`;
     }
 
     setInterval(updateTimer, 1000);
