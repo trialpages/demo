@@ -38,6 +38,7 @@
 
 <div class="container">
     <div class="date-time" id="current-date-time"></div>
+    <div class="imsak-time" id="imsak-time"></div>
     <h2 id="timer-heading">İmsak Vaktine Kalan Süre</h2>
     <div class="timer" id="timer">00:00:00</div>
     <div class="date-info" id="date-info"></div>
@@ -75,7 +76,8 @@
 
     function updateCurrentDateTime() {
         const now = new Date();
-        document.getElementById('current-date-time').textContent = now.toLocaleString();
+        document.getElementById('current-date-time').textContent = `Güncel Tarih ve Saat: ${now.toLocaleString()}`;
+        document.getElementById('imsak-time').textContent = `İmsak Saati: ${imsakTime.toLocaleTimeString()}`;
     }
 
     setInterval(updateTimer, 1000);
