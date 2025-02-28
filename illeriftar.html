@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İftar ve İmsak Vakti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f2f2f2;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        .date-time {
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .date-info {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="date-time" id="current-date-time"></div>
+    <h2 id="timer-heading">İftara Kalan Süre</h2>
+    <select id="city-select" onchange="updateTimes()">
+        <option value="">İl seçin</option>
+        <option value="izmir">İzmir</option>
+        <option value="istanbul">İstanbul</option>
+        <option value="ankara">Ankara</option>
+        <!-- Diğer şehirler buraya eklenebilir -->
+    </select>
+    <div class="timer" id="timer">00:00:00</div>
+    <div class="date-info" id="date-info"></div>
+    <div class="date-info" id="hijri-date">Hicri Tarih: 1 Ramazan 1446</div>
+</div>
+
+<script>
+    const imsakTimes = {
+        izmir: new Date('2025-03-02T05:00:00'), // İzmir için 2 Mart 2025 imsak vakti
+        istanbul: new Date('2025-03-02T05:10:00'), // İstanbul için 2 Mart 2025 imsak vakti
+        ankara: new Date('2025-03-02T05:05:00') // Ankara için 2 Mart 2025 imsak vakti
+        // Diğer şehirlerin vakitleri buraya eklenebilir
+    };
+
+    const iftarTimes = {
+        izmir: new Date('2025-03-01T19:11:00'), // İzmir için 1 Mart 2025 iftar saati
+        istanbul: new Date('2025-03-01T19:00:00'), // İstanbul için 1 Mart 2025 iftar saati
+        ankara: new Date('2025-03-01T19:05:00') // Ankara için 1 Mart 2025 iftar saati
+        // Diğer şehirlerin vakitleri buraya eklenebilir
+    };
+
+    function updateTimes() {
+        const now = new Date();
+        const selectedCity = document.getElementById('city-select').value;
+        
+        if (!selectedCity) return;
+
+        const imsakTime = imsakTimes[selectedCity];
+        const iftarTime = iftarTimes[selectedCity];
+
+        let timeDiff, headingText;
+
+        if (now < iftarTime) {
+            timeDiff = iftarTime - now;
+            headingText = "İftara Kalan Süre";
+        } else {
+            timeDiff = imsakTime - now;
+            headingText = "İmsak Vaktine Kalan Süre";
+        }
+
+        if (timeDiff > 0) {
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            document.getElementById('timer').textContent = 'Vakit geldi!';
+        }
+
+        document.getElementById('timer-heading').textContent = headingText;
+        document.getElementById('date-info').textContent = `Miladi Tarih: ${now.toLocaleDateString()}\nSeçilen Şehir: ${selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1)}`;
+    }
+
+    function updateCurrentDateTime() {
+        const now = new Date();
+        document.getElementById('current-date-time').textContent = now.toLocaleString();
+    }
+
+    setInterval(updateTimes, 1000);
+    setInterval(updateCurrentDateTime, 1000);
+</script>
+
+</body>
+</html>
