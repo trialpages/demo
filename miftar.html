@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mardin'de İmsak ve İftar Vakti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        .timer {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .date-info {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="date-time" id="current-date-time"></div>
+    <h2 id="timer-heading">İmsak Vaktine Kalan Süre</h2>
+    <div class="timer" id="timer">00:00:00</div>
+    <div class="date-info" id="date-info"></div>
+</div>
+
+<script>
+    const imsakTime = new Date('2025-02-28T05:04:00'); // Mardin için 28 Şubat 2025 imsak vakti
+    const iftarTime = new Date('2025-02-28T18:04:00'); // Mardin için 28 Şubat 2025 iftar vakti
+
+    function updateTimer() {
+        const now = new Date();
+        let timeDiff, headingText;
+
+        if (now < imsakTime) {
+            timeDiff = imsakTime - now;
+            headingText = "İmsak Vaktine Kalan Süre";
+        } else {
+            timeDiff = iftarTime - now;
+            headingText = "İftara Kalan Süre";
+        }
+
+        if (timeDiff > 0) {
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            document.getElementById('timer').textContent = 'Vakit geldi!';
+        }
+
+        document.getElementById('timer-heading').textContent = headingText;
+        document.getElementById('date-info').textContent = `Miladi Tarih: ${now.toLocaleDateString()}\nSeçilen Şehir: Mardin`;
+    }
+
+    function updateCurrentDateTime() {
+        const now = new Date();
+        document.getElementById('current-date-time').textContent = now.toLocaleString();
+    }
+
+    setInterval(updateTimer, 1000);
+    setInterval(updateCurrentDateTime, 1000);
+</script>
+
+</body>
+</html>
