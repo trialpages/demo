@@ -3,73 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base64 Encoder/Decoder</title>
+    <title>Base64 Kodlama ve Decode Aracı</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f2f2f2;
         }
         .container {
-            text-align: center;
             background-color: #fff;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
         }
         textarea {
             width: 100%;
             height: 100px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 4px;
             border: 1px solid #ccc;
-            box-sizing: border-box;
+            resize: none;
         }
         button {
             padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
+            margin: 5px;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Base64 Encoder/Decoder</h2>
-    <textarea id="input-text" placeholder="Metni buraya girin"></textarea>
-    <br>
-    <button onclick="encodeBase64()">Encode</button>
-    <button onclick="decodeBase64()">Decode</button>
-    <textarea id="output-text" placeholder="Sonuç burada görünecek" readonly></textarea>
+    <h2>Base64 Kodlama ve Decode Aracı</h2>
+    <textarea id="inputText" placeholder="Metin girin..."></textarea>
+    <button onclick="encodeBase64()">Base64 Kodla</button>
+    <button onclick="decodeBase64()">Base64 Decode Et</button>
+    <button onclick="clearText()">Metni Temizle</button>
+    <div class="result" id="result"></div>
+    <button onclick="copyResult()" id="copyButton" style="display:none;">Sonucu Kopyala</button>
 </div>
 
 <script>
     function encodeBase64() {
-        const inputText = document.getElementById('input-text').value;
+        const inputText = document.getElementById('inputText').value;
         const encodedText = btoa(inputText);
-        document.getElementById('output-text').value = encodedText;
+        document.getElementById('result').innerText = encodedText;
+        document.getElementById('copyButton').style.display = 'block';
     }
 
     function decodeBase64() {
-        const inputText = document.getElementById('input-text').value;
+        const inputText = document.getElementById('inputText').value;
         try {
             const decodedText = atob(inputText);
-            document.getElementById('output-text').value = decodedText;
-        } catch (error) {
-            document.getElementById('output-text').value = "Geçersiz Base64 metni";
+            document.getElementById('result').innerText = decodedText;
+            document.getElementById('copyButton').style.display = 'block';
+        } catch (e) {
+            document.getElementById('result').innerText = 'Geçersiz Base64 formatı!';
+            document.getElementById('copyButton').style.display = 'none';
         }
+    }
+
+    function clearText() {
+        document.getElementById('inputText').value = '';
+        document.getElementById('result').innerText = '';
+        document.getElementById('copyButton').style.display = 'none';
+    }
+
+    function copyResult() {
+        const resultText = document.getElementById('result').innerText;
+        navigator.clipboard.writeText(resultText).then(() => {
+            alert('Sonuç panoya kopyalandı!');
+        });
     }
 </script>
 
