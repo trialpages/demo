@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Özel Şifreleme Aracı</title>
+    <title>Özel Alfanümerik Kodlayıcı</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+            background: #f8f9fa;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,8 +17,8 @@
         .container {
             background: white;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             width: 400px;
         }
         h1 {
@@ -32,7 +32,7 @@
             padding: 12px;
             margin: 10px 0;
             border: 2px solid #3498db;
-            border-radius: 6px;
+            border-radius: 8px;
             resize: vertical;
         }
         .button-group {
@@ -46,47 +46,24 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
-        .encode-btn {
-            background: #3498db;
-            color: white;
-        }
-        .decode-btn {
-            background: #2ecc71;
-            color: white;
-        }
-        .copy-btn {
-            background: #9b59b6;
-            color: white;
-        }
-        .clear-btn {
-            background: #e74c3c;
-            color: white;
-        }
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-        .key-input {
-            margin: 15px 0;
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #3498db;
-            border-radius: 6px;
-        }
+        .encode-btn { background: #3498db; color: white; }
+        .decode-btn { background: #27ae60; color: white; }
+        .copy-btn { background: #9b59b6; color: white; }
+        .clear-btn { background: #e74c3c; color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Özel Şifreleme Aracı</h1>
-        <input type="number" id="secretKey" class="key-input" placeholder="Gizli Anahtar (1-100)">
-        <textarea id="inputText" placeholder="Metin girin..."></textarea>
+        <h1>Özel Alfanümerik Kodlayıcı</h1>
+        <textarea id="input" placeholder="Metni buraya girin..."></textarea>
         <div class="button-group">
-            <button class="encode-btn" onclick="encodeText()">Şifrele</button>
-            <button class="decode-btn" onclick="decodeText()">Çöz</button>
+            <button class="encode-btn" onclick="encode()">Kodla</button>
+            <button class="decode-btn" onclick="decode()">Çöz</button>
         </div>
-        <textarea id="outputText" readonly placeholder="Sonuç burada görünecek"></textarea>
+        <textarea id="output" readonly placeholder="Sonuç burada görünecek"></textarea>
         <div class="button-group">
             <button class="copy-btn" onclick="copyResult()">Kopyala</button>
             <button class="clear-btn" onclick="clearAll()">Temizle</button>
@@ -94,54 +71,56 @@
     </div>
 
 <script>
-// Özel şifreleme algoritması
-const customCipher = {
-    encode: (text, key) => {
-        return text.split('').map((char, index) => {
-            const code = char.charCodeAt(0);
-            const shift = (key + index) % 100;
-            return String.fromCharCode(code + shift);
+// Özel karakter setimiz (62 benzersiz karakter)
+const charset = 'aRbcd7efghijkKlmnoPpqrstuVvwxyzA0BCDEFGHIJLMNQSTUWXY123456Z89';
+
+// Özel kodlama algoritması
+const customEncoder = {
+    encode: (str) => {
+        return str.split('').map((char, index) => {
+            const code = char.charCodeAt(0) + index;
+            return charset[code % 62] + charset[Math.floor(code / 62) % 62];
         }).join('');
     },
     
-    decode: (text, key) => {
-        return text.split('').map((char, index) => {
-            const code = char.charCodeAt(0);
-            const shift = (key + index) % 100;
-            return String.fromCharCode(code - shift);
-        }).join('');
+    decode: (encodedStr) => {
+        let result = '';
+        for(let i=0; i<encodedStr.length; i+=2) {
+            const part = encodedStr.substr(i, 2);
+            const code = charset.indexOf(part[0]) + 
+                       (charset.indexOf(part[1]) * 62);
+            result += String.fromCharCode(code - (i/2));
+        }
+        return result;
     }
 };
 
-function encodeText() {
-    const key = parseInt(document.getElementById('secretKey').value);
-    if (!key || key < 1 || key > 100) return alert('Lütfen 1-100 arası geçerli bir anahtar girin!');
-    
-    const input = document.getElementById('inputText').value;
-    const encoded = customCipher.encode(input, key);
-    document.getElementById('outputText').value = encoded;
+function encode() {
+    const input = document.getElementById('input').value;
+    const encoded = customEncoder.encode(input);
+    document.getElementById('output').value = encoded;
 }
 
-function decodeText() {
-    const key = parseInt(document.getElementById('secretKey').value);
-    if (!key || key < 1 || key > 100) return alert('Lütfen 1-100 arası geçerli bir anahtar girin!');
-    
-    const input = document.getElementById('inputText').value;
-    const decoded = customCipher.decode(input, key);
-    document.getElementById('outputText').value = decoded;
+function decode() {
+    const encoded = document.getElementById('input').value;
+    try {
+        const decoded = customEncoder.decode(encoded);
+        document.getElementById('output').value = decoded;
+    } catch {
+        alert('Geçersiz kodlanmış metin!');
+    }
 }
 
 function copyResult() {
-    const output = document.getElementById('outputText');
+    const output = document.getElementById('output');
     output.select();
     document.execCommand('copy');
     alert('Panoya kopyalandı!');
 }
 
 function clearAll() {
-    document.getElementById('inputText').value = '';
-    document.getElementById('outputText').value = '';
-    document.getElementById('secretKey').value = '';
+    document.getElementById('input').value = '';
+    document.getElementById('output').value = '';
 }
 </script>
 </body>
