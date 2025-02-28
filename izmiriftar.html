@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İzmir'de Ramazan'a Kalan Süre</title>
+    <title>İzmir'de İmsak ve İftar Vakti</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
             background-color: #f2f2f2;
@@ -20,6 +21,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
         .timer {
             font-size: 2em;
@@ -35,51 +37,51 @@
 <body>
 
 <div class="container">
-    <h2>İzmir'de Ramazan'a Kalan Süre</h2>
-    <div class="timer" id="timer">00 Gün 00 Saat 00 Dakika 00 Saniye</div>
+    <div class="date-time" id="current-date-time"></div>
+    <div class="imsak-time" id="imsak-time"></div>
+    <h2 id="timer-heading">İmsak Vaktine Kalan Süre</h2>
+    <div class="timer" id="timer">00:00:00</div>
     <div class="date-info" id="date-info"></div>
 </div>
 
 <script>
-    const firstRamadanDate = new Date('2025-03-01T00:00:00'); // Ramazan'ın ilk günü
-    const iftarTimes = [
-        new Date('2025-03-01T19:11:00'), // 1 Mart 2025 iftar saati
-        // Diğer günlerin iftar saatleri buraya eklenebilir
-    ];
-    let currentDay = 0; // Ramazan'ın başlangıcına kadar 0 olacak, başladıktan sonra 1. günü olacak
+    const imsakTime = new Date('2025-03-01T06:16:00'); // İzmir için 1 Mart 2025 imsak vakti
+    const iftarTime = new Date('2025-03-01T18:28:00'); // İzmir için 1 Mart 2025 iftar vakti
 
     function updateTimer() {
         const now = new Date();
-        let timeDiff;
+        let timeDiff, headingText;
 
-        if (now < firstRamadanDate) {
-            timeDiff = firstRamadanDate - now;
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        if (now < imsakTime) {
+            timeDiff = imsakTime - now;
+            headingText = "İmsak Vaktine Kalan Süre";
+        } else {
+            timeDiff = iftarTime - now;
+            headingText = "İftara Kalan Süre";
+        }
+
+        if (timeDiff > 0) {
             const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-            document.getElementById('timer').textContent = `${days} Gün ${hours.toString().padStart(2, '0')} Saat ${minutes.toString().padStart(2, '0')} Dakika ${seconds.toString().padStart(2, '0')} Saniye`;
-            document.getElementById('date-info').textContent = `Ramazan'ın ilk gününe kalan süre: ${days} gün`;
+            document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         } else {
-            const iftarTime = iftarTimes[currentDay];
-            timeDiff = iftarTime - now;
-
-            if (timeDiff > 0) {
-                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-                document.getElementById('timer').textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                document.getElementById('date-info').textContent = `Ramazan'ın ${currentDay + 1}. günü\nİftar Vakti: ${iftarTime.toLocaleTimeString()}`;
-            } else {
-                document.getElementById('timer').textContent = 'İftar vakti geldi!';
-                currentDay += 1; // Bir sonraki güne geç
-            }
+            document.getElementById('timer').textContent = 'Vakit geldi!';
         }
+
+        document.getElementById('timer-heading').textContent = headingText;
+        document.getElementById('date-info').textContent = `Miladi Tarih: ${now.toLocaleDateString()}\nSeçilen Şehir: İzmir`;
+    }
+
+    function updateCurrentDateTime() {
+        const now = new Date();
+        document.getElementById('current-date-time').textContent = `Güncel Tarih ve Saat: ${now.toLocaleString()}`;
+        document.getElementById('imsak-time').textContent = `İmsak Saati: ${imsakTime.toLocaleTimeString()}`;
     }
 
     setInterval(updateTimer, 1000);
+    setInterval(updateCurrentDateTime, 1000);
 </script>
 
 </body>
