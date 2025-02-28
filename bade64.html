@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Base64 Encoder/Decoder</h2>
+    <textarea id="input-text" placeholder="Metni buraya girin"></textarea>
+    <br>
+    <button onclick="encodeBase64()">Encode</button>
+    <button onclick="decodeBase64()">Decode</button>
+    <textarea id="output-text" placeholder="Sonuç burada görünecek" readonly></textarea>
+</div>
+
+<script>
+    function encodeBase64() {
+        const inputText = document.getElementById('input-text').value;
+        const encodedText = btoa(inputText);
+        document.getElementById('output-text').value = encodedText;
+    }
+
+    function decodeBase64() {
+        const inputText = document.getElementById('input-text').value;
+        try {
+            const decodedText = atob(inputText);
+            document.getElementById('output-text').value = decodedText;
+        } catch (error) {
+            document.getElementById('output-text').value = "Geçersiz Base64 metni";
+        }
+    }
+</script>
+
+</body>
+</html>
