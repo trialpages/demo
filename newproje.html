@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yemek Tarifleri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #girisEkrani, #sohbetEkrani {
+            display: none;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkgreen;
+        }
+        iframe {
+            width: 100%;
+            height: 80vh;
+            border: none;
+        }
+    </style>
+    <script>
+        function kontrolEt() {
+            var parola = document.getElementById("parola").value;
+            var bugun = new Date();
+            var dogruParola = 
+                String(bugun.getDate()).padStart(2, '0') + 
+                String(bugun.getMonth() + 1).padStart(2, '0') + 
+                bugun.getFullYear();
+            
+            if (parola === dogruParola) {
+                document.getElementById("girisEkrani").style.display = "none";
+                document.getElementById("sohbetEkrani").style.display = "block";
+            } else {
+                alert("Yanlış parola! Tekrar deneyin.");
+            }
+        }
+
+        function sohbetiKapat() {
+            location.reload();
+        }
+    </script>
+</head>
+<body>
+
+    <div id="girisEkrani">
+        <h1>Yemek Tarifleri</h1>
+        <p>Parolanızı giriniz:</p>
+        <input type="password" id="parola" placeholder="Parola">
+        <button onclick="kontrolEt()">Giriş Yap</button>
+
+        <h2>Menemen Tarifi</h2>
+        <p>Malzemeler:</p>
+        <ul>
+            <li>3 adet domates</li>
+            <li>2 adet yeşil biber</li>
+            <li>3 adet yumurta</li>
+            <li>1 yemek kaşığı tereyağı</li>
+            <li>Tuz, karabiber</li>
+        </ul>
+        <p>Yapılışı:</p>
+        <p>Biberleri doğrayıp tereyağında kavurun. Üzerine doğranmış domatesleri ekleyip pişirin. Yumurtaları kırıp karıştırın. Baharatları ekleyerek servis yapın.</p>
+    </div>
+
+    <div id="sohbetEkrani">
+        <iframe src="https://my.cbox.ws"></iframe>
+        <button onclick="sohbetiKapat()">Sohbeti Kapat</button>
+    </div>
+
+    <script>
+        document.getElementById("girisEkrani").style.display = "block";
+    </script>
+
+</body>
+</html>
