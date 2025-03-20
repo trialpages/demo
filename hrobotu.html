@@ -135,19 +135,21 @@
     }
 
     function hesapla() {
+        // Atıf puanını hesapla (maksimum 5 puan)
         let atifPuan = puanlar.filter(p => p.madde.includes("Atıf")).reduce((sum, p) => sum + p.puan, 0);
-        
+        if (atifPuan > 5) {
+            toplamPuan -= (atifPuan - 5); // 5 puandan fazlasını toplamdan çıkar
+        }
+
         let sonuc = document.getElementById("sonuc");
         sonuc.className = "";
         
-        if (toplamPuan >= 50 && atifPuan <= 5) {
+        if (toplamPuan >= 50) {
             sonuc.className = "highlight";
             sonuc.textContent = `Toplam Puanınız: ${toplamPuan}. Tebrikler, atama için uygunsunuz!`;
         } else {
             sonuc.className = "error";
-            sonuc.textContent = `Atama şartlarını sağlamıyorsunuz. (Sebep: ${
-                toplamPuan < 50 ? "Toplam puan yetersiz." : ""
-            } ${atifPuan > 5 ? "Atıf puanı 5'i geçemez." : ""})`;
+            sonuc.textContent = `Atama şartlarını sağlamıyorsunuz. Toplam puan yetersiz.`;
         }
     }
 
