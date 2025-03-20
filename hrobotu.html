@@ -25,10 +25,6 @@
             font-size: 16px;
             width: 100%;
         }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
         .sepet {
             background: #e8f0fe;
             padding: 10px;
@@ -40,6 +36,17 @@
             color: green;
             font-size: 18px;
             margin-top: 10px;
+        }
+        .sepet-listesi {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        .sepet-listesi li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #ccc;
         }
     </style>
 </head>
@@ -90,18 +97,19 @@
 
     <div class="sepet">
         <h3>Sepet</h3>
-        <ul id="sepetListesi"></ul>
+        <ul id="sepetListesi" class="sepet-listesi"></ul>
         <p class="bold">Toplam Puan: <span id="toplamPuan">0</span></p>
     </div>
 
     <button onclick="hesapla()">Hesapla</button>
+    <button onclick="temizle()">Formu Temizle</button>
     <p class="highlight" id="sonuc"></p>
 </div>
 
 <script>
     let toplamPuan = 0;
     let puanlar = [];
-    let maddePuanlari = {1: 0, 5: 0, 7: 0, 22: 0}; // 1, 5, 7, 22. maddelerden en az 40 puan olmalı
+    let sayac = 1;
 
     function sepeteEkle() {
         let madde = document.getElementById("maddeSec");
@@ -115,9 +123,10 @@
             
             let list = document.getElementById("sepetListesi");
             let li = document.createElement("li");
-            li.textContent = `${madde.options[madde.selectedIndex].text} x ${adet} = ${toplamMaddePuan} puan`;
+            li.innerHTML = `<span>${sayac}. ${madde.options[madde.selectedIndex].text} x ${adet}</span> <span><b>${toplamMaddePuan} puan</b></span>`;
             list.appendChild(li);
-            
+            sayac++;
+
             document.getElementById("toplamPuan").textContent = toplamPuan;
         }
     }
@@ -134,6 +143,15 @@
         }
         
         document.getElementById("sonuc").textContent = sonucMesaji;
+    }
+
+    function temizle() {
+        toplamPuan = 0;
+        puanlar = [];
+        sayac = 1;
+        document.getElementById("sepetListesi").innerHTML = "";
+        document.getElementById("toplamPuan").textContent = "0";
+        document.getElementById("sonuc").textContent = "";
     }
 </script>
 
