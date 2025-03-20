@@ -3,55 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEÜ Dr. Öğretim Üyeliği Yeniden Atama Puanı Hesaplama</title>
+    <title>DEÜ Dr. Öğretim Üyeliği Puan Hesaplama</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 600px; margin: auto; }
-        label, input { display: block; margin-top: 10px; }
-        button { margin-top: 20px; padding: 10px; }
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; }
+        label, input { display: block; margin: 10px 0; }
+        button { padding: 10px; background-color: green; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: darkgreen; }
+        #sonuc { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Puan Hesaplama</h2>
-        <label>Makalelerden Alınan Puan:</label>
-        <input type="number" id="makalePuan" min="0">
-        
-        <label>Atıflardan Alınan Puan (En fazla 5):</label>
-        <input type="number" id="atifPuan" min="0" max="5">
-        
-        <label>Kitaplardan Alınan Puan:</label>
-        <input type="number" id="kitapPuan" min="0">
-        
-        <label>Bildirilerden Alınan Puan:</label>
-        <input type="number" id="bildiriPuan" min="0">
-        
-        <label>Ders Kitaplarından Alınan Puan:</label>
-        <input type="number" id="dersKitapPuan" min="0">
-        
-        <button onclick="hesapla()">Hesapla</button>
-        <h3 id="sonuc"></h3>
-    </div>
+
+    <h2>DEÜ Dr. Öğretim Üyeliği Puan Hesaplama</h2>
+
+    <label>Makaleler (Alan Endeksli) - 20 Puan</label>
+    <input type="number" id="makaleEndeks" min="0" value="0">
+
+    <label>Makaleler (ULAKBİM) - 15 Puan</label>
+    <input type="number" id="makaleUlakbim" min="0" value="0">
+
+    <label>Makaleler (Yabancı Hakemli) - 12 Puan</label>
+    <input type="number" id="makaleYabanci" min="0" value="0">
+
+    <label>Makaleler (Ulusal Hakemli) - 10 Puan</label>
+    <input type="number" id="makaleUlusal" min="0" value="0">
+
+    <label>Atıflar (Maksimum 5 Puan) - 5 Puan</label>
+    <input type="number" id="atif" min="0" max="1" value="0">
+
+    <label>Uluslararası Kitap Yazarlığı - 50 Puan</label>
+    <input type="number" id="kitapUluslararasi" min="0" value="0">
+
+    <label>Uluslararası Kitap Bölüm Yazarlığı - 15 Puan</label>
+    <input type="number" id="kitapUlusBolum" min="0" value="0">
+
+    <label>Ulusal Kitap Yazarlığı - 30 Puan</label>
+    <input type="number" id="kitapUlusal" min="0" value="0">
+
+    <label>Ulusal Kitap Bölüm Yazarlığı - 10 Puan</label>
+    <input type="number" id="kitapUlusalBolum" min="0" value="0">
+
+    <label>Tam Metin Sözlü Bildiri - 10 Puan</label>
+    <input type="number" id="tamMetinSozlu" min="0" value="0">
+
+    <label>Tam Metin Poster Bildiri - 7 Puan</label>
+    <input type="number" id="tamMetinPoster" min="0" value="0">
+
+    <label>Özet Basılmış Sözlü Bildiri - 7 Puan</label>
+    <input type="number" id="ozetSozlu" min="0" value="0">
+
+    <label>Özet Basılmış Poster Bildiri - 5 Puan</label>
+    <input type="number" id="ozetPoster" min="0" value="0">
+
+    <label>Davetli Konuşmacı - 10 Puan</label>
+    <input type="number" id="davetliKonusmaci" min="0" value="0">
+
+    <label>Sözlü Sunum - 5 Puan</label>
+    <input type="number" id="sozluSunum" min="0" value="0">
+
+    <label>Ders Kitabı Uluslararası - 30 Puan</label>
+    <input type="number" id="dersKitapUluslararasi" min="0" value="0">
+
+    <label>Ders Kitabı Uluslararası Bölüm - 10 Puan</label>
+    <input type="number" id="dersKitapUlusBolum" min="0" value="0">
+
+    <label>Ders Kitabı Ulusal - 20 Puan</label>
+    <input type="number" id="dersKitapUlusal" min="0" value="0">
+
+    <label>Ders Kitabı Ulusal Bölüm - 5 Puan</label>
+    <input type="number" id="dersKitapUlusalBolum" min="0" value="0">
+
+    <button onclick="hesapla()">Hesapla</button>
+
+    <div id="sonuc"></div>
 
     <script>
         function hesapla() {
-            let makale = parseInt(document.getElementById('makalePuan').value) || 0;
-            let atif = parseInt(document.getElementById('atifPuan').value) || 0;
-            let kitap = parseInt(document.getElementById('kitapPuan').value) || 0;
-            let bildiri = parseInt(document.getElementById('bildiriPuan').value) || 0;
-            let dersKitap = parseInt(document.getElementById('dersKitapPuan').value) || 0;
+            let puan1 = (document.getElementById("makaleEndeks").value * 20) +
+                        (document.getElementById("makaleUlakbim").value * 15) +
+                        (document.getElementById("makaleYabanci").value * 12) +
+                        (document.getElementById("makaleUlusal").value * 10);
             
-            let toplamPuan = makale + atif + kitap + bildiri + dersKitap;
-            let anaMaddeToplam = makale + kitap + bildiri + dersKitap;
+            let puan4 = Math.min(document.getElementById("atif").value * 5, 5);
             
-            let sonucText = `Toplam Puan: ${toplamPuan}`;
-            if (toplamPuan >= 50 && anaMaddeToplam >= 40) {
-                sonucText += "<br><strong>Yeniden atama için yeterli puan toplandı.</strong>";
-            } else {
-                sonucText += "<br><strong>Yeniden atama için yeterli puan toplanamadı.</strong>";
-            }
-            document.getElementById('sonuc').innerHTML = sonucText;
+            let puan5 = (document.getElementById("kitapUluslararasi").value * 50) +
+                        (document.getElementById("kitapUlusBolum").value * 15) +
+                        (document.getElementById("kitapUlusal").value * 30) +
+                        (document.getElementById("kitapUlusalBolum").value * 10);
+
+            let puan7 = (document.getElementById("tamMetinSozlu").value * 10) +
+                        (document.getElementById("tamMetinPoster").value * 7) +
+                        (document.getElementById("ozetSozlu").value * 7) +
+                        (document.getElementById("ozetPoster").value * 5) +
+                        (document.getElementById("davetliKonusmaci").value * 10) +
+                        (document.getElementById("sozluSunum").value * 5);
+
+            let puan22 = (document.getElementById("dersKitapUluslararasi").value * 30) +
+                         (document.getElementById("dersKitapUlusBolum").value * 10) +
+                         (document.getElementById("dersKitapUlusal").value * 20) +
+                         (document.getElementById("dersKitapUlusalBolum").value * 5);
+
+            let toplamPuan = puan1 + puan4 + puan5 + puan7 + puan22;
+
+            let mesaj = `Toplam Puan: ${toplamPuan} ` + 
+                        (toplamPuan >= 50 && (puan1 + puan5 + puan7 + puan22) >= 40 ? 
+                        "✅ Şartları sağlıyorsunuz." : "❌ Şartları sağlamıyorsunuz.");
+
+            document.getElementById("sonuc").innerHTML = mesaj;
         }
     </script>
+
 </body>
 </html>
