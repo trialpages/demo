@@ -37,6 +37,9 @@
             font-size: 18px;
             margin-top: 10px;
         }
+        .error {
+            color: red;
+        }
         .sepet-listesi {
             list-style: none;
             padding: 0;
@@ -103,7 +106,7 @@
 
     <button onclick="hesapla()">Hesapla</button>
     <button onclick="temizle()">Formu Temizle</button>
-    <p class="highlight" id="sonuc"></p>
+    <p id="sonuc"></p>
 </div>
 
 <script>
@@ -132,17 +135,22 @@
     }
 
     function hesapla() {
-        let anaMaddePuan = puanlar.filter(p => p.madde.includes("kitap") || p.madde.includes("bildiri") || p.madde.includes("Makaleler")).reduce((sum, p) => sum + p.puan, 0);
+        let anaMaddePuan = puanlar.filter(p => p.madde.match(/(kitap|bildiri|Makaleler)/i)).reduce((sum, p) => sum + p.puan, 0);
         let atifPuan = puanlar.filter(p => p.madde.includes("Atıf")).reduce((sum, p) => sum + p.puan, 0);
         
-        let sonucMesaji = `Toplam puanınız: ${toplamPuan}. `;
-        if (toplamPuan >= 50 && anaMaddePuan >= 40 && atifPuan <= 5) {
-            sonucMesaji += "Atama için uygunsunuz!";
-        } else {
-            sonucMesaji += "Atama şartlarını sağlamıyorsunuz.";
-        }
+        let sonuc = document.getElementById("sonuc");
+        sonuc.className = "";
         
-        document.getElementById("sonuc").textContent = sonucMesaji;
+        if (toplamPuan >= 50 && anaMaddePuan >= 40 && atifPuan <= 5) {
+            sonuc.className = "highlight";
+            sonuc.textContent = `Toplam Puanınız: ${toplamPuan}. Tebrikler, atama için uygunsunuz!`;
+        } else {
+            sonuc.className = "error";
+            sonuc.textContent = `Atama şartlarını sağlamıyorsunuz. (Sebep: ${
+                toplamPuan < 50 ? "Toplam puan yetersiz." : ""
+            } ${anaMaddePuan < 40 ? "Makale, Kitap, Bildiri veya Ders Kitaplarından en az 40 puan alınmalı." : ""}
+            ${atifPuan > 5 ? "Atıf puanı 5'i geçemez." : ""})`;
+        }
     }
 
     function temizle() {
