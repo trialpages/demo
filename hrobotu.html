@@ -135,21 +135,19 @@
     }
 
     function hesapla() {
-        let anaMaddePuan = puanlar.filter(p => p.madde.match(/(kitap|bildiri|Makaleler)/i)).reduce((sum, p) => sum + p.puan, 0);
         let atifPuan = puanlar.filter(p => p.madde.includes("Atıf")).reduce((sum, p) => sum + p.puan, 0);
         
         let sonuc = document.getElementById("sonuc");
         sonuc.className = "";
         
-        if (toplamPuan >= 50 && anaMaddePuan >= 40 && atifPuan <= 5) {
+        if (toplamPuan >= 50 && atifPuan <= 5) {
             sonuc.className = "highlight";
             sonuc.textContent = `Toplam Puanınız: ${toplamPuan}. Tebrikler, atama için uygunsunuz!`;
         } else {
             sonuc.className = "error";
             sonuc.textContent = `Atama şartlarını sağlamıyorsunuz. (Sebep: ${
                 toplamPuan < 50 ? "Toplam puan yetersiz." : ""
-            } ${anaMaddePuan < 40 ? "Makale, Kitap, Bildiri veya Ders Kitaplarından en az 40 puan alınmalı." : ""}
-            ${atifPuan > 5 ? "Atıf puanı 5'i geçemez." : ""})`;
+            } ${atifPuan > 5 ? "Atıf puanı 5'i geçemez." : ""})`;
         }
     }
 
