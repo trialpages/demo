@@ -5,111 +5,142 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEÜ Dr. Öğretim Üyeliği Puan Hesaplama</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
-        label, input { display: block; margin: 10px 0; width: 100%; }
-        button { padding: 10px; background-color: green; color: white; border: none; cursor: pointer; width: 100%; }
-        button:hover { background-color: darkgreen; }
-        #sonuc { margin-top: 20px; font-weight: bold; text-align: center; padding: 10px; border-radius: 5px; }
-        .input-group { margin-bottom: 10px; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+        #sonuc {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 
     <h2>DEÜ Dr. Öğretim Üyeliği Puan Hesaplama</h2>
+    <div class="container">
+        <div class="input-group">
+            <label>Alan Endeksli Makale (20 Puan)</label>
+            <select id="makaleEndeks"></select>
+        </div>
 
-    <div class="input-group">
-        <label>Alan Endeksli Makale Sayısı (20 Puan)</label>
-        <input type="number" id="makaleEndeks" min="0" value="0" oninput="hesapla()">
+        <div class="input-group">
+            <label>ULAKBİM Makale (15 Puan)</label>
+            <select id="makaleUlakbim"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Yabancı Hakemli Makale (12 Puan)</label>
+            <select id="makaleYabanci"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Ulusal Hakemli Makale (10 Puan)</label>
+            <select id="makaleUlusal"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Atıf Sayısı (Maks. 5 Puan)</label>
+            <select id="atif"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Uluslararası Kitap Yazarlığı (50 Puan)</label>
+            <select id="kitapUluslararasi"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Ulusal Kitap Yazarlığı (30 Puan)</label>
+            <select id="kitapUlusal"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Sözlü Tam Metin Bildiri (10 Puan)</label>
+            <select id="tamMetinSozlu"></select>
+        </div>
+
+        <div class="input-group">
+            <label>Poster Tam Metin Bildiri (7 Puan)</label>
+            <select id="tamMetinPoster"></select>
+        </div>
+
+        <button onclick="hesapla()">HESAPLA</button>
+
+        <div id="sonuc"></div>
     </div>
-
-    <div class="input-group">
-        <label>ULAKBİM Makale Sayısı (15 Puan)</label>
-        <input type="number" id="makaleUlakbim" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Yabancı Hakemli Makale Sayısı (12 Puan)</label>
-        <input type="number" id="makaleYabanci" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ulusal Hakemli Makale Sayısı (10 Puan)</label>
-        <input type="number" id="makaleUlusal" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Atıf Sayısı (Her biri 5 Puan, Maksimum 5 Puan)</label>
-        <input type="number" id="atif" min="0" max="1" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Uluslararası Kitap Yazarlığı (50 Puan)</label>
-        <input type="number" id="kitapUluslararasi" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Uluslararası Kitap Bölüm Yazarlığı (15 Puan)</label>
-        <input type="number" id="kitapUlusBolum" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ulusal Kitap Yazarlığı (30 Puan)</label>
-        <input type="number" id="kitapUlusal" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ulusal Kitap Bölüm Yazarlığı (10 Puan)</label>
-        <input type="number" id="kitapUlusalBolum" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Tam Metin Sözlü Bildiri (10 Puan)</label>
-        <input type="number" id="tamMetinSozlu" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Tam Metin Poster Bildiri (7 Puan)</label>
-        <input type="number" id="tamMetinPoster" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Özet Basılmış Sözlü Bildiri (7 Puan)</label>
-        <input type="number" id="ozetSozlu" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Özet Basılmış Poster Bildiri (5 Puan)</label>
-        <input type="number" id="ozetPoster" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Davetli Konuşmacı (10 Puan)</label>
-        <input type="number" id="davetliKonusmaci" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ders Kitabı Uluslararası (30 Puan)</label>
-        <input type="number" id="dersKitapUluslararasi" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ders Kitabı Uluslararası Bölüm (10 Puan)</label>
-        <input type="number" id="dersKitapUlusBolum" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ders Kitabı Ulusal (20 Puan)</label>
-        <input type="number" id="dersKitapUlusal" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div class="input-group">
-        <label>Ders Kitabı Ulusal Bölüm (5 Puan)</label>
-        <input type="number" id="dersKitapUlusalBolum" min="0" value="0" oninput="hesapla()">
-    </div>
-
-    <div id="sonuc"></div>
 
     <script>
+        function populateSelects() {
+            let selects = document.querySelectorAll("select");
+            selects.forEach(select => {
+                for (let i = 0; i <= 9; i++) {
+                    let option = document.createElement("option");
+                    option.value = i;
+                    option.textContent = i;
+                    select.appendChild(option);
+                }
+            });
+
+            // Atıf için maksimum 1 seçeneği
+            let atifSelect = document.getElementById("atif");
+            atifSelect.innerHTML = "";
+            for (let i = 0; i <= 1; i++) {
+                let option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                atifSelect.appendChild(option);
+            }
+        }
+
         function hesapla() {
             let puan1 = (document.getElementById("makaleEndeks").value * 20) +
                         (document.getElementById("makaleUlakbim").value * 15) +
@@ -119,27 +150,29 @@
             let puan4 = Math.min(document.getElementById("atif").value * 5, 5);
 
             let puan5 = (document.getElementById("kitapUluslararasi").value * 50) +
-                        (document.getElementById("kitapUlusBolum").value * 15) +
-                        (document.getElementById("kitapUlusal").value * 30) +
-                        (document.getElementById("kitapUlusalBolum").value * 10);
+                        (document.getElementById("kitapUlusal").value * 30);
 
             let puan7 = (document.getElementById("tamMetinSozlu").value * 10) +
-                        (document.getElementById("tamMetinPoster").value * 7) +
-                        (document.getElementById("ozetSozlu").value * 7) +
-                        (document.getElementById("ozetPoster").value * 5) +
-                        (document.getElementById("davetliKonusmaci").value * 10);
+                        (document.getElementById("tamMetinPoster").value * 7);
 
-            let puan22 = (document.getElementById("dersKitapUluslararasi").value * 30) +
-                         (document.getElementById("dersKitapUlusBolum").value * 10) +
-                         (document.getElementById("dersKitapUlusal").value * 20) +
-                         (document.getElementById("dersKitapUlusalBolum").value * 5);
+            let toplamPuan = puan1 + puan4 + puan5 + puan7;
+            let anaMaddePuan = puan1 + puan5 + puan7;
 
-            let toplamPuan = puan1 + puan4 + puan5 + puan7 + puan22;
-            let mesaj = `Toplam Puan: ${toplamPuan} ` + 
-                        (toplamPuan >= 50 && (puan1 + puan5 + puan7 + puan22) >= 40 ? "✅ Şartları sağlıyorsunuz." : "❌ Şartları sağlamıyorsunuz.");
+            let sonucKutusu = document.getElementById("sonuc");
 
-            document.getElementById("sonuc").innerHTML = mesaj;
+            if (toplamPuan >= 50 && anaMaddePuan >= 40) {
+                sonucKutusu.style.backgroundColor = "#2ecc71";
+                sonucKutusu.style.color = "white";
+                sonucKutusu.textContent = `✅ Tebrikler! Toplam Puan: ${toplamPuan}. Şartları sağladınız.`;
+            } else {
+                sonucKutusu.style.backgroundColor = "#e74c3c";
+                sonucKutusu.style.color = "white";
+                sonucKutusu.textContent = `❌ Üzgünüz, Toplam Puan: ${toplamPuan}. Şartları sağlamıyorsunuz.`;
+            }
         }
+
+        // Sayfa yüklendiğinde seçim kutularını hazırla
+        window.onload = populateSelects;
     </script>
 
 </body>
