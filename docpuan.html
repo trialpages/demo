@@ -4,114 +4,206 @@
     <meta charset="UTF-8">
     <title>İlahiyat Doçentlik Puan Hesaplama</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; }
-        .section { background: #f5f5f5; padding: 15px; margin: 10px 0; border-radius: 8px; }
-        select, input { padding: 5px; margin: 5px; width: 200px; }
-        button { background: #4CAF50; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #45a049; }
-        #selectedItems { margin: 20px 0; }
-        .item { background: white; padding: 10px; margin: 5px 0; border-radius: 4px; }
-        #result { padding: 15px; margin-top: 20px; border-radius: 8px; }
-        .success { background: #dff0d8; color: #3c763d; }
-        .error { background: #f2dede; color: #a94442; }
+        body { font-family: 'Segoe UI', sans-serif; max-width: 1000px; margin: 30px auto; padding: 20px; background: #f9f9f9; }
+        .section { background: #fff; padding: 20px; margin: 15px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        select, input { padding: 8px; margin: 8px; border: 1px solid #ddd; border-radius: 4px; width: 220px; }
+        button { background: #2c3e50; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #34495e; }
+        #selectedItems { margin: 25px 0; }
+        .item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #3498db; border-radius: 4px; }
+        #result { padding: 20px; margin-top: 25px; border-radius: 8px; font-size: 16px; }
+        .success { background: #e8f5e9; border-left: 4px solid #4CAF50; }
+        .error { background: #ffebee; border-left: 4px solid #f44336; }
+        .warning { background: #fff3e0; border-left: 4px solid #ff9800; }
+        .category-header { color: #2c3e50; margin: 20px 0 10px; }
     </style>
 </head>
 <body>
-    <h2>İlahiyat Doçentlik Puan Hesaplama Aracı</h2>
+    <h1 style="color: #2c3e50; text-align: center;">İlahiyat Doçentlik Puan Hesaplama Aracı</h1>
     
     <div class="section">
-        <select id="mainCategory">
-            <option value="">Ana Kategori Seçiniz</option>
-            <option value="1">1. Uluslararası Makale</option>
-            <option value="2">2. Ulusal Makale</option>
-            <!-- Diğer kategoriler eklenebilir -->
-        </select>
+        <div class="input-group">
+            <select id="mainCategory" onchange="loadSubCategories()">
+                <option value="">Ana Kategori Seçiniz</option>
+                <option value="1">1. Uluslararası Makale</option>
+                <option value="2">2. Ulusal Makale</option>
+                <option value="3">3. Lisansüstü Tezlerden Üretilmiş Yayın</option>
+                <option value="4">4. Kitap</option>
+                <option value="5">5. Atıf</option>
+                <option value="6">6. Lisansüstü Tez Danışmanlığı</option>
+                <option value="7">7. Bilimsel Araştırma Projesi</option>
+                <option value="8">8. Bilimsel Toplantı</option>
+                <option value="9">9. Eğitim-Öğretim</option>
+                <option value="10">10. Patent/Faydalı Model</option>
+                <option value="11">11. Ödül</option>
+                <option value="12">12. Editörlük</option>
+                <option value="13">13. Sanatsal Uygulama/Etkinlik</option>
+                <option value="14">14. Diğer</option>
+            </select>
 
-        <select id="subCategory" disabled>
-            <option value="">Alt Kategori Seçiniz</option>
-        </select>
+            <select id="subCategory" disabled>
+                <option value="">Alt Kategori Seçiniz</option>
+            </select>
 
-        <input type="number" id="workCount" placeholder="Çalışma Sayısı" min="1">
-        <input type="number" id="authorCount" placeholder="Yazar Sayısı" min="1">
-        <button onclick="addToCart()">Sepete Ekle</button>
+            <input type="number" id="workCount" placeholder="Çalışma Sayısı" min="1">
+            <input type="number" id="authorCount" placeholder="Yazar Sayısı" min="1">
+            <button onclick="addToCart()">Sepete Ekle</button>
+        </div>
     </div>
 
     <div id="selectedItems"></div>
-    <button onclick="calculate()">Hesapla</button>
+    <div style="text-align: center;">
+        <button onclick="calculate()" style="font-size: 18px; padding: 15px 30px;">HESAPLA</button>
+    </div>
     <div id="result"></div>
 
 <script>
-let items = [];
 const categories = {
     '1': { // Uluslararası Makale
-        '1a': {label: 'a) SCIE/SSCI Q1', points: 30},
-        '1b': {label: 'b) AHCI', points: 20},
-        // Diğer alt kategoriler eklenebilir
+        '1a': {label: 'a) SCIE/SSCI Q1', points: 30, max: null},
+        '1b': {label: 'b) SCIE/SSCI Q2', points: 20, max: null},
+        '1c': {label: 'c) SCIE/SSCI Q3', points: 15, max: null},
+        '1d': {label: 'd) SCIE/SSCI Q4', points: 10, max: null},
+        '1e': {label: 'e) AHCI', points: 20, max: null},
+        '1f': {label: 'f) ESCI/Scopus', points: 10, max: null},
+        '1g': {label: 'g) Diğer Uluslararası', points: 5, max: null},
+        '1h': {label: 'h) Editöre Mektup/Araştırma Notu', points: 3, max: null},
+        validations: {
+            thesisBased: false,
+            minTotal: 50,
+            required: []
+        }
     },
-    // Diğer ana kategoriler eklenebilir
+    '2': { // Ulusal Makale
+        '2a': {label: 'a) TR Dizin', points: 10, max: null},
+        '2b': {label: 'b) Diğer Hakemli', points: 4, max: null},
+        '2c': {label: 'c) Editöre Mektup/Araştırma Notu', points: 2, max: null},
+        validations: {
+            thesisBased: false,
+            minWorks: 5,
+            minSingleAuthor: 3,
+            minPoints: 50,
+            maxFromSub: {'2c': 2}
+        }
+    },
+    // Diğer kategoriler benzer şekilde eklenmeli
 };
 
-document.getElementById('mainCategory').addEventListener('change', function() {
+let items = [];
+const maxPoints = {
+    '3': 20,  // Lisansüstü Tezlerden max 20
+    '8': 10,  // Bilimsel Toplantı max 10
+    '5': 10,  // Atıf max 10
+    '12': 4,  // Editörlük max 4
+    '13': 20, // Sanatsal max 20
+    '14': 10  // Diğer max 10
+};
+
+function loadSubCategories() {
+    const mainCat = document.getElementById('mainCategory').value;
     const subCat = document.getElementById('subCategory');
     subCat.innerHTML = '<option value="">Alt Kategori Seçiniz</option>';
     
-    if(this.value === '1') {
-        Object.keys(categories['1']).forEach(key => {
-            subCat.innerHTML += `<option value="${key}">${categories['1'][key].label}</option>`;
+    if(mainCat && categories[mainCat]) {
+        Object.keys(categories[mainCat]).forEach(key => {
+            if(key !== 'validations') {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = categories[mainCat][key].label;
+                subCat.appendChild(option);
+            }
         });
         subCat.disabled = false;
+    } else {
+        subCat.disabled = true;
     }
-    // Diğer ana kategoriler için eklemeler yapılabilir
-});
+}
 
 function addToCart() {
     const mainCat = document.getElementById('mainCategory').value;
     const subCat = document.getElementById('subCategory').value;
     const workCount = parseInt(document.getElementById('workCount').value);
-    const authorCount = parseInt(document.getElementById('authorCount').value);
+    const authorCount = parseInt(document.getElementById('authorCount').value) || 1;
 
-    if(!mainCat || !subCat || !workCount || !authorCount) return alert('Lütfen tüm alanları doldurun!');
+    if(!validateInput(mainCat, subCat, workCount, authorCount)) return;
 
-    const pointsPerWork = categories[mainCat][subCat].points / authorCount;
-    const totalPoints = pointsPerWork * workCount;
-
+    const pointsPerWork = (categories[mainCat][subCat].points / authorCount) * workCount;
+    
     items.push({
-        category: `${mainCat}${subCat}`,
+        mainCat,
+        subCat,
         workCount,
         authorCount,
-        totalPoints
+        points: parseFloat(pointsPerWork.toFixed(2))
     });
 
     updateCartDisplay();
+}
+
+function validateInput(mainCat, subCat, workCount, authorCount) {
+    // Tüm validasyon kuralları buraya eklenecek
+    return true;
 }
 
 function updateCartDisplay() {
     const container = document.getElementById('selectedItems');
     container.innerHTML = items.map((item, index) => `
         <div class="item">
-            ${categories[item.category[0]][item.category].label} - 
-            Çalışma: ${item.workCount}, Yazar: ${item.authorCount}, Puan: ${item.totalPoints.toFixed(1)}
+            ${categories[item.mainCat][item.subCat].label} - 
+            Çalışma: ${item.workCount}, Yazar: ${item.authorCount}, Puan: ${item.points}
+            <button onclick="removeItem(${index})" style="float:right; background:#e74c3c; padding:2px 8px;">×</button>
         </div>
     `).join('');
 }
 
+function removeItem(index) {
+    items.splice(index, 1);
+    updateCartDisplay();
+}
+
 function calculate() {
-    let total = items.reduce((sum, item) => sum + item.totalPoints, 0);
-    let resultDiv = document.getElementById('result');
+    let total = 0;
+    let categoryTotals = {};
+    let errors = [];
+    let warnings = [];
+
+    // Toplam puan hesaplama
+    items.forEach(item => {
+        total += item.points;
+        categoryTotals[item.mainCat] = (categoryTotals[item.mainCat] || 0) + item.points;
+    });
+
+    // Kategori maksimum kontrolü
+    Object.keys(maxPoints).forEach(cat => {
+        if(categoryTotals[cat] > maxPoints[cat]) {
+            errors.push(`${cat}. maddeden maksimum ${maxPoints[cat]} puan alınabilir (Sizin puanınız: ${categoryTotals[cat]})`);
+        }
+    });
+
+    // Minimum şart kontrolü
+    if(total < 100) errors.push("Toplam puan 100'ün altında");
+    if(!categoryTotals['2'] || categoryTotals['2'] < 50) errors.push("Ulusal Makaleden en az 50 puan gereklidir");
     
-    // Zorunlu şartlar kontrolü
-    if(total < 100) {
+    // Sonuç gösterimi
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+    
+    if(errors.length > 0) {
         resultDiv.className = 'error';
-        resultDiv.innerHTML = `Şart sağlanamadı! Toplam puan 100'ün altında: ${total.toFixed(1)}`;
-        return;
+        resultDiv.innerHTML = `<h3>Şartlar Sağlanamadı!</h3>${errors.map(e => `<p>✖ ${e}</p>`).join('')}`;
+    } else if(warnings.length > 0) {
+        resultDiv.className = 'warning';
+        resultDiv.innerHTML = `<h3>Dikkat!</h3>${warnings.map(w => `<p>⚠ ${w}</p>`).join('')}`;
+    } else {
+        resultDiv.className = 'success';
+        resultDiv.innerHTML = `<h3>Başarılı!</h3>
+            <p>Toplam Puan: ${total.toFixed(2)}</p>
+            <p>Minimum 100 puan şartı sağlandı</p>`;
     }
-    
-    resultDiv.className = 'success';
-    resultDiv.innerHTML = `Tebrikler! Toplam puanınız: ${total.toFixed(1)}`;
 }
 </script>
 
-<!-- Not: Bu örnek sadece temel yapıyı göstermektedir. -->
-<!-- Tüm kategoriler, puan kuralları ve validasyonlar eklenmelidir. -->
+<!-- Tüm kategoriler ve validasyon kuralları eksiksiz eklendiğinde -->
+<!-- 500+ satırlık komple bir uygulama oluşacaktır -->
 </body>
 </html>
