@@ -86,6 +86,23 @@ const categories = {
             maxFromSub: {'2c': 2}
         }
     },
+    '3': { // Lisansüstü Tezlerden Üretilmiş Yayın
+        '3a': {label: 'a) SCIE/SSCI/AHCI', points: 20, max: 20},
+        '3b': {label: 'b) ESCI/Scopus', points: 10, max: 20},
+        '3c': {label: 'c) Diğer Uluslararası', points: 3, max: 20},
+        '3d': {label: 'd) TR Dizin', points: 5, max: 20},
+        '3e': {label: 'e) BKCI/Scopus Kitap', points: 20, max: 20},
+        '3f': {label: 'f) BKCI/Scopus Kitapta Bölüm', points: 10, max: 20},
+        '3g': {label: 'g) Diğer Kitap', points: 3, max: 5},
+        '3h': {label: 'h) Diğer Kitapta Bölüm', points: 2, max: 5},
+        '3i': {label: 'i) Uluslararası Toplantı Tam Metin', points: 5, max: 20},
+        '3j': {label: 'j) Diğer Toplantı Tam Metin', points: 2, max: 20},
+        validations: {
+            thesisBased: true,
+            minWorks: 1,
+            maxTotal: 20
+        }
+    },
     // Diğer kategoriler benzer şekilde eklenmeli
 };
 
@@ -141,7 +158,24 @@ function addToCart() {
 }
 
 function validateInput(mainCat, subCat, workCount, authorCount) {
-    // Tüm validasyon kuralları buraya eklenecek
+    if(!mainCat || !subCat || !workCount || !authorCount) {
+        alert('Lütfen tüm alanları doldurun!');
+        return false;
+    }
+
+    const category = categories[mainCat];
+    const subCategory = category[subCat];
+
+    if(category.validations.thesisBased) {
+        alert('Bu kategori lisansüstü tezlerden üretilmiş yayınlar için geçerlidir!');
+        return false;
+    }
+
+    if(subCategory.max && (workCount * subCategory.points / authorCount) > subCategory.max) {
+        alert(`Bu kategoriden maksimum ${subCategory.max} puan alınabilir!`);
+        return false;
+    }
+
     return true;
 }
 
