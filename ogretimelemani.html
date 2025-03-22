@@ -15,12 +15,12 @@
 
         h1 {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: linear-gradient(45deg, #3498db, #2c3e50);
-            color: white;
+            color: #fff;
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            padding: 20px;
             border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .calculator {
@@ -86,8 +86,8 @@
         }
 
         .info-box {
-            background: #fff;
-            padding: 20px;
+            background: white;
+            padding: 25px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             margin-top: 20px;
@@ -95,13 +95,18 @@
 
         .info-text {
             color: #27ae60;
-            font-size: 0.9em;
             margin-top: 10px;
             display: block;
+            font-size: 0.9em;
         }
 
         ul {
             padding-left: 20px;
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -117,7 +122,20 @@
             <div class="error" id="alesErrorOn"></div>
         </div>
         
-        <!-- Diğer inputlar aynı kaldı... -->
+        <div class="input-group">
+            <label>Yabancı Dil Puanı:</label>
+            <input type="number" id="dilOn" min="0" max="100" required>
+            <div class="error" id="dilErrorOn"></div>
+        </div>
+
+        <div class="input-group">
+            <label>Fakülte Yabancı Dil Oranı:</label>
+            <select id="fakulteTipi">
+                <option value="normal">Normal Fakülte</option>
+                <option value="30">%30 Yabancı Dil</option>
+                <option value="100">%100 Yabancı Dil</option>
+            </select>
+        </div>
 
         <button onclick="hesaplaOn()">Hesapla</button>
         <button onclick="temizleOn()">Temizle</button>
@@ -133,7 +151,21 @@
             <div class="error" id="alesErrorNihai"></div>
         </div>
         
-        <!-- Diğer inputlar aynı kaldı... -->
+        <div class="input-group">
+            <label>Yabancı Dil Puanı:</label>
+            <input type="number" id="dilNihai" min="0" max="100" required>
+            <div class="error" id="dilErrorNihai"></div>
+        </div>
+
+        <div class="input-group">
+            <label>Lisans Not Ortalaması:</label>
+            <input type="number" id="lisans" min="0" max="100" required>
+        </div>
+
+        <div class="input-group">
+            <label>Giriş Sınav Puanı:</label>
+            <input type="number" id="giris" min="0" max="100" required>
+        </div>
 
         <button onclick="hesaplaNihai()">Hesapla</button>
         <button onclick="temizleNihai()">Temizle</button>
@@ -146,20 +178,19 @@
             <li>ALES puanı her iki değerlendirmede de en az 70 olmalıdır</li>
             <li>Yabancı dil puanı normal fakülteler için en az 50 olmalıdır</li>
             <li>%30 veya %100 yabancı dil programı olan fakültelerde dil puanı en az 80 olmalıdır</li>
-            <li>Ön değerlendirme geçen adaylardan, ilan edilen kadro sayısının 10 katı aday sınava davet edilir</li>
-            <li>Tüm puanlar 100 üzerinden değerlendirilir</li>
+            <li>Ön değerlendirme puanı yeterli olan adaylardan, ilan edilen kadro sayısının 10 katı aday sınava davet edilir</li>
+            <li>Nihai değerlendirme puan hesaplaması: ALES (%30) + Yabancı Dil (%10) + Lisans Ortalaması (%30) + Giriş Sınavı (%30)</li>
         </ul>
     </div>
 
     <script>
-        // Ön Değerlendirme fonksiyonu güncellendi
         function hesaplaOn() {
             const ales = parseFloat(document.getElementById('alesOn').value);
             const dil = parseFloat(document.getElementById('dilOn').value);
             const fakulteTipi = document.getElementById('fakulteTipi').value;
             let isValid = true;
 
-            // ALES kontrolü eklendi
+            // ALES kontrolü
             if(ales < 70) {
                 document.getElementById('alesErrorOn').textContent = "ALES puanı 70'den az olamaz!";
                 isValid = false;
@@ -167,7 +198,16 @@
                 document.getElementById('alesErrorOn').textContent = "";
             }
 
-            // Diğer kontroller ve hesaplama...
+            // Dil puanı kontrolü
+            if(fakulteTipi !== 'normal' && dil < 80) {
+                document.getElementById('dilErrorOn').textContent = "Yabancı dil puanı 80'den az olamaz!";
+                isValid = false;
+            } else if(fakulteTipi === 'normal' && dil < 50) {
+                document.getElementById('dilErrorOn').textContent = "Yabancı dil puanı 50'den az olamaz!";
+                isValid = false;
+            } else {
+                document.getElementById('dilErrorOn').textContent = "";
+            }
 
             if(isValid) {
                 const puan = (ales * 0.6) + (dil * 0.4);
@@ -177,11 +217,23 @@
             }
         }
 
-        // Nihai Değerlendirme fonksiyonu güncellendi
+        function temizleOn() {
+            document.getElementById('alesOn').value = '';
+            document.getElementById('dilOn').value = '';
+            document.getElementById('fakulteTipi').value = 'normal';
+            document.getElementById('resultOn').textContent = '';
+            document.getElementById('dilErrorOn').textContent = '';
+            document.getElementById('alesErrorOn').textContent = '';
+        }
+
         function hesaplaNihai() {
             const ales = parseFloat(document.getElementById('alesNihai').value);
-            
-            // ALES kontrolü eklendi
+            const dil = parseFloat(document.getElementById('dilNihai').value);
+            const lisans = parseFloat(document.getElementById('lisans').value);
+            const giris = parseFloat(document.getElementById('giris').value);
+            let isValid = true;
+
+            // ALES kontrolü
             if(ales < 70) {
                 document.getElementById('alesErrorNihai').textContent = "ALES puanı 70'den az olamaz!";
                 isValid = false;
@@ -189,10 +241,29 @@
                 document.getElementById('alesErrorNihai').textContent = "";
             }
 
-            // Diğer kontroller ve hesaplama...
+            // Dil puanı kontrolü
+            if(dil < 50) {
+                document.getElementById('dilErrorNihai').textContent = "Yabancı dil puanı 50'den az olamaz!";
+                isValid = false;
+            } else {
+                document.getElementById('dilErrorNihai').textContent = "";
+            }
+
+            if(isValid) {
+                const puan = (ales * 0.3) + (dil * 0.1) + (lisans * 0.3) + (giris * 0.3);
+                document.getElementById('resultNihai').textContent = `Nihai Değerlendirme Puanı: ${puan.toFixed(2)}`;
+            }
         }
 
-        // Diğer fonksiyonlar aynı kaldı...
+        function temizleNihai() {
+            document.getElementById('alesNihai').value = '';
+            document.getElementById('dilNihai').value = '';
+            document.getElementById('lisans').value = '';
+            document.getElementById('giris').value = '';
+            document.getElementById('resultNihai').textContent = '';
+            document.getElementById('dilErrorNihai').textContent = '';
+            document.getElementById('alesErrorNihai').textContent = '';
+        }
     </script>
 </body>
 </html>
