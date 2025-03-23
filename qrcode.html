@@ -50,7 +50,7 @@
         }
 
         .qr-frame::after {
-            content: "QR Kodu Taratın";
+            content: "QR Kodu Okutun";
             position: absolute;
             bottom: -30px;
             left: 50%;
@@ -83,6 +83,10 @@
 
         .hidden {
             display: none;
+        }
+
+        .download-buttons {
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -127,7 +131,10 @@
         </div>
 
         <button onclick="generateQR()">QR Oluştur</button>
-        <button id="downloadBtn" class="download-btn hidden" onclick="downloadQR()">İndir</button>
+        <div class="download-buttons hidden" id="downloadBtns">
+            <button class="download-btn" onclick="downloadPNG()">PNG İndir</button>
+            <button class="download-btn" onclick="downloadJPEG()">JPEG İndir</button>
+        </div>
         
         <div class="qr-frame hidden" id="qrContainer">
             <div id="qrcode"></div>
@@ -176,7 +183,7 @@
 
             if (qr) qr.clear();
             document.getElementById('qrContainer').classList.remove('hidden');
-            document.getElementById('downloadBtn').classList.remove('hidden');
+            document.getElementById('downloadBtns').classList.remove('hidden');
             
             qr = new QRCode(document.getElementById('qrcode'), {
                 text: content,
@@ -188,11 +195,19 @@
             });
         }
 
-        function downloadQR() {
+        function downloadPNG() {
             const canvas = document.querySelector('#qrcode canvas');
             const link = document.createElement('a');
             link.download = 'qrcode.png';
-            link.href = canvas.toDataURL();
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadJPEG() {
+            const canvas = document.querySelector('#qrcode canvas');
+            const link = document.createElement('a');
+            link.download = 'qrcode.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
         }
     </script>
