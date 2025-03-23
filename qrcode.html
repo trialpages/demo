@@ -3,59 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Kod Oluşturucu ve Okuyucu</title>
+    <title>Dinamik QR Kodu Oluşturucu</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f3f3f3; }
-        .container { max-width: 400px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input, button, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        #qrcode { margin-top: 10px; }
-        #reader { width: 100%; max-width: 300px; margin: auto; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .qr-frame {
+            position: relative;
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border: 15px solid #333;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .qr-frame::after {
+            content: "QR Kodu Taratın";
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #666;
+        }
+
+        #qrcode {
+            margin: 10px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .download-btn {
+            background: #28a745;
+            margin-left: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>QR Kodu Oluşturucu</h2>
+        
+        <div class="input-group">
+            <label>İçerik Türü:</label>
+            <select id="type" onchange="toggleFields()">
+                <option value="url">URL</option>
+                <option value="sms">SMS</option>
+                <option value="email">E-posta</option>
+                <option value="text">Metin</option>
+            </select>
+        </div>
 
-<div class="container">
-    <h2>QR Kod Oluştur</h2>
-    <select id="type">
-        <option value="text">Metin</option>
-        <option value="url">URL</option>
-        <option value="email">E-posta</option>
-        <option value="sms">SMS</option>
-    </select>
-    <input type="text" id="inputData" placeholder="Veriyi girin">
-    <button onclick="generateQRCode()">QR Kod Oluştur</button>
-    <div id="qrcode"></div>
-</div>
+        <div id="urlField" class="input-group">
+            <label>URL:</label>
+            <input type="url" id="url" placeholder="https://ornek.com">
+        </div>
 
-<div class="container">
-    <h2>QR Kod Tara</h2>
-    <div id="reader"></div>
-    <p id="scannedData"></p>
-</div>
+        <div id="smsFields" class="input-group hidden">
+            <label>Telefon Numarası:</label>
+            <input type="tel" id="phone" placeholder="+905551234567">
+            <label>Mesaj:</label>
+            <textarea id="smsMessage" placeholder="Mesajınız..."></textarea>
+        </div>
 
-<script>
-    function generateQRCode() {
-        let type = document.getElementById("type").value;
-        let inputData = document.getElementById("inputData").value.trim();
-        if (!inputData) { alert("Lütfen veri girin!"); return; }
+        <div id="emailFields" class="input-group hidden">
+            <label>E-posta Adresi:</label>
+            <input type="email" id="email" placeholder="ornek@posta.com">
+            <label>Konu:</label>
+            <input type="text" id="subject" placeholder="E-posta Konusu">
+            <label>İçerik:</label>
+            <textarea id="emailBody" placeholder="E-posta İçeriği..."></textarea>
+        </div>
 
-        let formattedData = inputData;
-        if (type === "url") formattedData = encodeURI(inputData);
-        else if (type === "email") formattedData = "mailto:" + inputData;
-        else if (type === "sms") formattedData = "sms:" + inputData;
+        <div id="textField" class="input-group hidden">
+            <label>Metin:</label>
+            <textarea id="text" placeholder="Metin içeriği..."></textarea>
+        </div>
 
-        document.getElementById("qrcode").innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: formattedData, width: 150, height: 150 });
-    }
+        <button onclick="generateQR()">QR Oluştur</button>
+        <button id="downloadBtn" class="download-btn hidden" onclick="downloadQR()">İndir</button>
+        
+        <div class="qr-frame hidden" id="qrContainer">
+            <div id="qrcode"></div>
+        </div>
+    </div>
 
-    function onScanSuccess(decodedText) {
-        document.getElementById("scannedData").innerHTML = `<strong>Taranan Veri:</strong> <br> <a href="${decodedText}" target="_blank">${decodedText}</a>`;
-    }
+    <script>
+        let qr = null;
 
-    new Html5QrcodeScanner("reader", { fps: 10, qrbox: 200 }).render(onScanSuccess);
-</script>
+        function toggleFields() {
+            const type = document.getElementById('type').value;
+            document.getElementById('urlField').classList.toggle('hidden', type !== 'url');
+            document.getElementById('smsFields').classList.toggle('hidden', type !== 'sms');
+            document.getElementById('emailFields').classList.toggle('hidden', type !== 'email');
+            document.getElementById('textField').classList.toggle('hidden', type !== 'text');
+        }
 
+        function generateQR() {
+            const type = document.getElementById('type').value;
+            let content = '';
+
+            switch(type) {
+                case 'url':
+                    content = document.getElementById('url').value;
+                    break;
+                case 'sms':
+                    const phone = document.getElementById('phone').value;
+                    const message = document.getElementById('smsMessage').value;
+                    content = `SMSTO:${phone}:${message}`;
+                    break;
+                case 'email':
+                    const email = document.getElementById('email').value;
+                    const subject = document.getElementById('subject').value;
+                    const body = document.getElementById('emailBody').value;
+                    content = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                    break;
+                case 'text':
+                    content = document.getElementById('text').value;
+                    break;
+            }
+
+            if (!content) {
+                alert('Lütfen gerekli alanları doldurun!');
+                return;
+            }
+
+            if (qr) qr.clear();
+            document.getElementById('qrContainer').classList.remove('hidden');
+            document.getElementById('downloadBtn').classList.remove('hidden');
+            
+            qr = new QRCode(document.getElementById('qrcode'), {
+                text: content,
+                width: 256,
+                height: 256,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
 </body>
 </html>
