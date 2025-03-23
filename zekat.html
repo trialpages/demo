@@ -38,6 +38,11 @@
             background-color: #f8f9fa;
             border-radius: 5px;
         }
+        .loading {
+            display: none;
+            color: #007bff;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -85,11 +90,36 @@
     </div>
 
     <button onclick="hesaplaZekat()">Zekatımı Hesapla</button>
+    <div class="loading" id="loading">Altın fiyatları güncelleniyor...</div>
 
     <div class="result" id="sonuc"></div>
 
     <script>
-        function hesaplaZekat() {
+        async function getGoldPrice() {
+            try {
+                const response = await fetch('https://api.metalpriceapi.com/v1/latest?api_key=YOUR_API_KEY&base=XAU&currencies=TRY');
+                const data = await response.json();
+                return data.rates.TRY / 31.1035; // Ons'tan grama çevirme
+            } catch (error) {
+                console.error('Altın fiyatı alınamadı:', error);
+                return null;
+            }
+        }
+
+        async function hesaplaZekat() {
+            document.getElementById('loading').style.display = 'block';
+            
+            const goldPricePerGram = await getGoldPrice();
+            
+            document.getElementById('loading').style.display = 'none';
+
+            if (!goldPricePerGram) {
+                document.getElementById('sonuc').innerHTML = "Altın fiyatı alınamadı. Lütfen daha sonra tekrar deneyin.";
+                return;
+            }
+
+            const nisabMiktar = 80.18 * goldPricePerGram;
+
             // Değerleri alma
             const altin = parseFloat(document.getElementById('altin').value) || 0;
             const gumus = parseFloat(document.getElementById('gumus').value) || 0;
@@ -100,17 +130,19 @@
             const ticari = parseFloat(document.getElementById('ticari').value) || 0;
             const gelecek = parseFloat(document.getElementById('gelecek').value) || 0;
 
-            // Toplamı hesapla
             const toplam = altin + gumus + nakit + hisse + kripto + dijital + ticari + gelecek;
-            
-            // Zekatı hesapla (%2.5)
-            const zekatMiktari = toplam * 0.025;
 
-            // Sonuçları göster
-            document.getElementById('sonuc').innerHTML = `
-                <strong>Toplam Zekat Matrahı:</strong> ${toplam.toFixed(2)} TL<br>
-                <strong style="color: #2c5f2d;">Verilmesi Gereken Zekat:</strong> ${zekatMiktari.toFixed(2)} TL
-            `;
+            let sonucHTML = `<strong>Nisab Miktarı (80.18 gr Altın):</strong> ${nisabMiktar.toFixed(2)} TL<br>
+                           <strong>Toplam Mal Varlığınız:</strong> ${toplam.toFixed(2)} TL<br><br>`;
+
+            if (toplam < nisabMiktar) {
+                sonucHTML += `<strong style="color: #d9534f;">Zekat Vermekle Mükellef Değilsiniz</strong>`;
+            } else {
+                const zekatMiktari = toplam * 0.025;
+                sonucHTML += `<strong style="color: #2c5f2d;">Verilmesi Gereken Zekat:</strong> ${zekatMiktari.toFixed(2)} TL`;
+            }
+
+            document.getElementById('sonuc').innerHTML = sonucHTML;
         }
     </script>
 </body>
