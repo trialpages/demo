@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kod Oluşturucu ve Okuyucu</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f3f3f3; }
+        .container { max-width: 400px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        #qrcode { margin-top: 10px; }
+        #reader { width: 100%; max-width: 300px; margin: auto; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>QR Kod Oluştur</h2>
+    <select id="type">
+        <option value="text">Metin</option>
+        <option value="url">URL</option>
+        <option value="email">E-posta</option>
+        <option value="sms">SMS</option>
+    </select>
+    <input type="text" id="inputData" placeholder="Veriyi girin">
+    <button onclick="generateQRCode()">QR Kod Oluştur</button>
+    <div id="qrcode"></div>
+</div>
+
+<div class="container">
+    <h2>QR Kod Tara</h2>
+    <div id="reader"></div>
+    <p id="scannedData"></p>
+</div>
+
+<script>
+    function generateQRCode() {
+        let type = document.getElementById("type").value;
+        let inputData = document.getElementById("inputData").value.trim();
+        if (!inputData) { alert("Lütfen veri girin!"); return; }
+
+        let formattedData = inputData;
+        if (type === "url") formattedData = encodeURI(inputData);
+        else if (type === "email") formattedData = "mailto:" + inputData;
+        else if (type === "sms") formattedData = "sms:" + inputData;
+
+        document.getElementById("qrcode").innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), { text: formattedData, width: 150, height: 150 });
+    }
+
+    function onScanSuccess(decodedText) {
+        document.getElementById("scannedData").innerHTML = `<strong>Taranan Veri:</strong> <br> <a href="${decodedText}" target="_blank">${decodedText}</a>`;
+    }
+
+    new Html5QrcodeScanner("reader", { fps: 10, qrbox: 200 }).render(onScanSuccess);
+</script>
+
+</body>
+</html>
