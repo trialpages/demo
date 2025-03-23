@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dinamik QR Kodu Oluşturucu</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,14 +50,14 @@
             margin: 20px 0;
         }
 
-        .qr-frame::after {
-            content: "QR Kodu Okutun";
+        .frame-text {
             position: absolute;
             bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 12px;
             color: #666;
+            white-space: nowrap;
         }
 
         #qrcode {
@@ -70,6 +71,7 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background 0.3s;
         }
 
         button:hover {
@@ -87,6 +89,8 @@
 
         .download-buttons {
             margin-top: 15px;
+            display: flex;
+            gap: 10px;
         }
     </style>
 </head>
@@ -138,6 +142,7 @@
         
         <div class="qr-frame hidden" id="qrContainer">
             <div id="qrcode"></div>
+            <div class="frame-text">QR Kodu Okutun</div>
         </div>
     </div>
 
@@ -181,7 +186,11 @@
                 return;
             }
 
-            if (qr) qr.clear();
+            if (qr) {
+                qr.clear();
+                document.getElementById('qrcode').innerHTML = '';
+            }
+            
             document.getElementById('qrContainer').classList.remove('hidden');
             document.getElementById('downloadBtns').classList.remove('hidden');
             
@@ -195,20 +204,38 @@
             });
         }
 
-        function downloadPNG() {
-            const canvas = document.querySelector('#qrcode canvas');
-            const link = document.createElement('a');
-            link.download = 'qrcode.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+        async function captureFrame() {
+            const container = document.getElementById('qrContainer');
+            return await html2canvas(container, {
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                backgroundColor: null
+            });
         }
 
-        function downloadJPEG() {
-            const canvas = document.querySelector('#qrcode canvas');
-            const link = document.createElement('a');
-            link.download = 'qrcode.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
-            link.click();
+        async function downloadPNG() {
+            try {
+                const canvas = await captureFrame();
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                alert('İndirme işlemi sırasında hata oluştu: ' + error.message);
+            }
+        }
+
+        async function downloadJPEG() {
+            try {
+                const canvas = await captureFrame();
+                const link = document.createElement('a');
+                link.download = 'qrcode.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+            } catch (error) {
+                alert('İndirme işlemi sırasında hata oluştu: ' + error.message);
+            }
         }
     </script>
 </body>
