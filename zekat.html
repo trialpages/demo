@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zekat Hesaplama Robotu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Zekat Hesaplama Robotu</h2>
+    <p>Lütfen aşağıdaki alanları TL cinsinden doldurunuz:</p>
+
+    <div class="input-group">
+        <label>Altın:</label>
+        <input type="number" id="altin" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Gümüş:</label>
+        <input type="number" id="gumus" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Nakit Para:</label>
+        <input type="number" id="nakit" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Hisse Senetleriniz:</label>
+        <input type="number" id="hisse" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Kripto Paralarınız:</label>
+        <input type="number" id="kripto" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Dijital Varlıklarınız:</label>
+        <input type="number" id="dijital" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Ticari Malların Değeri:</label>
+        <input type="number" id="ticari" step="0.01" value="0">
+    </div>
+
+    <div class="input-group">
+        <label>Gelecek Nakit/Değerler:</label>
+        <input type="number" id="gelecek" step="0.01" value="0">
+    </div>
+
+    <button onclick="hesaplaZekat()">Zekatımı Hesapla</button>
+
+    <div class="result" id="sonuc"></div>
+
+    <script>
+        function hesaplaZekat() {
+            // Değerleri alma
+            const altin = parseFloat(document.getElementById('altin').value) || 0;
+            const gumus = parseFloat(document.getElementById('gumus').value) || 0;
+            const nakit = parseFloat(document.getElementById('nakit').value) || 0;
+            const hisse = parseFloat(document.getElementById('hisse').value) || 0;
+            const kripto = parseFloat(document.getElementById('kripto').value) || 0;
+            const dijital = parseFloat(document.getElementById('dijital').value) || 0;
+            const ticari = parseFloat(document.getElementById('ticari').value) || 0;
+            const gelecek = parseFloat(document.getElementById('gelecek').value) || 0;
+
+            // Toplamı hesapla
+            const toplam = altin + gumus + nakit + hisse + kripto + dijital + ticari + gelecek;
+            
+            // Zekatı hesapla (%2.5)
+            const zekatMiktari = toplam * 0.025;
+
+            // Sonuçları göster
+            document.getElementById('sonuc').innerHTML = `
+                <strong>Toplam Zekat Matrahı:</strong> ${toplam.toFixed(2)} TL<br>
+                <strong style="color: #2c5f2d;">Verilmesi Gereken Zekat:</strong> ${zekatMiktari.toFixed(2)} TL
+            `;
+        }
+    </script>
+</body>
+</html>
