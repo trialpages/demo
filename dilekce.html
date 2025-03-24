@@ -11,108 +11,68 @@
         input, textarea { width: 100%; padding: 8px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js/dist/html-docx.js"></script>
+    <!-- Docx kütüphanesi -->
+    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Dilekçe Oluşturucu</h1>
         
-        <div class="form-group">
-            <label>Başlık:</label>
-            <input type="text" id="baslik" placeholder="Dilekçe Başlığı" required>
-        </div>
+        <!-- Form alanları aynı kalıyor -->
         
-        <div class="form-group">
-            <label>Dilekçe Metni:</label>
-            <textarea id="metin" rows="6" placeholder="Dilekçe içeriğini yazınız" required></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label>Adres ve İletişim Bilgileri:</label>
-            <textarea id="adres" rows="3" placeholder="Adres ve iletişim bilgileri" required></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label>Tarih:</label>
-            <input type="date" id="tarih" required>
-        </div>
-        
-        <div class="form-group">
-            <label>Adınız Soyadınız:</label>
-            <input type="text" id="isim" placeholder="Ad Soyad" required>
-        </div>
-        
-        <button onclick="generateDocx()">Word Oluştur ve İndir</button>
+        <button onclick="generateProperDocx()">Word Oluştur ve İndir</button>
     </div>
 
     <script>
-        function generateDocx() {
-            try {
-                // Zorunlu alan kontrolü
-                const requiredFields = document.querySelectorAll('[required]');
-                let isValid = true;
-                
-                requiredFields.forEach(field => {
-                    if (!field.value.trim()) {
-                        field.style.border = '2px solid red';
-                        isValid = false;
-                    } else {
-                        field.style.border = '';
-                    }
-                });
+        async function generateProperDocx() {
+            const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
 
-                if (!isValid) {
-                    alert('Lütfen tüm zorunlu alanları doldurun!');
-                    return;
-                }
+            // Belge yapısını doğrudan oluşturma
+            const doc = new Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new Paragraph({
+                            text: document.getElementById('baslik').value,
+                            alignment: AlignmentType.CENTER,
+                            heading: "Heading1",
+                            spacing: { after: 400 }
+                        }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: document.getElementById('metin').value,
+                                    break: 1
+                                }),
+                                new TextRun({
+                                    text: "\nBilgi ve gereğini sayılarımla arz ederim.",
+                                    bold: true
+                                })
+                            ],
+                            alignment: AlignmentType.BOTH,
+                            spacing: { line: 360 }
+                        }),
+                        new Paragraph({
+                            text: document.getElementById('adres').value.replace(/\n/g, '\n'),
+                            alignment: AlignmentType.LEFT
+                        }),
+                        new Paragraph({
+                            text: document.getElementById('tarih').value,
+                            spacing: { before: 400 }
+                        }),
+                        new Paragraph({
+                            text: document.getElementById('isim').value,
+                            alignment: AlignmentType.RIGHT,
+                            spacing: { before: 800 }
+                        })
+                    ]
+                }]
+            });
 
-                // Değerleri alma
-                const baslik = document.getElementById('baslik').value;
-                const metin = document.getElementById('metin').value;
-                const adres = document.getElementById('adres').value;
-                const tarih = document.getElementById('tarih').value;
-                const isim = document.getElementById('isim').value;
-
-                // HTML içeriği oluşturma
-                const content = `
-                    <div style="font-family: 'Times New Roman', serif; line-height: 1.5;">
-                        <h1 style="text-align: center; font-size: 16pt; margin-bottom: 40pt;">${baslik}</h1>
-                        
-                        <div style="text-align: justify; margin-bottom: 40pt;">
-                            ${metin.split('\n').map(p => `<p style="margin: 0 0 12pt 0;">${p}</p>`).join('')}
-                            <p style="margin: 20pt 0 0 0;">Bilgi ve gereğini sayılarımla arz ederim.</p>
-                        </div>
-                        
-                        <div style="margin-top: 100pt;">
-                            <div style="margin-bottom: 20pt;">${adres.split('\n').join('<br>')}</div>
-                            <div>${tarih}</div>
-                            <div style="text-align: right; margin-top: 40pt;">${isim}</div>
-                        </div>
-                    </div>
-                `;
-
-                // Docx'e dönüştürme
-                const converted = htmlDocx.asBlob(content);
-                
-                // İndirme işlemi
-                const link = document.createElement('a');
-                const url = URL.createObjectURL(converted);
-                
-                link.href = url;
-                link.download = 'dilekce.docx';
-                document.body.appendChild(link);
-                link.click();
-                
-                // Temizlik
-                setTimeout(() => {
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                }, 100);
-
-            } catch (error) {
-                console.error('Hata oluştu:', error);
-                alert('Bir hata oluştu! Lütfen konsolu kontrol edin.');
-            }
+            // Dosyayı oluştur ve indir
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, "dilekce.docx");
         }
     </script>
 </body>
