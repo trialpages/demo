@@ -11,17 +11,38 @@
         input, textarea { width: 100%; padding: 8px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
-    <!-- Docx kütüphanesi -->
-    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js/dist/html-docx.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Dilekçe Oluşturucu</h1>
         
-        <!-- Form alanları aynı kalıyor -->
+        <div class="form-group">
+            <label>Başlık:</label>
+            <input type="text" id="baslik" placeholder="Dilekçe Başlığı" required>
+        </div>
         
-        <button onclick="generateProperDocx()">Word Oluştur ve İndir</button>
+        <div class="form-group">
+            <label>Dilekçe Metni:</label>
+            <textarea id="metin" rows="6" placeholder="Dilekçe içeriğini yazınız" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Adres ve İletişim Bilgileri:</label>
+            <textarea id="adres" rows="3" placeholder="Adres ve iletişim bilgileri" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Tarih:</label>
+            <input type="date" id="tarih" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Adınız Soyadınız:</label>
+            <input type="text" id="isim" placeholder="Ad Soyad" required>
+        </div>
+        
+        <button onclick="generateDocx()">Word Oluştur ve İndir</button>
     </div>
 
     <script>
