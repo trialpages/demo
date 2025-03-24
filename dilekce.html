@@ -11,14 +11,16 @@
         input, textarea { width: 100%; padding: 8px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
+    <!-- Docx oluşturmak için gerekli kütüphane -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Dilekçe Oluşturucu</h1>
         
         <div class="form-group">
-            <label>Dilekçenin yazıldığı kurum:</label>
-            <input type="text" id="kurum" placeholder="Dilekçenin Yazıldığı kurum">
+            <label>Dilekçenin Yazıldığı Kurum:</label>
+            <input type="text" id="Kurum" placeholder="Dilekçenin Yazıldığı Kurum">
         </div>
         
         <div class="form-group">
@@ -41,11 +43,11 @@
             <input type="text" id="isim" placeholder="Ad Soyad">
         </div>
         
-        <button onclick="generateDoc()">Word Oluştur ve İndir</button>
+        <button onclick="generateDocx()">Word Oluştur ve İndir</button>
     </div>
 
     <script>
-        function generateDoc() {
+        function generateDocx() {
             // Değerleri alma
             const baslik = document.getElementById('baslik').value;
             const metin = document.getElementById('metin').value;
@@ -55,48 +57,30 @@
 
             // HTML içeriği oluşturma
             const content = `
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body { font-family: Arial, sans-serif; line-height: 1.6; }
-                        .baslik { text-align: center; font-size: 18pt; margin-bottom: 30px; }
-                        .metin { text-align: justify; margin-bottom: 50px; }
-                        .adres { position: absolute; bottom: 50px; left: 0; }
-                        .tarih-isim { margin-top: 20px; }
-                        .isim { text-align: right; }
-                    </style>
-                </head>
-                <body>
-                    <h1 class="baslik">${baslik}</h1>
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <h1 style="text-align: center; font-size: 18pt; margin-bottom: 30px;">${baslik}</h1>
                     
-                    <div class="metin">
-                        ${metin.replace(/\n/g, '</p><p>')}
+                    <div style="text-align: justify; margin-bottom: 50px;">
+                        ${metin.split('\n').map(p => `<p>${p}</p>`).join('')}
                         <p>Bilgi ve gereğini sayılarımla arz ederim.</p>
                     </div>
                     
-                    <div class="adres">
-                        ${adres.replace(/\n/g, '<br>')}
-                    </div>
-                    
-                    <div class="tarih-isim">
+                    <div style="margin-top: 100px;">
+                        <div style="margin-bottom: 20px;">${adres.split('\n').join('<br>')}</div>
                         <div>${tarih}</div>
-                        <div class="isim">${isim}</div>
+                        <div style="text-align: right; margin-top: 30px;">${isim}</div>
                     </div>
-                </body>
-                </html>
+                </div>
             `;
 
-            // Word dosyası oluşturma ve indirme
-            const blob = new Blob([content], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'dilekce.doc';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Docx'e dönüştürme ve indirme
+            const converted = htmlDocx.asBlob(content);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(converted);
+            link.download = 'dilekce.docx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
