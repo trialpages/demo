@@ -2,98 +2,241 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Dilekçe Oluşturucu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesyonel Dilekçe Oluşturucu</title>
+    <script src="https://unpkg.com/docx@7.7.0/build/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 8px; }
-        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background: #f8f9fa;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2.2em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js/dist/html-docx.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Dilekçe Oluşturucu</h1>
+        <h1>📝 Profesyonel Dilekçe Oluşturucu</h1>
         
-        <div class="form-group">
-            <label>Başlık:</label>
-            <input type="text" id="baslik" placeholder="Dilekçe Başlığı" required>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="baslik">Dilekçe Başlığı</label>
+                <input type="text" id="baslik" placeholder="Örn: İzin Talebi Dilekçesi" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="tarih">Tarih</label>
+                <input type="date" id="tarih" required>
+            </div>
         </div>
-        
+
         <div class="form-group">
-            <label>Dilekçe Metni:</label>
-            <textarea id="metin" rows="6" placeholder="Dilekçe içeriğini yazınız" required></textarea>
+            <label for="metin">Dilekçe Metni</label>
+            <textarea id="metin" placeholder="Dilekçe içeriğinizi detaylı şekilde yazınız..." required></textarea>
         </div>
-        
+
         <div class="form-group">
-            <label>Adres ve İletişim Bilgileri:</label>
-            <textarea id="adres" rows="3" placeholder="Adres ve iletişim bilgileri" required></textarea>
+            <label for="adres">Adres ve İletişim Bilgileri</label>
+            <textarea id="adres" placeholder="Adresinizi ve iletişim bilgilerinizi giriniz..." required></textarea>
         </div>
-        
+
         <div class="form-group">
-            <label>Tarih:</label>
-            <input type="date" id="tarih" required>
+            <label for="isim">Adınız Soyadınız</label>
+            <input type="text" id="isim" placeholder="Ali Yılmaz" required>
         </div>
-        
-        <div class="form-group">
-            <label>Adınız Soyadınız:</label>
-            <input type="text" id="isim" placeholder="Ad Soyad" required>
-        </div>
-        
-        <button onclick="generateDocx()">Word Oluştur ve İndir</button>
+
+        <button onclick="generateProperDocx()">✨ Word Belgesi Oluştur ve İndir</button>
     </div>
 
     <script>
         async function generateProperDocx() {
-            const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+            try {
+                const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+                
+                // Zorunlu alan kontrolü
+                const requiredFields = document.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.style.border = '2px solid #e74c3c';
+                        isValid = false;
+                    } else {
+                        field.style.border = '2px solid #e0e0e0';
+                    }
+                });
 
-            // Belge yapısını doğrudan oluşturma
-            const doc = new Document({
-                sections: [{
-                    properties: {},
-                    children: [
-                        new Paragraph({
-                            text: document.getElementById('baslik').value,
-                            alignment: AlignmentType.CENTER,
-                            heading: "Heading1",
-                            spacing: { after: 400 }
-                        }),
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: document.getElementById('metin').value,
-                                    break: 1
-                                }),
-                                new TextRun({
-                                    text: "\nBilgi ve gereğini sayılarımla arz ederim.",
-                                    bold: true
-                                })
-                            ],
-                            alignment: AlignmentType.BOTH,
-                            spacing: { line: 360 }
-                        }),
-                        new Paragraph({
-                            text: document.getElementById('adres').value.replace(/\n/g, '\n'),
-                            alignment: AlignmentType.LEFT
-                        }),
-                        new Paragraph({
-                            text: document.getElementById('tarih').value,
-                            spacing: { before: 400 }
-                        }),
-                        new Paragraph({
-                            text: document.getElementById('isim').value,
-                            alignment: AlignmentType.RIGHT,
-                            spacing: { before: 800 }
-                        })
-                    ]
-                }]
-            });
+                if (!isValid) {
+                    alert('Lütfen tüm zorunlu alanları doldurun!');
+                    return;
+                }
 
-            // Dosyayı oluştur ve indir
-            const blob = await Packer.toBlob(doc);
-            saveAs(blob, "dilekce.docx");
+                // Belge yapısı
+                const doc = new Document({
+                    sections: [{
+                        properties: {
+                            page: {
+                                margin: {
+                                    top: 1000,
+                                    right: 1000,
+                                    bottom: 1000,
+                                    left: 1000
+                                }
+                            }
+                        },
+                        children: [
+                            new Paragraph({
+                                text: document.getElementById('baslik').value,
+                                alignment: AlignmentType.CENTER,
+                                heading: "Title",
+                                spacing: { after: 600 },
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 28
+                            }),
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: document.getElementById('metin').value,
+                                        break: 1,
+                                        font: "Times New Roman",
+                                        size: 22
+                                    }),
+                                    new TextRun({
+                                        text: "\n\nBilgi ve gereğini sayılarımla arz ederim.",
+                                        bold: true,
+                                        break: 2
+                                    })
+                                ],
+                                alignment: AlignmentType.BOTH,
+                                spacing: { line: 360 },
+                                indent: { firstLine: 400 }
+                            }),
+                            new Paragraph({
+                                text: document.getElementById('adres').value,
+                                alignment: AlignmentType.LEFT,
+                                spacing: { before: 800 },
+                                font: "Times New Roman",
+                                size: 22
+                            }),
+                            new Paragraph({
+                                text: document.getElementById('tarih').value,
+                                spacing: { before: 400 },
+                                font: "Times New Roman",
+                                size: 22
+                            }),
+                            new Paragraph({
+                                text: document.getElementById('isim').value,
+                                alignment: AlignmentType.RIGHT,
+                                spacing: { before: 800 },
+                                bold: true,
+                                font: "Times New Roman",
+                                size: 22
+                            })
+                        ]
+                    }]
+                });
+
+                // Dosya oluşturma ve indirme
+                const blob = await Packer.toBlob(doc);
+                saveAs(blob, "Dilekce.docx");
+                
+            } catch (error) {
+                console.error('Hata:', error);
+                alert('Bir hata oluştu! Lütfen konsolu kontrol edin.');
+            }
         }
     </script>
 </body>
