@@ -11,36 +11,35 @@
         input, textarea { width: 100%; padding: 8px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
     </style>
-    <!-- Docx oluşturmak için gerekli kütüphane -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-docx-js/0.3.1/html-docx.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js/dist/html-docx.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Dilekçe Oluşturucu</h1>
         
         <div class="form-group">
-            <label>Dilekçenin Yazıldığı Kurum:</label>
-            <input type="text" id="Kurum" placeholder="Dilekçenin Yazıldığı Kurum">
+            <label>Başlık:</label>
+            <input type="text" id="baslik" placeholder="Dilekçe Başlığı" required>
         </div>
         
         <div class="form-group">
             <label>Dilekçe Metni:</label>
-            <textarea id="metin" rows="6" placeholder="Dilekçe içeriğini yazınız"></textarea>
+            <textarea id="metin" rows="6" placeholder="Dilekçe içeriğini yazınız" required></textarea>
         </div>
         
         <div class="form-group">
             <label>Adres ve İletişim Bilgileri:</label>
-            <textarea id="adres" rows="3" placeholder="Adres ve iletişim bilgileri"></textarea>
+            <textarea id="adres" rows="3" placeholder="Adres ve iletişim bilgileri" required></textarea>
         </div>
         
         <div class="form-group">
             <label>Tarih:</label>
-            <input type="date" id="tarih">
+            <input type="date" id="tarih" required>
         </div>
         
         <div class="form-group">
             <label>Adınız Soyadınız:</label>
-            <input type="text" id="isim" placeholder="Ad Soyad">
+            <input type="text" id="isim" placeholder="Ad Soyad" required>
         </div>
         
         <button onclick="generateDocx()">Word Oluştur ve İndir</button>
@@ -48,39 +47,72 @@
 
     <script>
         function generateDocx() {
-            // Değerleri alma
-            const baslik = document.getElementById('baslik').value;
-            const metin = document.getElementById('metin').value;
-            const adres = document.getElementById('adres').value;
-            const tarih = document.getElementById('tarih').value;
-            const isim = document.getElementById('isim').value;
+            try {
+                // Zorunlu alan kontrolü
+                const requiredFields = document.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.style.border = '2px solid red';
+                        isValid = false;
+                    } else {
+                        field.style.border = '';
+                    }
+                });
 
-            // HTML içeriği oluşturma
-            const content = `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-                    <h1 style="text-align: center; font-size: 18pt; margin-bottom: 30px;">${baslik}</h1>
-                    
-                    <div style="text-align: justify; margin-bottom: 50px;">
-                        ${metin.split('\n').map(p => `<p>${p}</p>`).join('')}
-                        <p>Bilgi ve gereğini sayılarımla arz ederim.</p>
-                    </div>
-                    
-                    <div style="margin-top: 100px;">
-                        <div style="margin-bottom: 20px;">${adres.split('\n').join('<br>')}</div>
-                        <div>${tarih}</div>
-                        <div style="text-align: right; margin-top: 30px;">${isim}</div>
-                    </div>
-                </div>
-            `;
+                if (!isValid) {
+                    alert('Lütfen tüm zorunlu alanları doldurun!');
+                    return;
+                }
 
-            // Docx'e dönüştürme ve indirme
-            const converted = htmlDocx.asBlob(content);
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(converted);
-            link.download = 'dilekce.docx';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                // Değerleri alma
+                const baslik = document.getElementById('baslik').value;
+                const metin = document.getElementById('metin').value;
+                const adres = document.getElementById('adres').value;
+                const tarih = document.getElementById('tarih').value;
+                const isim = document.getElementById('isim').value;
+
+                // HTML içeriği oluşturma
+                const content = `
+                    <div style="font-family: 'Times New Roman', serif; line-height: 1.5;">
+                        <h1 style="text-align: center; font-size: 16pt; margin-bottom: 40pt;">${baslik}</h1>
+                        
+                        <div style="text-align: justify; margin-bottom: 40pt;">
+                            ${metin.split('\n').map(p => `<p style="margin: 0 0 12pt 0;">${p}</p>`).join('')}
+                            <p style="margin: 20pt 0 0 0;">Bilgi ve gereğini sayılarımla arz ederim.</p>
+                        </div>
+                        
+                        <div style="margin-top: 100pt;">
+                            <div style="margin-bottom: 20pt;">${adres.split('\n').join('<br>')}</div>
+                            <div>${tarih}</div>
+                            <div style="text-align: right; margin-top: 40pt;">${isim}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Docx'e dönüştürme
+                const converted = htmlDocx.asBlob(content);
+                
+                // İndirme işlemi
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(converted);
+                
+                link.href = url;
+                link.download = 'dilekce.docx';
+                document.body.appendChild(link);
+                link.click();
+                
+                // Temizlik
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 100);
+
+            } catch (error) {
+                console.error('Hata oluştu:', error);
+                alert('Bir hata oluştu! Lütfen konsolu kontrol edin.');
+            }
         }
     </script>
 </body>
