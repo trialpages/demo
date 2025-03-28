@@ -2,130 +2,221 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Gelişmiş Video URL Bulucu</title>
+    <title>Çalışan Video URL Bulucu</title>
     <style>
-        /* Güncellenmiş CSS */
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
-        .container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        input[type="url"] { width: 100%; padding: 12px; margin: 1rem 0; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
-        button { background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        button:hover { background: #1d4ed8; transform: translateY(-1px); }
-        .result-box { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; }
-        .success { background: #dcfce7; border: 2px solid #22c55e; }
-        .error { background: #fee2e2; border: 2px solid #ef4444; }
-        .video-list { list-style: none; padding: 0; }
-        .video-item { margin: 0.5rem 0; padding: 0.8rem; background: #f8fafc; border-radius: 6px; }
-        a { color: #2563eb; text-decoration: none; word-break: break-all; }
-        a:hover { text-decoration: underline; }
+        :root {
+            --primary: #3b82f6;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        input[type="url"] {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .result {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .success {
+            background: #ecfdf5;
+            border: 2px solid var(--success);
+        }
+        .error {
+            background: #fef2f2;
+            border: 2px solid var(--error);
+        }
+        .video-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .video-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            background: #f8fafc;
+            border-radius: 0.25rem;
+        }
+        .video-item a {
+            color: var(--primary);
+            word-break: break-all;
+        }
+        .loader {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏷️ Gelişmiş Video URL Avcısı</h1>
-        <input type="url" id="targetUrl" placeholder="https://örneksite.com/video-izle" autofocus>
-        <button onclick="startDetection()">Video URL'leri Tespit Et</button>
-        <div id="result" class="result-box"></div>
+        <h1>🔍 Video URL Bulucu v2</h1>
+        <div class="input-group">
+            <input type="url" id="urlInput" placeholder="https://orneksite.com/video" autofocus>
+            <button onclick="analyze()" id="analyzeBtn">Ara</button>
+        </div>
+        <div id="result" class="result"></div>
     </div>
 
     <script>
-        async function startDetection() {
-            const url = document.getElementById('targetUrl').value;
-            const resultDiv = document.getElementById('result');
+        const WORKING_PROXIES = [
+            'https://corsproxy.io/?',
+            'https://api.codetabs.com/v1/proxy?quest=',
+            'https://thingproxy.freeboard.io/fetch/'
+        ]
+
+        async function analyze() {
+            const urlInput = document.getElementById('urlInput')
+            const resultDiv = document.getElementById('result')
+            const analyzeBtn = document.getElementById('analyzeBtn')
             
-            if (!url) {
-                showResult('Lütfen geçerli bir URL girin!', 'error');
-                return;
-            }
-
-            showResult('<div class="loading">Analiz başlatıldı...</div>', 'info');
-
+            const originalText = analyzeBtn.textContent
+            analyzeBtn.disabled = true
+            analyzeBtn.textContent = 'Analiz ediliyor...'
+            resultDiv.innerHTML = ''
+            
             try {
-                // Gelişmiş CORS proxy
-                const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
+                const rawHtml = await fetchWithProxies(urlInput.value)
+                const videoUrls = extractVideoUrls(rawHtml)
                 
-                const response = await fetch(proxyUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                const html = await response.text();
-                const videoSources = await analyzeContent(html);
-                
-                if (videoSources.length > 0) {
-                    showVideoLinks(videoSources);
+                if(videoUrls.length > 0) {
+                    resultDiv.className = 'result success'
+                    resultDiv.innerHTML = `
+                        <h3>🎉 ${videoUrls.length} Video Kaynağı Bulundu:</h3>
+                        <ul class="video-list">
+                            ${videoUrls.map(url => `
+                                <li class="video-item">
+                                    <a href="${url}" target="_blank">${url}</a>
+                                    <button onclick="copyToClipboard('${url}')">📋</button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `
                 } else {
-                    showResult('Video kaynağı bulunamadı 😞', 'error');
+                    resultDiv.className = 'result error'
+                    resultDiv.innerHTML = '❌ Video URLsi bulunamadı'
                 }
-            } catch (error) {
-                showResult(`Hata: ${error.message}`, 'error');
+            } catch(error) {
+                resultDiv.className = 'result error'
+                resultDiv.innerHTML = `Hata: ${error.message}`
+            } finally {
+                analyzeBtn.disabled = false
+                analyzeBtn.textContent = originalText
             }
         }
 
-        async function analyzeContent(html) {
-            // Derin içerik analizi
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
+        async function fetchWithProxies(url) {
+            const controller = new AbortController()
+            const timeout = setTimeout(() => controller.abort(), 10000)
             
-            // 1. Video etiketlerini tarama
-            const videoTags = Array.from(doc.getElementsByTagName('video'));
-            const videoSources = videoTags.flatMap(video => {
-                const sources = Array.from(video.getElementsByTagName('source')).map(s => s.src);
-                return video.src ? [video.src, ...sources] : sources;
-            });
-
-            // 2. İframe analizi
-            const iframes = Array.from(doc.getElementsByTagName('iframe'));
-            const iframeSources = iframes.map(iframe => iframe.src);
-
-            // 3. Regex ile ham HTML tarama
-            const regexPatterns = [
-                /(https?:\/\/[^\s"']+?\.(?:mp4|mkv|mov|webm|m3u8))(?:\?[^\s"']+)?/gi,
-                /(https?:\/\/[^\s"']+?\/video\/[^\s"']+)/gi,
-                /(https?:\/\/[^\s"']+?\/stream[^\s"']*)/gi
-            ];
-            
-            const regexMatches = regexPatterns.flatMap(pattern => 
-                Array.from(html.matchAll(pattern)).map(m => m[1])
-            );
-
-            // 4. JSON-LD ve meta etiket kontrolü
-            const metaTags = Array.from(doc.querySelectorAll('meta[content]'));
-            const metaSources = metaTags
-                .map(tag => tag.content)
-                .filter(content => content.match(/\.(mp4|m3u8)/));
-
-            // Tüm kaynakları birleştir ve filtrele
-            const allSources = [...videoSources, ...iframeSources, ...regexMatches, ...metaSources]
-                .filter(src => src && !src.startsWith('data:'))
-                .map(src => src.startsWith('//') ? `https:${src}` : src)
-                .map(src => src.replace(/\\\//g, '/')) // Kaçan slash'ları düzelt
-                .filter((src, index, self) => self.indexOf(src) === index); // Tekilleri filtrele
-
-            return allSources;
+            for(const proxy of WORKING_PROXIES) {
+                try {
+                    const response = await fetch(proxy + encodeURIComponent(url), {
+                        signal: controller.signal
+                    })
+                    clearTimeout(timeout)
+                    return await response.text()
+                } catch {
+                    // Proxy çalışmıyorsa diğerini dene
+                    continue
+                }
+            }
+            throw new Error('Tüm proxy sunucuları çalışmıyor')
         }
 
-        function showVideoLinks(sources) {
-            const listItems = sources.map(src => `
-                <li class="video-item">
-                    🎬 <a href="${src}" target="_blank">${src}</a>
-                    <button onclick="navigator.clipboard.writeText('${src}')" 
-                            style="margin-left:10px; padding:2px 8px; font-size:0.8em">
-                        📋 Kopyala
-                    </button>
-                </li>
-            `).join('');
-
-            resultDiv.innerHTML = `
-                <h3>✅ ${sources.length} Video Kaynağı Bulundu:</h3>
-                <ul class="video-list">${listItems}</ul>
-            `;
-            resultDiv.className = 'result-box success';
+        function extractVideoUrls(html) {
+            const videoExtensions = ['mp4', 'mkv', 'mov', 'webm', 'm3u8', 'ts', 'm4v']
+            const regexPattern = new RegExp(
+                `https?://[^\\s"']*\\.(${videoExtensions.join('|')})[^\\s"']*`,
+                'gi'
+            )
+            
+            const sources = new Set()
+            
+            // 1. Regex ile tarama
+            const matches = html.matchAll(regexPattern)
+            for(const match of matches) {
+                sources.add(match[0].replace(/\\\//g, '/'))
+            }
+            
+            // 2. Video elementlerini kontrol etme
+            const tempDiv = document.createElement('div')
+            tempDiv.innerHTML = html
+            const videoElements = tempDiv.querySelectorAll('video')
+            
+            for(const video of videoElements) {
+                if(video.src) sources.add(video.src)
+                video.querySelectorAll('source').forEach(source => {
+                    if(source.src) sources.add(source.src)
+                })
+            }
+            
+            // 3. İframe analizi
+            const iframes = tempDiv.querySelectorAll('iframe')
+            for(const iframe of iframes) {
+                if(iframe.src) sources.add(iframe.src)
+            }
+            
+            // 4. Meta etiket kontrolü
+            const metaTags = tempDiv.querySelectorAll('meta[content]')
+            for(const tag of metaTags) {
+                const content = tag.content
+                if(content.match(regexPattern)) {
+                    sources.add(content)
+                }
+            }
+            
+            // Temizleme ve filtreleme
+            return Array.from(sources)
+                .filter(url => !url.startsWith('data:'))
+                .map(url => url.replace(/^\/\//, 'https://'))
+                .sort()
         }
 
-        function showResult(message, type) {
-            resultDiv.innerHTML = `<div class="${type}">${message}</div>`;
-            resultDiv.className = `result-box ${type}`;
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text)
+                .then(() => alert('Kopyalandı!'))
+                .catch(() => alert('Kopyalama başarısız'))
         }
     </script>
 </body>
