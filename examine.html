@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>İslam Hukuku Seviye Belirleme Sınavı</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --accent-color: #e67e22;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            color: var(--accent-color);
+            font-weight: bold;
+            text-align: right;
+        }
+
+        button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px 5px;
+        }
+
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .options label {
+            display: block;
+            margin: 10px 0;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Giriş Ekranı -->
+    <div id="startScreen" class="card">
+        <h2>İslam Hukuku Seviye Belirleme Sınavı</h2>
+        <p>📚 Sorulara verdiğiniz cevaplardan 70 ve üzeri bir puan alırsanız isminize sertifika düzenlenecektir.</p>
+        <input type="text" id="fullName" placeholder="Adınız Soyadınız" style="width:100%; padding:10px; margin:15px 0;">
+        <button onclick="startExam()">Sınava Başla</button>
+    </div>
+
+    <!-- Sınav Ekranı -->
+    <div id="examScreen" style="display:none;">
+        <div class="timer" id="timer">00:30</div>
+        <div id="questions"></div>
+        <div class="navigation-buttons">
+            <button onclick="finishExam()">Sınavı Bitir</button>
+            <button id="nextBtn" onclick="nextQuestion()" disabled>Sonraki Soru</button>
+        </div>
+    </div>
+
+    <!-- Sonuç Ekranı -->
+    <div id="resultScreen" class="card" style="display:none;">
+        <h2>Sınav Sonucunuz</h2>
+        <p>Doğru: <span id="correctCount"></span></p>
+        <p>Yanlış: <span id="wrongCount"></span></p>
+        <p>Puan: <span id="totalScore"></span></p>
+        <button id="certificateBtn" onclick="generateCertificate()" disabled>Sertifika Oluştur</button>
+    </div>
+
+<script>
+const questions = [
+    {
+        question: "İslam hukukunda 'ictihad' ne anlama gelir?",
+        options: ["Kıyas yapmak", "Nassları yorumlamak", "Örf ve adetleri dikkate almak", "Hüküm çıkarma çabası"],
+        correct: 4
+    },
+    {
+        question: "Hanefi mezhebine göre vakıf malların satışı nasıldır?",
+        options: ["Caizdir", "Caiz değildir", "Şartlara bağlıdır", "Yalnız devlet izniyle"],
+        correct: 1
+    },
+    {
+        question: "Mecelle hangi yıl yürürlüğe girmiştir?",
+        options: ["1876", "1881", "1890", "1900"],
+        correct: 1
+    }
+];
+
+let currentQuestion = 0;
+let timeLeft = 30;
+let timerId;
+let score = 0;
+let userName = "";
+
+function startExam() {
+    userName = document.getElementById('fullName').value;
+    if(!userName) return alert("Lütfen adınızı giriniz");
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('examScreen').style.display = 'block';
+    showQuestion();
+    startTimer();
+}
+
+function showQuestion() {
+    let html = `<div class="card question">
+                  <h3>${questions[currentQuestion].question}</h3>
+                  <div class="options">`;
+    questions[currentQuestion].options.forEach((opt, index) => {
+        html += `<label><input type="radio" name="answer" value="${index}"> ${opt}</label>`;
+    });
+    html += `</div></div>`;
+    document.getElementById('questions').innerHTML = html;
+    
+    // Radio buton dinleyici ekle
+    document.querySelectorAll('input[name="answer"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('nextBtn').disabled = false;
+        });
+    });
+}
+
+function startTimer() {
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').textContent = `00:${timeLeft.toString().padStart(2,'0')}`;
+        if(timeLeft <= 0) nextQuestion();
+    }, 1000);
+}
+
+function nextQuestion() {
+    clearInterval(timerId);
+    checkAnswer();
+    currentQuestion++;
+    timeLeft = 30;
+    document.getElementById('nextBtn').disabled = true;
+    if(currentQuestion < questions.length) {
+        showQuestion();
+        startTimer();
+    } else {
+        finishExam();
+    }
+}
+
+function checkAnswer() {
+    const selected = document.querySelector('input[name="answer"]:checked');
+    if(selected && selected.value == questions[currentQuestion].correct) score += 100/questions.length;
+}
+
+function finishExam() {
+    clearInterval(timerId);
+    document.getElementById('examScreen').style.display = 'none';
+    document.getElementById('resultScreen').style.display = 'block';
+    document.getElementById('correctCount').textContent = Math.round(score/(100/questions.length));
+    document.getElementById('wrongCount').textContent = questions.length - Math.round(score/(100/questions.length));
+    document.getElementById('totalScore').textContent = Math.round(score);
+    if(score >= 70) document.getElementById('certificateBtn').disabled = false;
+}
+
+function generateCertificate() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Sertifika tasarımı
+    doc.setFontSize(24);
+    doc.setTextColor(40, 40, 40);
+    doc.text('İSLAM HUKUKU ARAŞTIRMALARI PLATFORMU', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(18);
+    doc.text('Başarı Sertifikası', 105, 45, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.text(`Bu sertifika, ${userName} adlı katılımcıya`, 105, 60, { align: 'center' });
+    doc.text(`İslam Hukuku Seviye Belirleme Sınavı'nda ${Math.round(score)} puan alarak`, 105, 70, { align: 'center' });
+    doc.text('başarılı olduğu için verilmiştir.', 105, 80, { align: 'center' });
+    
+    // Tarih ve imza
+    doc.setFontSize(12);
+    doc.text(`Sertifika No: ${Math.floor(Math.random()*90000)+10000}`, 20, 110);
+    doc.text(new Date().toLocaleDateString('tr-TR'), 160, 110);
+    
+    // Çerçve
+    doc.setLineWidth(0.5);
+    doc.rect(10, 10, 277, 190);
+    
+    doc.save(`${userName}_Sertifika.pdf`);
+}
+</script>
+</body>
+</html>
