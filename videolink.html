@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Kaynak URL Bulucu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .video-found {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+        }
+        .no-video {
+            background-color: #f2dede;
+            border: 1px solid #ebccd1;
+        }
+        a {
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Kaynak URL Bulucu</h1>
+        <p>Video içeren bir web sayfasının URL'sini girerek gömülü video dosyasının kaynak linkini bulun.</p>
+        
+        <input type="url" id="pageUrl" placeholder="https://orneksite.com/video-icerik" required>
+        <button onclick="findVideoSource()">Sorgula</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function findVideoSource() {
+            const pageUrl = document.getElementById('pageUrl').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!pageUrl) {
+                alert('Lütfen bir URL girin');
+                return;
+            }
+            
+            try {
+                resultDiv.style.display = 'none';
+                
+                // CORS sorununu aşmak için bir proxy kullanıyoruz
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(pageUrl)}`;
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                if (data.contents) {
+                    // Sayfa içeriğini analiz ediyoruz
+                    const parser = new DOMParser();
+                    const htmlDoc = parser.parseFromString(data.contents, 'text/html');
+                    
+                    // Video etiketlerini bul
+                    const videoTags = htmlDoc.getElementsByTagName('video');
+                    const iframeTags = htmlDoc.getElementsByTagName('iframe');
+                    const sourceTags = htmlDoc.getElementsByTagName('source');
+                    
+                    let videoSources = [];
+                    
+                    // <video> etiketlerini kontrol et
+                    for (let video of videoTags) {
+                        if (video.src) {
+                            videoSources.push(video.src);
+                        }
+                        
+                        // <source> alt etiketlerini kontrol et
+                        for (let source of video.getElementsByTagName('source')) {
+                            if (source.src) {
+                                videoSources.push(source.src);
+                            }
+                        }
+                    }
+                    
+                    // <iframe> etiketlerini kontrol et (YouTube, Vimeo vb.)
+                    for (let iframe of iframeTags) {
+                        if (iframe.src) {
+                            videoSources.push(iframe.src);
+                        }
+                    }
+                    
+                    // Bağımsız <source> etiketlerini kontrol et
+                    for (let source of sourceTags) {
+                        if (source.src && !source.parentElement?.tagName === 'VIDEO') {
+                            videoSources.push(source.src);
+                        }
+                    }
+                    
+                    // Sonuçları göster
+                    if (videoSources.length > 0) {
+                        resultDiv.innerHTML = '<h3>Bulunan Video Kaynakları:</h3>';
+                        videoSources.forEach((src, index) => {
+                            resultDiv.innerHTML += `
+                                <p><strong>Kaynak ${index + 1}:</strong> 
+                                <a href="${src}" target="_blank">${src}</a></p>
+                            `;
+                        });
+                        resultDiv.className = 'video-found';
+                    } else {
+                        resultDiv.innerHTML = '<p>Bu sayfada herhangi bir video kaynağı bulunamadı.</p>';
+                        resultDiv.className = 'no-video';
+                    }
+                    
+                    resultDiv.style.display = 'block';
+                } else {
+                    throw new Error('Sayfa içeriği alınamadı');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p>Hata oluştu: ${error.message}</p>`;
+                resultDiv.className = 'no-video';
+                resultDiv.style.display = 'block';
+                console.error('Hata:', error);
+            }
+        }
+    </script>
+</body>
+</html>
