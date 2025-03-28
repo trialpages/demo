@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>İlahiyat Fakültesi Telefon Rehberi</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f6fa;
+        }
+
+        .search-container {
+            position: relative;
+            margin: 40px 0;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        #suggestions {
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .suggestion-item {
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f1f2f6;
+        }
+
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .unit-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .unit-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .contact-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .contact-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>İlahiyat Fakültesi Telefon Rehberi</h1>
+    
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="İsim, soyisim veya birim ara...">
+        <div id="suggestions"></div>
+    </div>
+
+    <div id="searchResult" class="result-card"></div>
+
+    <script>
+        const data = [
+            // Rektörlük
+            {name: "Prof. Dr. Mahmut AK", phone: "412 10 01-02", unit: "Rektör"},
+            {name: "Prof.Dr.Esra BUKOVA GÜZEL", phone: "412 10 22", unit: "Rektör Yardımcısı"},
+            {name: "Prof.Dr.Refik KORKUSUZ", phone: "412 10 12", unit: "Rektör Yardımcısı"},
+            {name: "Prof. Dr. Caner ÇAVDAR", phone: "412 10 13", unit: "Rektör Yardımcısı"},
+            {name: "Engin BASMACI", phone: "412 10 32-", unit: "Genel Sekreter"},
+            {name: "Ahmet Oktay ÖZTOP", phone: "412 10 50-51", unit: "Genel Sekreter Yardımcısı"},
+            {name: "Onur YILMAZ", phone: "412 10 53", unit: "Genel Sekreter Yardımcısı"},
+
+            // İlahiyat Fakültesi
+            {name: "Prof.Dr.Muammer ERBAŞ", phone: "20030", unit: "Dekan"},
+            {name: "Öznur GEYLANİOĞLU", phone: "20034", unit: "Özel Kalem"},
+            {name: "Prof.Dr.Necdet ŞENGÜN", phone: "20031", unit: "Dekan Yardımcısı"},
+            {name: "Prof.Dr.Emrah DİNDİ", phone: "20032", unit: "Dekan Yardımcısı"},
+            {name: "Asuman ERDAĞ", phone: "20036", unit: "Özel Kalem"},
+            {name: "Salih AKAGÜNDÜZ", phone: "20033", unit: "Fakülte Sekreteri"},
+            
+            // Öğretim Elemanları
+            {name: "AHMED Eman G. K.", phone: "20095", unit: "Öğr.Gör."},
+            {name: "AHMED Maryam K. M.", phone: "20094", unit: "Öğr.Gör."},
+            {name: "AKAY Taha Rıdvan", phone: "20081", unit: "Ar.Gör."},
+            {name: "ALKAN Huzeyfe", phone: "20116", unit: "Dr.Öğr.Üyesi"},
+            {name: "AYDIN Mehmet", phone: "20019", unit: "Doç.Dr."},
+            {name: "AKSOY, Süheyla", phone: "20051", unit: "Ar.Gör."},
+            {name: "BAĞLIOĞLU Ahmet", phone: "20011", unit: "Doç.Dr."},
+            {name: "BİLEN Osman", phone: "20025", unit: "Prof.Dr."},
+            {name: "CEYLAN Senem", phone: "20021", unit: "Prof.Dr."},
+            {name: "CEYLAN Yusuf", phone: "20018", unit: "Doç.Dr."},
+            {name: "ÇİFTÇİ Adil", phone: "20028", unit: "Prof.Dr."},
+            {name: "TOKTAŞ Fatih", phone: "20013", unit: "Prof.Dr."},
+            {name: "DAKKAK, Ümmügülsüm", phone: "20103", unit: "Öğr.Gör.Dr."},
+            {name: "DEĞİRMENCİ Tolga Kaan", phone: "20078", unit: "Ar.Gör."},
+            {name: "DEMİR Nisa Derya", phone: "20045", unit: "Ar.Gör.Dr"},
+            {name: "DİNDİ Emrah", phone: "20142", unit: "Doç.Dr."},
+            {name: "DUYGU Zafer", phone: "20194", unit: "Doç.Dr."},
+            {name: "ERBAŞ Muammer", phone: "20039", unit: "Prof.Dr."},
+            {name: "ERDEMİR Rana A.M.M.E.S.", phone: "20074", unit: "Öğr.Gör."},
+            {name: "ESEN Bekir", phone: "20048", unit: "Ar.Gör."},
+            {name: "ESEN Hüseyin", phone: "20010", unit: "Prof.Dr."},
+            {name: "GENÇ Süleyman", phone: "20135", unit: "Dr.Öğr.Üyesi"},
+            {name: "GENGİL, Veysel", phone: "20140", unit: "Doç.Dr."},
+            {name: "GÖKBULUT Süleyman", phone: "20026", unit: "Doç.Dr."},
+            {name: "HARDAL M.İkbal", phone: "20059", unit: "Ar.Gör."},
+            {name: "İLHAN Mehmet", phone: "20014", unit: "Doç.Dr."},
+            {name: "JAJI Zelal AL", phone: "20095", unit: "Öğr.Gör."},
+            {name: "KAHRAMAN Ferruh", phone: "20126", unit: "Doç.Dr ."},
+            {name: "KARAMAN Elif Hilal", phone: "20193", unit: "Dr.Öğr.Üyesi."},
+            {name: "KAYA Senanur", phone: "20053", unit: "Ar.Gör."},
+            {name: "KISA Cihad", phone: "20153", unit: "Doç.Dr."},
+            {name: "KONUR Himmet", phone: "20139", unit: "Prof.Dr."},
+            {name: "KÜÇÜKTİRYAKİ A.Yasin", phone: "20134", unit: "Dr.Öğr.Üyesi"},
+            {name: "MEMİŞ Murat", phone: "20120", unit: "Doç.Dr."},
+            {name: "MÜMİNOĞLU Kasım", phone: "20005", unit: "Doç.Dr."},
+            {name: "OCAK, Halil", phone: "20133", unit: "Dr.Öğr.Üyesi"},
+            {name: "ÖZTÜRK M.Bilal", phone: "20076", unit: "Doç.Dr."},
+            {name: "PALABIYIK Abdülkadir", phone: "20137", unit: "Dr.Öğr.Üyesi"},
+            {name: "PALABIYIK M.Hanefi", phone: "20038", unit: "Prof.Dr."},
+            {name: "PALALI Seyfullah", phone: "20132", unit: "Dr.Öğr.Üyesi"},
+            {name: "SOFUOĞLU Hadi", phone: "20007", unit: "Dr.Öğr.Üyesi"},
+            {name: "SOFUOĞLU Nesrin", phone: "20121", unit: "Doç.Dr."},
+            {name: "ŞAHİN Mehmet Cem", phone: "20103", unit: "Prof.Dr."},
+            {name: "ŞAŞAL Nisan", phone: "20072", unit: "Ar.Gör."},
+            {name: "ŞENER Orhan Rasim", phone: "20060", unit: "Ar.Gör."},
+            {name: "ŞENGÜN Necdet", phone: "20023", unit: "Doç.Dr."},
+            {name: "ŞENSÖZ Tuğçe", phone: "20058", unit: "Ar.Gör."},
+            {name: "ŞENTÜRK Nurullah", phone: "20097", unit: "Öğr.Gör.Dr."},
+            {name: "SÜNTER, Emel", phone: "20112", unit: "Doç.Dr."},
+            {name: "SOLİMAN, Abdülkerim", phone: "20129", unit: "Dr.Öğr.Üyesi"},
+            {name: "TAŞKIN Ahmet", phone: "20049", unit: "Ar.Gör."},
+            {name: "TEKDEMİR H.Kübra", phone: "20046", unit: "Ar.Gör.Dr"},
+            {name: "TEKKOYUN Ali", phone: "20144", unit: "Ar.Gör.Dr"},
+            {name: "TÜRKERİ Mehmet", phone: "20037", unit: "Prof.Dr."},
+            {name: "TÜRKYILMAZ Hilmi", phone: "20125", unit: "Doç.Dr."},
+            {name: "TUZER Salih", phone: "20105", unit: "Öğr.Gör.Dr."},
+            {name: "ULUAĞAÇ Yetgin", phone: "20073", unit: "Ar.Gör."},
+            {name: "UYDAŞ Tuğba", phone: "20124", unit: "Ar.Gör."},
+            {name: "UYMAZ Türkan", phone: "20043", unit: "Doç.Dr."},
+            {name: "YASDIMAN H.Şah", phone: "20024", unit: "Prof.Dr."},
+            {name: "YENEN İlker", phone: "20111", unit: "Ar.Gör."},
+            {name: "YILDIRIM, Akif", phone: "20055", unit: "Dr.Öğr.Üyesi"},
+            {name: "YILMAZ Büşra", phone: "20072", unit: "Ar.Gör."},
+            {name: "YILDIRIM Fatih", phone: "20056", unit: "Ar.Gör.Dr"},
+            {name: "YILDIZ Şenay ÖZGÜR", phone: "20015", unit: "Prof.Dr."},
+            {name: "YİTİK Ali İhsan", phone: "20040", unit: "Prof.Dr."},
+        ];
+
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const resultDiv = document.getElementById('searchResult');
+
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            if(searchTerm.length < 2) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const matches = data.filter(item => 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.unit.toLowerCase().includes(searchTerm)
+            );
+
+            suggestionsDiv.innerHTML = matches.map(item => `
+                <div class="suggestion-item" data-name="${item.name}" data-phone="${item.phone}" data-unit="${item.unit}">
+                    ${item.name} - ${item.unit}
+                </div>
+            `).join('');
+
+            suggestionsDiv.style.display = matches.length ? 'block' : 'none';
+        });
+
+        suggestionsDiv.addEventListener('click', function(e) {
+            if(e.target.classList.contains('suggestion-item')) {
+                const name = e.target.dataset.name;
+                const phone = e.target.dataset.phone;
+                const unit = e.target.dataset.unit;
+                
+                resultDiv.innerHTML = `
+                    <h3>${name}</h3>
+                    <p>Ünvan/Birim: ${unit}</p>
+                    <p>Telefon: ${phone}</p>
+                `;
+                resultDiv.style.display = 'block';
+                suggestionsDiv.style.display = 'none';
+                searchInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
