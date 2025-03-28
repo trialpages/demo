@@ -2,159 +2,130 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Kaynak URL Bulucu</title>
+    <title>Gelişmiş Video URL Bulucu</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .container {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        input[type="url"] {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-        .video-found {
-            background-color: #dff0d8;
-            border: 1px solid #d6e9c6;
-        }
-        .no-video {
-            background-color: #f2dede;
-            border: 1px solid #ebccd1;
-        }
-        a {
-            word-break: break-all;
-        }
+        /* Güncellenmiş CSS */
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        input[type="url"] { width: 100%; padding: 12px; margin: 1rem 0; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; }
+        button { background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        button:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .result-box { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; }
+        .success { background: #dcfce7; border: 2px solid #22c55e; }
+        .error { background: #fee2e2; border: 2px solid #ef4444; }
+        .video-list { list-style: none; padding: 0; }
+        .video-item { margin: 0.5rem 0; padding: 0.8rem; background: #f8fafc; border-radius: 6px; }
+        a { color: #2563eb; text-decoration: none; word-break: break-all; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Video Kaynak URL Bulucu</h1>
-        <p>Video içeren bir web sayfasının URL'sini girerek gömülü video dosyasının kaynak linkini bulun.</p>
-        
-        <input type="url" id="pageUrl" placeholder="https://orneksite.com/video-icerik" required>
-        <button onclick="findVideoSource()">Sorgula</button>
-        
-        <div id="result"></div>
+        <h1>🏷️ Gelişmiş Video URL Avcısı</h1>
+        <input type="url" id="targetUrl" placeholder="https://örneksite.com/video-izle" autofocus>
+        <button onclick="startDetection()">Video URL'leri Tespit Et</button>
+        <div id="result" class="result-box"></div>
     </div>
 
     <script>
-        async function findVideoSource() {
-            const pageUrl = document.getElementById('pageUrl').value.trim();
+        async function startDetection() {
+            const url = document.getElementById('targetUrl').value;
             const resultDiv = document.getElementById('result');
             
-            if (!pageUrl) {
-                alert('Lütfen bir URL girin');
+            if (!url) {
+                showResult('Lütfen geçerli bir URL girin!', 'error');
                 return;
             }
-            
+
+            showResult('<div class="loading">Analiz başlatıldı...</div>', 'info');
+
             try {
-                resultDiv.style.display = 'none';
+                // Gelişmiş CORS proxy
+                const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
                 
-                // CORS sorununu aşmak için bir proxy kullanıyoruz
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(pageUrl)}`;
-                const response = await fetch(proxyUrl);
-                const data = await response.json();
+                const response = await fetch(proxyUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
                 
-                if (data.contents) {
-                    // Sayfa içeriğini analiz ediyoruz
-                    const parser = new DOMParser();
-                    const htmlDoc = parser.parseFromString(data.contents, 'text/html');
-                    
-                    // Video etiketlerini bul
-                    const videoTags = htmlDoc.getElementsByTagName('video');
-                    const iframeTags = htmlDoc.getElementsByTagName('iframe');
-                    const sourceTags = htmlDoc.getElementsByTagName('source');
-                    
-                    let videoSources = [];
-                    
-                    // <video> etiketlerini kontrol et
-                    for (let video of videoTags) {
-                        if (video.src) {
-                            videoSources.push(video.src);
-                        }
-                        
-                        // <source> alt etiketlerini kontrol et
-                        for (let source of video.getElementsByTagName('source')) {
-                            if (source.src) {
-                                videoSources.push(source.src);
-                            }
-                        }
-                    }
-                    
-                    // <iframe> etiketlerini kontrol et (YouTube, Vimeo vb.)
-                    for (let iframe of iframeTags) {
-                        if (iframe.src) {
-                            videoSources.push(iframe.src);
-                        }
-                    }
-                    
-                    // Bağımsız <source> etiketlerini kontrol et
-                    for (let source of sourceTags) {
-                        if (source.src && !source.parentElement?.tagName === 'VIDEO') {
-                            videoSources.push(source.src);
-                        }
-                    }
-                    
-                    // Sonuçları göster
-                    if (videoSources.length > 0) {
-                        resultDiv.innerHTML = '<h3>Bulunan Video Kaynakları:</h3>';
-                        videoSources.forEach((src, index) => {
-                            resultDiv.innerHTML += `
-                                <p><strong>Kaynak ${index + 1}:</strong> 
-                                <a href="${src}" target="_blank">${src}</a></p>
-                            `;
-                        });
-                        resultDiv.className = 'video-found';
-                    } else {
-                        resultDiv.innerHTML = '<p>Bu sayfada herhangi bir video kaynağı bulunamadı.</p>';
-                        resultDiv.className = 'no-video';
-                    }
-                    
-                    resultDiv.style.display = 'block';
+                const html = await response.text();
+                const videoSources = await analyzeContent(html);
+                
+                if (videoSources.length > 0) {
+                    showVideoLinks(videoSources);
                 } else {
-                    throw new Error('Sayfa içeriği alınamadı');
+                    showResult('Video kaynağı bulunamadı 😞', 'error');
                 }
             } catch (error) {
-                resultDiv.innerHTML = `<p>Hata oluştu: ${error.message}</p>`;
-                resultDiv.className = 'no-video';
-                resultDiv.style.display = 'block';
-                console.error('Hata:', error);
+                showResult(`Hata: ${error.message}`, 'error');
             }
+        }
+
+        async function analyzeContent(html) {
+            // Derin içerik analizi
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // 1. Video etiketlerini tarama
+            const videoTags = Array.from(doc.getElementsByTagName('video'));
+            const videoSources = videoTags.flatMap(video => {
+                const sources = Array.from(video.getElementsByTagName('source')).map(s => s.src);
+                return video.src ? [video.src, ...sources] : sources;
+            });
+
+            // 2. İframe analizi
+            const iframes = Array.from(doc.getElementsByTagName('iframe'));
+            const iframeSources = iframes.map(iframe => iframe.src);
+
+            // 3. Regex ile ham HTML tarama
+            const regexPatterns = [
+                /(https?:\/\/[^\s"']+?\.(?:mp4|mkv|mov|webm|m3u8))(?:\?[^\s"']+)?/gi,
+                /(https?:\/\/[^\s"']+?\/video\/[^\s"']+)/gi,
+                /(https?:\/\/[^\s"']+?\/stream[^\s"']*)/gi
+            ];
+            
+            const regexMatches = regexPatterns.flatMap(pattern => 
+                Array.from(html.matchAll(pattern)).map(m => m[1])
+            );
+
+            // 4. JSON-LD ve meta etiket kontrolü
+            const metaTags = Array.from(doc.querySelectorAll('meta[content]'));
+            const metaSources = metaTags
+                .map(tag => tag.content)
+                .filter(content => content.match(/\.(mp4|m3u8)/));
+
+            // Tüm kaynakları birleştir ve filtrele
+            const allSources = [...videoSources, ...iframeSources, ...regexMatches, ...metaSources]
+                .filter(src => src && !src.startsWith('data:'))
+                .map(src => src.startsWith('//') ? `https:${src}` : src)
+                .map(src => src.replace(/\\\//g, '/')) // Kaçan slash'ları düzelt
+                .filter((src, index, self) => self.indexOf(src) === index); // Tekilleri filtrele
+
+            return allSources;
+        }
+
+        function showVideoLinks(sources) {
+            const listItems = sources.map(src => `
+                <li class="video-item">
+                    🎬 <a href="${src}" target="_blank">${src}</a>
+                    <button onclick="navigator.clipboard.writeText('${src}')" 
+                            style="margin-left:10px; padding:2px 8px; font-size:0.8em">
+                        📋 Kopyala
+                    </button>
+                </li>
+            `).join('');
+
+            resultDiv.innerHTML = `
+                <h3>✅ ${sources.length} Video Kaynağı Bulundu:</h3>
+                <ul class="video-list">${listItems}</ul>
+            `;
+            resultDiv.className = 'result-box success';
+        }
+
+        function showResult(message, type) {
+            resultDiv.innerHTML = `<div class="${type}">${message}</div>`;
+            resultDiv.className = `result-box ${type}`;
         }
     </script>
 </body>
