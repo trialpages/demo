@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Snake Game</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: #1a1a1a;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+        }
+
+        .game-container {
+            position: relative;
+            background: #000;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        #gameCanvas {
+            border: 2px solid #00ff00;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #000;
+            border-radius: 5px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                transform: scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()">Tema Değiştir</button>
+    </div>
+
+    <div class="game-container">
+        <div class="score-board">
+            <div>Skor: <span id="score">0</span></div>
+            <div>En Yüksek: <span id="highScore">0</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        
+        <div class="controls">
+            <button onclick="startGame()">Yeni Oyun</button>
+            <p>Yön tuşları ile hareket ettirin</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const GRID_SIZE = 20;
+        const GRID_COUNT = canvas.width / GRID_SIZE;
+
+        let snake = [];
+        let food = {};
+        let dx = GRID_SIZE;
+        let dy = 0;
+        let score = 0;
+        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let gameLoop;
+        
+        document.getElementById('highScore').textContent = highScore;
+
+        function startGame() {
+            clearInterval(gameLoop);
+            snake = [
+                {x: 200, y: 200},
+                {x: 180, y: 200},
+                {x: 160, y: 200}
+            ];
+            score = 0;
+            dx = GRID_SIZE;
+            dy = 0;
+            spawnFood();
+            gameLoop = setInterval(update, 100);
+            updateScore();
+        }
+
+        function update() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            
+            // Duvar çarpışma kontrolü
+            if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+                return endGame();
+            }
+            
+            // Kendine çarpma kontrolü
+            for (let segment of snake) {
+                if (head.x === segment.x && head.y === segment.y) {
+                    return endGame();
+                }
+            }
+
+            snake.unshift(head);
+            
+            // Yem yeme kontrolü
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                updateScore();
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+            
+            draw();
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Yılanı çiz
+            ctx.fillStyle = '#00FF00';
+            snake.forEach((segment, index) => {
+                ctx.fillRect(segment.x, segment.y, GRID_SIZE-1, GRID_SIZE-1);
+            });
+            
+            // Yemi çiz
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(food.x, food.y, GRID_SIZE-1, GRID_SIZE-1);
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * GRID_COUNT) * GRID_SIZE,
+                y: Math.floor(Math.random() * GRID_COUNT) * GRID_SIZE
+            };
+            // Yemin yılan üzerinde oluşmamasını sağla
+            for (let segment of snake) {
+                if (food.x === segment.x && food.y === segment.y) {
+                    spawnFood();
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                document.getElementById('highScore').textContent = highScore;
+                localStorage.setItem('snakeHighScore', highScore);
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameLoop);
+            alert(`Oyun Bitti! Skorunuz: ${score}`);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            document.body.style.backgroundColor = document.body.classList.contains('light-theme') 
+                ? '#f0f0f0' 
+                : '#1a1a1a';
+        }
+
+        // Kontroller
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp':
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                    break;
+                case 'ArrowDown':
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                    break;
+                case 'ArrowLeft':
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
