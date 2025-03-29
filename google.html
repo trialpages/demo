@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arama Motoru</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input, button { padding: 10px; margin: 5px; }
+        .results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Arama Motoru</h2>
+    <input type="text" id="searchName" placeholder="Aranacak isim">
+    <button onclick="searchName()">Ara</button><div id="results" class="results"></div>
+
+<script>
+    function searchName() {
+        const name = document.getElementById("searchName").value;
+        const sites = [
+            { name: "Wikipedia", url: "https://tr.wikipedia.org/wiki/" },
+            { name: "Google", url: "https://www.google.com/search?q=" },
+            { name: "Twitter", url: "https://twitter.com/search?q=" },
+            { name: "LinkedIn", url: "https://www.linkedin.com/search/results/all/?keywords=" }
+        ];
+        
+        let output = "";
+        sites.forEach(site => {
+            output += `<h3>${site.name}</h3>`;
+            output += `<p><a href='${site.url}${encodeURIComponent(name)}' target='_blank'>${site.name} üzerinde ara</a></p>`;
+        });
+        
+        document.getElementById("results").innerHTML = output;
+    }
+</script>
+
+</body>
+</html>
