@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Retro Snake Game</title>
     <style>
         body {
@@ -10,11 +10,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background: #1a1a1a;
             font-family: 'Courier New', monospace;
             color: #00ff00;
+            touch-action: none;
         }
 
         .game-container {
@@ -27,6 +28,7 @@
 
         #gameCanvas {
             border: 2px solid #00ff00;
+            touch-action: none;
         }
 
         .score-board {
@@ -61,16 +63,40 @@
             transform: scale(1.05);
         }
 
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .touch-controls {
+            display: none;
+            margin-top: 20px;
+            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
         }
 
-        @media (max-width: 600px) {
-            .game-container {
-                transform: scale(0.8);
+        .touch-controls button {
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            font-size: 24px;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .touch-controls {
+                display: grid;
             }
+            .desktop-info {
+                display: none;
+            }
+        }
+
+        .speed-selector {
+            margin: 15px 0;
+        }
+
+        select {
+            background: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 5px;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
@@ -88,8 +114,29 @@
         <canvas id="gameCanvas" width="400" height="400"></canvas>
         
         <div class="controls">
+            <div class="speed-selector">
+                <label>Hız: </label>
+                <select id="speedSelect">
+                    <option value="150">Yavaş</option>
+                    <option value="100" selected>Normal</option>
+                    <option value="70">Hızlı</option>
+                    <option value="40">Çok Hızlı</option>
+                </select>
+            </div>
             <button onclick="startGame()">Yeni Oyun</button>
-            <p>Yön tuşları ile hareket ettirin</p>
+            <p class="desktop-info">Yön tuşları ile hareket ettirin</p>
+        </div>
+
+        <div class="touch-controls">
+            <div></div>
+            <button data-direction="up" ontouchstart="handleTouchControl('up')">↑</button>
+            <div></div>
+            <button data-direction="left" ontouchstart="handleTouchControl('left')">←</button>
+            <div></div>
+            <button data-direction="right" ontouchstart="handleTouchControl('right')">→</button>
+            <div></div>
+            <button data-direction="down" ontouchstart="handleTouchControl('down')">↓</button>
+            <div></div>
         </div>
     </div>
 
@@ -98,6 +145,7 @@
         const ctx = canvas.getContext('2d');
         const GRID_SIZE = 20;
         const GRID_COUNT = canvas.width / GRID_SIZE;
+        const speedSelect = document.getElementById('speedSelect');
 
         let snake = [];
         let food = {};
@@ -120,19 +168,34 @@
             dx = GRID_SIZE;
             dy = 0;
             spawnFood();
-            gameLoop = setInterval(update, 100);
+            gameLoop = setInterval(update, speedSelect.value);
             updateScore();
+        }
+
+        function handleTouchControl(direction) {
+            switch(direction) {
+                case 'up':
+                    if (dy === 0) { dx = 0; dy = -GRID_SIZE; }
+                    break;
+                case 'down':
+                    if (dy === 0) { dx = 0; dy = GRID_SIZE; }
+                    break;
+                case 'left':
+                    if (dx === 0) { dx = -GRID_SIZE; dy = 0; }
+                    break;
+                case 'right':
+                    if (dx === 0) { dx = GRID_SIZE; dy = 0; }
+                    break;
+            }
         }
 
         function update() {
             const head = {x: snake[0].x + dx, y: snake[0].y + dy};
             
-            // Duvar çarpışma kontrolü
             if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
                 return endGame();
             }
             
-            // Kendine çarpma kontrolü
             for (let segment of snake) {
                 if (head.x === segment.x && head.y === segment.y) {
                     return endGame();
@@ -141,7 +204,6 @@
 
             snake.unshift(head);
             
-            // Yem yeme kontrolü
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 updateScore();
@@ -157,13 +219,11 @@
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Yılanı çiz
             ctx.fillStyle = '#00FF00';
             snake.forEach((segment, index) => {
                 ctx.fillRect(segment.x, segment.y, GRID_SIZE-1, GRID_SIZE-1);
             });
             
-            // Yemi çiz
             ctx.fillStyle = '#FF0000';
             ctx.fillRect(food.x, food.y, GRID_SIZE-1, GRID_SIZE-1);
         }
@@ -173,7 +233,6 @@
                 x: Math.floor(Math.random() * GRID_COUNT) * GRID_SIZE,
                 y: Math.floor(Math.random() * GRID_COUNT) * GRID_SIZE
             };
-            // Yemin yılan üzerinde oluşmamasını sağla
             for (let segment of snake) {
                 if (food.x === segment.x && food.y === segment.y) {
                     spawnFood();
@@ -202,7 +261,12 @@
                 : '#1a1a1a';
         }
 
-        // Kontroller
+        // Touch event prevention
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Keyboard controls
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
                 case 'ArrowUp':
