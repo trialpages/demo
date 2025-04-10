@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Hız Testi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .speed-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .speed-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .speed-type h3 {
+            color: #4a5568;
+            font-size: 1.2em;
+        }
+
+        .speed-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #2d3748;
+            margin: 15px 0;
+        }
+
+        .unit {
+            font-size: 0.6em;
+            color: #718096;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .speed-value {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📶 İnternet Hız Testi</h1>
+        
+        <div class="speed-card">
+            <div class="speed-type">
+                <h3>İndirme Hızı</h3>
+                <span>↓</span>
+            </div>
+            <div class="speed-value">0 <span class="unit">Mbps</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="download-progress"></div>
+            </div>
+        </div>
+
+        <div class="speed-card">
+            <div class="speed-type">
+                <h3>Yükleme Hızı</h3>
+                <span>↑</span>
+            </div>
+            <div class="speed-value">0 <span class="unit">Mbps</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="upload-progress"></div>
+            </div>
+        </div>
+
+        <button onclick="startTest()" id="testButton">Testi Başlat</button>
+    </div>
+
+    <script>
+        async function startTest() {
+            const testButton = document.getElementById('testButton');
+            testButton.disabled = true;
+            testButton.textContent = 'Test Yapılıyor...';
+
+            // İndirme hızı testi
+            const downloadSpeed = await measureSpeed('download');
+            updateSpeed('download', downloadSpeed);
+            
+            // Yükleme hızı testı
+            const uploadSpeed = await measureSpeed('upload');
+            updateSpeed('upload', uploadSpeed);
+
+            testButton.disabled = false;
+            testButton.textContent = 'Testi Tekrarla';
+        }
+
+        function measureSpeed(type) {
+            return new Promise((resolve) => {
+                const startTime = Date.now();
+                const fileSize = type === 'download' ? 5 * 1024 * 1024 : 2 * 1024 * 1024; // 5MB / 2MB
+                const dummyFile = new Blob([new Uint8Array(fileSize)]);
+                
+                if(type === 'download') {
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const duration = (Date.now() - startTime) / 1000;
+                        const speed = (fileSize * 8 / (duration * 1000000)).toFixed(2);
+                        resolve(speed);
+                    };
+                    reader.readAsArrayBuffer(dummyFile);
+                } else {
+                    const formData = new FormData();
+                    formData.append('file', dummyFile);
+                    
+                    fetch('https://httpbin.org/post', {
+                        method: 'POST',
+                        body: formData
+                    }).then(() => {
+                        const duration = (Date.now() - startTime) / 1000;
+                        const speed = (fileSize * 8 / (duration * 1000000)).toFixed(2);
+                        resolve(speed);
+                    });
+                }
+            });
+        }
+
+        function updateSpeed(type, speed) {
+            const element = document.querySelector(`.${type}-speed`);
+            const progressBar = document.getElementById(`${type}-progress`);
+            
+            document.querySelectorAll(`.speed-value`)[type === 'download' ? 0 : 1].innerHTML = 
+                `${speed} <span class="unit">Mbps</span>`;
+            
+            const percentage = Math.min((speed / 100) * 100, 100);
+            progressBar.style.width = `${percentage}%`;
+        }
+    </script>
+</body>
+</html>
