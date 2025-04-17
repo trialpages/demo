@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ders Saat Hesaplama</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #2a5d84;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: #2a5d84;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1f4c6e;
+    }
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e6f2ff;
+      border-radius: 8px;
+      border: 1px solid #b3d1ff;
+    }
+    .result-section {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Ders Saati ve Ek Ders Hesaplama</h2>
+
+  <label for="eylul">Eylül Okulu Ders Saati</label>
+  <input type="number" id="eylul" min="0" value="0">
+
+  <label for="ege">Ege Okulu Ders Saati</label>
+  <input type="number" id="ege" min="0" value="0">
+
+  <button onclick="hesapla()">Hesapla</button>
+
+  <div class="results" id="sonuc" style="display:none;">
+    <div class="result-section" id="eylulSonuc"></div>
+    <div class="result-section" id="egeSonuc"></div>
+    <div class="result-section" id="toplamUcret"></div>
+  </div>
+
+  <script>
+    function hesapla() {
+      let eylulSaat = parseInt(document.getElementById('eylul').value);
+      let egeSaat = parseInt(document.getElementById('ege').value);
+      const maasKarsiligi = 10;
+      const saatUcreti = 170;
+
+      let eylulMaasKarsiligi = 0;
+      let eylulEkDers = 0;
+      let egeMaasKarsiligi = 0;
+      let egeEkDers = 0;
+
+      // Eylül Okulu
+      if (eylulSaat >= maasKarsiligi) {
+        eylulMaasKarsiligi = maasKarsiligi;
+        eylulEkDers = eylulSaat - maasKarsiligi;
+      } else {
+        eylulMaasKarsiligi = eylulSaat;
+        let eksikSaat = maasKarsiligi - eylulSaat;
+
+        // Ege Okulu
+        if (egeSaat >= eksikSaat) {
+          egeMaasKarsiligi = eksikSaat;
+          egeEkDers = egeSaat - eksikSaat;
+        } else {
+          egeMaasKarsiligi = egeSaat;
+          egeEkDers = 0;
+        }
+      }
+
+      let toplamEkDersSaat = eylulEkDers + egeEkDers;
+      let toplamEkDersUcret = toplamEkDersSaat * saatUcreti;
+
+      document.getElementById('eylulSonuc').innerHTML = `
+        <h3>Eylül Okulu</h3>
+        <p>Toplam Ders Saati: ${eylulSaat}</p>
+        <p>Maaş Karşılığı: ${eylulMaasKarsiligi} saat</p>
+        <p>Ek Ders: ${eylulEkDers} saat</p>
+        <p>Ek Ders Ücreti: ${eylulEkDers * saatUcreti} TL</p>
+      `;
+
+      document.getElementById('egeSonuc').innerHTML = `
+        <h3>Ege Okulu</h3>
+        <p>Toplam Ders Saati: ${egeSaat}</p>
+        <p>Maaş Karşılığı: ${egeMaasKarsiligi} saat</p>
+        <p>Ek Ders: ${egeEkDers} saat</p>
+        <p>Ek Ders Ücreti: ${egeEkDers * saatUcreti} TL</p>
+      `;
+
+      document.getElementById('toplamUcret').innerHTML = `
+        <h3>Toplam Ek Ders Ücreti</h3>
+        <p>${toplamEkDersUcret} TL</p>
+      `;
+
+      document.getElementById('sonuc').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
