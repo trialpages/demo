@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mesaj Gönder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #1877f2;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 0.3rem;
+        }
+
+        select {
+            appearance: none;
+            background: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 0.8rem center/15px 15px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            background: #1877f2;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #166fe5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mesaj Gönder</h1>
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="contact">Telefon Numarası veya E-posta</label>
+                <input type="text" id="contact" placeholder="Örnek: 05551234567 veya ornek@mail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="messageType">Mesaj Türü</label>
+                <select id="messageType" required>
+                    <option value="">Seçiniz</option>
+                    <option value="sms">SMS</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="telegram">Telegram</option>
+                    <option value="email">E-posta</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Mesajınız</label>
+                <textarea id="message" placeholder="Mesajınızı buraya yazın..." required></textarea>
+            </div>
+
+            <button type="submit">Mesajı Gönder</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const contact = document.getElementById('contact').value;
+            const messageType = document.getElementById('messageType').value;
+            const message = encodeURIComponent(document.getElementById('message').value);
+            
+            let url;
+            
+            switch(messageType) {
+                case 'sms':
+                    url = `sms:${contact}?body=${message}`;
+                    break;
+                case 'whatsapp':
+                    url = `https://wa.me/${contact}?text=${message}`;
+                    break;
+                case 'telegram':
+                    url = `tg://msg?text=${message}&to=${contact}`;
+                    break;
+                case 'email':
+                    url = `mailto:${contact}?body=${message}`;
+                    break;
+                default:
+                    alert('Lütfen geçerli bir mesaj türü seçin!');
+                    return;
+            }
+            
+            window.open(url, '_blank');
+        });
+    </script>
+</body>
+</html>
