@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kartvizit Oluşturucu</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      padding: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2d8659;
+    }
+
+    .form-container {
+      background-color: white;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .card {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e8f5e9;
+      border: 2px solid #2d8659;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+      text-align: left;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    button {
+      background-color: #2d8659;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #24704e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kartvizit Oluştur</h1>
+
+  <div class="form-container">
+    <input type="text" id="adsoyad" placeholder="Ad Soyad">
+    <input type="text" id="unvan" placeholder="Unvan">
+    <input type="text" id="telefon" placeholder="Telefon">
+    <input type="email" id="email" placeholder="E-posta">
+    <textarea id="adres" placeholder="Adres"></textarea>
+    <button onclick="kartvizitiOlustur()">Oluştur</button>
+  </div>
+
+  <div class="card" id="kartvizit">
+    <h2 id="k-adsoyad"></h2>
+    <p><strong>Unvan:</strong> <span id="k-unvan"></span></p>
+    <p><strong>Telefon:</strong> <span id="k-telefon"></span></p>
+    <p><strong>E-posta:</strong> <span id="k-email"></span></p>
+    <p><strong>Adres:</strong> <span id="k-adres"></span></p>
+  </div>
+
+  <script>
+    function kartvizitiOlustur() {
+      const adsoyad = document.getElementById("adsoyad").value;
+      const unvan = document.getElementById("unvan").value;
+      const telefon = document.getElementById("telefon").value;
+      const email = document.getElementById("email").value;
+      const adres = document.getElementById("adres").value;
+
+      document.getElementById("k-adsoyad").innerText = adsoyad;
+      document.getElementById("k-unvan").innerText = unvan;
+      document.getElementById("k-telefon").innerText = telefon;
+      document.getElementById("k-email").innerText = email;
+      document.getElementById("k-adres").innerText = adres;
+
+      document.getElementById("kartvizit").style.display = "block";
+    }
+  </script>
+</body>
+</html>
