@@ -1,99 +1,161 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Şık Dosya Paylaşım (Temp.sh)</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex; align-items: center; justify-content: center;
-      height: 100vh; margin: 0; background: linear-gradient(135deg,#ece9e6,#ffffff);
-    }
-    .container {
-      background: white; padding: 2rem; border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 90%; max-width: 500px;
-      text-align: center;
-    }
-    h2 { margin-bottom: 1rem; color: #333; }
-    input[type="file"] { display: block; margin: 1rem auto; }
-    button {
-      padding: 12px 24px; border: none; border-radius: 50px;
-      background: #007bff; color: white; font-size: 1rem;
-      cursor: pointer; transition: background 0.3s;
-    }
-    button:hover { background: #0056b3; }
-    .file-link {
-      margin-top: 1.5rem; padding: 1rem; background: #f8f9fa;
-      border-radius: 15px; display: flex; align-items: center;
-      justify-content: space-between;
-    }
-    .file-link input {
-      flex-grow: 1; padding: 5px; margin-right: 10px;
-      border: 1px solid #ccc; border-radius: 8px;
-    }
-    .copy {
-      background: #28a745; border-radius: 50px;
-    }
-    .copy:hover { background: #1e7e34; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gofile.io ile Dosya Paylaş</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0; padding: 2rem;
+    display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+  }
+  .container {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    max-width: 600px;
+    width: 100%;
+  }
+  h2 {
+    margin-top: 0; color: #333;
+  }
+  input[type="file"] {
+    display: block;
+    margin: 1rem 0;
+  }
+  button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .file-link {
+    margin-top: 1rem;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .file-link input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .copy {
+    background-color: #28a745;
+    border-radius: 50px;
+    padding: 8px 16px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .copy:hover {
+    background-color: #1e7e34;
+  }
+  .loading {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #555;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Dosya Yükle & Paylaş</h2>
-    <input type="file" id="fileInput" multiple>
-    <button onclick="uploadFiles()">Yükle</button>
-    <div id="linkContainer"></div>
-  </div>
 
-  <script>
-    async function uploadFiles() {
-      const files = document.getElementById('fileInput').files;
-      const linkContainer = document.getElementById('linkContainer');
-      linkContainer.innerHTML = '';
+<div class="container">
+  <h2>Dosya Yükle ve Paylaş (Gofile.io)</h2>
+  <input type="file" id="fileInput" multiple />
+  <button onclick="uploadFiles()">Yükle</button>
+  <div id="linkContainer"></div>
+  <div id="loading" class="loading" style="display:none;">Yükleniyor...</div>
+</div>
 
-      if (files.length === 0) {
-        alert('Lütfen en az bir dosya seçin.');
-        return;
-      }
+<script>
+  async function uploadFiles() {
+    const input = document.getElementById('fileInput');
+    const files = input.files;
+    const linkContainer = document.getElementById('linkContainer');
+    const loading = document.getElementById('loading');
+    linkContainer.innerHTML = '';
 
-      for (const file of files) {
-        const fileBox = document.createElement('div');
-        fileBox.className = 'file-link';
-        fileBox.innerHTML = `<span><strong>${file.name}</strong> yükleniyor...</span>`;
-        linkContainer.appendChild(fileBox);
+    if (files.length === 0) {
+      alert('Lütfen en az bir dosya seçin.');
+      return;
+    }
 
-        const formData = new FormData();
-        formData.append('file', file);
+    loading.style.display = 'block';
 
-        try {
-          const res = await fetch('https://temp.sh/upload', {
-            method: 'POST',
-            body: formData
-          });
-          if (!res.ok) throw new Error(`Sunucu: ${res.status}`);
-          const text = await res.text();
-          const link = text.trim();
+    // 1. Sunucudan upload için bir "upload server" adresi al
+    const serverResp = await fetch('https://api.gofile.io/getServer');
+    const serverData = await serverResp.json();
+    if (!serverData.status === 'ok') {
+      alert('Sunucu alınamadı, lütfen tekrar deneyin.');
+      loading.style.display = 'none';
+      return;
+    }
+    const server = serverData.data.server;
 
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const fileBox = document.createElement('div');
+      fileBox.className = 'file-link';
+      fileBox.innerHTML = `<span><strong>${file.name}</strong> yükleniyor...</span>`;
+      linkContainer.appendChild(fileBox);
+
+      try {
+        const res = await fetch(`https://${server}.gofile.io/uploadFile`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'ok') {
           fileBox.innerHTML = '';
-          const input = document.createElement('input');
-          input.type = 'text'; input.value = link; input.readOnly = true;
+
+          const inputEl = document.createElement('input');
+          inputEl.type = 'text';
+          inputEl.value = data.data.downloadPage;
+          inputEl.readOnly = true;
+
           const copyBtn = document.createElement('button');
-          copyBtn.textContent = 'Kopyala';
           copyBtn.className = 'copy';
+          copyBtn.textContent = 'Kopyala';
           copyBtn.onclick = () => {
-            navigator.clipboard.writeText(link);
+            navigator.clipboard.writeText(data.data.downloadPage);
             copyBtn.textContent = 'Kopyalandı!';
-            setTimeout(() => copyBtn.textContent = 'Kopyala', 1500);
+            setTimeout(() => (copyBtn.textContent = 'Kopyala'), 1500);
           };
 
-          fileBox.appendChild(input);
+          fileBox.appendChild(inputEl);
           fileBox.appendChild(copyBtn);
-
-        } catch (err) {
-          fileBox.innerHTML = `<span style="color:red"><strong>${file.name}</strong> hatası: ${err.message}</span>`;
+        } else {
+          fileBox.innerHTML = `<span style="color:red;">${file.name} yüklenemedi: ${data.message}</span>`;
         }
+      } catch (error) {
+        fileBox.innerHTML = `<span style="color:red;">${file.name} yükleme hatası: ${error.message}</span>`;
       }
     }
-  </script>
+
+    loading.style.display = 'none';
+  }
+</script>
+
 </body>
 </html>
