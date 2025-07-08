@@ -6,165 +6,137 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.0.0-beta.2/docx.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    h1 {
-      text-align: center;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f8f8f8; }
+    h1 { text-align: center; }
     textarea, input, button {
       width: 100%;
-      margin-top: 10px;
+      margin: 10px 0;
       padding: 10px;
       font-size: 16px;
+      box-sizing: border-box;
     }
     button {
-      background: #007bff;
+      background-color: #28a745;
       color: white;
       border: none;
       cursor: pointer;
     }
-    button:hover {
-      background: #0056b3;
-    }
+    button:hover { background-color: #218838; }
     .info {
-      font-size: 14px;
-      color: #555;
-      background: #fff8dc;
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
       padding: 10px;
-      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
+
   <h1>Test Kitapçığı Oluşturucu</h1>
+
   <input id="title" placeholder="Kitapçık Başlığı (örn: 2025 TYT Türkçe)">
   <div class="info">
-    <strong>Yönerge:</strong><br>
-    Her soru aşağıdaki gibi yazılmalıdır:<br><br>
-    <code>
-1. Soru metni?<br>
-A) Şık A<br>
-B) Şık B<br>
-C) Şık C<br>
-D) Şık D<br>
-E) Şık E<br>
-Cevap: C
-    </code><br><br>
-    🔁 <strong>A. veya A ) veya A) formatları geçerlidir</strong><br>
-    ✅ <strong>Cevap: C</strong> şeklinde bitmelidir
+    <strong>Soru formatı örneği:</strong><br><br>
+    1. Soru metni nedir?<br>
+    A) Seçenek A<br>
+    B) Seçenek B<br>
+    C) Seçenek C<br>
+    D) Seçenek D<br>
+    E) Seçenek E<br>
+    Cevap: C
   </div>
-  <textarea id="inputText" rows="30" placeholder="Soruları buraya yapıştırın..."></textarea>
-  <button onclick="generateBooklets()">Kitapçıkları Oluştur (.ZIP olarak indir)</button>
+  <textarea id="inputText" rows="20" placeholder="Soruları bu alana yapıştırın..."></textarea>
+  <button onclick="generateBooklets()">Kitapçıkları Oluştur (.zip olarak indir)</button>
 
   <script>
     const { Document, Packer, Paragraph, TextRun } = docx;
 
     function parseQuestions(text) {
-      const questionBlocks = text.trim().split(/\n(?=\d+\.\s)/g);
+      const blocks = text.trim().split(/\n(?=\d+\.\s)/g); // yeni sorular için
       const questions = [];
 
-      for (const block of questionBlocks) {
-        const lines = block.trim().split("\n").map(l => l.trim());
-        const questionLine = lines.find(line => /^\d+\./.test(line)) || "";
+      for (const block of blocks) {
+        const lines = block.trim().split('\n').map(l => l.trim());
+        const qLine = lines.find(l => /^\d+\.\s/.test(l)) || '';
         const choices = {};
-
-        for (let opt of ['A', 'B', 'C', 'D', 'E']) {
-          const regex = new RegExp(`^${opt}\\s*[).]\\s*(.*)`, 'i'); // A. veya A) için
-          const line = lines.find(l => regex.test(l));
+        ['A', 'B', 'C', 'D', 'E'].forEach(letter => {
+          const line = lines.find(l => new RegExp(`^${letter}[).]\\s*`).test(l));
           if (line) {
-            const match = line.match(regex);
-            choices[opt] = match ? match[1].trim() : "";
+            choices[letter] = line.replace(new RegExp(`^${letter}[).]\\s*`), '').trim();
           }
-        }
+        });
+        const answerMatch = lines.find(l => /Cevap\s*:?\s*([ABCDE])/.test(l));
+        const answer = answerMatch ? answerMatch.match(/([ABCDE])/)?.[1] : '';
 
-        const answerLine = lines.find(line => /Cevap\s*:?\s*([ABCDE])/i);
-        const answerMatch = answerLine ? answerLine.match(/Cevap\s*:?\s*([ABCDE])/i) : null;
-        const answer = answerMatch ? answerMatch[1].toUpperCase() : "";
-
-        if (questionLine && Object.keys(choices).length === 5 && answer) {
+        if (qLine && Object.keys(choices).length === 5 && answer) {
           questions.push({
-            question: questionLine.replace(/^\d+\.\s*/, '').trim(),
+            question: qLine.replace(/^\d+\.\s*/, ''),
             choices,
             correct: answer
           });
         }
       }
-
       return questions;
     }
 
-    function shuffle(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
+    function shuffle(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
     }
 
     async function generateBooklets() {
-      const title = document.getElementById("title").value || "Test Kitapçığı";
-      const rawText = document.getElementById("inputText").value;
-      const parsed = parseQuestions(rawText);
+      const title = document.getElementById('title').value || 'Test Kitapçığı';
+      const text = document.getElementById('inputText').value;
+      const questions = parseQuestions(text);
 
-      if (parsed.length < 1 || parsed.length > 100) {
-        alert(`1 ile 100 arasında soru girilmelidir. Şu anda ${parsed.length} soru var.`);
+      if (questions.length < 1 || questions.length > 100) {
+        alert(`1 ile 100 arasında soru girilmeli. Mevcut: ${questions.length}`);
         return;
       }
 
       const versions = {
-        A: parsed,
-        B: shuffle(parsed),
-        C: shuffle(parsed),
-        D: shuffle(parsed),
+        A: questions,
+        B: shuffle(questions),
+        C: shuffle(questions),
+        D: shuffle(questions)
       };
 
       const zip = new JSZip();
 
-      for (const [label, list] of Object.entries(versions)) {
+      for (const [key, list] of Object.entries(versions)) {
         const doc = new Document();
         const children = [];
 
-        // Başlık
         children.push(new Paragraph({
-          children: [new TextRun({ text: `${title} - Kitapçık ${label}`, bold: true, size: 32 })],
-          spacing: { after: 300 }
+          children: [new TextRun({ text: `${title} - Kitapçık ${key}`, bold: true, size: 28 })],
+          spacing: { after: 400 }
         }));
 
-        // Sorular
-        list.forEach((item, index) => {
-          const questionText = `${index + 1}. ${item.question}`;
-          children.push(new Paragraph({ children: [new TextRun({ text: questionText, bold: true })] }));
-          ['A', 'B', 'C', 'D', 'E'].forEach(opt => {
-            children.push(new Paragraph({ text: `${opt}) ${item.choices[opt]}` }));
+        list.forEach((q, i) => {
+          children.push(new Paragraph({ children: [new TextRun({ text: `${i + 1}. ${q.question}`, bold: true })] }));
+          ['A', 'B', 'C', 'D', 'E'].forEach(letter => {
+            children.push(new Paragraph({ text: `${letter}) ${q.choices[letter]}` }));
           });
           children.push(new Paragraph({ text: "" }));
         });
 
-        // Cevap Anahtarı
         children.push(new Paragraph({ text: "Cevap Anahtarı", spacing: { before: 500 }, bold: true }));
-        list.forEach((item, index) => {
-          children.push(new Paragraph({ text: `${index + 1}. ${item.correct}` }));
+        list.forEach((q, i) => {
+          children.push(new Paragraph({ text: `${i + 1}. ${q.correct}` }));
         });
 
         doc.addSection({ children });
-
         const blob = await Packer.toBlob(doc);
-        zip.file(`${title.replace(/\s+/g, "_")}_Kitapcik_${label}.docx`, blob);
+        zip.file(`${title.replace(/\s+/g, "_")}_Kitapcik_${key}.docx`, blob);
       }
 
-      zip.generateAsync({ type: "blob" }).then(content => {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(content);
-        link.download = `${title.replace(/\s+/g, "_")}_Kitapciklar.zip`;
-        link.click();
-      });
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `${title.replace(/\s+/g, "_")}_Kitapciklar.zip`;
+      link.click();
     }
   </script>
+
 </body>
 </html>
