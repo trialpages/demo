@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Kitapçığı Oluşturucu</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.0.0-beta.2/docx.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f1f3f5;
+      max-width: 900px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 400px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Kitapçığı Oluşturucu</h1>
+  <input id="title" placeholder="Başlık (örn: 2025 TYT Türkçe)"/>
+  <textarea id="inputText" placeholder="Soruları buraya yapıştırın..."></textarea>
+  <button onclick="generateBooklets()">Kitapçıkları Oluştur</button>
+
+  <script>
+    const { Document, Packer, Paragraph, TextRun } = docx;
+
+    function parseQuestions(text) {
+      const questionBlocks = text.trim().split(/\n(?=\d+\.\s)/g);
+      const questions = [];
+
+      for (const block of questionBlocks) {
+        const lines = block.trim().split("\n");
+        const questionLine = lines.find(line => /^\d+\./.test(line)) || "";
+        const choices = {};
+        for (let opt of ['A', 'B', 'C', 'D', 'E']) {
+          const line = lines.find(l => l.trim().startsWith(opt + ")"));
+          if (line) choices[opt] = line.trim().substring(2).trim();
+        }
+        const answerLine = lines.find(line => /Cevap\s*:\s*/i.test(line)) || "";
+        const answerMatch = answerLine.match(/Cevap\s*:\s*([ABCDE])/i);
+        const answer = answerMatch ? answerMatch[1].toUpperCase() : "";
+
+        if (questionLine && Object.keys(choices).length === 5 && answer) {
+          questions.push({
+            question: questionLine.replace(/^\d+\.\s*/, '').trim(),
+            choices,
+            correct: answer
+          });
+        }
+      }
+
+      return questions;
+    }
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function generateBooklets() {
+      const title = document.getElementById("title").value || "Test Kitapçığı";
+      const rawText = document.getElementById("inputText").value;
+      const parsed = parseQuestions(rawText);
+
+      if (parsed.length !== 40) {
+        alert(`40 soru bekleniyor, şu anda ${parsed.length} tane bulundu.`);
+        return;
+      }
+
+      const versions = {
+        A: parsed,
+        B: shuffle(parsed),
+        C: shuffle(parsed),
+        D: shuffle(parsed),
+      };
+
+      for (const [label, list] of Object.entries(versions)) {
+        const doc = new Document();
+        const children = [];
+
+        // Başlık
+        children.push(new Paragraph({
+          children: [new TextRun({ text: `${title} - Kitapçık ${label}`, bold: true, size: 32 })],
+          spacing: { after: 300 }
+        }));
+
+        // Sorular
+        list.forEach((item, index) => {
+          const questionText = `${index + 1}. ${item.question}`;
+          children.push(new Paragraph({ children: [new TextRun({ text: questionText, bold: true })] }));
+          ['A', 'B', 'C', 'D', 'E'].forEach(opt => {
+            children.push(new Paragraph({ text: `${opt}) ${item.choices[opt]}` }));
+          });
+          children.push(new Paragraph({ text: "" }));
+        });
+
+        // Cevap Anahtarı
+        children.push(new Paragraph({ text: "Cevap Anahtarı", spacing: { before: 500 }, bold: true }));
+        list.forEach((item, index) => {
+          children.push(new Paragraph({
+            text: `${index + 1}. ${item.correct}`,
+          }));
+        });
+
+        doc.addSection({ children });
+
+        Packer.toBlob(doc).then(blob => {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `${title.replace(/\s+/g, "_")}_Kitapcik_${label}.docx`;
+          link.click();
+        });
+      }
+    }
+  </script>
+</body>
+</html>
