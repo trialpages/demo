@@ -8,7 +8,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f0f0f0;
       padding: 20px;
       max-width: 900px;
       margin: auto;
@@ -34,22 +34,29 @@
     .info {
       font-size: 14px;
       color: #555;
+      background: #fff8dc;
+      padding: 10px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
 <body>
   <h1>Test Kitapçığı Oluşturucu</h1>
-  <input id="title" placeholder="Başlık (örn: 2025 TYT Türkçe)">
-  <div class="info">Soruları aşağıdaki formatta yapıştırın:<br>
-  <code>
+  <input id="title" placeholder="Kitapçık Başlığı (örn: 2025 TYT Türkçe)">
+  <div class="info">
+    <strong>Yönerge:</strong><br>
+    Her soru aşağıdaki gibi yazılmalıdır:<br><br>
+    <code>
 1. Soru metni?<br>
-A. Seçenek A<br>
-B. Seçenek B<br>
-C. Seçenek C<br>
-D. Seçenek D<br>
-E. Seçenek E<br>
+A) Şık A<br>
+B) Şık B<br>
+C) Şık C<br>
+D) Şık D<br>
+E) Şık E<br>
 Cevap: C
-  </code>
+    </code><br><br>
+    🔁 <strong>A. veya A ) veya A) formatları geçerlidir</strong><br>
+    ✅ <strong>Cevap: C</strong> şeklinde bitmelidir
   </div>
   <textarea id="inputText" rows="30" placeholder="Soruları buraya yapıştırın..."></textarea>
   <button onclick="generateBooklets()">Kitapçıkları Oluştur (.ZIP olarak indir)</button>
@@ -62,15 +69,21 @@ Cevap: C
       const questions = [];
 
       for (const block of questionBlocks) {
-        const lines = block.trim().split("\n");
+        const lines = block.trim().split("\n").map(l => l.trim());
         const questionLine = lines.find(line => /^\d+\./.test(line)) || "";
         const choices = {};
+
         for (let opt of ['A', 'B', 'C', 'D', 'E']) {
-          const line = lines.find(l => l.trim().startsWith(opt + "."));
-          if (line) choices[opt] = line.trim().substring(2).trim();
+          const regex = new RegExp(`^${opt}\\s*[).]\\s*(.*)`, 'i'); // A. veya A) için
+          const line = lines.find(l => regex.test(l));
+          if (line) {
+            const match = line.match(regex);
+            choices[opt] = match ? match[1].trim() : "";
+          }
         }
-        const answerLine = lines.find(line => /Cevap\s*:\s*/i.test(line)) || "";
-        const answerMatch = answerLine.match(/Cevap\s*:\s*([ABCDE])/i);
+
+        const answerLine = lines.find(line => /Cevap\s*:?\s*([ABCDE])/i);
+        const answerMatch = answerLine ? answerLine.match(/Cevap\s*:?\s*([ABCDE])/i) : null;
         const answer = answerMatch ? answerMatch[1].toUpperCase() : "";
 
         if (questionLine && Object.keys(choices).length === 5 && answer) {
@@ -136,9 +149,7 @@ Cevap: C
         // Cevap Anahtarı
         children.push(new Paragraph({ text: "Cevap Anahtarı", spacing: { before: 500 }, bold: true }));
         list.forEach((item, index) => {
-          children.push(new Paragraph({
-            text: `${index + 1}. ${item.correct}`,
-          }));
+          children.push(new Paragraph({ text: `${index + 1}. ${item.correct}` }));
         });
 
         doc.addSection({ children });
