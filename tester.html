@@ -1,49 +1,58 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Test Kitapçığı Oluşturucu</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.0.0-beta.2/docx.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f4f4f4;
       padding: 20px;
-      background: #f1f3f5;
       max-width: 900px;
       margin: auto;
     }
     h1 {
       text-align: center;
-      margin-bottom: 20px;
     }
-    textarea {
+    textarea, input, button {
       width: 100%;
-      height: 400px;
-      padding: 10px;
-      font-size: 14px;
-    }
-    input, button {
-      width: 100%;
+      margin-top: 10px;
       padding: 10px;
       font-size: 16px;
-      margin-top: 10px;
     }
     button {
-      background-color: #007bff;
+      background: #007bff;
       color: white;
       border: none;
       cursor: pointer;
     }
     button:hover {
-      background-color: #0056b3;
+      background: #0056b3;
+    }
+    .info {
+      font-size: 14px;
+      color: #555;
     }
   </style>
 </head>
 <body>
   <h1>Test Kitapçığı Oluşturucu</h1>
-  <input id="title" placeholder="Başlık (örn: 2025 TYT Türkçe)"/>
-  <textarea id="inputText" placeholder="Soruları buraya yapıştırın..."></textarea>
-  <button onclick="generateBooklets()">Kitapçıkları Oluştur</button>
+  <input id="title" placeholder="Başlık (örn: 2025 TYT Türkçe)">
+  <div class="info">Soruları aşağıdaki formatta yapıştırın:<br>
+  <code>
+1. Soru metni?<br>
+A. Seçenek A<br>
+B. Seçenek B<br>
+C. Seçenek C<br>
+D. Seçenek D<br>
+E. Seçenek E<br>
+Cevap: C
+  </code>
+  </div>
+  <textarea id="inputText" rows="30" placeholder="Soruları buraya yapıştırın..."></textarea>
+  <button onclick="generateBooklets()">Kitapçıkları Oluştur (.ZIP olarak indir)</button>
 
   <script>
     const { Document, Packer, Paragraph, TextRun } = docx;
@@ -57,7 +66,7 @@
         const questionLine = lines.find(line => /^\d+\./.test(line)) || "";
         const choices = {};
         for (let opt of ['A', 'B', 'C', 'D', 'E']) {
-          const line = lines.find(l => l.trim().startsWith(opt + ")"));
+          const line = lines.find(l => l.trim().startsWith(opt + "."));
           if (line) choices[opt] = line.trim().substring(2).trim();
         }
         const answerLine = lines.find(line => /Cevap\s*:\s*/i.test(line)) || "";
@@ -85,13 +94,13 @@
       return arr;
     }
 
-    function generateBooklets() {
+    async function generateBooklets() {
       const title = document.getElementById("title").value || "Test Kitapçığı";
       const rawText = document.getElementById("inputText").value;
       const parsed = parseQuestions(rawText);
 
-      if (parsed.length !== 40) {
-        alert(`40 soru bekleniyor, şu anda ${parsed.length} tane bulundu.`);
+      if (parsed.length < 1 || parsed.length > 100) {
+        alert(`1 ile 100 arasında soru girilmelidir. Şu anda ${parsed.length} soru var.`);
         return;
       }
 
@@ -101,6 +110,8 @@
         C: shuffle(parsed),
         D: shuffle(parsed),
       };
+
+      const zip = new JSZip();
 
       for (const [label, list] of Object.entries(versions)) {
         const doc = new Document();
@@ -132,13 +143,16 @@
 
         doc.addSection({ children });
 
-        Packer.toBlob(doc).then(blob => {
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = `${title.replace(/\s+/g, "_")}_Kitapcik_${label}.docx`;
-          link.click();
-        });
+        const blob = await Packer.toBlob(doc);
+        zip.file(`${title.replace(/\s+/g, "_")}_Kitapcik_${label}.docx`, blob);
       }
+
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = `${title.replace(/\s+/g, "_")}_Kitapciklar.zip`;
+        link.click();
+      });
     }
   </script>
 </body>
