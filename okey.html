@@ -15,25 +15,15 @@
   <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6">
     <h1 class="text-2xl font-bold text-center mb-6 text-indigo-700">101 Okey Skor Tablosu</h1>
 
+    <!-- Oyuncu isimleri -->
     <div class="grid grid-cols-4 gap-4 mb-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Oyuncu 1</label>
-        <input type="text" id="player0" placeholder="Oyuncu 1" class="w-full border rounded px-2 py-1" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Oyuncu 2</label>
-        <input type="text" id="player1" placeholder="Oyuncu 2" class="w-full border rounded px-2 py-1" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Oyuncu 3</label>
-        <input type="text" id="player2" placeholder="Oyuncu 3" class="w-full border rounded px-2 py-1" />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Oyuncu 4</label>
-        <input type="text" id="player3" placeholder="Oyuncu 4" class="w-full border rounded px-2 py-1" />
-      </div>
+      <div><label class="text-sm font-medium text-gray-700">Oyuncu 1</label><input type="text" id="player0" placeholder="Oyuncu 1" class="w-full border rounded px-2 py-1" /></div>
+      <div><label class="text-sm font-medium text-gray-700">Oyuncu 2</label><input type="text" id="player1" placeholder="Oyuncu 2" class="w-full border rounded px-2 py-1" /></div>
+      <div><label class="text-sm font-medium text-gray-700">Oyuncu 3</label><input type="text" id="player2" placeholder="Oyuncu 3" class="w-full border rounded px-2 py-1" /></div>
+      <div><label class="text-sm font-medium text-gray-700">Oyuncu 4</label><input type="text" id="player3" placeholder="Oyuncu 4" class="w-full border rounded px-2 py-1" /></div>
     </div>
 
+    <!-- Skor tablosu -->
     <table class="table-auto w-full text-center border">
       <thead>
         <tr class="bg-indigo-100">
@@ -44,25 +34,49 @@
           <th class="p-2 border">Oyuncu 4</th>
         </tr>
       </thead>
-      <tbody id="scoreTable">
+      <tbody>
         <!-- 11 el -->
-        ${[...Array(11)].map((_, row) => `
-          <tr>
-            <td class="border p-2 font-bold">${row + 1}</td>
-            ${[...Array(4)].map((_, col) => `
-              <td class="border p-1">
-                <input type="number" data-row="${row}" data-col="${col}" class="scoreInput w-20 text-center border rounded py-1" />
-              </td>
-            `).join('')}
-          </tr>
-        `).join('')}
+        <!-- Her satır manuel yazıldı -->
+        <!-- Bu işlemi otomatik yapmamı istersen başka bir yol da sunabilirim -->
+        <!-- Satırları oluşturan örnek: -->
+        <!-- <tr><td>1</td><td><input ... /></td> ... </tr> -->
+        <!-- 11 adet satır aşağıda -->
+
+        <!-- El 1 -->
+        <tr>
+          <td class="border p-2 font-bold">1</td>
+          <td class="border p-1"><input type="number" data-row="0" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="0" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="0" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="0" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td>
+        </tr>
+        <!-- El 2 -->
+        <tr>
+          <td class="border p-2 font-bold">2</td>
+          <td class="border p-1"><input type="number" data-row="1" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="1" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="1" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td>
+          <td class="border p-1"><input type="number" data-row="1" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td>
+        </tr>
+        <!-- El 3 -->
+        <tr><td class="border p-2 font-bold">3</td><td class="border p-1"><input type="number" data-row="2" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="2" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="2" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="2" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">4</td><td class="border p-1"><input type="number" data-row="3" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="3" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="3" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="3" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">5</td><td class="border p-1"><input type="number" data-row="4" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="4" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="4" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="4" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">6</td><td class="border p-1"><input type="number" data-row="5" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="5" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="5" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="5" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">7</td><td class="border p-1"><input type="number" data-row="6" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="6" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="6" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="6" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">8</td><td class="border p-1"><input type="number" data-row="7" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="7" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="7" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="7" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">9</td><td class="border p-1"><input type="number" data-row="8" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="8" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="8" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="8" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">10</td><td class="border p-1"><input type="number" data-row="9" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="9" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="9" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="9" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+        <tr><td class="border p-2 font-bold">11</td><td class="border p-1"><input type="number" data-row="10" data-col="0" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="10" data-col="1" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="10" data-col="2" class="scoreInput w-20 text-center border rounded py-1"></td><td class="border p-1"><input type="number" data-row="10" data-col="3" class="scoreInput w-20 text-center border rounded py-1"></td></tr>
+
       </tbody>
       <tfoot>
         <tr class="bg-indigo-50 font-semibold">
           <td class="p-2 border">Toplam</td>
-          ${[...Array(4)].map((_, col) => `
-            <td class="p-2 border text-indigo-700" id="total${col}">0</td>
-          `).join('')}
+          <td class="p-2 border text-indigo-700" id="total0">0</td>
+          <td class="p-2 border text-indigo-700" id="total1">0</td>
+          <td class="p-2 border text-indigo-700" id="total2">0</td>
+          <td class="p-2 border text-indigo-700" id="total3">0</td>
         </tr>
       </tfoot>
     </table>
@@ -76,23 +90,22 @@
 
   <script>
     const inputs = document.querySelectorAll('.scoreInput');
-    const totals = [0, 0, 0, 0];
 
     inputs.forEach(input => {
       input.addEventListener('input', updateTotals);
     });
 
     function updateTotals() {
-      const newTotals = [0, 0, 0, 0];
+      const totals = [0, 0, 0, 0];
       inputs.forEach(input => {
         const col = +input.dataset.col;
         const val = parseInt(input.value);
         if (!isNaN(val)) {
-          newTotals[col] += val;
+          totals[col] += val;
         }
       });
       for (let i = 0; i < 4; i++) {
-        document.getElementById('total' + i).textContent = newTotals[i];
+        document.getElementById('total' + i).textContent = totals[i];
       }
     }
 
