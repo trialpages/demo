@@ -3,38 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Yakıt Maliyeti Hesaplayıcı</title>
+  <title>Yakıt Maliyet Hesaplayıcı</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f0f4f8;
-      color: #333;
+      background-color: #eef3f7;
       margin: 0;
       padding: 20px;
+      color: #333;
     }
     .container {
-      max-width: 600px;
-      background: white;
+      max-width: 750px;
       margin: auto;
-      padding: 25px;
+      background: white;
+      padding: 30px;
       border-radius: 15px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     h2 {
       text-align: center;
       color: #007B83;
+      margin-bottom: 25px;
+    }
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #f9fbfc;
+      border-left: 5px solid #007B83;
+      border-radius: 10px;
     }
     label {
       display: block;
-      margin: 15px 0 5px;
+      margin: 8px 0 5px;
       font-weight: bold;
     }
-    select, input {
+    input {
       width: 100%;
       padding: 10px;
-      font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
     button {
       margin-top: 20px;
@@ -48,14 +56,23 @@
       cursor: pointer;
     }
     button:hover {
-      background-color: #005e62;
+      background-color: #005c5c;
     }
     .result {
-      margin-top: 25px;
-      background: #e9f7f6;
-      padding: 15px;
+      margin-top: 30px;
+      background: #e6f9f7;
+      padding: 20px;
       border-radius: 10px;
-      border-left: 5px solid #007B83;
+      border-left: 5px solid #00a69c;
+    }
+    .fuel-title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #005c5c;
+      margin-top: 20px;
+    }
+    ul {
+      padding-left: 20px;
     }
   </style>
 </head>
@@ -63,18 +80,28 @@
   <div class="container">
     <h2>Yakıt Maliyeti Hesaplayıcı</h2>
 
-    <label for="fuelType">Yakıt Tipi:</label>
-    <select id="fuelType">
-      <option value="benzin">Benzin (₺45/litre)</option>
-      <option value="lpg">LPG (₺23/litre)</option>
-      <option value="elektrik">Elektrik (₺11.5/kWh)</option>
-    </select>
+    <div class="section">
+      <label for="distance">Kat Edilen Mesafe (km):</label>
+      <input type="number" id="distance" placeholder="Örn: 300" step="1">
+    </div>
 
-    <label for="consumption">100 km'deki Tüketim (Litre veya kWh):</label>
-    <input type="number" id="consumption" placeholder="Örn: 6.5" step="0.1">
+    <div class="section">
+      <h3>Benzin</h3>
+      <label for="benzin">100 km'deki Tüketim (Litre):</label>
+      <input type="number" id="benzin" placeholder="Örn: 6.5" step="0.1">
+    </div>
 
-    <label for="distance">Kat Edilen Mesafe (km):</label>
-    <input type="number" id="distance" placeholder="Örn: 350" step="1">
+    <div class="section">
+      <h3>LPG</h3>
+      <label for="lpg">100 km'deki Tüketim (Litre):</label>
+      <input type="number" id="lpg" placeholder="Örn: 9.0" step="0.1">
+    </div>
+
+    <div class="section">
+      <h3>Elektrik</h3>
+      <label for="elektrik">100 km'deki Tüketim (kWh):</label>
+      <input type="number" id="elektrik" placeholder="Örn: 18" step="0.1">
+    </div>
 
     <button onclick="hesapla()">Hesapla</button>
 
@@ -83,37 +110,52 @@
 
   <script>
     const fiyatlar = {
-      benzin: 45,
-      lpg: 23,
+      benzin: 52,
+      lpg: 25,
       elektrik: 11.5
     };
 
     function hesapla() {
-      const yakitTipi = document.getElementById("fuelType").value;
-      const tuketim = parseFloat(document.getElementById("consumption").value);
       const mesafe = parseFloat(document.getElementById("distance").value);
+      const benzinTuketim = parseFloat(document.getElementById("benzin").value);
+      const lpgTuketim = parseFloat(document.getElementById("lpg").value);
+      const elektrikTuketim = parseFloat(document.getElementById("elektrik").value);
       const sonucDiv = document.getElementById("sonuc");
 
-      if (isNaN(tuketim) || isNaN(mesafe)) {
-        sonucDiv.innerHTML = "<strong>Lütfen tüm alanları doğru şekilde doldurun.</strong>";
+      if (isNaN(mesafe) || mesafe <= 0) {
+        sonucDiv.innerHTML = "<strong>Lütfen geçerli bir mesafe girin.</strong>";
         return;
       }
 
-      const harcama = (mesafe / 100) * tuketim;
-      const seciliMaliyet = harcama * fiyatlar[yakitTipi];
+      let cikti = "";
 
-      let digerMaliyetler = '';
-      for (let tip in fiyatlar) {
-        if (tip !== yakitTipi) {
-          const maliyet = harcama * fiyatlar[tip];
-          digerMaliyetler += `<li>${tip.charAt(0).toUpperCase() + tip.slice(1)} ile tahmini maliyet: <strong>₺${maliyet.toFixed(2)}</strong></li>`;
-        }
+      if (!isNaN(benzinTuketim)) {
+        cikti += hesaplaDetay("Benzin", benzinTuketim, fiyatlar.benzin, mesafe);
+      }
+      if (!isNaN(lpgTuketim)) {
+        cikti += hesaplaDetay("LPG", lpgTuketim, fiyatlar.lpg, mesafe);
+      }
+      if (!isNaN(elektrikTuketim)) {
+        cikti += hesaplaDetay("Elektrik", elektrikTuketim, fiyatlar.elektrik, mesafe, "kWh");
       }
 
-      sonucDiv.innerHTML = `
-        <p><strong>${mesafe} km</strong> yol için seçilen <strong>${yakitTipi}</strong> ile tahmini maliyet: <strong>₺${seciliMaliyet.toFixed(2)}</strong></p>
-        <p>Diğer yakıt türleriyle olsaydı:</p>
-        <ul>${digerMaliyetler}</ul>
+      sonucDiv.innerHTML = cikti || "<strong>Lütfen en az bir yakıt tipi için bilgi girin.</strong>";
+    }
+
+    function hesaplaDetay(ad, tuketim100km, fiyat, mesafe, birim = "Litre") {
+      const toplamTuketim = (mesafe / 100) * tuketim100km;
+      const toplamMaliyet = toplamTuketim * fiyat;
+      const kmBasinaTuketim = tuketim100km / 100;
+      const kmBasinaMaliyet = kmBasinaTuketim * fiyat;
+
+      return `
+        <div class="fuel-title">${ad}:</div>
+        <ul>
+          <li>Toplam tüketim: <strong>${toplamTuketim.toFixed(2)} ${birim}</strong></li>
+          <li>Toplam maliyet: <strong>₺${toplamMaliyet.toFixed(2)}</strong></li>
+          <li>1 km'de tüketim: <strong>${kmBasinaTuketim.toFixed(3)} ${birim}</strong></li>
+          <li>1 km'de maliyet: <strong>₺${kmBasinaMaliyet.toFixed(3)}</strong></li>
+        </ul>
       `;
     }
   </script>
