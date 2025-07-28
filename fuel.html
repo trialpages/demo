@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Yakıt Maliyeti Hesaplayıcı</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      margin: auto;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #007B83;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      width: 100%;
+      background-color: #007B83;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005e62;
+    }
+    .result {
+      margin-top: 25px;
+      background: #e9f7f6;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 5px solid #007B83;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Yakıt Maliyeti Hesaplayıcı</h2>
+
+    <label for="fuelType">Yakıt Tipi:</label>
+    <select id="fuelType">
+      <option value="benzin">Benzin (₺45/litre)</option>
+      <option value="lpg">LPG (₺23/litre)</option>
+      <option value="elektrik">Elektrik (₺11.5/kWh)</option>
+    </select>
+
+    <label for="consumption">100 km'deki Tüketim (Litre veya kWh):</label>
+    <input type="number" id="consumption" placeholder="Örn: 6.5" step="0.1">
+
+    <label for="distance">Kat Edilen Mesafe (km):</label>
+    <input type="number" id="distance" placeholder="Örn: 350" step="1">
+
+    <button onclick="hesapla()">Hesapla</button>
+
+    <div class="result" id="sonuc"></div>
+  </div>
+
+  <script>
+    const fiyatlar = {
+      benzin: 45,
+      lpg: 23,
+      elektrik: 11.5
+    };
+
+    function hesapla() {
+      const yakitTipi = document.getElementById("fuelType").value;
+      const tuketim = parseFloat(document.getElementById("consumption").value);
+      const mesafe = parseFloat(document.getElementById("distance").value);
+      const sonucDiv = document.getElementById("sonuc");
+
+      if (isNaN(tuketim) || isNaN(mesafe)) {
+        sonucDiv.innerHTML = "<strong>Lütfen tüm alanları doğru şekilde doldurun.</strong>";
+        return;
+      }
+
+      const harcama = (mesafe / 100) * tuketim;
+      const seciliMaliyet = harcama * fiyatlar[yakitTipi];
+
+      let digerMaliyetler = '';
+      for (let tip in fiyatlar) {
+        if (tip !== yakitTipi) {
+          const maliyet = harcama * fiyatlar[tip];
+          digerMaliyetler += `<li>${tip.charAt(0).toUpperCase() + tip.slice(1)} ile tahmini maliyet: <strong>₺${maliyet.toFixed(2)}</strong></li>`;
+        }
+      }
+
+      sonucDiv.innerHTML = `
+        <p><strong>${mesafe} km</strong> yol için seçilen <strong>${yakitTipi}</strong> ile tahmini maliyet: <strong>₺${seciliMaliyet.toFixed(2)}</strong></p>
+        <p>Diğer yakıt türleriyle olsaydı:</p>
+        <ul>${digerMaliyetler}</ul>
+      `;
+    }
+  </script>
+</body>
+</html>
