@@ -3,81 +3,102 @@
 <head>
   <meta charset="UTF-8">
   <title>İfrelİ Muhabbet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 🔹 Mobil uyum için -->
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
       background: #f5f6fa;
+      margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
     }
     .container {
-      width: 400px;
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
       background: white;
-      border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      overflow: hidden;
     }
     header {
-      background: #4a69bd;
+      background: linear-gradient(135deg, #4a69bd, #3b5399);
       color: white;
       padding: 15px;
       text-align: center;
-      font-size: 18px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
     #loginDiv, #chatDiv {
-      padding: 20px;
+      flex: 1;
       display: none;
+      flex-direction: column;
+      padding: 20px;
     }
-    input {
+    input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 8px 0;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 10px;
+      font-size: 15px;
+      resize: none;
+      box-sizing: border-box;
+    }
+    textarea {
+      min-height: 45px;
+      max-height: 80px;
     }
     button {
-      width: 100%;
-      padding: 10px;
+      padding: 12px;
       background: #4a69bd;
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      font-size: 15px;
       cursor: pointer;
       margin-top: 10px;
+      transition: 0.2s ease;
     }
     button:hover { background: #3b5399; }
     #messages {
-      height: 300px;
+      flex: 1;
       overflow-y: auto;
-      padding: 10px;
+      padding: 15px;
       background: #f1f2f6;
       border-radius: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
     }
     .msg {
-      margin: 5px 0;
-      padding: 8px 12px;
-      border-radius: 16px;
-      max-width: 70%;
-      clear: both;
+      margin: 6px 0;
+      padding: 10px 14px;
+      border-radius: 18px;
+      max-width: 75%;
+      word-wrap: break-word;
+      font-size: 15px;
     }
     .msg.me {
       background: #4a69bd;
       color: white;
-      float: right;
-      text-align: right;
+      align-self: flex-end;
     }
     .msg.other {
       background: #dfe4ea;
-      float: left;
-      text-align: left;
+      color: #2f3542;
+      align-self: flex-start;
+    }
+    #chatInputArea {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     #logoutBtn {
       background: #e74c3c;
-      margin-top: 5px;
     }
     #logoutBtn:hover { background: #c0392b; }
   </style>
@@ -97,8 +118,13 @@
     <!-- Sohbet Alanı -->
     <div id="chatDiv">
       <div id="messages"></div>
-      <input type="text" id="messageInput" placeholder="Mesaj yaz...">
-      <button onclick="sendMessage()">Gönder</button>
+
+      <!-- 🔹 Mesaj yazma alanı -->
+      <div id="chatInputArea">
+        <textarea id="messageInput" placeholder="Mesaj yaz..."></textarea>
+        <button onclick="sendMessage()">Gönder</button>
+      </div>
+
       <button id="logoutBtn" onclick="logout()">Çıkış</button>
     </div>
   </div>
@@ -109,7 +135,7 @@
     import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-    // 🔹 Firebase config (senin verdiğin kod)
+    // 🔹 Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyA2EtFfhxcVp_gOk0sany4frsI__OMKnsA",
       authDomain: "ifreli-muhabbet.firebaseapp.com",
@@ -133,10 +159,10 @@
     onAuthStateChanged(auth, user => {
       if (user) {
         loginDiv.style.display = "none";
-        chatDiv.style.display = "block";
+        chatDiv.style.display = "flex";
         loadMessages();
       } else {
-        loginDiv.style.display = "block";
+        loginDiv.style.display = "flex";
         chatDiv.style.display = "none";
       }
     });
@@ -192,6 +218,14 @@
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
+
+    // 🔹 Enter ile mesaj gönderme
+    msgInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
 
     // Butonlara erişim
     window.signup = signup;
