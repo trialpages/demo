@@ -3,104 +3,108 @@
 <head>
   <meta charset="UTF-8">
   <title>İfrelİ Muhabbet</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 🔹 Mobil uyum için -->
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+      font-family: Arial, sans-serif;
       background: #f5f6fa;
-      margin: 0;
-      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
+      margin: 0;
     }
     .container {
       width: 100%;
       max-width: 480px;
       height: 100vh;
+      background: white;
+      border-radius: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     header {
-      background: linear-gradient(135deg, #4a69bd, #3b5399);
+      background: #4a69bd;
       color: white;
       padding: 15px;
       text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      letter-spacing: 1px;
+      font-size: 18px;
     }
     #loginDiv, #chatDiv {
       flex: 1;
       display: none;
-      flex-direction: column;
       padding: 20px;
     }
     input, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       margin: 8px 0;
       border: 1px solid #ccc;
-      border-radius: 10px;
-      font-size: 15px;
-      resize: none;
+      border-radius: 8px;
       box-sizing: border-box;
     }
     textarea {
-      min-height: 45px;
-      max-height: 80px;
+      font-family: "Times New Roman", serif;
+      resize: none;
+      height: 60px;
     }
     button {
-      padding: 12px;
+      width: 100%;
+      padding: 10px;
       background: #4a69bd;
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
-      transition: 0.2s ease;
     }
     button:hover { background: #3b5399; }
     #messages {
       flex: 1;
       overflow-y: auto;
-      padding: 15px;
+      padding: 10px;
       background: #f1f2f6;
       border-radius: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       flex-direction: column;
     }
     .msg {
-      margin: 6px 0;
-      padding: 10px 14px;
-      border-radius: 18px;
-      max-width: 75%;
+      margin: 5px 0;
+      padding: 8px 12px;
+      border-radius: 16px;
+      max-width: 70%;
       word-wrap: break-word;
-      font-size: 15px;
     }
     .msg.me {
       background: #4a69bd;
       color: white;
       align-self: flex-end;
+      text-align: right;
     }
     .msg.other {
       background: #dfe4ea;
-      color: #2f3542;
       align-self: flex-start;
-    }
-    #chatInputArea {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      text-align: left;
     }
     #logoutBtn {
       background: #e74c3c;
+      margin-top: 5px;
     }
     #logoutBtn:hover { background: #c0392b; }
+    .inputRow {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .inputRow textarea {
+      flex: 1;
+    }
+    .inputRow button {
+      flex: 0 0 auto;
+      width: auto;
+      padding: 10px 16px;
+    }
   </style>
 </head>
 <body>
@@ -111,20 +115,16 @@
     <div id="loginDiv">
       <input type="email" id="email" placeholder="E-posta">
       <input type="password" id="password" placeholder="Şifre">
-      <button onclick="signup()">Kayıt Ol</button>
       <button onclick="login()">Giriş Yap</button>
     </div>
 
     <!-- Sohbet Alanı -->
     <div id="chatDiv">
       <div id="messages"></div>
-
-      <!-- 🔹 Mesaj yazma alanı -->
-      <div id="chatInputArea">
+      <div class="inputRow">
         <textarea id="messageInput" placeholder="Mesaj yaz..."></textarea>
-        <button onclick="sendMessage()">Gönder</button>
+        <button onclick="sendMessage()">➤</button>
       </div>
-
       <button id="logoutBtn" onclick="logout()">Çıkış</button>
     </div>
   </div>
@@ -132,8 +132,8 @@
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     // 🔹 Firebase config
     const firebaseConfig = {
@@ -155,6 +155,9 @@
     const messagesDiv = document.getElementById('messages');
     const msgInput = document.getElementById('messageInput');
 
+    let lastVisible = null;
+    let unsubscribe = null;
+
     // Kullanıcı durumunu dinle
     onAuthStateChanged(auth, user => {
       if (user) {
@@ -162,17 +165,12 @@
         chatDiv.style.display = "flex";
         loadMessages();
       } else {
-        loginDiv.style.display = "flex";
+        if (unsubscribe) unsubscribe();
+        loginDiv.style.display = "block";
         chatDiv.style.display = "none";
+        messagesDiv.innerHTML = "";
       }
     });
-
-    // Kayıt Ol
-    async function signup() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      await createUserWithEmailAndPassword(auth, email, password).catch(alert);
-    }
 
     // Giriş Yap
     async function login() {
@@ -198,37 +196,87 @@
       }
     }
 
-    // Mesajları Yükle
-    function loadMessages() {
-      const q = query(collection(db, "messages"), orderBy("timestamp"));
-      onSnapshot(q, snapshot => {
-        messagesDiv.innerHTML = "";
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const div = document.createElement("div");
-          div.classList.add("msg");
-          if (data.sender === auth.currentUser.email) {
-            div.classList.add("me");
-          } else {
-            div.classList.add("other");
-          }
-          div.textContent = data.text;
-          messagesDiv.appendChild(div);
-        });
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      });
-    }
-
-    // 🔹 Enter ile mesaj gönderme
-    msgInput.addEventListener("keydown", function(e) {
+    // Enter ile mesaj gönder
+    msgInput.addEventListener("keydown", e => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
     });
 
+    // Mesajları Yükle
+    async function loadMessages() {
+      const q = query(collection(db, "messages"), orderBy("timestamp", "desc"), limit(20));
+      const snapshot = await getDocs(q);
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+      // En son mesajlardan başlayarak göster
+      let msgs = [];
+      snapshot.forEach(doc => {
+        msgs.unshift({ id: doc.id, ...doc.data() });
+      });
+      renderMessages(msgs);
+
+      // Yeni mesajları canlı dinle
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(
+        query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(50)),
+        snap => {
+          messagesDiv.innerHTML = "";
+          snap.forEach(doc => {
+            const data = doc.data();
+            renderMessage(data);
+          });
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+      );
+    }
+
+    // Daha eski mesajları getir
+    messagesDiv.addEventListener("scroll", async () => {
+      if (messagesDiv.scrollTop === 0 && lastVisible) {
+        const q = query(collection(db, "messages"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(20));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          lastVisible = snapshot.docs[snapshot.docs.length - 1];
+          let msgs = [];
+          snapshot.forEach(doc => {
+            msgs.unshift({ id: doc.id, ...doc.data() });
+          });
+          prependMessages(msgs);
+        }
+      }
+    });
+
+    function renderMessages(msgs) {
+      messagesDiv.innerHTML = "";
+      msgs.forEach(m => renderMessage(m));
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function prependMessages(msgs) {
+      const oldScroll = messagesDiv.scrollHeight;
+      msgs.forEach(m => {
+        const div = document.createElement("div");
+        div.classList.add("msg");
+        if (m.sender === auth.currentUser.email) div.classList.add("me");
+        else div.classList.add("other");
+        div.textContent = m.text;
+        messagesDiv.insertBefore(div, messagesDiv.firstChild);
+      });
+      messagesDiv.scrollTop = messagesDiv.scrollHeight - oldScroll;
+    }
+
+    function renderMessage(m) {
+      const div = document.createElement("div");
+      div.classList.add("msg");
+      if (m.sender === auth.currentUser.email) div.classList.add("me");
+      else div.classList.add("other");
+      div.textContent = m.text;
+      messagesDiv.appendChild(div);
+    }
+
     // Butonlara erişim
-    window.signup = signup;
     window.login = login;
     window.logout = logout;
     window.sendMessage = sendMessage;
