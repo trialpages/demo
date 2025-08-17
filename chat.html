@@ -16,142 +16,54 @@
       --radius: 12px;
     }
     * { box-sizing: border-box; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-    }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; background: var(--bg); }
+    body { display: flex; align-items: center; justify-content: center; }
     .container {
-      width: 100%;
-      max-width: 480px;
-      height: 100dvh; /* mobil tarayıcı çubukları için daha doğru */
-      background: #fff;
-      display: flex;
-      flex-direction: column;
+      width: 100%; max-width: 480px; height: 100dvh;
+      background: #fff; display: flex; flex-direction: column;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     header {
-      background: var(--primary);
-      color: #fff;
-      padding: 14px 16px;
-      text-align: center;
-      font-size: 18px;
+      background: var(--primary); color: #fff;
+      padding: 14px 16px; text-align: center; font-size: 18px;
       flex-shrink: 0;
     }
-
-    /* Ortak form elemanları */
-    input, textarea, button {
-      border-radius: var(--radius);
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+    input, textarea, button { border-radius: var(--radius); border: 1px solid #ccc; font-size: 14px; }
     input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      background: #fff;
+      width: 100%; padding: 10px; margin: 8px 0; background: #fff;
     }
-    textarea {
-      font-family: "Times New Roman", serif;
-      resize: none;
-      min-height: 60px;
-      max-height: 140px;
-    }
+    textarea { font-family: "Times New Roman", serif; resize: none; min-height: 60px; max-height: 140px; }
     button {
-      background: var(--primary);
-      color: #fff;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-      transition: background .15s ease;
+      background: var(--primary); color: #fff; padding: 10px;
+      border: none; cursor: pointer; transition: background .15s ease;
     }
     button:hover { background: var(--primary-hover); }
-
-    /* Bölümler */
-    #loginDiv, #chatDiv {
-      flex: 1;
-      display: none;
-      padding: 16px;
-      overflow: hidden; /* iç düzeni koru */
-    }
-
-    /* Login (dokunma) */
-    #loginDiv button { width: 100%; } /* sadece login butonu tam genişlik kalsın */
-
-    /* Chat düzeni */
-    #chatDiv {
-      display: none; /* JS açacak */
-      flex-direction: column;
-      gap: 10px;
-    }
+    #loginDiv, #chatDiv { flex: 1; display: none; padding: 16px; overflow: hidden; }
+    #loginDiv button { width: 100%; }
+    #chatDiv { flex-direction: column; gap: 10px; }
     #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-      background: var(--msg-bg);
-      border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-height: 0; /* flex içinde doğru kaydırma için önemli */
+      flex: 1; overflow-y: auto; padding: 10px; background: var(--msg-bg);
+      border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px; min-height: 0;
     }
     .msg {
-      margin: 0;
-      padding: 8px 12px;
-      border-radius: 16px;
-      max-width: 80%;
-      word-wrap: break-word;
-      line-height: 1.3;
-      font-size: 14px;
-      background: var(--other);
-      align-self: flex-start;
+      margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 80%;
+      word-wrap: break-word; line-height: 1.3; font-size: 14px;
+      background: var(--other); align-self: flex-start;
     }
-    .msg.me {
-      background: var(--primary);
-      color: #fff;
-      align-self: flex-end;
-    }
-
-    .inputRow {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-    }
-    .inputRow textarea {
-      flex: 1 1 auto;
-      margin: 0;
-    }
+    .msg.me { background: var(--primary); color: #fff; align-self: flex-end; }
+    .inputRow { display: flex; gap: 8px; align-items: flex-end; }
+    .inputRow textarea { flex: 1 1 auto; margin: 0; }
     .sendBtn {
-      flex: 0 0 auto;
-      padding: 10px 16px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 42px;
-      width: auto;
+      flex: 0 0 auto; padding: 10px 16px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 42px; width: auto;
     }
-
-    /* Çıkış butonunu textarea'nın altına, sağa dayalı küçük tut */
-    .actionsRow {
-      display: flex;
-      justify-content: flex-end;
-    }
+    .actionsRow { display: flex; justify-content: flex-end; }
     #logoutBtn {
-      background: var(--danger);
-      padding: 8px 12px;
-      border-radius: 999px;
-      width: auto;           /* tam genişlik değil */
-      margin: 0;             /* dikeyde uzamasın */
+      background: var(--danger); padding: 8px 12px;
+      border-radius: 999px; width: auto; margin: 0;
     }
     #logoutBtn:hover { background: var(--danger-hover); }
-
     @media (max-width: 600px) {
       header { font-size: 16px; padding: 12px; }
       .msg { font-size: 13px; }
@@ -173,12 +85,10 @@
     <!-- Sohbet -->
     <div id="chatDiv">
       <div id="messages" aria-live="polite"></div>
-
       <div class="inputRow">
         <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
         <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
       </div>
-
       <div class="actionsRow">
         <button id="logoutBtn" onclick="logout()">Çıkış</button>
       </div>
@@ -189,7 +99,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -201,26 +111,30 @@
       appId: "1:83940267241:web:b3d39fc721b75e9377cc78"
     };
 
-    // Başlat
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // DOM
     const loginDiv = document.getElementById("loginDiv");
     const chatDiv = document.getElementById("chatDiv");
     const messagesDiv = document.getElementById("messages");
     const msgInput = document.getElementById("messageInput");
 
     let unsubscribe = null;
+    let lastVisible = null;
+    let loadingOld = false;
 
-    // Auth durumunu dinle
+    // Bildirim izni iste
+    if ("Notification" in window) {
+      Notification.requestPermission();
+    }
+
+    // Auth state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginDiv.style.display = "none";
         chatDiv.style.display = "flex";
         loadMessages();
-        msgInput.focus();
       } else {
         if (unsubscribe) unsubscribe();
         loginDiv.style.display = "block";
@@ -245,18 +159,15 @@
       const text = msgInput.value.trim();
       if (!text) return;
       if (!auth.currentUser) return;
-
       await addDoc(collection(db, "messages"), {
         text,
         sender: auth.currentUser.email,
         timestamp: serverTimestamp()
       });
-
       msgInput.value = "";
-      msgInput.focus();
     }
 
-    // Enter ile gönder (Shift+Enter yeni satır)
+    // Enter ile gönder
     msgInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
@@ -264,41 +175,83 @@
       }
     });
 
-    // Son 20 mesajı izle ve göster (yeni -> eski çek, ekranda eski -> yeni sırala)
-    function loadMessages() {
+    // İlk mesajları yükle
+    async function loadMessages() {
+      const q = query(collection(db, "messages"), orderBy("timestamp", "desc"), limit(20));
+      const snapshot = await getDocs(q);
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+      let msgs = [];
+      snapshot.forEach(doc => msgs.unshift({ id: doc.id, ...doc.data() }));
+      renderMessages(msgs);
+
+      // Yeni mesajları canlı dinle (en güncel 1 tanesini yakala)
       if (unsubscribe) unsubscribe();
-      const q = query(
-        collection(db, "messages"),
-        orderBy("timestamp", "desc"),
-        limit(20)
-      );
-      unsubscribe = onSnapshot(q, (snap) => {
-        const msgs = [];
-        snap.forEach((doc) => msgs.push(doc.data()));
-        // ekranda eski->yeni göstermek için sırala
-        msgs.sort((a, b) => {
-          const ta = (a.timestamp?.seconds ?? 0) * 1000 + (a.timestamp?.nanoseconds ?? 0) / 1e6;
-          const tb = (b.timestamp?.seconds ?? 0) * 1000 + (b.timestamp?.nanoseconds ?? 0) / 1e6;
-          return ta - tb;
+      const liveQ = query(collection(db, "messages"), orderBy("timestamp", "desc"), limit(1));
+      unsubscribe = onSnapshot(liveQ, snap => {
+        snap.docChanges().forEach(change => {
+          if (change.type === "added") {
+            const data = change.doc.data();
+            // Yeni mesaj bana ait değilse bildirim
+            if (data.sender !== auth.currentUser.email && Notification.permission === "granted") {
+              new Notification("Yeni mesaj", { body: data.text });
+            }
+            appendMessage(data);
+          }
         });
-        renderMessages(msgs);
       });
     }
 
+    // Sonsuz scroll
+    messagesDiv.addEventListener("scroll", async () => {
+      if (messagesDiv.scrollTop === 0 && lastVisible && !loadingOld) {
+        loadingOld = true;
+        const oldQ = query(collection(db, "messages"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(20));
+        const snapshot = await getDocs(oldQ);
+        if (!snapshot.empty) {
+          lastVisible = snapshot.docs[snapshot.docs.length - 1];
+          let msgs = [];
+          snapshot.forEach(doc => msgs.unshift({ id: doc.id, ...doc.data() }));
+          prependMessages(msgs);
+        }
+        loadingOld = false;
+      }
+    });
+
     function renderMessages(msgs) {
       messagesDiv.innerHTML = "";
-      msgs.forEach(renderMessage);
+      msgs.forEach(m => renderMessage(m));
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
+    function appendMessage(m) {
+      renderMessage(m);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function prependMessages(msgs) {
+      const oldHeight = messagesDiv.scrollHeight;
+      msgs.forEach(m => {
+        const div = createMsgDiv(m);
+        messagesDiv.insertBefore(div, messagesDiv.firstChild);
+      });
+      // Scroll pozisyonunu koru
+      messagesDiv.scrollTop = messagesDiv.scrollHeight - oldHeight;
+    }
+
     function renderMessage(m) {
-      const div = document.createElement("div");
-      div.className = "msg" + (m.sender === auth.currentUser?.email ? " me" : "");
-      div.textContent = m.text ?? "";
+      const div = createMsgDiv(m);
       messagesDiv.appendChild(div);
     }
 
-    // global erişim
+    function createMsgDiv(m) {
+      const div = document.createElement("div");
+      div.className = "msg" + (m.sender === auth.currentUser?.email ? " me" : "");
+      div.textContent = m.text ?? "";
+      return div;
+    }
+
+    // Global
     window.login = login;
     window.logout = logout;
     window.sendMessage = sendMessage;
