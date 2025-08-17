@@ -1,124 +1,161 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>İletişim Formu</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root {
+      --primary: #4a69bd;
+      --primary-hover: #3b5399;
+      --bg: #f5f6fa;
+      --msg-bg: #f1f2f6;
+      --other: #dfe4ea;
+      --danger: #e74c3c;
+      --danger-hover: #c0392b;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
       margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .container {
       width: 100%;
       max-width: 480px;
-      height: 100vh;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      height: 100dvh; /* mobil tarayıcı çubukları için daha doğru */
+      background: #fff;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     header {
-      background: #4a69bd;
-      color: white;
-      padding: 15px;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 16px;
       text-align: center;
       font-size: 18px;
       flex-shrink: 0;
     }
-    #loginDiv, #chatDiv {
-      flex: 1;
-      display: none;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow: hidden;
+
+    /* Ortak form elemanları */
+    input, textarea, button {
+      border-radius: var(--radius);
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
     input, textarea {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
+      background: #fff;
     }
     textarea {
       font-family: "Times New Roman", serif;
       resize: none;
-      height: 60px;
+      min-height: 60px;
+      max-height: 140px;
     }
     button {
-      width: 100%;
+      background: var(--primary);
+      color: #fff;
       padding: 10px;
-      background: #4a69bd;
-      color: white;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
-      margin-top: 10px;
+      transition: background .15s ease;
     }
-    button:hover { background: #3b5399; }
+    button:hover { background: var(--primary-hover); }
+
+    /* Bölümler */
+    #loginDiv, #chatDiv {
+      flex: 1;
+      display: none;
+      padding: 16px;
+      overflow: hidden; /* iç düzeni koru */
+    }
+
+    /* Login (dokunma) */
+    #loginDiv button { width: 100%; } /* sadece login butonu tam genişlik kalsın */
+
+    /* Chat düzeni */
+    #chatDiv {
+      display: none; /* JS açacak */
+      flex-direction: column;
+      gap: 10px;
+    }
     #messages {
       flex: 1;
       overflow-y: auto;
       padding: 10px;
-      background: #f1f2f6;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      background: var(--msg-bg);
+      border-radius: var(--radius);
       display: flex;
       flex-direction: column;
+      gap: 6px;
+      min-height: 0; /* flex içinde doğru kaydırma için önemli */
     }
     .msg {
-      margin: 5px 0;
+      margin: 0;
       padding: 8px 12px;
       border-radius: 16px;
-      max-width: 70%;
+      max-width: 80%;
       word-wrap: break-word;
+      line-height: 1.3;
       font-size: 14px;
+      background: var(--other);
+      align-self: flex-start;
     }
     .msg.me {
-      background: #4a69bd;
-      color: white;
+      background: var(--primary);
+      color: #fff;
       align-self: flex-end;
-      text-align: right;
-    }
-    .msg.other {
-      background: #dfe4ea;
-      align-self: flex-start;
-      text-align: left;
-    }
-    #logoutBtn {
-      background: #e74c3c;
-      margin-top: 5px;
-    }
-    #logoutBtn:hover { background: #c0392b; }
-    .inputRow {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-    .inputRow textarea {
-      flex: 1;
-    }
-    .inputRow button {
-      flex: 0 0 auto;
-      width: auto;
-      padding: 10px 16px;
     }
 
-    /* Mobil uyum */
+    .inputRow {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .inputRow textarea {
+      flex: 1 1 auto;
+      margin: 0;
+    }
+    .sendBtn {
+      flex: 0 0 auto;
+      padding: 10px 16px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 42px;
+      width: auto;
+    }
+
+    /* Çıkış butonunu textarea'nın altına, sağa dayalı küçük tut */
+    .actionsRow {
+      display: flex;
+      justify-content: flex-end;
+    }
+    #logoutBtn {
+      background: var(--danger);
+      padding: 8px 12px;
+      border-radius: 999px;
+      width: auto;           /* tam genişlik değil */
+      margin: 0;             /* dikeyde uzamasın */
+    }
+    #logoutBtn:hover { background: var(--danger-hover); }
+
     @media (max-width: 600px) {
-      header {
-        font-size: 16px;
-        padding: 12px;
-      }
-      .msg {
-        font-size: 13px;
-      }
+      header { font-size: 16px; padding: 12px; }
+      .msg { font-size: 13px; }
+      .sendBtn { height: 40px; }
     }
   </style>
 </head>
@@ -126,21 +163,25 @@
   <div class="container">
     <header>İletişim Formu</header>
 
-    <!-- Giriş Alanı -->
+    <!-- Giriş -->
     <div id="loginDiv">
-      <input type="email" id="email" placeholder="E-posta">
-      <input type="password" id="password" placeholder="Şifre">
+      <input type="email" id="email" placeholder="E-posta" />
+      <input type="password" id="password" placeholder="Şifre" />
       <button onclick="login()">Giriş Yap</button>
     </div>
 
-    <!-- Sohbet Alanı -->
+    <!-- Sohbet -->
     <div id="chatDiv">
-      <div id="messages"></div>
+      <div id="messages" aria-live="polite"></div>
+
       <div class="inputRow">
-        <textarea id="messageInput" placeholder="Mesaj yaz..."></textarea>
-        <button onclick="sendMessage()">➤</button>
+        <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
+        <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
       </div>
-      <button id="logoutBtn" onclick="logout()">Çıkış</button>
+
+      <div class="actionsRow">
+        <button id="logoutBtn" onclick="logout()">Çıkış</button>
+      </div>
     </div>
   </div>
 
@@ -160,23 +201,26 @@
       appId: "1:83940267241:web:b3d39fc721b75e9377cc78"
     };
 
+    // Başlat
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const loginDiv = document.getElementById('loginDiv');
-    const chatDiv = document.getElementById('chatDiv');
-    const messagesDiv = document.getElementById('messages');
-    const msgInput = document.getElementById('messageInput');
+    // DOM
+    const loginDiv = document.getElementById("loginDiv");
+    const chatDiv = document.getElementById("chatDiv");
+    const messagesDiv = document.getElementById("messages");
+    const msgInput = document.getElementById("messageInput");
 
     let unsubscribe = null;
 
-    // Kullanıcı durumunu dinle
-    onAuthStateChanged(auth, user => {
+    // Auth durumunu dinle
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         loginDiv.style.display = "none";
         chatDiv.style.display = "flex";
         loadMessages();
+        msgInput.focus();
       } else {
         if (unsubscribe) unsubscribe();
         loginDiv.style.display = "block";
@@ -187,60 +231,74 @@
 
     // Giriş
     async function login() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      await signInWithEmailAndPassword(auth, email, password).catch(alert);
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!email || !password) { alert("Lütfen e-posta ve şifre girin."); return; }
+      await signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
     }
 
     // Çıkış
-    async function logout() {
-      await signOut(auth);
-    }
+    async function logout() { await signOut(auth); }
 
     // Mesaj gönder
     async function sendMessage() {
-      if (msgInput.value.trim()) {
-        await addDoc(collection(db, "messages"), {
-          text: msgInput.value,
-          sender: auth.currentUser.email,
-          timestamp: serverTimestamp()
-        });
-        msgInput.value = "";
-      }
+      const text = msgInput.value.trim();
+      if (!text) return;
+      if (!auth.currentUser) return;
+
+      await addDoc(collection(db, "messages"), {
+        text,
+        sender: auth.currentUser.email,
+        timestamp: serverTimestamp()
+      });
+
+      msgInput.value = "";
+      msgInput.focus();
     }
 
-    // Enter ile gönder
-    msgInput.addEventListener("keydown", e => {
+    // Enter ile gönder (Shift+Enter yeni satır)
+    msgInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         sendMessage();
       }
     });
 
-    // Mesajları yükle (20 ile sınır)
+    // Son 20 mesajı izle ve göster (yeni -> eski çek, ekranda eski -> yeni sırala)
     function loadMessages() {
       if (unsubscribe) unsubscribe();
-      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(20));
-      unsubscribe = onSnapshot(q, snap => {
-        messagesDiv.innerHTML = "";
-        snap.forEach(doc => {
-          const data = doc.data();
-          renderMessage(data);
+      const q = query(
+        collection(db, "messages"),
+        orderBy("timestamp", "desc"),
+        limit(20)
+      );
+      unsubscribe = onSnapshot(q, (snap) => {
+        const msgs = [];
+        snap.forEach((doc) => msgs.push(doc.data()));
+        // ekranda eski->yeni göstermek için sırala
+        msgs.sort((a, b) => {
+          const ta = (a.timestamp?.seconds ?? 0) * 1000 + (a.timestamp?.nanoseconds ?? 0) / 1e6;
+          const tb = (b.timestamp?.seconds ?? 0) * 1000 + (b.timestamp?.nanoseconds ?? 0) / 1e6;
+          return ta - tb;
         });
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        renderMessages(msgs);
       });
+    }
+
+    function renderMessages(msgs) {
+      messagesDiv.innerHTML = "";
+      msgs.forEach(renderMessage);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
     function renderMessage(m) {
       const div = document.createElement("div");
-      div.classList.add("msg");
-      if (m.sender === auth.currentUser.email) div.classList.add("me");
-      else div.classList.add("other");
-      div.textContent = m.text;
+      div.className = "msg" + (m.sender === auth.currentUser?.email ? " me" : "");
+      div.textContent = m.text ?? "";
       messagesDiv.appendChild(div);
     }
 
-    // Butonlara erişim
+    // global erişim
     window.login = login;
     window.logout = logout;
     window.sendMessage = sendMessage;
