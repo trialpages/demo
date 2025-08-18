@@ -1,300 +1,275 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>İletişim Formu</title>
-  <style>
-    :root {
-      --primary: #4a69bd;
-      --primary-hover: #3b5399;
-      --bg: #f5f6fa;
-      --msg-bg: #f1f2f6;
-      --other: #dfe4ea;
-      --danger: #e74c3c;
-      --danger-hover: #c0392b;
-      --radius: 12px;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; background: var(--bg); }
-    body { display: flex; align-items: center; justify-content: center; }
-    .container {
-      width: 100%; max-width: 480px; height: 100dvh;
-      background: #fff; display: flex; flex-direction: column;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    header {
-      background: var(--primary); color: #fff;
-      padding: 14px 16px; text-align: center; font-size: 18px;
-      flex-shrink: 0;
-    }
-    input, textarea, button { border-radius: var(--radius); border: 1px solid #ccc; font-size: 14px; }
-    input, textarea {
-      width: 100%; padding: 10px; margin: 8px 0; background: #fff;
-    }
-    textarea { font-family: "Times New Roman", serif; resize: none; min-height: 60px; max-height: 140px; }
-    button {
-      background: var(--primary); color: #fff; padding: 10px;
-      border: none; cursor: pointer; transition: background .15s ease;
-    }
-    button:hover { background: var(--primary-hover); }
-    #loginDiv, #chatDiv { flex: 1; display: none; padding: 16px; overflow: hidden; }
-    #loginDiv button { width: 100%; }
-    #chatDiv { flex-direction: column; gap: 10px; }
-    #messages {
-      flex: 1; overflow-y: auto; padding: 10px; background: var(--msg-bg);
-      border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px; min-height: 0;
-    }
-    .msg {
-      margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 70%;
-      word-wrap: break-word; line-height: 1.3; font-size: 14px;
-      background: var(--other); align-self: flex-start;
-    }
-    .msg.me { background: var(--primary); color: #fff; align-self: flex-end; }
-    .inputRow { display: flex; gap: 8px; align-items: flex-end; }
-    .inputRow textarea { flex: 1 1 auto; margin: 0; }
-    .sendBtn {
-      flex: 0 0 auto; padding: 10px 16px; border-radius: 999px;
-      display: inline-flex; align-items: center; justify-content: center;
-      height: 42px; width: auto;
-    }
-    .actionsRow { display: flex; justify-content: flex-end; }
-    #logoutBtn {
-      background: var(--danger); padding: 8px 12px;
-      border-radius: 999px; width: auto; margin: 0;
-    }
-    #logoutBtn:hover { background: var(--danger-hover); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>İletişim Formu</title>
+<style>
+:root {
+  --primary: #4a69bd;
+  --primary-hover: #3b5399;
+  --bg: #f5f6fa;
+  --msg-bg: #f1f2f6;
+  --other: #dfe4ea;
+  --danger: #e74c3c;
+  --danger-hover: #c0392b;
+  --radius: 12px;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;font-family:Arial,sans-serif;background:var(--bg);}
+body{display:flex;align-items:center;justify-content:center;}
+.container{
+  width:100%; max-width:480px; height:100dvh;
+  background:#fff; display:flex; flex-direction:column;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+header{
+  background:var(--primary); color:#fff;
+  padding:14px 16px; text-align:center; font-size:18px;
+  flex-shrink:0;
+}
+input,textarea,button{border-radius:var(--radius);border:1px solid #ccc;font-size:14px;}
+input,textarea{width:100%; padding:10px; margin:8px 0; background:#fff;}
+textarea{font-family:"Times New Roman",serif;resize:none;min-height:60px; max-height:140px;}
+button{background:var(--primary);color:#fff;padding:10px;border:none;cursor:pointer;transition:background .15s ease;}
+button:hover{background:var(--primary-hover);}
+#loginDiv,#chatDiv{flex:1;display:none;padding:16px;overflow:hidden;}
+#loginDiv button{width:100%;}
+#chatDiv{flex-direction:column;gap:10px;}
+#messages{
+  flex:1; overflow-y:auto; padding:10px; background:var(--msg-bg);
+  border-radius:var(--radius); display:flex; flex-direction:column; gap:6px; min-height:0;
+}
+.msg{
+  margin:0; padding:8px 12px; border-radius:16px; max-width:70%;
+  word-wrap:break-word; line-height:1.3; font-size:14px;
+  background:var(--other); align-self:flex-start;
+}
+.msg.me{background:var(--primary); color:#fff; align-self:flex-end;}
+.inputRow{display:flex; gap:8px; align-items:flex-end; position:relative;}
+.inputRow textarea{flex:1 1 auto; margin:0; padding-right:60px;}
+.sendBtn{flex:0 0 auto; padding:10px 16px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; height:42px; width:auto;}
+.actionsRow{display:flex;justify-content:flex-end;}
+#logoutBtn{background:var(--danger); padding:8px 12px; border-radius:999px; width:auto; margin:0;}
+#logoutBtn:hover{background:var(--danger-hover);}
 
-    /* Küçük galeri ikonu */
-    #imageInput { display: none; }
-    .imageBtn {
-      cursor: pointer;
-      font-size: 20px;
-      padding: 6px;
-      border-radius: 50%;
-      border: 1px solid #ccc;
-      display: flex; align-items: center; justify-content: center;
-      background: #fff;
-      transition: background .15s;
-    }
-    .imageBtn:hover { background: #eee; }
-
-    @media (max-width: 600px) {
-      header { font-size: 16px; padding: 12px; }
-      .msg { font-size: 13px; max-width: 80%; }
-      .sendBtn { height: 40px; }
-    }
-  </style>
+/* Küçük ikonlar */
+#imageInput,#audioInput{display:none;}
+.iconBtn{
+  position:absolute;
+  bottom:10px;
+  width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  background:#fff;
+  border-radius:50%;
+  border:1px solid #ccc;
+  font-size:18px;
+  transition: background .15s;
+}
+.iconBtn:hover{background:#eee;}
+#imageBtn{right:50px;}
+#audioBtn{right:10px;}
+.msg img{max-width:180px; border-radius:12px; margin-bottom:6px;}
+.msg audio{width:160px; border-radius:12px;}
+@media (max-width:600px){
+  header{font-size:16px;padding:12px;}
+  .msg{font-size:13px; max-width:80%;}
+  .sendBtn{height:40px;}
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>İletişim Formu</header>
+<div class="container">
+<header>İletişim Formu</header>
 
-    <div id="loginDiv">
-      <input type="email" id="email" placeholder="E-posta" />
-      <input type="password" id="password" placeholder="Şifre" />
-      <button onclick="login()">Giriş Yap</button>
-    </div>
+<div id="loginDiv">
+  <input type="email" id="email" placeholder="E-posta" />
+  <input type="password" id="password" placeholder="Şifre" />
+  <button onclick="login()">Giriş Yap</button>
+</div>
 
-    <div id="chatDiv">
-      <div id="messages" aria-live="polite"></div>
-      <div class="inputRow">
-        <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
-        <label class="imageBtn" for="imageInput" title="Resim ekle">🖼️</label>
-        <input type="file" id="imageInput" accept="image/*" />
-        <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
-      </div>
-      <div class="actionsRow">
-        <button id="logoutBtn" onclick="logout()">Çıkış</button>
-      </div>
-    </div>
+<div id="chatDiv">
+  <div id="messages" aria-live="polite"></div>
+  <div class="inputRow">
+    <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
+    <label class="iconBtn" id="imageBtn" for="imageInput" title="Resim ekle">🖼️</label>
+    <input type="file" id="imageInput" accept="image/*"/>
+    <label class="iconBtn" id="audioBtn" title="Ses kaydet">🎤</label>
+    <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
   </div>
+  <div class="actionsRow">
+    <button id="logoutBtn" onclick="logout()">Çıkış</button>
+  </div>
+</div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
-      authDomain: "ms4bfcw.firebaseapp.com",
-      projectId: "ms4bfcw",
-      storageBucket: "ms4bfcw.firebasestorage.app",
-      messagingSenderId: "260708453820",
-      appId: "1:260708453820:web:7857e835708603aba62fb9",
-      measurementId: "G-WFMF5VGM8F"
+const firebaseConfig = {
+  apiKey:"AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
+  authDomain:"ms4bfcw.firebaseapp.com",
+  projectId:"ms4bfcw",
+  storageBucket:"ms4bfcw.firebasestorage.app",
+  messagingSenderId:"260708453820",
+  appId:"1:260708453820:web:7857e835708603aba62fb9",
+  measurementId:"G-WFMF5VGM8F"
+};
+
+const app=initializeApp(firebaseConfig);
+const analytics=getAnalytics(app);
+const auth=getAuth(app);
+const db=getFirestore(app);
+
+const loginDiv=document.getElementById("loginDiv");
+const chatDiv=document.getElementById("chatDiv");
+const messagesDiv=document.getElementById("messages");
+const msgInput=document.getElementById("messageInput");
+
+let unsubscribe=null;
+let lastVisible=null;
+let loadingOld=false;
+
+if("Notification" in window) Notification.requestPermission();
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    loginDiv.style.display="none";
+    chatDiv.style.display="flex";
+    loadMessages();
+  }else{
+    if(unsubscribe) unsubscribe();
+    loginDiv.style.display="block";
+    chatDiv.style.display="none";
+    messagesDiv.innerHTML="";
+  }
+});
+
+async function login(){
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+  if(!email||!password){alert("Lütfen e-posta ve şifre girin.");return;}
+  await signInWithEmailAndPassword(auth,email,password).catch(err=>alert(err.message));
+}
+async function logout(){await signOut(auth);}
+
+let mediaRecorder;
+let audioChunks=[];
+
+document.getElementById("audioBtn").addEventListener("mousedown",async()=>{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  mediaRecorder=new MediaRecorder(stream);
+  audioChunks=[];
+  mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+  mediaRecorder.start();
+});
+document.getElementById("audioBtn").addEventListener("mouseup",async()=>{
+  if(!mediaRecorder) return;
+  mediaRecorder.onstop=async()=>{
+    const blob=new Blob(audioChunks,{type:"audio/webm"});
+    if(blob.size>500000){alert("Ses mesajı çok uzun (~10-15 sn max)"); return;}
+    const reader=new FileReader();
+    reader.onloadend=async()=>{
+      const audioBase64=reader.result;
+      await addDoc(collection(db,"messages"),{
+        sender:auth.currentUser.email,
+        timestamp:serverTimestamp(),
+        audioBase64
+      });
     };
+    reader.readAsDataURL(blob);
+  };
+  mediaRecorder.stop();
+});
 
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+document.getElementById("imageInput").addEventListener("change", async function(){
+  const file=this.files[0];
+  if(!file) return;
+  if(file.size>2*1024*1024){alert("Resim boyutu 2MB'den büyük olamaz"); return;}
+  const reader=new FileReader();
+  reader.onloadend=async()=>{
+    const imageBase64=reader.result;
+    await addDoc(collection(db,"messages"),{
+      sender:auth.currentUser.email,
+      timestamp:serverTimestamp(),
+      imageBase64
+    });
+  };
+  reader.readAsDataURL(file);
+  this.value="";
+});
 
-    const loginDiv = document.getElementById("loginDiv");
-    const chatDiv = document.getElementById("chatDiv");
-    const messagesDiv = document.getElementById("messages");
-    const msgInput = document.getElementById("messageInput");
+async function sendMessage(){
+  const text=msgInput.value.trim();
+  if(!text || !auth.currentUser) return;
+  await addDoc(collection(db,"messages"),{
+    text,
+    sender:auth.currentUser.email,
+    timestamp:serverTimestamp()
+  });
+  msgInput.value="";
+}
 
-    let unsubscribe = null;
-    let lastVisible = null;
-    let loadingOld = false;
+msgInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault(); sendMessage();}
+});
 
-    if ("Notification" in window) Notification.requestPermission();
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        loginDiv.style.display = "none";
-        chatDiv.style.display = "flex";
-        loadMessages();
-      } else {
-        if (unsubscribe) unsubscribe();
-        loginDiv.style.display = "block";
-        chatDiv.style.display = "none";
-        messagesDiv.innerHTML = "";
+async function loadMessages(){
+  const q=query(collection(db,"messages"),orderBy("timestamp","desc"),limit(20));
+  const snapshot=await getDocs(q);
+  lastVisible=snapshot.docs[snapshot.docs.length-1];
+  let msgs=[];
+  snapshot.forEach(doc=>msgs.unshift({...doc.data(),id:doc.id}));
+  renderMessages(msgs);
+  if(unsubscribe) unsubscribe();
+  const liveQ=query(collection(db,"messages"),orderBy("timestamp","desc"),limit(1));
+  unsubscribe=onSnapshot(liveQ,snap=>{
+    snap.docChanges().forEach(change=>{
+      if(change.type==="added"){
+        const data=change.doc.data();
+        if(data.sender!==auth.currentUser.email && Notification.permission==="granted")
+          new Notification("Yeni mesaj",{body:data.text||"Yeni mesaj"});
+        appendMessage(data);
       }
     });
+  });
+}
 
-    async function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      if (!email || !password) { alert("Lütfen e-posta ve şifre girin."); return; }
-      await signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
+messagesDiv.addEventListener("scroll",async()=>{
+  if(messagesDiv.scrollTop===0 && lastVisible && !loadingOld){
+    loadingOld=true;
+    const oldQ=query(collection(db,"messages"),orderBy("timestamp","desc"),startAfter(lastVisible),limit(20));
+    const snapshot=await getDocs(oldQ);
+    if(!snapshot.empty){
+      lastVisible=snapshot.docs[snapshot.docs.length-1];
+      let msgs=[];
+      snapshot.forEach(doc=>msgs.unshift({...doc.data(),id:doc.id}));
+      prependMessages(msgs);
     }
+    loadingOld=false;
+  }
+});
 
-    async function logout() { await signOut(auth); }
+function renderMessages(msgs){messagesDiv.innerHTML=""; msgs.forEach(m=>renderMessage(m)); messagesDiv.scrollTop=messagesDiv.scrollHeight;}
+function appendMessage(m){renderMessage(m); messagesDiv.scrollTop=messagesDiv.scrollHeight;}
+function prependMessages(msgs){const oldHeight=messagesDiv.scrollHeight; msgs.forEach(m=>{const div=createMsgDiv(m); messagesDiv.insertBefore(div,messagesDiv.firstChild);}); messagesDiv.scrollTop=messagesDiv.scrollHeight-oldHeight;}
+function renderMessage(m){const div=createMsgDiv(m); messagesDiv.appendChild(div);}
+function createMsgDiv(m){
+  const div=document.createElement("div");
+  div.className="msg"+(m.sender===auth.currentUser?.email?" me":"");
+  if(m.imageBase64){const img=document.createElement("img"); img.src=m.imageBase64; div.appendChild(img);}
+  if(m.audioBase64){const audio=document.createElement("audio"); audio.src=m.audioBase64; audio.controls=true; div.appendChild(audio);}
+  if(m.text){const p=document.createElement("p"); p.textContent=m.text; div.appendChild(p);}
+  return div;
+}
 
-    async function sendMessage() {
-      const text = msgInput.value.trim();
-      const file = document.getElementById("imageInput").files[0];
-
-      if (!text && !file) return;
-      if (!auth.currentUser) return;
-
-      let imageBase64 = null;
-
-      if (file) {
-        if(file.size > 2 * 1024 * 1024){ // 2MB sınırı
-          alert("Resim boyutu 2 MB'den büyük olamaz.");
-          return;
-        }
-
-        imageBase64 = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        document.getElementById("imageInput").value = "";
-      }
-
-      await addDoc(collection(db, "messages"), {
-        text: text || "",
-        sender: auth.currentUser.email,
-        timestamp: serverTimestamp(),
-        imageBase64: imageBase64 || null
-      });
-
-      msgInput.value = "";
-    }
-
-    msgInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    async function loadMessages() {
-      const q = query(collection(db, "messages"), orderBy("timestamp", "desc"), limit(20));
-      const snapshot = await getDocs(q);
-      lastVisible = snapshot.docs[snapshot.docs.length - 1];
-
-      let msgs = [];
-      snapshot.forEach(doc => msgs.unshift({ id: doc.id, ...doc.data() }));
-      renderMessages(msgs);
-
-      if (unsubscribe) unsubscribe();
-      const liveQ = query(collection(db, "messages"), orderBy("timestamp", "desc"), limit(1));
-      unsubscribe = onSnapshot(liveQ, snap => {
-        snap.docChanges().forEach(change => {
-          if (change.type === "added") {
-            const data = change.doc.data();
-            if (data.sender !== auth.currentUser.email && Notification.permission === "granted") {
-              new Notification("Yeni mesaj", { body: data.text });
-            }
-            appendMessage(data);
-          }
-        });
-      });
-    }
-
-    messagesDiv.addEventListener("scroll", async () => {
-      if (messagesDiv.scrollTop === 0 && lastVisible && !loadingOld) {
-        loadingOld = true;
-        const oldQ = query(collection(db, "messages"), orderBy("timestamp", "desc"), startAfter(lastVisible), limit(20));
-        const snapshot = await getDocs(oldQ);
-        if (!snapshot.empty) {
-          lastVisible = snapshot.docs[snapshot.docs.length - 1];
-          let msgs = [];
-          snapshot.forEach(doc => msgs.unshift({ id: doc.id, ...doc.data() }));
-          prependMessages(msgs);
-        }
-        loadingOld = false;
-      }
-    });
-
-    function renderMessages(msgs) {
-      messagesDiv.innerHTML = "";
-      msgs.forEach(m => renderMessage(m));
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function appendMessage(m) {
-      renderMessage(m);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function prependMessages(msgs) {
-      const oldHeight = messagesDiv.scrollHeight;
-      msgs.forEach(m => {
-        const div = createMsgDiv(m);
-        messagesDiv.insertBefore(div, messagesDiv.firstChild);
-      });
-      messagesDiv.scrollTop = messagesDiv.scrollHeight - oldHeight;
-    }
-
-    function renderMessage(m) {
-      const div = createMsgDiv(m);
-      messagesDiv.appendChild(div);
-    }
-
-    function createMsgDiv(m) {
-      const div = document.createElement("div");
-      div.className = "msg" + (m.sender === auth.currentUser?.email ? " me" : "");
-
-      if (m.imageBase64) {
-        const img = document.createElement("img");
-        img.src = m.imageBase64;
-        img.style.maxWidth = "180px";
-        img.style.borderRadius = "12px";
-        img.style.marginBottom = m.text ? "6px" : "0";
-        div.appendChild(img);
-      }
-
-      if (m.text) {
-        const p = document.createElement("p");
-        p.textContent = m.text;
-        div.appendChild(p);
-      }
-
-      return div;
-    }
-
-    window.login = login;
-    window.logout = logout;
-    window.sendMessage = sendMessage;
-  </script>
+window.login=login;
+window.logout=logout;
+window.sendMessage=sendMessage;
+</script>
 </body>
 </html>
