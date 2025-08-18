@@ -16,22 +16,23 @@
   --radius: 12px;
 }
 *{box-sizing:border-box;}
-html,body{height:100%;margin:0;font-family:Arial,sans-serif;background:var(--bg);}
+html,body{height:100%;margin:0;font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;background:var(--bg);}
 body{display:flex;align-items:center;justify-content:center;}
 .container{
   width:100%; max-width:480px; height:100dvh;
   background:#fff; display:flex; flex-direction:column;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  box-shadow:0 4px 20px rgba(0,0,0,0.12);
+  position:relative;
 }
 header{
   background:var(--primary); color:#fff;
-  padding:14px 16px; text-align:center; font-size:18px;
-  flex-shrink:0;
+  padding:14px 50px 14px 16px; text-align:center; font-size:18px; font-weight:500;
+  flex-shrink:0; position:relative;
 }
 input,textarea,button{border-radius:var(--radius);border:1px solid #ccc;font-size:14px;}
 input,textarea{width:100%; padding:10px; margin:8px 0; background:#fff;}
-textarea{font-family:"Times New Roman",serif;resize:none;min-height:60px; max-height:140px;}
-button{background:var(--primary);color:#fff;padding:10px;border:none;cursor:pointer;transition:background .15s ease;}
+textarea{font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;resize:none;min-height:42px; max-height:140px;}
+button{background:var(--primary);color:#fff;padding:10px;border:none;cursor:pointer;transition:all .15s ease;}
 button:hover{background:var(--primary-hover);}
 #loginDiv,#chatDiv{flex:1;display:none;padding:16px;overflow:hidden;}
 #loginDiv button{width:100%;}
@@ -41,19 +42,26 @@ button:hover{background:var(--primary-hover);}
   border-radius:var(--radius); display:flex; flex-direction:column; gap:6px; min-height:0;
 }
 .msg{
-  margin:0; padding:8px 12px; border-radius:16px; max-width:70%;
+  margin:0; padding:8px 14px; border-radius:16px; 
   word-wrap:break-word; line-height:1.3; font-size:14px;
   background:var(--other); align-self:flex-start;
+  max-width: 80%;
 }
 .msg.me{background:var(--primary); color:#fff; align-self:flex-end;}
+.msg.text-only {
+  max-width: fit-content;
+}
+.msg.text-only.me {
+  border-bottom-right-radius: 4px;
+}
+.msg.text-only:not(.me) {
+  border-bottom-left-radius: 4px;
+}
 .inputRow{display:flex; gap:8px; align-items:flex-end; position:relative;}
 .inputRow textarea{flex:1 1 auto; margin:0; padding-right:60px;}
-.sendBtn{flex:0 0 auto; padding:10px 16px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; height:42px; width:auto;}
 .actionsRow{display:flex;justify-content:flex-end;}
-#logoutBtn{background:var(--danger); padding:8px 12px; border-radius:999px; width:auto; margin:0;}
-#logoutBtn:hover{background:var(--danger-hover);}
 
-/* Küçük ikonlar */
+/* İkon butonlar */
 #imageInput,#audioInput{display:none;}
 .iconBtn{
   position:absolute;
@@ -63,25 +71,74 @@ button:hover{background:var(--primary-hover);}
   cursor:pointer;
   background:#fff;
   border-radius:50%;
-  border:1px solid #ccc;
+  border:1px solid #ddd;
   font-size:18px;
-  transition: background .15s;
+  transition: all .15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.iconBtn:hover{background:#eee;}
+.iconBtn:hover{
+  background:#f5f5f5;
+  transform: scale(1.05);
+}
 #imageBtn{right:50px;}
 #audioBtn{right:10px;}
-.msg img{max-width:180px; border-radius:12px; margin-bottom:6px;}
-.msg audio{width:160px; border-radius:12px;}
+
+/* Ses kayıt aktif durumu */
+.recording #audioBtn {
+  background: var(--danger);
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+
+/* Çıkış ikonu */
+#logoutIcon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--danger);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+#logoutIcon:hover {
+  background: var(--danger-hover);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.msg img{max-width:200px; border-radius:12px; margin-bottom:6px; display:block;}
+.msg audio{width:180px; border-radius:12px; display:block;}
+
 @media (max-width:600px){
-  header{font-size:16px;padding:12px;}
-  .msg{font-size:13px; max-width:80%;}
-  .sendBtn{height:40px;}
+  header{font-size:16px;padding:12px 45px 12px 12px;}
+  .msg{font-size:13px; max-width:85%;}
+  .msg img{max-width:160px;}
+  .msg audio{width:150px;}
 }
 </style>
 </head>
 <body>
 <div class="container">
-<header>İletişim Formu</header>
+<header>
+  <div id="logoutIcon" title="Çıkış">←</div>
+  İletişim Formu
+</header>
 
 <div id="loginDiv">
   <input type="email" id="email" placeholder="E-posta" />
@@ -93,13 +150,19 @@ button:hover{background:var(--primary-hover);}
   <div id="messages" aria-live="polite"></div>
   <div class="inputRow">
     <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
-    <label class="iconBtn" id="imageBtn" for="imageInput" title="Resim ekle">🖼️</label>
+    <label class="iconBtn" id="imageBtn" for="imageInput" title="Resim ekle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 16L8 12L11 15L14 11L16 13L20 9V16C20 17.1046 19.1046 18 18 18H6C4.89543 18 4 17.1046 4 16V16Z" stroke="#4a69bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="8.5" cy="8.5" r="1.5" stroke="#4a69bd" stroke-width="2"/>
+        <rect x="3" y="3" width="18" height="18" rx="2" stroke="#4a69bd" stroke-width="2"/>
+      </svg>
+    </label>
     <input type="file" id="imageInput" accept="image/*"/>
-    <label class="iconBtn" id="audioBtn" title="Ses kaydet">🎤</label>
-    <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
-  </div>
-  <div class="actionsRow">
-    <button id="logoutBtn" onclick="logout()">Çıkış</button>
+    <label class="iconBtn" id="audioBtn" title="Ses kaydet">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3V19M8 6V16M16 8V14M20 10V12M4 10V12" stroke="#4a69bd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </label>
   </div>
 </div>
 </div>
@@ -129,10 +192,14 @@ const loginDiv=document.getElementById("loginDiv");
 const chatDiv=document.getElementById("chatDiv");
 const messagesDiv=document.getElementById("messages");
 const msgInput=document.getElementById("messageInput");
+const logoutIcon = document.getElementById("logoutIcon");
 
 let unsubscribe=null;
 let lastVisible=null;
 let loadingOld=false;
+let isRecording = false;
+let mediaRecorder;
+let audioChunks=[];
 
 if("Notification" in window) Notification.requestPermission();
 
@@ -146,6 +213,8 @@ onAuthStateChanged(auth,user=>{
     loginDiv.style.display="block";
     chatDiv.style.display="none";
     messagesDiv.innerHTML="";
+    isRecording = false;
+    document.body.classList.remove("recording");
   }
 });
 
@@ -155,35 +224,57 @@ async function login(){
   if(!email||!password){alert("Lütfen e-posta ve şifre girin.");return;}
   await signInWithEmailAndPassword(auth,email,password).catch(err=>alert(err.message));
 }
-async function logout(){await signOut(auth);}
 
-let mediaRecorder;
-let audioChunks=[];
+async function logout(){
+  if (isRecording && mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+  }
+  await signOut(auth);
+}
 
-document.getElementById("audioBtn").addEventListener("mousedown",async()=>{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  mediaRecorder=new MediaRecorder(stream);
-  audioChunks=[];
-  mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-  mediaRecorder.start();
+logoutIcon.addEventListener("click", logout);
+
+document.getElementById("audioBtn").addEventListener("click", async() => {
+  if (!isRecording) {
+    // Kaydı başlat
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.start();
+      isRecording = true;
+      document.body.classList.add("recording");
+    } catch (err) {
+      console.error("Mikrofon erişimi reddedildi:", err);
+      alert("Ses kaydı için mikrofon erişimi gerekli!");
+    }
+  } else {
+    // Kaydı durdur
+    if (mediaRecorder && mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      isRecording = false;
+      document.body.classList.remove("recording");
+    }
+  }
 });
-document.getElementById("audioBtn").addEventListener("mouseup",async()=>{
-  if(!mediaRecorder) return;
-  mediaRecorder.onstop=async()=>{
-    const blob=new Blob(audioChunks,{type:"audio/webm"});
-    if(blob.size>500000){alert("Ses mesajı çok uzun (~10-15 sn max)"); return;}
-    const reader=new FileReader();
-    reader.onloadend=async()=>{
-      const audioBase64=reader.result;
-      await addDoc(collection(db,"messages"),{
-        sender:auth.currentUser.email,
-        timestamp:serverTimestamp(),
-        audioBase64
-      });
-    };
-    reader.readAsDataURL(blob);
+
+mediaRecorder && (mediaRecorder.onstop = async() => {
+  const blob = new Blob(audioChunks, {type: "audio/webm"});
+  if (blob.size > 500000) {
+    alert("Ses mesajı çok uzun (~10-15 sn max)"); 
+    return;
+  }
+  const reader = new FileReader();
+  reader.onloadend = async() => {
+    const audioBase64 = reader.result;
+    await addDoc(collection(db, "messages"), {
+      sender: auth.currentUser.email,
+      timestamp: serverTimestamp(),
+      audioBase64
+    });
   };
-  mediaRecorder.stop();
+  reader.readAsDataURL(blob);
 });
 
 document.getElementById("imageInput").addEventListener("change", async function(){
@@ -212,10 +303,19 @@ async function sendMessage(){
     timestamp:serverTimestamp()
   });
   msgInput.value="";
+  msgInput.style.height = "auto";
 }
 
 msgInput.addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault(); sendMessage();}
+  if(e.key==="Enter"&&!e.shiftKey){
+    e.preventDefault(); 
+    sendMessage();
+  }
+});
+
+msgInput.addEventListener("input", function() {
+  this.style.height = "auto";
+  this.style.height = (this.scrollHeight) + "px";
 });
 
 async function loadMessages(){
@@ -260,10 +360,32 @@ function prependMessages(msgs){const oldHeight=messagesDiv.scrollHeight; msgs.fo
 function renderMessage(m){const div=createMsgDiv(m); messagesDiv.appendChild(div);}
 function createMsgDiv(m){
   const div=document.createElement("div");
-  div.className="msg"+(m.sender===auth.currentUser?.email?" me":"");
-  if(m.imageBase64){const img=document.createElement("img"); img.src=m.imageBase64; div.appendChild(img);}
-  if(m.audioBase64){const audio=document.createElement("audio"); audio.src=m.audioBase64; audio.controls=true; div.appendChild(audio);}
-  if(m.text){const p=document.createElement("p"); p.textContent=m.text; div.appendChild(p);}
+  const isMe = m.sender === auth.currentUser?.email;
+  div.className="msg" + (isMe ? " me" : "");
+  
+  // Sadece metin mesajları için özel class
+  if (!m.imageBase64 && !m.audioBase64 && m.text) {
+    div.classList.add("text-only");
+  }
+  
+  if(m.imageBase64){
+    const img=document.createElement("img"); 
+    img.src=m.imageBase64; 
+    img.alt = "Gönderilen resim";
+    div.appendChild(img);
+  }
+  if(m.audioBase64){
+    const audio=document.createElement("audio"); 
+    audio.src=m.audioBase64; 
+    audio.controls=true;
+    audio.setAttribute("aria-label", "Sesli mesaj");
+    div.appendChild(audio);
+  }
+  if(m.text){
+    const p=document.createElement("p"); 
+    p.textContent=m.text; 
+    div.appendChild(p);
+  }
   return div;
 }
 
