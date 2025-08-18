@@ -2,157 +2,13 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Online Not Defteri</title>
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Quill -->
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-  <style>
-    html,body{height:100%}
-    .icon-btn{display:flex;flex-direction:column;align-items:center;gap:6px}
-    .icon-btn svg{width:24px;height:24px}
-    .ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .ql-editor{min-height:50vh}
-  </style>
-</head>
-<body class="h-full bg-gray-50 text-gray-800">
-
-  <!-- Toast -->
-  <div id="toast" class="fixed top-3 left-1/2 -translate-x-1/2 z-50 hidden">
-    <div class="bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-lg">Kaydedildi ✅</div>
-  </div>
-
-  <!-- Auth -->
-  <section id="authSection" class="min-h-full grid place-items-center p-6">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow p-6 space-y-5">
-      <div class="text-center">
-        <h1 class="text-2xl font-bold">📝 Online Not Defteri</h1>
-        <p class="text-sm text-gray-500 mt-1">Lütfen e-posta ve parola ile giriş yapın.</p>
-      </div>
-      <form id="loginForm" class="space-y-4">
-        <div>
-          <label class="text-sm font-medium">E-posta</label>
-          <input id="email" type="email" required class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring focus:outline-none" placeholder="ornek@posta.com">
-        </div>
-        <div>
-          <label class="text-sm font-medium">Parola</label>
-          <input id="password" type="password" required class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring focus:outline-none" placeholder="••••••••">
-        </div>
-        <button type="submit" class="w-full bg-gray-900 text-white py-2 rounded-xl hover:bg-black transition">
-          Giriş Yap
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- App -->
-  <section id="appSection" class="hidden h-full">
-    <div class="flex h-full">
-      <!-- Sol: Not listesi ve ikonlar -->
-      <aside class="w-80 bg-white border-r h-full flex flex-col">
-        <div class="px-4 py-3 border-b flex items-center justify-between">
-          <h2 class="font-semibold">Notlar</h2>
-          <!-- Çıkış -->
-          <button id="logoutBtn" class="text-gray-500 hover:text-black" title="Çıkış">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1m0-10V5"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- İkon araç çubuğu (üstte kalsın) -->
-        <div class="grid grid-cols-4 gap-2 p-3 border-b">
-          <button id="newNoteBtn" class="icon-btn text-gray-700 hover:text-black" title="Yeni Not">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            <span class="text-[10px]">Yeni</span>
-          </button>
-          <button id="saveNoteBtn" class="icon-btn text-gray-700 hover:text-emerald-700" title="Kaydet">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            <span class="text-[10px]">Kaydet</span>
-          </button>
-          <button id="deleteNoteBtn" class="icon-btn text-gray-700 hover:text-rose-700" title="Sil">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-6 4h8"/></svg>
-            <span class="text-[10px]">Sil</span>
-          </button>
-          <button id="logoutBtn2" class="icon-btn text-gray-700 hover:text-gray-900" title="Çıkış">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12"/></svg>
-            <span class="text-[10px]">Çıkış</span>
-          </button>
-        </div>
-
-        <!-- Ara -->
-        <div class="p-3 border-b">
-          <input id="searchInput" type="search" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Notlarda ara…">
-        </div>
-
-        <!-- Liste -->
-        <ul id="noteItems" class="flex-1 overflow-y-auto divide-y"></ul>
-      </aside>
-
-      <!-- Sağ: Görüntüleyici alanı (başlangıçta boş bilgi) -->
-      <main class="flex-1 h-full flex flex-col">
-        <div id="viewerEmpty" class="m-6 bg-white rounded-2xl border-dashed border-2 border-gray-200 p-10 text-center text-gray-500">
-          Bir not seçin ya da <span class="font-medium text-gray-700">Yeni</span> ikonuna tıklayın.
-        </div>
-
-        <!-- Not Görüntüleyici -->
-        <article id="viewer" class="hidden h-full overflow-y-auto">
-          <header class="bg-white border-b px-6 py-4">
-            <h1 id="viewTitle" class="text-2xl font-bold"></h1>
-            <p id="viewMeta" class="text-xs text-gray-500 mt-1"></p>
-          </header>
-          <div id="viewContent" class="prose max-w-none bg-white p-6"></div>
-
-          <!-- Düzenle FAB -->
-          <button id="editFab" title="Düzenle"
-                  class="fixed bottom-6 right-6 bg-gray-900 text-white rounded-full p-4 shadow-lg hover:bg-black hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-          </button>
-        </article>
-      </main>
-    </div>
-  </section>
-
-  <!-- Tam ekran Editör (Yeni/Düzenle için) -->
-  <section id="editorOverlay" class="hidden fixed inset-0 z-40">
-    <div class="absolute inset-0 bg-black/50"></div>
-    <div class="relative h-full">
-      <div class="absolute inset-0 bg-white flex flex-col">
-        <header class="px-4 py-3 border-b bg-white flex items-center gap-3">
-          <input id="noteTitle" type="text" placeholder="Başlık…"
-                 class="flex-1 px-3 py-2 border rounded-lg focus:ring focus:outline-none" />
-          <!-- Kapat (iptal) -->
-          <button id="closeEditorBtn" class="text-gray-500 hover:text-black" title="Kapat">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-          </button>
-        </header>
-        <div class="p-4">
-          <div id="editor" class="bg-white rounded-xl shadow"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Firebase App + Auth + Firestore -->
+  <title>Firebase Not Defteri</title>
   <script type="module">
-    // Firebase SDK'lar
+    // Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged,
-      signInWithEmailAndPassword, signOut
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-    import {
-      getFirestore, collection, addDoc, doc, setDoc, deleteDoc,
-      onSnapshot, query, orderBy, serverTimestamp, getDoc
-    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-    // --- Firebase Config (senin verdiğin) ---
     const firebaseConfig = {
       apiKey: "AIzaSyBh5W8v9XVYfsvJ3UwMhx9OaC4Mqew5F2Q",
       authDomain: "notes-56c65.firebaseapp.com",
@@ -167,294 +23,189 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Quill (justify dahil)
-    const quill = new Quill('#editor', {
-      theme: 'snow',
-      modules: {
-        toolbar: [
-          [{ 'header': [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ 'align': [] }],           // left, center, right, justify
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-          ['blockquote', 'code-block'],
-          ['link', 'image'],
-          ['clean']
-        ]
-      }
-    });
-
-    // UI refs
-    const authSection = document.getElementById('authSection');
-    const appSection  = document.getElementById('appSection');
-    const loginForm   = document.getElementById('loginForm');
-    const emailEl     = document.getElementById('email');
-    const passEl      = document.getElementById('password');
-
-    const noteItemsEl = document.getElementById('noteItems');
-    const searchInput = document.getElementById('searchInput');
-
-    const newBtn   = document.getElementById('newNoteBtn');
-    const saveBtn  = document.getElementById('saveNoteBtn');
-    const delBtn   = document.getElementById('deleteNoteBtn');
-    const logoutBtn= document.getElementById('logoutBtn');
-    const logoutBtn2= document.getElementById('logoutBtn2');
-
-    const editorOverlay = document.getElementById('editorOverlay');
-    const noteTitleEl   = document.getElementById('noteTitle');
-    const closeEditorBtn= document.getElementById('closeEditorBtn');
-
-    const viewer        = document.getElementById('viewer');
-    const viewerEmpty   = document.getElementById('viewerEmpty');
-    const viewTitle     = document.getElementById('viewTitle');
-    const viewMeta      = document.getElementById('viewMeta');
-    const viewContent   = document.getElementById('viewContent');
-    const editFab       = document.getElementById('editFab');
-
-    const toast         = document.getElementById('toast');
-
-    // State
-    let currentUser = null;
     let currentNoteId = null;
-    let isEditingExisting = false; // false: yeni, true: düzenleme
-    let unsubscribeNotes = null;
-    let cachedNotes = [];
 
-    // --- Auth ---
-    loginForm.addEventListener('submit', async (e) => {
+    // DOM Elements
+    const loginPage = document.getElementById("loginPage");
+    const appPage = document.getElementById("appPage");
+    const notesList = document.getElementById("notesList");
+    const editorPage = document.getElementById("editorPage");
+    const noteContent = document.getElementById("noteContent");
+    const noteViewPage = document.getElementById("noteViewPage");
+    const noteViewContent = document.getElementById("noteViewContent");
+
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       try {
-        const email = emailEl.value.trim();
-        const password = passEl.value;
         await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        alert('Giriş hatası: ' + (err?.message || err));
+      } catch (error) {
+        alert("Giriş başarısız: " + error.message);
       }
     });
 
+    // Auth kontrolü
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        currentUser = user;
-        authSection.classList.add('hidden');
-        appSection.classList.remove('hidden');
-        startNotesListener();
-        clearViewer();
-        hideEditor();
+        loginPage.style.display = "none";
+        appPage.style.display = "flex";
+        loadNotes();
       } else {
-        currentUser = null;
-        stopNotesListener();
-        appSection.classList.add('hidden');
-        authSection.classList.remove('hidden');
-        hideEditor();
-        clearViewer();
+        loginPage.style.display = "flex";
+        appPage.style.display = "none";
       }
     });
 
-    async function signout() { try { await signOut(auth); } catch(e){ console.error(e);} }
-    logoutBtn.addEventListener('click', signout);
-    logoutBtn2.addEventListener('click', signout);
-
-    // --- Notes listener ---
-    function startNotesListener() {
-      if (!currentUser) return;
-      const qy = query(
-        collection(db, 'users', currentUser.uid, 'notes'),
-        orderBy('createdAt', 'desc')
-      );
-      if (unsubscribeNotes) unsubscribeNotes();
-      unsubscribeNotes = onSnapshot(qy, (snap) => {
-        cachedNotes = [];
-        snap.forEach((docSnap) => {
-          const data = docSnap.data();
-          cachedNotes.push({ id: docSnap.id, ...data });
-        });
-        renderNotes(cachedNotes);
-      }, (err) => {
-        console.error(err);
-        alert('Notları çekerken hata oluştu.');
-      });
-    }
-    function stopNotesListener() {
-      if (unsubscribeNotes) { unsubscribeNotes(); unsubscribeNotes = null; }
-      noteItemsEl.innerHTML = '';
-      cachedNotes = [];
-    }
-
-    // --- Render list ---
-    function renderNotes(list) {
-      noteItemsEl.innerHTML = '';
-      list.forEach(n => {
-        const li = document.createElement('li');
-        li.className = "px-3 py-2 hover:bg-gray-100 cursor-pointer";
-        const title = (n.title?.trim() ? n.title.trim() : 'Başlıksız Not');
-        const snippet = stripHtml(n.content || '').slice(0, 100);
-        li.innerHTML = `
-          <div class="font-medium ellipsis">${escapeHtml(title)}</div>
-          <div class="text-xs text-gray-500 ellipsis">${escapeHtml(snippet)}</div>
-        `;
-        li.addEventListener('click', () => openViewer(n.id));
-        noteItemsEl.appendChild(li);
+    // Notları yükle
+    async function loadNotes() {
+      notesList.innerHTML = "";
+      const q = query(collection(db, "users", auth.currentUser.uid, "notes"), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      snapshot.forEach((docSnap) => {
+        const li = document.createElement("li");
+        li.textContent = docSnap.data().content.replace(/<[^>]+>/g, "").substring(0, 40) + "...";
+        li.addEventListener("click", () => openNoteView(docSnap.id, docSnap.data().content));
+        notesList.appendChild(li);
       });
     }
 
-    // --- Viewer ---
-    async function openViewer(noteId) {
-      if (!currentUser) return;
-      try {
-        const ref = doc(db, 'users', currentUser.uid, 'notes', noteId);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) return;
-        const n = { id: snap.id, ...snap.data() };
-
-        currentNoteId = n.id;
-        viewTitle.textContent = (n.title?.trim() || 'Başlıksız Not');
-        viewMeta.textContent  = buildMeta(n);
-        viewContent.innerHTML = n.content || '';
-
-        viewerEmpty.classList.add('hidden');
-        viewer.classList.remove('hidden');
-        editFab.classList.remove('hidden');
-      } catch (e) {
-        console.error(e);
-        alert('Not açılamadı.');
-      }
-    }
-    function clearViewer() {
+    // Yeni not
+    document.getElementById("newBtn").addEventListener("click", () => {
       currentNoteId = null;
-      viewer.classList.add('hidden');
-      editFab.classList.add('hidden');
-      viewerEmpty.classList.remove('hidden');
-      viewTitle.textContent = '';
-      viewMeta.textContent = '';
-      viewContent.innerHTML = '';
-    }
-    function buildMeta(n){
-      const created = tsToLocal(n.createdAt);
-      const updated = tsToLocal(n.updatedAt);
-      let s = created ? `Oluşturma: ${created}` : '';
-      if (updated) s += (s ? ' • ' : '') + `Güncelleme: ${updated}`;
-      return s;
-    }
-    function tsToLocal(ts){
-      if (!ts) return '';
-      const d = ts.toDate ? ts.toDate() : (ts.seconds ? new Date(ts.seconds*1000) : new Date(ts));
-      return d.toLocaleString();
-    }
-
-    // --- Editor Overlay ---
-    newBtn.addEventListener('click', () => {
-      isEditingExisting = false;
-      currentNoteId = null;
-      noteTitleEl.value = '';
-      quill.root.innerHTML = '';
-      showEditor();
+      noteContent.innerHTML = "";
+      editorPage.style.display = "block";
+      noteViewPage.style.display = "none";
+      notesList.style.display = "none";
     });
-    editFab.addEventListener('click', () => {
-      if (!currentNoteId) return;
-      const n = cachedNotes.find(x => x.id === currentNoteId);
-      if (!n) return;
-      isEditingExisting = true;
-      noteTitleEl.value = n.title || '';
-      quill.root.innerHTML = n.content || '';
-      showEditor();
-    });
-    closeEditorBtn.addEventListener('click', () => hideEditor());
-
-    function showEditor(){ editorOverlay.classList.remove('hidden'); }
-    function hideEditor(){ editorOverlay.classList.add('hidden'); }
 
     // Kaydet
-    saveBtn.addEventListener('click', saveFromToolbar);
-    async function saveFromToolbar(){
-      if (editorOverlay.classList.contains('hidden')) {
-        alert('Kaydetmek için önce bir not oluşturun/düzenleyin (Yeni veya Düzenle).');
-        return;
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      if (!noteContent.innerHTML.trim()) return;
+      if (currentNoteId) {
+        await updateDoc(doc(db, "users", auth.currentUser.uid, "notes", currentNoteId), {
+          content: noteContent.innerHTML,
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        await addDoc(collection(db, "users", auth.currentUser.uid, "notes"), {
+          content: noteContent.innerHTML,
+          createdAt: serverTimestamp()
+        });
       }
-      await saveNote();
-    }
-
-    async function saveNote(){
-      if (!currentUser) return;
-      const title = (noteTitleEl.value || '').trim();
-      const content = quill.root.innerHTML;
-      const data = {
-        title: title || deriveTitleFromContent(content),
-        content,
-        updatedAt: serverTimestamp(),
-      };
-      try {
-        if (isEditingExisting && currentNoteId){
-          await setDoc(doc(db, 'users', currentUser.uid, 'notes', currentNoteId), data, { merge: true });
-          showToast('Güncellendi ✅');
-          hideEditor();
-          // Düzenleme ise, görüntüleyiciye geri dön
-          openViewer(currentNoteId);
-        } else {
-          const ref = await addDoc(collection(db, 'users', currentUser.uid, 'notes'), {
-            ...data,
-            createdAt: serverTimestamp()
-          });
-          currentNoteId = ref.id;
-          showToast('Kaydedildi ✅');
-          hideEditor();
-          // Yeni not sonrası sadece liste görünsün
-          clearViewer();
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Kaydederken hata: ' + (err?.message || err));
-      }
-    }
+      editorPage.style.display = "none";
+      notesList.style.display = "block";
+      await loadNotes();
+    });
 
     // Sil
-    delBtn.addEventListener('click', async () => {
-      if (!currentUser) return;
-      // Silinecek not: Öncelik görüntüleyicide açık olan
-      const targetId = currentNoteId;
-      if (!targetId) { alert('Silmek için bir not seçin.'); return; }
-      if (!confirm('Bu not silinsin mi?')) return;
-      try {
-        await deleteDoc(doc(db, 'users', currentUser.uid, 'notes', targetId));
-        showToast('Silindi 🗑️', 'bg-rose-600');
-        clearViewer();
-        // Editor açıksa kapat
-        hideEditor();
-      } catch (e) {
-        console.error(e);
-        alert('Silme hatası: ' + (e?.message || e));
+    document.getElementById("deleteBtn").addEventListener("click", async () => {
+      if (currentNoteId) {
+        await deleteDoc(doc(db, "users", auth.currentUser.uid, "notes", currentNoteId));
+        noteViewPage.style.display = "none";
+        notesList.style.display = "block";
+        await loadNotes();
       }
     });
 
-    // Arama
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase().trim();
-      if (!q) return renderNotes(cachedNotes);
-      const filtered = cachedNotes.filter(n =>
-        (n.title || '').toLowerCase().includes(q) ||
-        stripHtml(n.content || '').toLowerCase().includes(q)
-      );
-      renderNotes(filtered);
+    // Çıkış
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
     });
 
-    // Helpers
-    function stripHtml(html='') {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || '';
+    // Notu görüntüle
+    function openNoteView(id, content) {
+      currentNoteId = id;
+      noteViewContent.innerHTML = content;
+      noteViewPage.style.display = "block";
+      notesList.style.display = "none";
+      editorPage.style.display = "none";
     }
-    function escapeHtml(s='') {
-      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-    }
-    function deriveTitleFromContent(html) {
-      const txt = stripHtml(html).trim();
-      if (!txt) return 'Başlıksız Not';
-      return txt.split('\n')[0].slice(0, 80);
-    }
-    function showToast(text='Kaydedildi ✅', color='bg-emerald-600') {
-      toast.firstElementChild.textContent = text;
-      toast.firstElementChild.className = color + " text-white px-4 py-2 rounded-xl shadow-lg";
-      toast.classList.remove('hidden');
-      setTimeout(() => toast.classList.add('hidden'), 1500);
-    }
+
+    // Düzenle
+    document.getElementById("editBtn").addEventListener("click", () => {
+      noteContent.innerHTML = noteViewContent.innerHTML;
+      editorPage.style.display = "block";
+      noteViewPage.style.display = "none";
+    });
+
+    // Geri dön
+    document.getElementById("backBtn").addEventListener("click", () => {
+      noteViewPage.style.display = "none";
+      notesList.style.display = "block";
+    });
   </script>
+
+  <style>
+    body { margin:0; font-family:Arial, sans-serif; background:#f5f5f5; }
+    #loginPage, #appPage { height:100vh; display:flex; justify-content:center; align-items:center; }
+    #loginForm { display:flex; flex-direction:column; gap:10px; background:white; padding:20px; border-radius:8px; }
+    #appPage { display:none; flex-direction:column; }
+    header { display:flex; gap:15px; padding:10px; background:#333; color:white; align-items:center; }
+    header svg { width:24px; height:24px; cursor:pointer; }
+    header span { font-size:12px; }
+    main { flex:1; display:flex; padding:10px; }
+    #notesList { flex:1; list-style:none; padding:0; margin:0; background:white; border-radius:8px; overflow:auto; }
+    #notesList li { padding:10px; border-bottom:1px solid #eee; cursor:pointer; }
+    #notesList li:hover { background:#f0f0f0; }
+    #editorPage, #noteViewPage { display:none; flex:1; background:white; border-radius:8px; padding:10px; margin-top:10px; overflow:auto; }
+    #noteContent { min-height:80vh; outline:none; }
+    #noteViewContent { white-space:pre-wrap; }
+    .topbar { display:flex; justify-content:space-between; margin-bottom:10px; }
+    button.icon { background:none; border:none; cursor:pointer; }
+    button.icon svg { width:24px; height:24px; }
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="loginPage">
+    <form id="loginForm">
+      <h3>Giriş Yap</h3>
+      <input type="email" id="email" placeholder="E-posta" required />
+      <input type="password" id="password" placeholder="Şifre" required />
+      <button type="submit">Giriş</button>
+    </form>
+  </div>
+
+  <!-- App -->
+  <div id="appPage">
+    <header>
+      <div>
+        <svg id="newBtn" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+        <span>Yeni</span>
+      </div>
+      <div>
+        <svg id="saveBtn" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        <span>Kaydet</span>
+      </div>
+      <div>
+        <svg id="deleteBtn" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M9 6V4h6v2m-2 4v8m-4-8v8"/></svg>
+        <span>Sil</span>
+      </div>
+      <div>
+        <svg id="logoutBtn" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        <span>Çıkış</span>
+      </div>
+      <input id="searchBox" placeholder="Notlarda ara..." style="margin-left:auto; padding:5px;" />
+    </header>
+    <main>
+      <ul id="notesList"></ul>
+      <div id="editorPage" contenteditable="false">
+        <div id="noteContent" contenteditable="true"></div>
+      </div>
+      <div id="noteViewPage">
+        <div class="topbar">
+          <button id="backBtn" class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button id="editBtn" class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/></svg>
+          </button>
+        </div>
+        <div id="noteViewContent"></div>
+      </div>
+    </main>
+  </div>
 </body>
 </html>
