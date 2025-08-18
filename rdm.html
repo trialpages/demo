@@ -46,7 +46,7 @@
       border-radius: var(--radius); display: flex; flex-direction: column; gap: 6px; min-height: 0;
     }
     .msg {
-      margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 80%;
+      margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 70%;
       word-wrap: break-word; line-height: 1.3; font-size: 14px;
       background: var(--other); align-self: flex-start;
     }
@@ -64,9 +64,24 @@
       border-radius: 999px; width: auto; margin: 0;
     }
     #logoutBtn:hover { background: var(--danger-hover); }
+
+    /* Küçük galeri ikonu */
+    #imageInput { display: none; }
+    .imageBtn {
+      cursor: pointer;
+      font-size: 20px;
+      padding: 6px;
+      border-radius: 50%;
+      border: 1px solid #ccc;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff;
+      transition: background .15s;
+    }
+    .imageBtn:hover { background: #eee; }
+
     @media (max-width: 600px) {
       header { font-size: 16px; padding: 12px; }
-      .msg { font-size: 13px; }
+      .msg { font-size: 13px; max-width: 80%; }
       .sendBtn { height: 40px; }
     }
   </style>
@@ -75,18 +90,17 @@
   <div class="container">
     <header>İletişim Formu</header>
 
-    <!-- Giriş -->
     <div id="loginDiv">
       <input type="email" id="email" placeholder="E-posta" />
       <input type="password" id="password" placeholder="Şifre" />
       <button onclick="login()">Giriş Yap</button>
     </div>
 
-    <!-- Sohbet -->
     <div id="chatDiv">
       <div id="messages" aria-live="polite"></div>
       <div class="inputRow">
         <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
+        <label class="imageBtn" for="imageInput" title="Resim ekle">🖼️</label>
         <input type="file" id="imageInput" accept="image/*" />
         <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
       </div>
@@ -96,14 +110,12 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
-    // Firebase config (senin projen)
     const firebaseConfig = {
       apiKey: "AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
       authDomain: "ms4bfcw.firebaseapp.com",
@@ -128,9 +140,7 @@
     let lastVisible = null;
     let loadingOld = false;
 
-    if ("Notification" in window) {
-      Notification.requestPermission();
-    }
+    if ("Notification" in window) Notification.requestPermission();
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -164,6 +174,11 @@
       let imageBase64 = null;
 
       if (file) {
+        if(file.size > 2 * 1024 * 1024){ // 2MB sınırı
+          alert("Resim boyutu 2 MB'den büyük olamaz.");
+          return;
+        }
+
         imageBase64 = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
@@ -262,7 +277,7 @@
       if (m.imageBase64) {
         const img = document.createElement("img");
         img.src = m.imageBase64;
-        img.style.maxWidth = "200px";
+        img.style.maxWidth = "180px";
         img.style.borderRadius = "12px";
         img.style.marginBottom = m.text ? "6px" : "0";
         div.appendChild(img);
