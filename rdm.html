@@ -1,258 +1,256 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>İletişim Formu</title>
-<style>
-:root {
-  --primary: #4a69bd;
-  --primary-hover: #3b5399;
-  --bg: #f5f6fa;
-  --msg-bg: #f1f2f6;
-  --other: #dfe4ea;
-  --danger: #e74c3c;
-  --radius: 12px;
-  --dark-bg: #1a1a2e;
-  --dark-container: #16213e;
-  --dark-header: #0f3460;
-  --dark-text: #e6e6e6;
-  --dark-msg-bg: #2a2a4a;
-  --dark-input-bg: #2a2a4a;
-  --dark-input-text: #f0f0f0;
-  --dark-icon-bg: #2a2a4a;
-  --dark-other: #3d3d5c;
-}
-*{box-sizing:border-box;}
-html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);}
-body{display:flex;align-items:center;justify-content:center;transition: background-color 0.3s ease;}
-body.dark-mode {background: var(--dark-bg);}
-.container{
-  width:100%; max-width:480px; height:100dvh;
-  background:#fff; display:flex; flex-direction:column;
-  box-shadow:0 4px 20px rgba(0,0,0,0.12);
-  position:relative;
-}
-.dark-mode .container {background: var(--dark-container);}
-header{
-  background:var(--primary); color:#fff;
-  padding:14px 16px; text-align:center; font-size:18px; font-weight:500;
-  flex-shrink:0;
-}
-.dark-mode header {background: var(--dark-header);}
-input,textarea,button{border-radius:var(--radius);border:1px solid #ccc;font-size:14px;}
-input,textarea{width:100%; padding:10px; margin:8px 0; background:#fff;}
-textarea{resize:none;min-height:42px; max-height:140px; padding-right: 110px;}
-.dark-mode input, .dark-mode textarea {background: var(--dark-input-bg);color: var(--dark-input-text);}
-button{background:var(--primary);color:#fff;padding:10px;border:none;cursor:pointer;}
-button:hover{background:var(--primary-hover);}
-#loginDiv,#chatDiv{flex:1;display:none;padding:16px;overflow:hidden;}
-#chatDiv{flex-direction:column;gap:10px;}
-#messages{
-  flex:1; overflow-y:auto; padding:10px; background:var(--msg-bg);
-  border-radius:var(--radius); display:flex; flex-direction:column; gap:6px; min-height:0;
-}
-.dark-mode #messages {background: var(--dark-msg-bg);}
-.msg{
-  margin:0; padding:8px 12px; border-radius:12px; 
-  word-wrap:break-word; line-height:1.3; font-size:14px;
-  background:var(--other); align-self:flex-start;
-  max-width: 70%; position: relative;
-}
-.dark-mode .msg {background: var(--dark-other); color: var(--dark-text);}
-.msg.me{background:var(--primary); color:#fff; align-self:flex-end;}
-.timestamp {font-size:10px; opacity:0.7; margin-top:4px; display:block; text-align:right;}
-.msg:not(.me) .timestamp {text-align:left;}
-.dark-mode .timestamp {color:rgba(255,255,255,0.6);}
-.inputRow{display:flex; gap:8px; align-items:flex-end; position:relative;}
-.inputRow textarea{flex:1; margin:0;}
-.iconBtn{
-  position:absolute; bottom:10px;
-  width:32px; height:32px;
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; background:#fff; border-radius:50%;
-  border:1px solid #ddd; font-size:18px;
-}
-.dark-mode .iconBtn {background:var(--dark-icon-bg); border-color:#444; color:#f0f0f0;}
-#radioBtn{right:70px;}
-#darkModeBtn{right:40px;}
-#logoutBtn{right:10px;}
-/* Radyo açıkken ses dalgası animasyonu */
-.radio-active svg {
-  animation: pulse 1s infinite;
-}
-@keyframes pulse {
-  0% {transform: scale(1);}
-  50% {transform: scale(1.15);}
-  100% {transform: scale(1);}
-}
-@media (max-width:600px){
-  header{font-size:16px;padding:12px;}
-  .msg{font-size:13px; max-width:75%;}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>İletişim Formu</title>
+  <style>
+    :root {
+      --primary: #4a69bd;
+      --primary-hover: #3b5399;
+      --bg: #f5f6fa;
+      --msg-bg: #f1f2f6;
+      --other: #dfe4ea;
+      --danger: #e74c3c;
+      --danger-hover: #c0392b;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: Arial, sans-serif; background: var(--bg); }
+    body { display: flex; align-items: center; justify-content: center; }
+    .container {
+      width: 100%; max-width: 480px; height: 100dvh;
+      background: #fff; display: flex; flex-direction: column;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    header {
+      background: var(--primary); color: #fff;
+      padding: 14px 16px; text-align: center; font-size: 18px;
+      flex-shrink: 0;
+    }
+    input, textarea, button { border-radius: var(--radius); border: 1px solid #ccc; font-size: 14px; }
+    input, textarea {
+      width: 100%; padding: 10px; margin: 8px 0; background: #fff;
+    }
+    textarea { font-family: "Times New Roman", serif; resize: none; min-height: 60px; max-height: 140px; }
+    button {
+      background: var(--primary); color: #fff; padding: 10px;
+      border: none; cursor: pointer; transition: background .15s ease;
+    }
+    button:hover { background: var(--primary-hover); }
+    #loginDiv, #chatDiv { flex: 1; display: none; padding: 16px; overflow: hidden; }
+    #loginDiv button { width: 100%; }
+    #chatDiv { flex-direction: column; gap: 10px; }
+    #messages {
+      flex: 1; overflow-y: auto; padding: 10px; background: var(--msg-bg);
+      border-radius: var(--radius); display: flex; flex-direction: column;
+      gap: 6px; justify-content: flex-end; /* ALTTA BAŞLAMASI İÇİN */
+      min-height: 0;
+    }
+    .msg {
+      margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 80%;
+      word-wrap: break-word; line-height: 1.3; font-size: 14px;
+      background: var(--other); align-self: flex-start;
+    }
+    .msg.me { background: var(--primary); color: #fff; align-self: flex-end; }
+    .inputRow { display: flex; gap: 8px; align-items: flex-end; }
+    .inputRow textarea { flex: 1 1 auto; margin: 0; }
+    .sendBtn {
+      flex: 0 0 auto; padding: 10px 16px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 42px; width: auto;
+    }
+    .actionsRow { display: flex; justify-content: flex-end; }
+    #logoutBtn {
+      background: var(--danger); padding: 8px 12px;
+      border-radius: 999px; width: auto; margin: 0;
+    }
+    #logoutBtn:hover { background: var(--danger-hover); }
+    @media (max-width: 600px) {
+      header { font-size: 16px; padding: 12px; }
+      .msg { font-size: 13px; }
+      .sendBtn { height: 40px; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-<header>İletişim Formu</header>
-<div id="loginDiv">
-  <input type="email" id="email" placeholder="E-posta" />
-  <input type="password" id="password" placeholder="Şifre" />
-  <button onclick="login()">Giriş Yap</button>
-</div>
-<div id="chatDiv">
-  <div id="messages" aria-live="polite"></div>
-  <div class="inputRow">
-    <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
-    <!-- Radyo butonu -->
-    <button class="iconBtn" id="radioBtn" title="Radyo Aç/Kapat">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 17h16M5 12h14M9 7h6" stroke="#4a69bd" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <!-- Karanlık Mod -->
-    <button class="iconBtn" id="darkModeBtn" title="Karanlık mod">
-      <svg width="20" height="20" viewBox="0 0 24 24" stroke="#4a69bd" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 16c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4z"/>
-      </svg>
-    </button>
-    <!-- Çıkış -->
-    <button class="iconBtn" id="logoutBtn" title="Çıkış">
-      <svg width="20" height="20" viewBox="0 0 24 24" stroke="#e74c3c" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-        <path d="M16 17l5-5-5-5"/>
-        <path d="M21 12H9"/>
-      </svg>
-    </button>
+  <div class="container">
+    <header>İletişim Formu</header>
+
+    <!-- Giriş -->
+    <div id="loginDiv">
+      <input type="email" id="email" placeholder="E-posta" />
+      <input type="password" id="password" placeholder="Şifre" />
+      <button onclick="login()">Giriş Yap</button>
+    </div>
+
+    <!-- Sohbet -->
+    <div id="chatDiv">
+      <div id="messages" aria-live="polite"></div>
+      <div class="inputRow">
+        <textarea id="messageInput" placeholder="Mesaj yazın..." aria-label="Mesaj"></textarea>
+        <button class="sendBtn" title="Gönder" aria-label="Gönder" onclick="sendMessage()">➤</button>
+      </div>
+      <div class="actionsRow">
+        <button id="logoutBtn" onclick="logout()">Çıkış</button>
+      </div>
+    </div>
   </div>
-</div>
-</div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { getFirestore,collection,addDoc,query,orderBy,limit,getDocs,onSnapshot,serverTimestamp,startAfter } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
-const firebaseConfig={apiKey:"AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
-authDomain:"ms4bfcw.firebaseapp.com",projectId:"ms4bfcw",
-storageBucket:"ms4bfcw.firebasestorage.app",messagingSenderId:"260708453820",
-appId:"1:260708453820:web:7857e835708603aba62fb9",measurementId:"G-WFMF5VGM8F"};
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, limit, startAfter, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-const app=initializeApp(firebaseConfig);
-const analytics=getAnalytics(app);
-const auth=getAuth(app);
-const db=getFirestore(app);
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2EtFfhxcVp_gOk0sany4frsI__OMKnsA",
+      authDomain: "ifreli-muhabbet.firebaseapp.com",
+      projectId: "ifreli-muhabbet",
+      storageBucket: "ifreli-muhabbet.firebasestorage.app",
+      messagingSenderId: "83940267241",
+      appId: "1:83940267241:web:b3d39fc721b75e9377cc78"
+    };
 
-const loginDiv=document.getElementById("loginDiv");
-const chatDiv=document.getElementById("chatDiv");
-const messagesDiv=document.getElementById("messages");
-const msgInput=document.getElementById("messageInput");
-const darkModeBtn=document.getElementById("darkModeBtn");
-const logoutBtn=document.getElementById("logoutBtn");
-const radioBtn=document.getElementById("radioBtn");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-let unsubscribe=null;
-let lastVisible=null;
-let radioPlayer=new Audio("http://stream.radyo45lik.com:4545/stream");
-radioPlayer.crossOrigin="anonymous"; 
-radioPlayer.loop=true;
-let radioOn=false;
+    const loginDiv = document.getElementById("loginDiv");
+    const chatDiv = document.getElementById("chatDiv");
+    const messagesDiv = document.getElementById("messages");
+    const msgInput = document.getElementById("messageInput");
 
-function initDarkMode(){const isDark=localStorage.getItem("darkMode")==="true";
-if(isDark) document.body.classList.add("dark-mode");}
-function toggleDarkMode(){const isDark=document.body.classList.toggle("dark-mode");
-localStorage.setItem("darkMode",isDark);}
-darkModeBtn.addEventListener("click",toggleDarkMode);
+    let unsubscribe = null;
+    let lastVisible = null;
+    let loadingOld = false;
 
-radioBtn.addEventListener("click",()=>{
-  if(!radioOn){
-    radioPlayer.play();
-    radioBtn.classList.add("radio-active");
-    radioOn=true;
-  }else{
-    radioPlayer.pause();
-    radioPlayer.currentTime=0;
-    radioBtn.classList.remove("radio-active");
-    radioOn=false;
-  }
-});
-
-onAuthStateChanged(auth,user=>{
-  if(user){loginDiv.style.display="none";chatDiv.style.display="flex";loadMessages();}
-  else{if(unsubscribe) unsubscribe();loginDiv.style.display="block";chatDiv.style.display="none";messagesDiv.innerHTML="";}
-});
-async function login(){const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-if(!email||!password){alert("Lütfen e-posta ve şifre girin.");return;}
-await signInWithEmailAndPassword(auth,email,password).catch(err=>alert(err.message));}
-async function logout(){await signOut(auth);}
-logoutBtn.addEventListener("click",logout);
-
-async function sendMessage(){
-  const text=msgInput.value.trim();
-  if(!text||!auth.currentUser) return;
-  await addDoc(collection(db,"messages"),{text,sender:auth.currentUser.email,timestamp:serverTimestamp()});
-  msgInput.value="";
-  msgInput.style.height="auto";
-}
-msgInput.addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}
-});
-msgInput.addEventListener("input",function(){this.style.height="auto";this.style.height=this.scrollHeight+"px";});
-
-async function loadMessages(){
-  const q=query(collection(db,"messages"),orderBy("timestamp","desc"),limit(20));
-  const snapshot=await getDocs(q);
-  lastVisible=snapshot.docs[snapshot.docs.length-1];
-  let msgs=[];snapshot.forEach(doc=>msgs.unshift({...doc.data(),id:doc.id}));
-  renderMessages(msgs);
-  if(unsubscribe) unsubscribe();
-  const liveQ=query(collection(db,"messages"),orderBy("timestamp","desc"),limit(1));
-  unsubscribe=onSnapshot(liveQ,snap=>{
-    snap.docChanges().forEach(change=>{
-      if(change.type==="added"){appendMessage(change.doc.data());}
-    });
-  });
-}
-messagesDiv.addEventListener("scroll",async()=>{
-  if(messagesDiv.scrollTop===0 && lastVisible){
-    const oldQ=query(collection(db,"messages"),orderBy("timestamp","desc"),startAfter(lastVisible),limit(20));
-    const snapshot=await getDocs(oldQ);
-    if(!snapshot.empty){
-      lastVisible=snapshot.docs[snapshot.docs.length-1];
-      let msgs=[];snapshot.forEach(doc=>msgs.unshift({...doc.data(),id:doc.id}));
-      prependMessages(msgs);
+    // Bildirim izni iste
+    if ("Notification" in window) {
+      Notification.requestPermission();
     }
-  }
-});
 
-function formatTime(date){if(!date)return"";const d=date.toDate?date.toDate():new Date(date);
-return d.getHours().toString().padStart(2,"0")+":"+d.getMinutes().toString().padStart(2,"0");}
+    // Auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginDiv.style.display = "none";
+        chatDiv.style.display = "flex";
+        loadMessages();
+      } else {
+        if (unsubscribe) unsubscribe();
+        loginDiv.style.display = "block";
+        chatDiv.style.display = "none";
+        messagesDiv.innerHTML = "";
+      }
+    });
 
-function linkify(text){
-  const urlRegex=/(https?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex,url=>`<a href="${url}" target="_blank">${url}</a>`);
-}
-function renderMessages(msgs){messagesDiv.innerHTML="";msgs.forEach(m=>renderMessage(m));messagesDiv.scrollTop=messagesDiv.scrollHeight;}
-function appendMessage(m){renderMessage(m);messagesDiv.scrollTop=messagesDiv.scrollHeight;}
-function prependMessages(msgs){const oldHeight=messagesDiv.scrollHeight;msgs.forEach(m=>{const div=createMsgDiv(m);messagesDiv.insertBefore(div,messagesDiv.firstChild);});messagesDiv.scrollTop=messagesDiv.scrollHeight-oldHeight;}
-function renderMessage(m){const div=createMsgDiv(m);messagesDiv.appendChild(div);}
-function createMsgDiv(m){
-  const div=document.createElement("div");
-  const isMe=m.sender===auth.currentUser?.email;
-  div.className="msg"+(isMe?" me":"");
-  if(m.text){
-    const p=document.createElement("p");
-    p.innerHTML=linkify(m.text);
-    div.appendChild(p);
-  }
-  const time=document.createElement("span");
-  time.className="timestamp";
-  time.textContent=formatTime(m.timestamp);
-  div.appendChild(time);
-  return div;
-}
-window.login=login;window.logout=logout;window.sendMessage=sendMessage;
-</script>
+    // Giriş
+    async function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!email || !password) { alert("Lütfen e-posta ve şifre girin."); return; }
+      await signInWithEmailAndPassword(auth, email, password).catch(err => alert(err.message));
+    }
+
+    // Çıkış
+    async function logout() { await signOut(auth); }
+
+    // Mesaj gönder
+    async function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text) return;
+      if (!auth.currentUser) return;
+      await addDoc(collection(db, "messages"), {
+        text,
+        sender: auth.currentUser.email,
+        timestamp: serverTimestamp()
+      });
+      msgInput.value = "";
+    }
+
+    // Enter ile gönder
+    msgInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // İlk mesajları yükle
+    async function loadMessages() {
+      const q = query(collection(db, "messages"), orderBy("timestamp", "asc"), limit(20));
+      const snapshot = await getDocs(q);
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
+
+      let msgs = [];
+      snapshot.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+      renderMessages(msgs);
+
+      // Yeni mesajları canlı dinle
+      if (unsubscribe) unsubscribe();
+      const liveQ = query(collection(db, "messages"), orderBy("timestamp", "asc"));
+      unsubscribe = onSnapshot(liveQ, snap => {
+        snap.docChanges().forEach(change => {
+          if (change.type === "added") {
+            const data = change.doc.data();
+            appendMessage(data);
+          }
+        });
+      });
+    }
+
+    // Sonsuz scroll (yukarı kaydırınca eski mesajlar)
+    messagesDiv.addEventListener("scroll", async () => {
+      if (messagesDiv.scrollTop === 0 && lastVisible && !loadingOld) {
+        loadingOld = true;
+        const oldQ = query(collection(db, "messages"), orderBy("timestamp", "asc"), startAfter(lastVisible), limit(20));
+        const snapshot = await getDocs(oldQ);
+        if (!snapshot.empty) {
+          lastVisible = snapshot.docs[snapshot.docs.length - 1];
+          let msgs = [];
+          snapshot.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+          prependMessages(msgs);
+        }
+        loadingOld = false;
+      }
+    });
+
+    function renderMessages(msgs) {
+      messagesDiv.innerHTML = "";
+      msgs.forEach(m => renderMessage(m));
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function appendMessage(m) {
+      renderMessage(m);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function prependMessages(msgs) {
+      const oldHeight = messagesDiv.scrollHeight;
+      msgs.forEach(m => {
+        const div = createMsgDiv(m);
+        messagesDiv.insertBefore(div, messagesDiv.firstChild);
+      });
+      messagesDiv.scrollTop = messagesDiv.scrollHeight - oldHeight;
+    }
+
+    function renderMessage(m) {
+      const div = createMsgDiv(m);
+      messagesDiv.appendChild(div);
+    }
+
+    function createMsgDiv(m) {
+      const div = document.createElement("div");
+      div.className = "msg" + (m.sender === auth.currentUser?.email ? " me" : "");
+      div.textContent = m.text ?? "";
+      return div;
+    }
+
+    window.login = login;
+    window.logout = logout;
+    window.sendMessage = sendMessage;
+  </script>
 </body>
 </html>
