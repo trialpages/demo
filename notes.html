@@ -10,11 +10,11 @@
   <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
   <style>
-    html,body { height:100%; }
-    #editor { height: calc(100vh - 140px); } /* Başlık + toolbar + padding düşüldü */
-    .icon-btn { display:flex; flex-direction:column; align-items:center; gap:6px; }
-    .icon-btn svg { width:24px; height:24px; }
-    .ellipsis { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    html,body{height:100%}
+    .icon-btn{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .icon-btn svg{width:24px;height:24px}
+    .ellipsis{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ql-editor{min-height:50vh}
   </style>
 </head>
 <body class="h-full bg-gray-50 text-gray-800">
@@ -24,12 +24,12 @@
     <div class="bg-emerald-600 text-white px-4 py-2 rounded-xl shadow-lg">Kaydedildi ✅</div>
   </div>
 
-  <!-- Auth ekranı -->
+  <!-- Auth -->
   <section id="authSection" class="min-h-full grid place-items-center p-6">
     <div class="w-full max-w-md bg-white rounded-2xl shadow p-6 space-y-5">
       <div class="text-center">
         <h1 class="text-2xl font-bold">📝 Online Not Defteri</h1>
-        <p class="text-sm text-gray-500 mt-1">Lütfen e-posta ve parolanızla giriş yapın.</p>
+        <p class="text-sm text-gray-500 mt-1">Lütfen e-posta ve parola ile giriş yapın.</p>
       </div>
       <form id="loginForm" class="space-y-4">
         <div>
@@ -44,15 +44,14 @@
           Giriş Yap
         </button>
       </form>
-      <p class="text-xs text-gray-500">Kullanıcıyı Firebase Console’dan zaten oluşturduğun için doğrudan giriş yapabilirsin.</p>
     </div>
   </section>
 
-  <!-- Uygulama ekranı -->
+  <!-- App -->
   <section id="appSection" class="hidden h-full">
     <div class="flex h-full">
-      <!-- Sol: Not listesi -->
-      <aside class="w-72 bg-white border-r h-full flex flex-col">
+      <!-- Sol: Not listesi ve ikonlar -->
+      <aside class="w-80 bg-white border-r h-full flex flex-col">
         <div class="px-4 py-3 border-b flex items-center justify-between">
           <h2 class="font-semibold">Notlar</h2>
           <!-- Çıkış -->
@@ -63,8 +62,8 @@
           </button>
         </div>
 
-        <!-- İkon dikey araç çubuğu -->
-        <div class="grid grid-cols-3 gap-2 p-3 border-b">
+        <!-- İkon araç çubuğu (üstte kalsın) -->
+        <div class="grid grid-cols-4 gap-2 p-3 border-b">
           <button id="newNoteBtn" class="icon-btn text-gray-700 hover:text-black" title="Yeni Not">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             <span class="text-[10px]">Yeni</span>
@@ -77,26 +76,66 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-6 4h8"/></svg>
             <span class="text-[10px]">Sil</span>
           </button>
+          <button id="logoutBtn2" class="icon-btn text-gray-700 hover:text-gray-900" title="Çıkış">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3-3m0 0l3 3m-3-3v12"/></svg>
+            <span class="text-[10px]">Çıkış</span>
+          </button>
         </div>
 
-        <!-- Not ara -->
+        <!-- Ara -->
         <div class="p-3 border-b">
           <input id="searchInput" type="search" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Notlarda ara…">
         </div>
 
-        <!-- Notlar listesi -->
+        <!-- Liste -->
         <ul id="noteItems" class="flex-1 overflow-y-auto divide-y"></ul>
       </aside>
 
-      <!-- Sağ: Editör -->
+      <!-- Sağ: Görüntüleyici alanı (başlangıçta boş bilgi) -->
       <main class="flex-1 h-full flex flex-col">
-        <header class="bg-white border-b px-4 py-3">
-          <input id="noteTitle" type="text" placeholder="Başlık…" class="w-full px-3 py-2 border rounded-lg focus:ring focus:outline-none" />
+        <div id="viewerEmpty" class="m-6 bg-white rounded-2xl border-dashed border-2 border-gray-200 p-10 text-center text-gray-500">
+          Bir not seçin ya da <span class="font-medium text-gray-700">Yeni</span> ikonuna tıklayın.
+        </div>
+
+        <!-- Not Görüntüleyici -->
+        <article id="viewer" class="hidden h-full overflow-y-auto">
+          <header class="bg-white border-b px-6 py-4">
+            <h1 id="viewTitle" class="text-2xl font-bold"></h1>
+            <p id="viewMeta" class="text-xs text-gray-500 mt-1"></p>
+          </header>
+          <div id="viewContent" class="prose max-w-none bg-white p-6"></div>
+
+          <!-- Düzenle FAB -->
+          <button id="editFab" title="Düzenle"
+                  class="fixed bottom-6 right-6 bg-gray-900 text-white rounded-full p-4 shadow-lg hover:bg-black hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </article>
+      </main>
+    </div>
+  </section>
+
+  <!-- Tam ekran Editör (Yeni/Düzenle için) -->
+  <section id="editorOverlay" class="hidden fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-black/50"></div>
+    <div class="relative h-full">
+      <div class="absolute inset-0 bg-white flex flex-col">
+        <header class="px-4 py-3 border-b bg-white flex items-center gap-3">
+          <input id="noteTitle" type="text" placeholder="Başlık…"
+                 class="flex-1 px-3 py-2 border rounded-lg focus:ring focus:outline-none" />
+          <!-- Kapat (iptal) -->
+          <button id="closeEditorBtn" class="text-gray-500 hover:text-black" title="Kapat">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </header>
         <div class="p-4">
           <div id="editor" class="bg-white rounded-xl shadow"></div>
         </div>
-      </main>
+      </div>
     </div>
   </section>
 
@@ -110,7 +149,7 @@
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, doc, setDoc, deleteDoc,
-      onSnapshot, query, orderBy, serverTimestamp, getDocs
+      onSnapshot, query, orderBy, serverTimestamp, getDoc
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
     // --- Firebase Config (senin verdiğin) ---
@@ -128,14 +167,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Quill kurulum (iki yana yasla dâhil)
+    // Quill (justify dahil)
     const quill = new Quill('#editor', {
       theme: 'snow',
       modules: {
         toolbar: [
           [{ 'header': [1, 2, 3, false] }],
           ['bold', 'italic', 'underline', 'strike'],
-          [{ 'align': [] }], // left, center, right, justify
+          [{ 'align': [] }],           // left, center, right, justify
           [{ 'list': 'ordered' }, { 'list': 'bullet' }],
           ['blockquote', 'code-block'],
           ['link', 'image'],
@@ -144,13 +183,13 @@
       }
     });
 
-    // UI yardımcıları
+    // UI refs
     const authSection = document.getElementById('authSection');
     const appSection  = document.getElementById('appSection');
     const loginForm   = document.getElementById('loginForm');
     const emailEl     = document.getElementById('email');
     const passEl      = document.getElementById('password');
-    const noteTitleEl = document.getElementById('noteTitle');
+
     const noteItemsEl = document.getElementById('noteItems');
     const searchInput = document.getElementById('searchInput');
 
@@ -158,43 +197,63 @@
     const saveBtn  = document.getElementById('saveNoteBtn');
     const delBtn   = document.getElementById('deleteNoteBtn');
     const logoutBtn= document.getElementById('logoutBtn');
-    const toast    = document.getElementById('toast');
+    const logoutBtn2= document.getElementById('logoutBtn2');
 
+    const editorOverlay = document.getElementById('editorOverlay');
+    const noteTitleEl   = document.getElementById('noteTitle');
+    const closeEditorBtn= document.getElementById('closeEditorBtn');
+
+    const viewer        = document.getElementById('viewer');
+    const viewerEmpty   = document.getElementById('viewerEmpty');
+    const viewTitle     = document.getElementById('viewTitle');
+    const viewMeta      = document.getElementById('viewMeta');
+    const viewContent   = document.getElementById('viewContent');
+    const editFab       = document.getElementById('editFab');
+
+    const toast         = document.getElementById('toast');
+
+    // State
     let currentUser = null;
     let currentNoteId = null;
+    let isEditingExisting = false; // false: yeni, true: düzenleme
     let unsubscribeNotes = null;
-    let cachedNotes = []; // Arama için yerel cache
+    let cachedNotes = [];
 
-    // Giriş formu
+    // --- Auth ---
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       try {
         const email = emailEl.value.trim();
         const password = passEl.value;
-        const { user } = await signInWithEmailAndPassword(auth, email, password);
-        // state değişimini onAuthStateChanged yakalayacak
+        await signInWithEmailAndPassword(auth, email, password);
       } catch (err) {
         alert('Giriş hatası: ' + (err?.message || err));
       }
     });
 
-    // Auth state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
         authSection.classList.add('hidden');
         appSection.classList.remove('hidden');
         startNotesListener();
-        resetEditor();
+        clearViewer();
+        hideEditor();
       } else {
         currentUser = null;
+        stopNotesListener();
         appSection.classList.add('hidden');
         authSection.classList.remove('hidden');
-        stopNotesListener();
-        resetEditor();
+        hideEditor();
+        clearViewer();
       }
     });
 
+    async function signout() { try { await signOut(auth); } catch(e){ console.error(e);} }
+    logoutBtn.addEventListener('click', signout);
+    logoutBtn2.addEventListener('click', signout);
+
+    // --- Notes listener ---
     function startNotesListener() {
       if (!currentUser) return;
       const qy = query(
@@ -204,7 +263,6 @@
       if (unsubscribeNotes) unsubscribeNotes();
       unsubscribeNotes = onSnapshot(qy, (snap) => {
         cachedNotes = [];
-        noteItemsEl.innerHTML = '';
         snap.forEach((docSnap) => {
           const data = docSnap.data();
           cachedNotes.push({ id: docSnap.id, ...data });
@@ -215,58 +273,106 @@
         alert('Notları çekerken hata oluştu.');
       });
     }
-
     function stopNotesListener() {
       if (unsubscribeNotes) { unsubscribeNotes(); unsubscribeNotes = null; }
       noteItemsEl.innerHTML = '';
+      cachedNotes = [];
     }
 
+    // --- Render list ---
     function renderNotes(list) {
       noteItemsEl.innerHTML = '';
       list.forEach(n => {
         const li = document.createElement('li');
         li.className = "px-3 py-2 hover:bg-gray-100 cursor-pointer";
-        const title = n.title?.trim() ? n.title.trim() : 'Başlıksız Not';
-        const plain = stripHtml(n.content || '').slice(0, 80);
+        const title = (n.title?.trim() ? n.title.trim() : 'Başlıksız Not');
+        const snippet = stripHtml(n.content || '').slice(0, 100);
         li.innerHTML = `
           <div class="font-medium ellipsis">${escapeHtml(title)}</div>
-          <div class="text-xs text-gray-500 ellipsis">${escapeHtml(plain)}</div>
+          <div class="text-xs text-gray-500 ellipsis">${escapeHtml(snippet)}</div>
         `;
-        li.addEventListener('click', () => {
-          currentNoteId = n.id;
-          noteTitleEl.value = title;
-          quill.root.innerHTML = n.content || '';
-          // seçiliyi vurgula
-          [...noteItemsEl.children].forEach(x => x.classList.remove('bg-gray-100'));
-          li.classList.add('bg-gray-100');
-        });
+        li.addEventListener('click', () => openViewer(n.id));
         noteItemsEl.appendChild(li);
       });
     }
 
-    function stripHtml(html) {
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html || '';
-      return tmp.textContent || tmp.innerText || '';
+    // --- Viewer ---
+    async function openViewer(noteId) {
+      if (!currentUser) return;
+      try {
+        const ref = doc(db, 'users', currentUser.uid, 'notes', noteId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return;
+        const n = { id: snap.id, ...snap.data() };
+
+        currentNoteId = n.id;
+        viewTitle.textContent = (n.title?.trim() || 'Başlıksız Not');
+        viewMeta.textContent  = buildMeta(n);
+        viewContent.innerHTML = n.content || '';
+
+        viewerEmpty.classList.add('hidden');
+        viewer.classList.remove('hidden');
+        editFab.classList.remove('hidden');
+      } catch (e) {
+        console.error(e);
+        alert('Not açılamadı.');
+      }
     }
-    function escapeHtml(s='') {
-      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    function clearViewer() {
+      currentNoteId = null;
+      viewer.classList.add('hidden');
+      editFab.classList.add('hidden');
+      viewerEmpty.classList.remove('hidden');
+      viewTitle.textContent = '';
+      viewMeta.textContent = '';
+      viewContent.innerHTML = '';
+    }
+    function buildMeta(n){
+      const created = tsToLocal(n.createdAt);
+      const updated = tsToLocal(n.updatedAt);
+      let s = created ? `Oluşturma: ${created}` : '';
+      if (updated) s += (s ? ' • ' : '') + `Güncelleme: ${updated}`;
+      return s;
+    }
+    function tsToLocal(ts){
+      if (!ts) return '';
+      const d = ts.toDate ? ts.toDate() : (ts.seconds ? new Date(ts.seconds*1000) : new Date(ts));
+      return d.toLocaleString();
     }
 
-    function resetEditor() {
+    // --- Editor Overlay ---
+    newBtn.addEventListener('click', () => {
+      isEditingExisting = false;
       currentNoteId = null;
       noteTitleEl.value = '';
       quill.root.innerHTML = '';
-    }
-
-    // Yeni
-    newBtn.addEventListener('click', () => {
-      resetEditor();
-      noteTitleEl.focus();
+      showEditor();
     });
+    editFab.addEventListener('click', () => {
+      if (!currentNoteId) return;
+      const n = cachedNotes.find(x => x.id === currentNoteId);
+      if (!n) return;
+      isEditingExisting = true;
+      noteTitleEl.value = n.title || '';
+      quill.root.innerHTML = n.content || '';
+      showEditor();
+    });
+    closeEditorBtn.addEventListener('click', () => hideEditor());
+
+    function showEditor(){ editorOverlay.classList.remove('hidden'); }
+    function hideEditor(){ editorOverlay.classList.add('hidden'); }
 
     // Kaydet
-    saveBtn.addEventListener('click', async () => {
+    saveBtn.addEventListener('click', saveFromToolbar);
+    async function saveFromToolbar(){
+      if (editorOverlay.classList.contains('hidden')) {
+        alert('Kaydetmek için önce bir not oluşturun/düzenleyin (Yeni veya Düzenle).');
+        return;
+      }
+      await saveNote();
+    }
+
+    async function saveNote(){
       if (!currentUser) return;
       const title = (noteTitleEl.value || '').trim();
       const content = quill.root.innerHTML;
@@ -275,51 +381,47 @@
         content,
         updatedAt: serverTimestamp(),
       };
-
       try {
-        if (currentNoteId) {
+        if (isEditingExisting && currentNoteId){
           await setDoc(doc(db, 'users', currentUser.uid, 'notes', currentNoteId), data, { merge: true });
+          showToast('Güncellendi ✅');
+          hideEditor();
+          // Düzenleme ise, görüntüleyiciye geri dön
+          openViewer(currentNoteId);
         } else {
-          const docRef = await addDoc(collection(db, 'users', currentUser.uid, 'notes'), {
+          const ref = await addDoc(collection(db, 'users', currentUser.uid, 'notes'), {
             ...data,
             createdAt: serverTimestamp()
           });
-          currentNoteId = docRef.id;
+          currentNoteId = ref.id;
+          showToast('Kaydedildi ✅');
+          hideEditor();
+          // Yeni not sonrası sadece liste görünsün
+          clearViewer();
         }
-        showToast();
       } catch (err) {
         console.error(err);
-        alert('Kaydederken hata oluştu: ' + (err?.message || err));
+        alert('Kaydederken hata: ' + (err?.message || err));
       }
-    });
-
-    function deriveTitleFromContent(html) {
-      const txt = stripHtml(html).trim();
-      if (!txt) return 'Başlıksız Not';
-      return txt.split('\n')[0].slice(0, 80);
     }
 
     // Sil
     delBtn.addEventListener('click', async () => {
       if (!currentUser) return;
-      if (!currentNoteId) {
-        alert('Silinecek bir not seçin.');
-        return;
-      }
+      // Silinecek not: Öncelik görüntüleyicide açık olan
+      const targetId = currentNoteId;
+      if (!targetId) { alert('Silmek için bir not seçin.'); return; }
       if (!confirm('Bu not silinsin mi?')) return;
       try {
-        await deleteDoc(doc(db, 'users', currentUser.uid, 'notes', currentNoteId));
-        resetEditor();
+        await deleteDoc(doc(db, 'users', currentUser.uid, 'notes', targetId));
         showToast('Silindi 🗑️', 'bg-rose-600');
-      } catch (err) {
-        console.error(err);
-        alert('Silme hatası: ' + (err?.message || err));
+        clearViewer();
+        // Editor açıksa kapat
+        hideEditor();
+      } catch (e) {
+        console.error(e);
+        alert('Silme hatası: ' + (e?.message || e));
       }
-    });
-
-    // Çıkış
-    logoutBtn.addEventListener('click', async () => {
-      try { await signOut(auth); } catch (e) { console.error(e); }
     });
 
     // Arama
@@ -333,6 +435,20 @@
       renderNotes(filtered);
     });
 
+    // Helpers
+    function stripHtml(html='') {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    }
+    function escapeHtml(s='') {
+      return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+    }
+    function deriveTitleFromContent(html) {
+      const txt = stripHtml(html).trim();
+      if (!txt) return 'Başlıksız Not';
+      return txt.split('\n')[0].slice(0, 80);
+    }
     function showToast(text='Kaydedildi ✅', color='bg-emerald-600') {
       toast.firstElementChild.textContent = text;
       toast.firstElementChild.className = color + " text-white px-4 py-2 rounded-xl shadow-lg";
