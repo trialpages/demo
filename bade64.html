@@ -1,102 +1,233 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base64 Kodlama ve Decode Aracı</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 200px;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            resize: none;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            word-wrap: break-word;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Base64 Kodlama ve Decode Aracı</title>
+  <style>
+    :root{
+      --bg-start:#eef2f7;
+      --bg-end:#dbe5f3;
+      --card-bg:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --primary:#2563eb;
+      --primary-hover:#1e40af;
+      --danger:#ef4444;
+      --ring: 0 10px 25px rgba(37,99,235,.15);
+      --radius: 16px;
+    }
+
+    /* Arkaplan ve tipografi */
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% -10%, var(--bg-start), transparent),
+                  radial-gradient(1200px 800px at 120% 10%, var(--bg-end), transparent),
+                  linear-gradient(180deg, #f6f8fb, #e9eff7 60%, #e6edf7);
+      display:grid; place-items:center; padding:24px;
+    }
+
+    /* Kart */
+    .card{
+      width:min(92vw, 760px);
+      background:var(--card-bg);
+      border-radius:var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.06), 0 12px 30px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+
+    .card-header{
+      padding:22px 24px; border-bottom:1px solid #eef2f7; background:linear-gradient(180deg,#fff, #fafbff);
+    }
+    .title{margin:0; font-weight:700; letter-spacing:.2px;}
+    .subtitle{margin:6px 0 0; color:var(--muted); font-size:.95rem}
+
+    .card-body{padding:22px; display:grid; gap:16px}
+
+    /* Giriş alanı */
+    .field{
+      display:grid; gap:8px;
+    }
+    .label{font-size:.9rem; color:var(--muted)}
+    textarea{
+      width:100%; min-height:140px; resize:vertical;
+      padding:14px 16px; border:1px solid #e5e7eb; border-radius:12px; outline:none; line-height:1.5;
+      background:#fbfdff;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+    /* Butonlar */
+    .actions{display:flex; flex-wrap:wrap; gap:10px}
+    .btn{
+      appearance:none; border:0; border-radius:12px; padding:12px 16px; font-weight:600; cursor:pointer;
+      transition:transform .06s ease, box-shadow .15s ease, background-color .15s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--primary); color:#fff; box-shadow:var(--ring)}
+    .btn-primary:hover{background:var(--primary-hover)}
+    .btn-soft{background:#eef2ff; color:#243b7a}
+    .btn-soft:hover{background:#e3e8ff}
+    .btn-ghost{background:#f3f4f6; color:#111827}
+    .btn-ghost:hover{background:#e9eaee}
+
+    /* Sonuç alanı */
+    .result-block{display:grid; gap:8px}
+    .result{
+      background:#f8fafc; border:1px dashed #dbe3ef; border-radius:12px; padding:14px 16px; min-height:72px;
+      overflow:auto; word-break:break-word; white-space:pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    .hint{color:var(--muted); font-size:.88rem}
+
+    /* Alt bilgi */
+    .card-footer{padding:16px 22px; border-top:1px solid #eef2f7; display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:.9rem}
+
+    /* Koyu tema desteği (sistem tercihi) */
+    @media (prefers-color-scheme: dark){
+      :root{--card-bg:#0b1020; --text:#e5e7eb; --muted:#9aa5b1}
+      body{background: radial-gradient(1200px 800px at 20% -10%, #0f172a, transparent),
+                       radial-gradient(1200px 800px at 120% 10%, #0b1227, transparent),
+                       linear-gradient(180deg, #0b1020, #0b1220 60%, #09101d)}
+      .card{box-shadow: 0 2px 8px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.35)}
+      textarea{background:#0f172a; border-color:#1f2a44; color:#e5e7eb}
+      .result{background:#0f172a; border-color:#1f2a44}
+      .btn-ghost{background:#0f172a; color:#e5e7eb}
+      .btn-ghost:hover{background:#121a2e}
+      .btn-soft{background:#1d2748; color:#d5ddff}
+      .btn-soft:hover{background:#23305a}
+      .card-header{background:linear-gradient(180deg,#0b1020, #0f1428); border-bottom-color:#16203b}
+      .card-footer{border-top-color:#16203b}
+    }
+
+    /* Daha geniş ekranlarda düzen */
+    @media (min-width: 900px){
+      .card-body{grid-template-columns: 1fr 1fr; align-items:start}
+      .result-block{margin-top:0}
+    }
+  </style>
 </head>
 <body>
+  <main class="card" role="region" aria-label="Base64 Kodlama Aracı">
+    <header class="card-header">
+      <h1 class="title">Base64 Kodlama & Çözme</h1>
+      <p class="subtitle">UTF‑8 uyumlu, kopyala‑yapıştır dostu ve mobil/masaüstü uyumlu tek sayfa araç.</p>
+    </header>
 
-<div class="container">
-    <h2>Base64 Kodlama ve Decode Aracı</h2>
-    <textarea id="inputText" placeholder="Metin girin..."></textarea>
-    <button onclick="encodeBase64()">Base64 Kodla</button>
-    <button onclick="decodeBase64()">Base64 Decode Et</button>
-    <button onclick="clearText()">Metni Temizle</button>
-    <div class="result" id="result"></div>
-    <button onclick="copyResult()" id="copyButton" style="display:none;">Sonucu Kopyala</button>
-</div>
+    <section class="card-body">
+      <div class="field" style="grid-column:1/-1">
+        <label for="inputText" class="label">Metin</label>
+        <textarea id="inputText" placeholder="Metninizi girin veya yapıştırın…"></textarea>
+      </div>
 
-<script>
-    function encodeBase64() {
-        const inputText = document.getElementById('inputText').value;
-        const encodedText = btoa(inputText);
-        document.getElementById('result').innerText = encodedText;
-        document.getElementById('copyButton').style.display = 'block';
+      <div class="actions">
+        <button class="btn btn-primary" id="encodeBtn" type="button">Base64 Kodla</button>
+        <button class="btn btn-soft" id="decodeBtn" type="button">Base64 Çöz (Decode)</button>
+        <button class="btn btn-ghost" id="clearBtn" type="button">Temizle</button>
+      </div>
+
+      <div class="result-block">
+        <div class="label">Sonuç</div>
+        <pre id="result" class="result" aria-live="polite"></pre>
+        <div class="hint" id="hint">Hazır. Kodla/Çöz tuşlarından birine basın.</div>
+        <div class="actions">
+          <button class="btn btn-primary" id="copyBtn" type="button" style="display:none">Sonucu Kopyala</button>
+          <button class="btn btn-ghost" id="swapBtn" type="button" style="display:none">Sonucu Girdiye Aktar</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="card-footer">
+      <span>UTF‑8 destekli • Güvenli panoya kopyalama</span>
+      <span id="status" aria-live="polite"></span>
+    </footer>
+  </main>
+
+  <script>
+    // UTF-8 uyumlu Base64 yardımcıları
+    function base64Encode(str){
+      const bytes = new TextEncoder().encode(str);
+      let binary = "";
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      return btoa(binary);
+    }
+    function base64Decode(b64){
+      // URL-safe varyantları destekle
+      b64 = b64.replace(/-/g, "+").replace(/_/g, "/");
+      const binary = atob(b64);
+      const bytes = new Uint8Array([...binary].map(ch => ch.charCodeAt(0)));
+      return new TextDecoder().decode(bytes);
     }
 
-    function decodeBase64() {
-        const inputText = document.getElementById('inputText').value;
-        try {
-            const decodedText = atob(inputText);
-            document.getElementById('result').innerText = decodedText;
-            document.getElementById('copyButton').style.display = 'block';
-        } catch (e) {
-            document.getElementById('result').innerText = 'Geçersiz Base64 formatı!';
-            document.getElementById('copyButton').style.display = 'none';
-        }
+    const $ = (id) => document.getElementById(id);
+    const input = $("inputText");
+    const result = $("result");
+    const hint = $("hint");
+    const status = $("status");
+    const copyBtn = $("copyBtn");
+    const swapBtn = $("swapBtn");
+
+    function showResult(text){
+      result.textContent = text;
+      copyBtn.style.display = text ? "inline-block" : "none";
+      swapBtn.style.display = text ? "inline-block" : "none";
+      hint.textContent = text ? "Bitti. Kopyalayabilir veya girdiye aktarabilirsiniz." : "Hazır. Kodla/Çöz tuşlarından birine basın.";
     }
 
-    function clearText() {
-        document.getElementById('inputText').value = '';
-        document.getElementById('result').innerText = '';
-        document.getElementById('copyButton').style.display = 'none';
+    $("encodeBtn").addEventListener("click", () => {
+      const val = input.value ?? "";
+      const encoded = base64Encode(val);
+      showResult(encoded);
+      toast("Metin Base64 olarak kodlandı.");
+    });
+
+    $("decodeBtn").addEventListener("click", () => {
+      const val = input.value ?? "";
+      try{
+        const decoded = base64Decode(val.trim());
+        showResult(decoded);
+        toast("Base64 metni çözüldü.");
+      }catch(err){
+        showResult("");
+        hint.textContent = "Geçersiz Base64 formatı. Lütfen girdiyi kontrol edin.";
+        toast("Geçersiz Base64", true);
+      }
+    });
+
+    $("clearBtn").addEventListener("click", () => {
+      input.value = ""; showResult(""); toast("Alanlar temizlendi.");
+      input.focus();
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(result.textContent || "");
+        toast("Sonuç panoya kopyalandı.");
+      }catch(e){ toast("Kopyalama engellendi.", true); }
+    });
+
+    swapBtn.addEventListener("click", () => {
+      input.value = result.textContent || "";
+      showResult("");
+      input.focus();
+      toast("Sonuç girdiye aktarıldı.");
+    });
+
+    // Küçük bir toast/status geri bildirimi
+    let toastTimer;
+    function toast(message, isError){
+      clearTimeout(toastTimer);
+      status.textContent = message;
+      status.style.color = isError ? "var(--danger)" : "var(--muted)";
+      toastTimer = setTimeout(() => { status.textContent = ""; }, 2500);
     }
 
-    function copyResult() {
-        const resultText = document.getElementById('result').innerText;
-        navigator.clipboard.writeText(resultText).then(() => {
-            alert('Sonuç panoya kopyalandı!');
-        });
-    }
-</script>
-
+    // Ctrl/Cmd + Enter ile Encode, Shift+Enter ile Decode kısayolu
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { $("encodeBtn").click(); }
+      if (e.shiftKey && e.key === "Enter") { $("decodeBtn").click(); }
+    });
+  </script>
 </body>
 </html>
