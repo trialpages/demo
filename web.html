@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gizli Tarayıcı - Geçmişe Kaydetmez</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50, #1a1a2e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1rem;
+        }
+        
+        .browser-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .url-bar {
+            flex: 1;
+            display: flex;
+            min-width: 250px;
+        }
+        
+        .url-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 24px 0 0 24px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .go-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 0 24px 24px 0;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .go-button:hover {
+            background: #2980b9;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-button {
+            padding: 12px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            transition: background 0.3s;
+        }
+        
+        .nav-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .browser-frame {
+            flex: 1;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            min-height: 400px;
+        }
+        
+        .privacy-notice {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .browser-controls {
+                flex-direction: column;
+            }
+            
+            .nav-buttons {
+                align-self: center;
+            }
+            
+            .url-bar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gizli Tarayıcı</h1>
+            <p class="subtitle">Geçmişe kaydetmeyen özel tarayıcı deneyimi</p>
+        </header>
+        
+        <div class="browser-controls">
+            <div class="nav-buttons">
+                <button class="nav-button" id="back-button">←</button>
+                <button class="nav-button" id="forward-button">→</button>
+                <button class="nav-button" id="refresh-button">↻</button>
+            </div>
+            
+            <div class="url-bar">
+                <input type="text" class="url-input" id="url-input" placeholder="URL'yi buraya yazın ve Enter'a basın...">
+                <button class="go-button" id="go-button">Git</button>
+            </div>
+        </div>
+        
+        <iframe 
+            class="browser-frame" 
+            id="browser-frame" 
+            src="about:blank"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            allow="geolocation; microphone; camera"
+        ></iframe>
+        
+        <div class="privacy-notice">
+            ⚠️ Bu tarayıcı, ziyaret ettiğiniz siteleri yerel geçmişinize kaydetmez. Ancak, İnternet servis sağlayıcınız veya ziyaret ettiğiniz web siteleri trafiğinizi kaydedebilir.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const frame = document.getElementById('browser-frame');
+            const urlInput = document.getElementById('url-input');
+            const goButton = document.getElementById('go-button');
+            const backButton = document.getElementById('back-button');
+            const forwardButton = document.getElementById('forward-button');
+            const refreshButton = document.getElementById('refresh-button');
+            
+            // Geçerli bir URL mi kontrol et
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            }
+            
+            // URL'yi yükle
+            function loadUrl() {
+                let url = urlInput.value.trim();
+                
+                if (!url) return;
+                
+                // HTTP/HTTPS protokolü yoksa ekle
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                
+                if (isValidUrl(url)) {
+                    frame.src = url;
+                } else {
+                    alert('Geçerli bir URL giriniz.');
+                }
+            }
+            
+            // Olay dinleyicileri
+            goButton.addEventListener('click', loadUrl);
+            
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadUrl();
+                }
+            });
+            
+            backButton.addEventListener('click', function() {
+                try {
+                    frame.contentWindow.history.back();
+                } catch (e) {
+                    console.log('Geri gitme hatası: Farklı kökenden dolayı erişim kısıtlandı');
+                }
+            });
+            
+            forwardButton.addEventListener('click', function() {
+                try {
+                    frame.contentWindow.history.forward();
+                } catch (e) {
+                    console.log('İleri gitme hatası: Farklı kökenden dolayı erişim kısıtlandı');
+                }
+            });
+            
+            refreshButton.addEventListener('click', function() {
+                frame.src = frame.src;
+            });
+            
+            // Iframe yüklendiğinde URL çubuğunu güncelle
+            frame.addEventListener('load', function() {
+                try {
+                    // Sadece aynı kökene sahip sayfalar için çalışır
+                    if (frame.contentWindow.location.href !== 'about:blank') {
+                        urlInput.value = frame.contentWindow.location.href;
+                    }
+                } catch (e) {
+                    // Farklı köken politikası nedeniyle erişim kısıtlandı
+                    urlInput.value = frame.src;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
