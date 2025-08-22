@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yemek Tarifleri</title>
+    <title>Login Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -46,7 +46,7 @@
                 document.getElementById("girisEkrani").style.display = "none";
                 document.getElementById("sohbetEkrani").style.display = "block";
             } else {
-                alert("Yanlış parola! Tekrar deneyin.");
+                alert("Wrong Password. Please try again!");
             }
         }
 
@@ -58,15 +58,15 @@
 <body>
 
     <div id="girisEkrani">
-        <h1>Yemek Tarifleri</h1>
-        <p>Parolanızı giriniz:</p>
-        <input type="password" id="parola" placeholder="Parola">
-        <button onclick="kontrolEt()">Giriş Yap</button>
+        <h1>Login Page</h1>
+        <p></p>
+        <input type="password" id="parola" placeholder="Password">
+        <button onclick="kontrolEt()">Login</button>
     </div>
 
     <div id="sohbetEkrani">
-        <iframe src="https://my.cbox.ws"></iframe>
-        <button onclick="sohbetiKapat()">Sohbeti Kapat</button>
+        <iframe src="https://www.google.com"></iframe>
+        <button onclick="sohbetiKapat()">LogOut</button>
     </div>
 
     <script>
