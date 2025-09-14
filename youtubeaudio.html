@@ -1,0 +1,165 @@
+<!doctype html>
+
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YouTube Ses Oynatıcı (Görüntüsüz)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; padding: 20px; max-width:900px; margin:auto; }
+    h1 { font-size: 1.4rem; margin-bottom: 0.2rem; }
+    label { display:block; margin-top:10px; font-weight:600; }
+    textarea { width:100%; height:90px; padding:8px; font-size:0.95rem; }
+    .controls { margin-top:10px; display:flex; gap:8px; flex-wrap:wrap; }
+    button, input[type=range] { padding:8px 12px; font-size:0.95rem; }
+    .queue { margin-top:12px; border-top:1px solid #eee; padding-top:10px; }
+    .queue li { margin:6px 0; }
+    .hidden-iframe { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0.01; }
+    .meta { margin-top:8px; font-size:0.95rem; }
+    .note { margin-top:12px; font-size:0.85rem; color:#555; }
+  </style>
+</head>
+<body>
+  <h1>YouTube bağlantılarını görüntüsüz (sadece ses) sırayla çal</h1>
+  <p>Linkleri alt alta veya virgülle ayırarak yapıştır. Örnek: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code> veya <code>https://youtu.be/dQw4w9WgXcQ</code></p><label for="links">YouTube bağlantıları</label>
+
+  <textarea id="links" placeholder="Her satıra bir link ya da virgülle ayırın..."></textarea>  <div class="controls">
+    <button id="load">Yükle ve Oynat</button>
+    <button id="play">Oynat</button>
+    <button id="pause">Duraklat</button>
+    <button id="prev">Öncekı</button>
+    <button id="next">Sonraki</button>
+    <label style="display:flex;align-items:center;gap:6px;margin-left:8px;">Ses <input id="vol" type="range" min="0" max="100" value="80"></label>
+  </div>  <div class="meta">
+    <div>Çalan: <span id="title">—</span></div>
+    <div>Durum: <span id="status">Hazır</span></div>
+  </div>  <ul class="queue" id="queueList"></ul>  <p class="note">Not: Tarayıcıların otomatik oynatma kısıtları vardır; ilk oynatma genellikle kullanıcı etkileşimi gerektirir. Bu sayfa iframe üzerinden YouTube'un embed API'sini kullanır — telif ve YouTube kullanım şartlarına dikkat edin.</p>  <!-- Gizli iframe: video görünmeyecek fakat ses çalacaktır. -->  <div class="hidden-iframe" aria-hidden="true">
+    <div id="player"></div>
+  </div>  <script>
+    // YouTube IFrame API yükleme
+    let tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    let player;
+    let queue = [];
+    let currentIndex = 0;
+
+    function parseVideoId(url) {
+      if (!url) return null;
+      url = url.trim();
+      // desteklenen formatlar: youtu.be/ID , youtube.com/watch?v=ID , youtube.com/embed/ID
+      try {
+        const u = new URL(url);
+        if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+        if (u.searchParams && u.searchParams.get('v')) return u.searchParams.get('v');
+        const parts = u.pathname.split('/');
+        return parts.pop() || null;
+      } catch (e) {
+        // eğer düz ID girildiyse
+        if (/^[A-Za-z0-9_-]{8,}$/.test(url)) return url;
+        return null;
+      }
+    }
+
+    function buildQueueFromText(text) {
+      const separators = /[\n,]+/;
+      const parts = text.split(separators).map(s=>s.trim()).filter(Boolean);
+      const ids = parts.map(parseVideoId).filter(Boolean);
+      return ids;
+    }
+
+    function refreshQueueUI() {
+      const list = document.getElementById('queueList');
+      list.innerHTML = '';
+      queue.forEach((id, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${i+1}. ${id}` + (i===currentIndex ? ' ← çalıyor' : '');
+        li.style.cursor = 'pointer';
+        li.onclick = ()=>{ playIndex(i); };
+        list.appendChild(li);
+      });
+    }
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        height: '200', width: '300', // görünmesin diye CSS ile gizliyoruz
+        videoId: '',
+        playerVars: {
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          fs: 0,
+          disablekb: 1
+        },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerReady() {
+      document.getElementById('status').textContent = 'API Hazır';
+    }
+
+    function onPlayerStateChange(e) {
+      const s = e.data;
+      const statusEl = document.getElementById('status');
+      if (s === YT.PlayerState.ENDED) {
+        statusEl.textContent = 'Bitti';
+        next();
+      } else if (s === YT.PlayerState.PLAYING) {
+        statusEl.textContent = 'Oynatılıyor';
+        updateTitle();
+      } else if (s === YT.PlayerState.PAUSED) {
+        statusEl.textContent = 'Duraklatıldı';
+      } else if (s === YT.PlayerState.BUFFERING) {
+        statusEl.textContent = 'Yükleniyor...';
+      }
+    }
+
+    function updateTitle() {
+      // video başlığını al (API yüklenince çalışır)
+      try {
+        player.getVideoData && setTimeout(()=>{
+          const d = player.getVideoData();
+          document.getElementById('title').textContent = d && (d.title || d.video_id) ? (d.title || d.video_id) : '—';
+        }, 300);
+      } catch(e){ }
+    }
+
+    function playIndex(i) {
+      if (!player || !queue.length) return;
+      if (i < 0 || i >= queue.length) return;
+      currentIndex = i;
+      player.loadVideoById({videoId: queue[currentIndex], startSeconds: 0});
+      // bazı tarayıcılarda ses açma kullanıcı etkileşimi ister; kullanıcı "Yükle ve Oynat" butonuna basmalı
+      player.setVolume(Number(document.getElementById('vol').value));
+      refreshQueueUI();
+    }
+
+    function play() { if (player) player.playVideo(); }
+    function pause() { if (player) player.pauseVideo(); }
+    function prev() { if (currentIndex>0) playIndex(currentIndex-1); }
+    function next() { if (currentIndex < queue.length-1) playIndex(currentIndex+1); }
+
+    document.getElementById('load').addEventListener('click', ()=>{
+      const text = document.getElementById('links').value || '';
+      const ids = buildQueueFromText(text);
+      if (!ids.length) { alert('Geçerli bir YouTube bağlantısı bulunamadı.'); return; }
+      queue = ids;
+      currentIndex = 0;
+      refreshQueueUI();
+      playIndex(0);
+    });
+
+    document.getElementById('play').addEventListener('click', ()=>{ play(); });
+    document.getElementById('pause').addEventListener('click', ()=>{ pause(); });
+    document.getElementById('prev').addEventListener('click', ()=>{ prev(); });
+    document.getElementById('next').addEventListener('click', ()=>{ next(); });
+    document.getElementById('vol').addEventListener('input', (e)=>{ if (player) player.setVolume(Number(e.target.value)); });
+
+  </script></body>
+</html>
