@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Login Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #girisEkrani, #sohbetEkrani {
+      display: none;
+      flex: 1;
+    }
+    #girisEkrani {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 80%;
+      max-width: 300px;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: darkgreen;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100vh - 60px);
+      border: none;
+      display: block;
+    }
+    #logoutBtn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #28a745, #218838);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    #logoutBtn:hover {
+      background: linear-gradient(90deg, #218838, #1e7e34);
+    }
+    #sohbetEkrani {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+  </style>
+  <script>
+    function kontrolEt() {
+      var parola = document.getElementById("parola").value;
+      var bugun = new Date();
+      var dogruParola = 
+          String(bugun.getDate()).padStart(2, '0') + 
+          String(bugun.getMonth() + 1).padStart(2, '0') + 
+          bugun.getFullYear();
+      
+      if (parola === dogruParola) {
+        document.getElementById("girisEkrani").style.display = "none";
+        document.getElementById("sohbetEkrani").style.display = "flex";
+        // iframe url base64 decode
+        var encodedUrl = "aHR0cHM6Ly93d3c1LmNib3gud3MvYm94Lz9ib3hpZD05NTgyMDUmYm94dGFnPWJYTGhaQw==";
+        var decodedUrl = atob(encodedUrl);
+        document.getElementById("chatFrame").src = decodedUrl;
+      } else {
+        alert("Wrong Password. Please try again!");
+      }
+    }
+
+    function sohbetiKapat() {
+      location.reload();
+    }
+
+    window.addEventListener("resize", function() {
+      document.body.style.height = window.innerHeight + "px";
+    });
+  </script>
+</head>
+<body>
+
+  <div id="girisEkrani">
+    <h1>Login Page</h1>
+    <input type="password" id="parola" placeholder="Password">
+    <button onclick="kontrolEt()">Login</button>
+  </div>
+
+  <div id="sohbetEkrani">
+    <iframe id="chatFrame"></iframe>
+    <button id="logoutBtn" onclick="sohbetiKapat()">LogOut</button>
+  </div>
+
+  <script>
+    document.getElementById("girisEkrani").style.display = "flex";
+  </script>
+
+</body>
+</html>
