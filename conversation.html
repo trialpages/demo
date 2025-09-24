@@ -8,7 +8,7 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 0 0 8px 0; /* sayfa altına az boşluk */
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -30,33 +30,37 @@
       max-width: 300px;
       font-size: 16px;
     }
-    button {
-      padding: 12px 20px;
-      background-color: green;
+    /* Login butonu */
+    #loginBtn {
+      padding: 14px 30px;
+      background-color: #264D65;
       color: white;
       border: none;
       cursor: pointer;
-      font-size: 16px;
-      border-radius: 8px;
+      font-size: 17px;
+      border-radius: 12px; /* dikdörtgen-oval */
       transition: background 0.3s ease;
+      min-width: 140px;
     }
-    button:hover {
-      background-color: darkgreen;
+    #loginBtn:hover {
+      background-color: #1e3d52;
     }
     iframe {
       width: 100%;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 100px); /* buton boşluğu dahil */
       border: none;
       display: block;
     }
+    /* Logout butonu */
     #logoutBtn {
+      margin-top: 6px; /* iframe ile minik boşluk */
       width: 100%;
-      padding: 15px;
-      background: linear-gradient(90deg, #264D65, #264D65);
+      padding: 14px;
+      background: linear-gradient(90deg, #28a745, #218838);
       color: #fff;
       border: none;
-      border-radius: 30px;
-      font-size: 16px;
+      border-radius: 12px; /* dikdörtgen-oval */
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
       text-align: center;
@@ -106,7 +110,7 @@
   <div id="girisEkrani">
     <h1>Login Page</h1>
     <input type="password" id="parola" placeholder="Password">
-    <button onclick="kontrolEt()">Login</button>
+    <button id="loginBtn" onclick="kontrolEt()">Login</button>
   </div>
 
   <div id="sohbetEkrani">
