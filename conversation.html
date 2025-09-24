@@ -8,7 +8,6 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0 0 8px 0; /* sayfa altına az boşluk */
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -17,11 +16,14 @@
       display: none;
       flex: 1;
     }
+    /* Giriş ekranı */
     #girisEkrani {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      background-color: #3A6783; /* #264D65'in biraz açık hali */
+      color: white;
     }
     input {
       padding: 10px;
@@ -29,6 +31,8 @@
       width: 80%;
       max-width: 300px;
       font-size: 16px;
+      border: none;
+      border-radius: 6px;
     }
     /* Login butonu */
     #loginBtn {
@@ -38,7 +42,7 @@
       border: none;
       cursor: pointer;
       font-size: 17px;
-      border-radius: 12px; /* dikdörtgen-oval */
+      border-radius: 12px;
       transition: background 0.3s ease;
       min-width: 140px;
     }
@@ -47,19 +51,19 @@
     }
     iframe {
       width: 100%;
-      height: calc(100vh - 100px); /* buton boşluğu dahil */
+      height: calc(100vh - 94px); /* buton + boşluk */
       border: none;
       display: block;
     }
     /* Logout butonu */
     #logoutBtn {
-      margin-top: 6px; /* iframe ile minik boşluk */
+      margin: 6px 0; /* üst ve alt boşluk eşit */
       width: 100%;
       padding: 14px;
-      background: linear-gradient(90deg, #28a745, #218838);
+      background-color: #264D65;
       color: #fff;
       border: none;
-      border-radius: 12px; /* dikdörtgen-oval */
+      border-radius: 12px;
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
@@ -67,7 +71,7 @@
       transition: all 0.3s ease;
     }
     #logoutBtn:hover {
-      background: linear-gradient(90deg, #218838, #1e7e34);
+      background-color: #1e3d52;
     }
     #sohbetEkrani {
       display: flex;
