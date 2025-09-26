@@ -92,7 +92,7 @@
         document.getElementById("girisEkrani").style.display = "none";
         document.getElementById("sohbetEkrani").style.display = "flex";
         // iframe url base64 decode
-        var encodedUrl = "aHR0cHM6Ly93d3c1LmNib3gud3MvYm94Lz9ib3hpZD05NTgyMDUmYm94dGFnPWJYTGhaQw==";
+        var encodedUrl = "";
         var decodedUrl = atob(encodedUrl);
         document.getElementById("chatFrame").src = decodedUrl;
       } else {
