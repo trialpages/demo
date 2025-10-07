@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ders Programı Hazırlayıcı</title>
+<title>Ders Çizelgesi Hazırlayıcı</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -31,9 +31,7 @@ input, select, button {
   border: 1px solid #ccc;
   font-size: 14px;
 }
-input[type=file] {
-  border: none;
-}
+input[type=file] { border: none; }
 button {
   background: #0ea5a4;
   color: #fff;
@@ -41,22 +39,20 @@ button {
   font-weight: bold;
   cursor: pointer;
 }
-button:hover {
-  background: #088f8d;
-}
+button:hover { background: #088f8d; }
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  table-layout: fixed;
 }
 th, td {
   border: 1px solid #ccc;
   padding: 8px;
-  text-align: left;
+  text-align: center;
+  word-wrap: break-word;
 }
-th {
-  background: #e2e8f0;
-}
+th { background: #e2e8f0; }
 .logo-preview {
   width: 80px;
   height: 80px;
@@ -70,17 +66,12 @@ th {
   color: #888;
   font-size: 12px;
 }
-.flex {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
+.flex { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 </style>
 </head>
 <body>
 
-<h1>Ders Programı Hazırlayıcı</h1>
+<h1>Ders Çizelgesi Hazırlayıcı</h1>
 
 <div class="card">
   <div class="flex">
@@ -129,11 +120,22 @@ th {
 </div>
 
 <div class="card">
-  <table id="table">
+  <table id="scheduleTable">
     <thead>
-      <tr><th>Gün</th><th>Saat</th><th>Ders</th><th>Şube</th><th>Sil</th></tr>
+      <tr>
+        <th>Saat</th>
+        <th>Pazartesi</th>
+        <th>Salı</th>
+        <th>Çarşamba</th>
+        <th>Perşembe</th>
+        <th>Cuma</th>
+        <th>Cumartesi</th>
+        <th>Pazar</th>
+      </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="scheduleBody">
+      <!-- Saat satırları dinamik olarak eklenecek -->
+    </tbody>
   </table>
   <br>
   <button id="downloadPdf">PDF Olarak Kaydet</button>
@@ -165,30 +167,35 @@ logoInput.addEventListener("change", (e)=>{
 
 // Ders ekleme
 document.getElementById("addBtn").onclick=()=>{
-  const d=document.getElementById("daySelect").value;
-  const t=document.getElementById("timeInput").value.trim();
-  const c=document.getElementById("courseInput").value.trim();
-  const s=document.getElementById("sectionInput").value.trim();
-  if(!t || !c){alert("Ders adı ve saat giriniz.");return;}
-  cart.push({day:d,time:t,course:c,section:s});
-  render();
+  const day=document.getElementById("daySelect").value;
+  const time=document.getElementById("timeInput").value.trim();
+  const course=document.getElementById("courseInput").value.trim();
+  const section=document.getElementById("sectionInput").value.trim();
+  if(!time || !course){alert("Ders adı ve saat giriniz."); return;}
+  cart.push({day,time,course,section});
+  renderSchedule();
 };
 
-function render(){
-  const tbody=document.querySelector("#table tbody");
-  tbody.innerHTML="";
-  cart.forEach((c,i)=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${c.day}</td><td>${c.time}</td><td>${c.course}</td><td>${c.section}</td>
-    <td><button style='background:#ef4444;color:#fff' onclick='del(${i})'>Sil</button></td>`;
+// Ders çizelgesini oluştur
+function renderSchedule(){
+  const tbody = document.getElementById("scheduleBody");
+  tbody.innerHTML = "";
+  // Saatleri al, eşsiz saat listesi
+  const times = [...new Set(cart.map(c=>c.time))].sort();
+  times.forEach(t=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${t}</td>` + 
+      ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"].map(d=>{
+        const ders = cart.find(c=>c.day===d && c.time===t);
+        return `<td>${ders ? ders.course + "<br><small>"+ders.section+"</small>" : ""}</td>`;
+      }).join('');
     tbody.appendChild(tr);
   });
 }
-function del(i){ cart.splice(i,1); render(); }
 
 // PDF çıktısı
 document.getElementById("downloadPdf").onclick=async()=>{
-  if(cart.length===0){alert("Henüz ders eklenmedi!");return;}
+  if(cart.length===0){alert("Henüz ders eklenmedi!"); return;}
   const school=document.getElementById("schoolName").value;
   const teacher=document.getElementById("teacherName").value;
 
@@ -196,6 +203,7 @@ document.getElementById("downloadPdf").onclick=async()=>{
   printable.style.background="#fff";
   printable.style.color="#000";
   printable.style.padding="20px";
+
   printable.innerHTML=`
     <div style='display:flex;justify-content:space-between;align-items:center;'>
       <div>
@@ -205,24 +213,31 @@ document.getElementById("downloadPdf").onclick=async()=>{
       ${logoDataURL ? `<img src='${logoDataURL}' style='height:70px;'>` : ''}
     </div>
     <hr>
-    <table style='width:100%;border-collapse:collapse;margin-top:10px'>
-      <thead><tr style='background:#e2e8f0'>
-        <th style='border:1px solid #ccc;padding:8px'>Gün</th>
-        <th style='border:1px solid #ccc;padding:8px'>Saat</th>
-        <th style='border:1px solid #ccc;padding:8px'>Ders</th>
-        <th style='border:1px solid #ccc;padding:8px'>Şube</th>
-      </tr></thead>
+    <table style='width:100%;border-collapse:collapse;table-layout:fixed'>
+      <thead>
+        <tr style='background:#e2e8f0'>
+          <th>Saat</th>
+          <th>Pazartesi</th>
+          <th>Salı</th>
+          <th>Çarşamba</th>
+          <th>Perşembe</th>
+          <th>Cuma</th>
+          <th>Cumartesi</th>
+          <th>Pazar</th>
+        </tr>
+      </thead>
       <tbody>
-        ${cart.map(r=>`<tr>
-          <td style='border:1px solid #ccc;padding:8px'>${r.day}</td>
-          <td style='border:1px solid #ccc;padding:8px'>${r.time}</td>
-          <td style='border:1px solid #ccc;padding:8px'>${r.course}</td>
-          <td style='border:1px solid #ccc;padding:8px'>${r.section}</td>
-        </tr>`).join('')}
+        ${[...new Set(cart.map(c=>c.time)).sort().map(t=>{
+          return `<tr>
+            <td style='border:1px solid #ccc;padding:6px'>${t}</td>` +
+            ["Pazartesi","Salı","Çarşamba","Perşembe","Cuma","Cumartesi","Pazar"].map(d=>{
+              const ders = cart.find(c=>c.day===d && c.time===t);
+              return `<td style='border:1px solid #ccc;padding:6px'>${ders ? ders.course+"<br><small>"+ders.section+"</small>" : ""}</td>`;
+            }).join('') + `</tr>`;
+        }).join('')}
       </tbody>
     </table>
   `;
-
   document.body.appendChild(printable);
   const canvas = await html2canvas(printable,{scale:2});
   const img = canvas.toDataURL("image/png");
@@ -230,7 +245,7 @@ document.getElementById("downloadPdf").onclick=async()=>{
   const pageWidth = pdf.internal.pageSize.getWidth();
   const ratio = pageWidth / canvas.width;
   pdf.addImage(img,"PNG",0,0,canvas.width*ratio,canvas.height*ratio);
-  pdf.save("ders_programi.pdf");
+  pdf.save("ders_cizelgesi.pdf");
   printable.remove();
 };
 </script>
