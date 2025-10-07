@@ -1,0 +1,291 @@
+<!doctype html>
+
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ders Programı Hazırlayıcı — Taş Gibi</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5m8Kk9lU1O3QeQ9p0mK+Zr6qY2VYk6tYQxvQ1p6q9sVZ5Xk6q2Wf7Zk3Qq3H9Z6q3K3h+Q2vQz6b7Z3tQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-UdGvK7Q8jV0q8a6Gm7r3y7q1f6Zt1q3x6z2q3p4k9x6c3b7z8yQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5a4;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#071028 0%, #071A2C 100%); color:#e6eef6; padding:28px}
+    .container{max-width:1100px;margin:0 auto}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo-preview{width:64px;height:64px;border-radius:8px;background:var(--glass);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    h1{margin:0;font-size:20px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); padding:16px; border-radius:12px}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text], select, input[type=time]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .row{display:flex;gap:12px}
+    button{background:var(--accent);color:#042027;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:8px;border:1px solid rgba(255,255,255,0.03);text-align:left}
+    .center{display:flex;align-items:center;gap:8px}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr;}.logo-preview{width:48px;height:48px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-preview card" id="logoPreview">LOGO</div>
+        <div>
+          <h1>Ders Programı Hazırlayıcı — Taş Gibi</h1>
+          <div style="color:var(--muted);font-size:13px">Okul adı, öğretim üyesi ve dersleri girip PDF alabilirsiniz.</div>
+        </div>
+      </div>
+    </header><div class="card grid">
+  <div>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+      <div style="flex:1">
+        <label>Okul / Kurum İsmi</label>
+        <input id="schoolName" type="text" placeholder="Örn: İstanbul İlahiyat Fakültesi" />
+      </div>
+      <div style="width:220px">
+        <label>Öğretim Üyesi / Sorumlu</label>
+        <input id="teacherName" type="text" placeholder="Ad Soyad" />
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-end">
+      <div style="flex:1">
+        <label>Gün</label>
+        <select id="daySelect">
+          <option value="Pazartesi">Pazartesi</option>
+          <option value="Salı">Salı</option>
+          <option value="Çarşamba">Çarşamba</option>
+          <option value="Perşembe">Perşembe</option>
+          <option value="Cuma">Cuma</option>
+          <option value="Cumartesi">Cumartesi</option>
+          <option value="Pazar">Pazar</option>
+        </select>
+      </div>
+      <div style="width:220px">
+        <label>Ders Saati (ör: 09:00-10:30)</label>
+        <input id="timeInput" type="text" placeholder="09:00-10:30" />
+      </div>
+      <div style="width:220px">
+        <label>Ders / Konu</label>
+        <input id="courseInput" type="text" placeholder="Ders adı" />
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center">
+      <div style="flex:1">
+        <label>Şube / Sınıf / Grup</label>
+        <input id="sectionInput" type="text" placeholder="A, B, 1. Sınıf, Şube 3" />
+      </div>
+      <div>
+        <label style="visibility:hidden">Ekle</label>
+        <div class="row">
+          <button id="addBtn">Sepete Ekle</button>
+          <button id="clearBtn" class="btn-ghost">Formu Temizle</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="list card" id="cartList" style="margin-top:12px">
+      <!-- Dinamik eklenen dersler burada listelenecek -->
+      <div style="color:var(--muted);font-size:13px">Henüz ders eklenmedi.</div>
+    </div>
+
+  </div>
+
+  <div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="card">
+        <label>Okul Logosu (PDF'ye eklenecek)</label>
+        <input id="logoInput" type="file" accept="image/*" />
+        <div style="font-size:12px;color:var(--muted);margin-top:8px">PNG/JPG — yüklendikten sonra önizleme sağlanır.</div>
+      </div>
+
+      <div class="card">
+        <label>Hazır Tablonuz</label>
+        <div id="previewTableContainer" style="max-height:320px;overflow:auto">
+          <table id="previewTable">
+            <thead>
+              <tr><th>Gün</th><th>Saat</th><th>Ders</th><th>Şube</th><th>İşlem</th></tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button id="exportPdf">PDF Olarak Kaydet</button>
+          <button id="clearAll" class="btn-ghost">Tümünü Temizle</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>PDF Önizleme Ayarları</label>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+          <input type="checkbox" id="includeHeader" checked /> <label for="includeHeader" style="margin:0">Başlık ve öğretim üyesi bilgisi eklensin</label>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <label style="width:120px">Sayfa yönü</label>
+          <select id="pageOrientation">
+            <option value="portrait">Dikey (Portrait)</option>
+            <option value="landscape">Yatay (Landscape)</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  Bu tek sayfa uygulama tamamen istemci tarafında çalışır. Dosyayı açıp dene — taş gibi çalışmalı.
+</footer>
+
+  </div>  <script>
+    // Basit, güvenilir ders programı uygulaması
+    const cart = [];
+    const logoInput = document.getElementById('logoInput');
+    const logoPreview = document.getElementById('logoPreview');
+    let logoDataURL = null;
+
+    logoInput.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        logoDataURL = reader.result;
+        logoPreview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = logoDataURL;
+        img.style.maxWidth='100%'; img.style.maxHeight='100%';
+        logoPreview.appendChild(img);
+      };
+      reader.readAsDataURL(f);
+    });
+
+    function el(id){return document.getElementById(id)}
+    const addBtn = el('addBtn');
+    const clearBtn = el('clearBtn');
+    const daySelect = el('daySelect');
+    const timeInput = el('timeInput');
+    const courseInput = el('courseInput');
+    const sectionInput = el('sectionInput');
+    const cartList = el('cartList');
+    const previewTbody = document.querySelector('#previewTable tbody');
+    const exportPdfBtn = el('exportPdf');
+    const clearAllBtn = el('clearAll');
+
+    function renderCart(){
+      cartList.innerHTML = '';
+      previewTbody.innerHTML = '';
+      if(cart.length===0){cartList.innerHTML = '<div style="color:var(--muted);font-size:13px">Henüz ders eklenmedi.</div>'}
+      cart.forEach((it, idx)=>{
+        const row = document.createElement('div'); row.className='item';
+        row.innerHTML = `<div><strong>${it.day}</strong> — ${it.time} <div style="color:var(--muted);font-size:13px">${it.course} | ${it.section}</div></div>
+        <div class="center"><button class="btn-ghost" data-idx="${idx}">Sil</button></div>`;
+        cartList.appendChild(row);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${it.day}</td><td>${it.time}</td><td>${it.course}</td><td>${it.section}</td><td><button class="btn-ghost" data-idx2="${idx}">Sil</button></td>`;
+        previewTbody.appendChild(tr);
+      });
+
+      // attach delete handlers
+      cartList.querySelectorAll('button[data-idx]').forEach(b=>b.addEventListener('click', (e)=>{ const i=parseInt(e.currentTarget.dataset.idx); cart.splice(i,1); renderCart(); }));
+      previewTbody.querySelectorAll('button[data-idx2]').forEach(b=>b.addEventListener('click', (e)=>{ const i=parseInt(e.currentTarget.dataset.idx2); cart.splice(i,1); renderCart(); }));
+    }
+
+    addBtn.addEventListener('click', ()=>{
+      const day = daySelect.value;
+      const time = timeInput.value.trim();
+      const course = courseInput.value.trim();
+      const section = sectionInput.value.trim();
+      if(!time || !course){
+        alert('Lütfen ders saati ve ders adı alanlarını doldurun.'); return;
+      }
+      cart.push({day,time,course,section});
+      timeInput.value=''; courseInput.value=''; sectionInput.value='';
+      renderCart();
+    });
+
+    clearBtn.addEventListener('click', ()=>{ timeInput.value=''; courseInput.value=''; sectionInput.value=''; });
+    clearAllBtn.addEventListener('click', ()=>{ if(confirm('Tüm dersler silinsin mi?')){cart.splice(0); renderCart();}});
+
+    exportPdfBtn.addEventListener('click', async ()=>{
+      if(cart.length===0){ alert('Önce en az bir ders ekleyin.'); return; }
+      const { jsPDF } = window.jspdf;
+      const orientation = document.getElementById('pageOrientation').value;
+      const includeHeader = document.getElementById('includeHeader').checked;
+      const school = document.getElementById('schoolName').value || '';
+      const teacher = document.getElementById('teacherName').value || '';
+
+      // Build a printable container
+      const wrapper = document.createElement('div');
+      wrapper.style.width = orientation==='portrait' ? '800px' : '1200px';
+      wrapper.style.padding = '28px';
+      wrapper.style.background = '#ffffff';
+      wrapper.style.color = '#041220';
+      wrapper.style.fontFamily = 'Arial, Helvetica, sans-serif';
+
+      if(includeHeader){
+        const head = document.createElement('div'); head.style.display='flex'; head.style.justifyContent='space-between'; head.style.alignItems='center';
+        const left = document.createElement('div');
+        const title = document.createElement('div'); title.style.fontSize='22px'; title.style.fontWeight='700'; title.textContent = school;
+        const sub = document.createElement('div'); sub.style.fontSize='14px'; sub.style.marginTop='6px'; sub.textContent = 'Öğretim Üyesi: ' + teacher;
+        left.appendChild(title); left.appendChild(sub);
+        head.appendChild(left);
+        if(logoDataURL){
+          const img = new Image(); img.src = logoDataURL; img.style.maxHeight='80px'; img.style.objectFit='contain';
+          const imgWrap = document.createElement('div'); imgWrap.appendChild(img);
+          head.appendChild(imgWrap);
+        }
+        wrapper.appendChild(head);
+        const hr = document.createElement('hr'); hr.style.margin='14px 0'; wrapper.appendChild(hr);
+      }
+
+      const table = document.createElement('table'); table.style.width='100%'; table.style.borderCollapse='collapse';
+      const thead = document.createElement('thead'); thead.innerHTML = '<tr><th style="border:1px solid #ccc;padding:8px">Gün</th><th style="border:1px solid #ccc;padding:8px">Saat</th><th style="border:1px solid #ccc;padding:8px">Ders</th><th style="border:1px solid #ccc;padding:8px">Şube</th></tr>';
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      // Sort by day order (Pazartesi...Pazar)
+      const order = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+      const sorted = [...cart].sort((a,b)=> order.indexOf(a.day)-order.indexOf(b.day));
+      sorted.forEach(r=>{
+        const tr = document.createElement('tr'); tr.innerHTML = `<td style="border:1px solid #ccc;padding:8px">${r.day}</td><td style="border:1px solid #ccc;padding:8px">${r.time}</td><td style="border:1px solid #ccc;padding:8px">${r.course}</td><td style="border:1px solid #ccc;padding:8px">${r.section}</td>`;
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+
+      document.body.appendChild(wrapper); // attach temporarily for rendering
+
+      try{
+        const canvas = await html2canvas(wrapper, {scale:2, useCORS:true, allowTaint:true});
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({unit:'px', format: orientation==='portrait' ? [800,1120] : [1200,800], orientation: orientation});
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        // fit image into pdf
+        const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+        const imgW = canvas.width * ratio;
+        const imgH = canvas.height * ratio;
+        pdf.addImage(imgData, 'PNG', (pdfWidth - imgW)/2, 20, imgW, imgH);
+        const fileName = (school || 'ders_programi') + '_' + (teacher || '') + '.pdf';
+        pdf.save(fileName.replace(/\s+/g,'_'));
+      }catch(err){
+        console.error(err); alert('PDF oluşturulurken hata: ' + err.message);
+      }finally{
+        wrapper.remove();
+      }
+    });
+
+    // initialize
+    renderCart();
+  </script></body>
+</html>
