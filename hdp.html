@@ -1,291 +1,239 @@
 <!doctype html>
-
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ders Programı Hazırlayıcı — Taş Gibi</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNa5m8Kk9lU1O3QeQ9p0mK+Zr6qY2VYk6tYQxvQ1p6q9sVZ5Xk6q2Wf7Zk3Qq3H9Z6q3K3h+Q2vQz6b7Z3tQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-UdGvK7Q8jV0q8a6Gm7r3y7q1f6Zt1q3x6z2q3p4k9x6c3b7z8yQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#0ea5a4;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
-    *{box-sizing:border-box}
-    body{font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#071028 0%, #071A2C 100%); color:#e6eef6; padding:28px}
-    .container{max-width:1100px;margin:0 auto}
-    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo-preview{width:64px;height:64px;border-radius:8px;background:var(--glass);display:flex;align-items:center;justify-content:center;overflow:hidden}
-    h1{margin:0;font-size:20px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); padding:16px; border-radius:12px}
-    .grid{display:grid;grid-template-columns:1fr 380px;gap:16px}
-    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type=text], select, input[type=time]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    .row{display:flex;gap:12px}
-    button{background:var(--accent);color:#042027;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
-    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
-    .list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-    .item{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{padding:8px;border:1px solid rgba(255,255,255,0.03);text-align:left}
-    .center{display:flex;align-items:center;gap:8px}
-    footer{margin-top:12px;color:var(--muted);font-size:13px}
-    @media(max-width:900px){.grid{grid-template-columns:1fr;}.logo-preview{width:48px;height:48px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ders Programı Hazırlayıcı</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f5f7fa;
+  color: #222;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+  color: #005f73;
+  margin-bottom: 15px;
+}
+.card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+input, select, button {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+input[type=file] {
+  border: none;
+}
+button {
+  background: #0ea5a4;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background: #088f8d;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background: #e2e8f0;
+}
+.logo-preview {
+  width: 80px;
+  height: 80px;
+  border: 1px dashed #aaa;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #fafafa;
+  color: #888;
+  font-size: 12px;
+}
+.flex {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo-preview card" id="logoPreview">LOGO</div>
-        <div>
-          <h1>Ders Programı Hazırlayıcı — Taş Gibi</h1>
-          <div style="color:var(--muted);font-size:13px">Okul adı, öğretim üyesi ve dersleri girip PDF alabilirsiniz.</div>
-        </div>
-      </div>
-    </header><div class="card grid">
-  <div>
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
-      <div style="flex:1">
-        <label>Okul / Kurum İsmi</label>
-        <input id="schoolName" type="text" placeholder="Örn: İstanbul İlahiyat Fakültesi" />
-      </div>
-      <div style="width:220px">
-        <label>Öğretim Üyesi / Sorumlu</label>
-        <input id="teacherName" type="text" placeholder="Ad Soyad" />
-      </div>
+
+<h1>Ders Programı Hazırlayıcı</h1>
+
+<div class="card">
+  <div class="flex">
+    <div style="flex:1">
+      <label>Okul / Kurum:</label><br>
+      <input id="schoolName" type="text" placeholder="Örn: Marmara Üniversitesi İlahiyat Fakültesi" style="width:100%">
     </div>
-
-    <div style="display:flex;gap:12px;margin-bottom:12px;align-items:flex-end">
-      <div style="flex:1">
-        <label>Gün</label>
-        <select id="daySelect">
-          <option value="Pazartesi">Pazartesi</option>
-          <option value="Salı">Salı</option>
-          <option value="Çarşamba">Çarşamba</option>
-          <option value="Perşembe">Perşembe</option>
-          <option value="Cuma">Cuma</option>
-          <option value="Cumartesi">Cumartesi</option>
-          <option value="Pazar">Pazar</option>
-        </select>
-      </div>
-      <div style="width:220px">
-        <label>Ders Saati (ör: 09:00-10:30)</label>
-        <input id="timeInput" type="text" placeholder="09:00-10:30" />
-      </div>
-      <div style="width:220px">
-        <label>Ders / Konu</label>
-        <input id="courseInput" type="text" placeholder="Ders adı" />
-      </div>
+    <div style="flex:1">
+      <label>Öğretim Üyesi:</label><br>
+      <input id="teacherName" type="text" placeholder="Ad Soyad" style="width:100%">
     </div>
-
-    <div style="display:flex;gap:12px;align-items:center">
-      <div style="flex:1">
-        <label>Şube / Sınıf / Grup</label>
-        <input id="sectionInput" type="text" placeholder="A, B, 1. Sınıf, Şube 3" />
-      </div>
-      <div>
-        <label style="visibility:hidden">Ekle</label>
-        <div class="row">
-          <button id="addBtn">Sepete Ekle</button>
-          <button id="clearBtn" class="btn-ghost">Formu Temizle</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="list card" id="cartList" style="margin-top:12px">
-      <!-- Dinamik eklenen dersler burada listelenecek -->
-      <div style="color:var(--muted);font-size:13px">Henüz ders eklenmedi.</div>
-    </div>
-
-  </div>
-
-  <div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div class="card">
-        <label>Okul Logosu (PDF'ye eklenecek)</label>
-        <input id="logoInput" type="file" accept="image/*" />
-        <div style="font-size:12px;color:var(--muted);margin-top:8px">PNG/JPG — yüklendikten sonra önizleme sağlanır.</div>
-      </div>
-
-      <div class="card">
-        <label>Hazır Tablonuz</label>
-        <div id="previewTableContainer" style="max-height:320px;overflow:auto">
-          <table id="previewTable">
-            <thead>
-              <tr><th>Gün</th><th>Saat</th><th>Ders</th><th>Şube</th><th>İşlem</th></tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button id="exportPdf">PDF Olarak Kaydet</button>
-          <button id="clearAll" class="btn-ghost">Tümünü Temizle</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <label>PDF Önizleme Ayarları</label>
-        <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-          <input type="checkbox" id="includeHeader" checked /> <label for="includeHeader" style="margin:0">Başlık ve öğretim üyesi bilgisi eklensin</label>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <label style="width:120px">Sayfa yönü</label>
-          <select id="pageOrientation">
-            <option value="portrait">Dikey (Portrait)</option>
-            <option value="landscape">Yatay (Landscape)</option>
-          </select>
-        </div>
-      </div>
-
+    <div>
+      <label>Okul Logosu:</label><br>
+      <input id="logoInput" type="file" accept="image/*"><br>
+      <div id="logoPreview" class="logo-preview">LOGO</div>
     </div>
   </div>
 </div>
 
-<footer>
-  Bu tek sayfa uygulama tamamen istemci tarafında çalışır. Dosyayı açıp dene — taş gibi çalışmalı.
-</footer>
+<div class="card">
+  <div class="flex">
+    <div>
+      <label>Gün:</label><br>
+      <select id="daySelect">
+        <option>Pazartesi</option><option>Salı</option><option>Çarşamba</option>
+        <option>Perşembe</option><option>Cuma</option><option>Cumartesi</option><option>Pazar</option>
+      </select>
+    </div>
+    <div>
+      <label>Saat:</label><br>
+      <input id="timeInput" type="text" placeholder="09:00-10:30">
+    </div>
+    <div>
+      <label>Ders:</label><br>
+      <input id="courseInput" type="text" placeholder="Ders Adı">
+    </div>
+    <div>
+      <label>Şube:</label><br>
+      <input id="sectionInput" type="text" placeholder="A / 1. Sınıf / Grup 3">
+    </div>
+    <div>
+      <label>&nbsp;</label><br>
+      <button id="addBtn">Ekle</button>
+    </div>
+  </div>
+</div>
 
-  </div>  <script>
-    // Basit, güvenilir ders programı uygulaması
-    const cart = [];
-    const logoInput = document.getElementById('logoInput');
-    const logoPreview = document.getElementById('logoPreview');
-    let logoDataURL = null;
+<div class="card">
+  <table id="table">
+    <thead>
+      <tr><th>Gün</th><th>Saat</th><th>Ders</th><th>Şube</th><th>Sil</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <br>
+  <button id="downloadPdf">PDF Olarak Kaydet</button>
+</div>
 
-    logoInput.addEventListener('change', (e)=>{
-      const f = e.target.files[0];
-      if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        logoDataURL = reader.result;
-        logoPreview.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = logoDataURL;
-        img.style.maxWidth='100%'; img.style.maxHeight='100%';
-        logoPreview.appendChild(img);
-      };
-      reader.readAsDataURL(f);
-    });
+<script>
+const { jsPDF } = window.jspdf;
+const cart = [];
+let logoDataURL = null;
 
-    function el(id){return document.getElementById(id)}
-    const addBtn = el('addBtn');
-    const clearBtn = el('clearBtn');
-    const daySelect = el('daySelect');
-    const timeInput = el('timeInput');
-    const courseInput = el('courseInput');
-    const sectionInput = el('sectionInput');
-    const cartList = el('cartList');
-    const previewTbody = document.querySelector('#previewTable tbody');
-    const exportPdfBtn = el('exportPdf');
-    const clearAllBtn = el('clearAll');
+// Logo yükleme
+const logoInput = document.getElementById("logoInput");
+const logoPreview = document.getElementById("logoPreview");
+logoInput.addEventListener("change", (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    logoDataURL = r.result;
+    logoPreview.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = logoDataURL;
+    img.style.maxWidth='100%';
+    img.style.maxHeight='100%';
+    logoPreview.appendChild(img);
+  };
+  r.readAsDataURL(f);
+});
 
-    function renderCart(){
-      cartList.innerHTML = '';
-      previewTbody.innerHTML = '';
-      if(cart.length===0){cartList.innerHTML = '<div style="color:var(--muted);font-size:13px">Henüz ders eklenmedi.</div>'}
-      cart.forEach((it, idx)=>{
-        const row = document.createElement('div'); row.className='item';
-        row.innerHTML = `<div><strong>${it.day}</strong> — ${it.time} <div style="color:var(--muted);font-size:13px">${it.course} | ${it.section}</div></div>
-        <div class="center"><button class="btn-ghost" data-idx="${idx}">Sil</button></div>`;
-        cartList.appendChild(row);
+// Ders ekleme
+document.getElementById("addBtn").onclick=()=>{
+  const d=document.getElementById("daySelect").value;
+  const t=document.getElementById("timeInput").value.trim();
+  const c=document.getElementById("courseInput").value.trim();
+  const s=document.getElementById("sectionInput").value.trim();
+  if(!t || !c){alert("Ders adı ve saat giriniz.");return;}
+  cart.push({day:d,time:t,course:c,section:s});
+  render();
+};
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${it.day}</td><td>${it.time}</td><td>${it.course}</td><td>${it.section}</td><td><button class="btn-ghost" data-idx2="${idx}">Sil</button></td>`;
-        previewTbody.appendChild(tr);
-      });
+function render(){
+  const tbody=document.querySelector("#table tbody");
+  tbody.innerHTML="";
+  cart.forEach((c,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${c.day}</td><td>${c.time}</td><td>${c.course}</td><td>${c.section}</td>
+    <td><button style='background:#ef4444;color:#fff' onclick='del(${i})'>Sil</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function del(i){ cart.splice(i,1); render(); }
 
-      // attach delete handlers
-      cartList.querySelectorAll('button[data-idx]').forEach(b=>b.addEventListener('click', (e)=>{ const i=parseInt(e.currentTarget.dataset.idx); cart.splice(i,1); renderCart(); }));
-      previewTbody.querySelectorAll('button[data-idx2]').forEach(b=>b.addEventListener('click', (e)=>{ const i=parseInt(e.currentTarget.dataset.idx2); cart.splice(i,1); renderCart(); }));
-    }
+// PDF çıktısı
+document.getElementById("downloadPdf").onclick=async()=>{
+  if(cart.length===0){alert("Henüz ders eklenmedi!");return;}
+  const school=document.getElementById("schoolName").value;
+  const teacher=document.getElementById("teacherName").value;
 
-    addBtn.addEventListener('click', ()=>{
-      const day = daySelect.value;
-      const time = timeInput.value.trim();
-      const course = courseInput.value.trim();
-      const section = sectionInput.value.trim();
-      if(!time || !course){
-        alert('Lütfen ders saati ve ders adı alanlarını doldurun.'); return;
-      }
-      cart.push({day,time,course,section});
-      timeInput.value=''; courseInput.value=''; sectionInput.value='';
-      renderCart();
-    });
+  const printable=document.createElement("div");
+  printable.style.background="#fff";
+  printable.style.color="#000";
+  printable.style.padding="20px";
+  printable.innerHTML=`
+    <div style='display:flex;justify-content:space-between;align-items:center;'>
+      <div>
+        <h2 style='margin:0'>${school}</h2>
+        <div>Öğretim Üyesi: ${teacher}</div>
+      </div>
+      ${logoDataURL ? `<img src='${logoDataURL}' style='height:70px;'>` : ''}
+    </div>
+    <hr>
+    <table style='width:100%;border-collapse:collapse;margin-top:10px'>
+      <thead><tr style='background:#e2e8f0'>
+        <th style='border:1px solid #ccc;padding:8px'>Gün</th>
+        <th style='border:1px solid #ccc;padding:8px'>Saat</th>
+        <th style='border:1px solid #ccc;padding:8px'>Ders</th>
+        <th style='border:1px solid #ccc;padding:8px'>Şube</th>
+      </tr></thead>
+      <tbody>
+        ${cart.map(r=>`<tr>
+          <td style='border:1px solid #ccc;padding:8px'>${r.day}</td>
+          <td style='border:1px solid #ccc;padding:8px'>${r.time}</td>
+          <td style='border:1px solid #ccc;padding:8px'>${r.course}</td>
+          <td style='border:1px solid #ccc;padding:8px'>${r.section}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
 
-    clearBtn.addEventListener('click', ()=>{ timeInput.value=''; courseInput.value=''; sectionInput.value=''; });
-    clearAllBtn.addEventListener('click', ()=>{ if(confirm('Tüm dersler silinsin mi?')){cart.splice(0); renderCart();}});
+  document.body.appendChild(printable);
+  const canvas = await html2canvas(printable,{scale:2});
+  const img = canvas.toDataURL("image/png");
+  const pdf = new jsPDF("p","pt","a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const ratio = pageWidth / canvas.width;
+  pdf.addImage(img,"PNG",0,0,canvas.width*ratio,canvas.height*ratio);
+  pdf.save("ders_programi.pdf");
+  printable.remove();
+};
+</script>
 
-    exportPdfBtn.addEventListener('click', async ()=>{
-      if(cart.length===0){ alert('Önce en az bir ders ekleyin.'); return; }
-      const { jsPDF } = window.jspdf;
-      const orientation = document.getElementById('pageOrientation').value;
-      const includeHeader = document.getElementById('includeHeader').checked;
-      const school = document.getElementById('schoolName').value || '';
-      const teacher = document.getElementById('teacherName').value || '';
-
-      // Build a printable container
-      const wrapper = document.createElement('div');
-      wrapper.style.width = orientation==='portrait' ? '800px' : '1200px';
-      wrapper.style.padding = '28px';
-      wrapper.style.background = '#ffffff';
-      wrapper.style.color = '#041220';
-      wrapper.style.fontFamily = 'Arial, Helvetica, sans-serif';
-
-      if(includeHeader){
-        const head = document.createElement('div'); head.style.display='flex'; head.style.justifyContent='space-between'; head.style.alignItems='center';
-        const left = document.createElement('div');
-        const title = document.createElement('div'); title.style.fontSize='22px'; title.style.fontWeight='700'; title.textContent = school;
-        const sub = document.createElement('div'); sub.style.fontSize='14px'; sub.style.marginTop='6px'; sub.textContent = 'Öğretim Üyesi: ' + teacher;
-        left.appendChild(title); left.appendChild(sub);
-        head.appendChild(left);
-        if(logoDataURL){
-          const img = new Image(); img.src = logoDataURL; img.style.maxHeight='80px'; img.style.objectFit='contain';
-          const imgWrap = document.createElement('div'); imgWrap.appendChild(img);
-          head.appendChild(imgWrap);
-        }
-        wrapper.appendChild(head);
-        const hr = document.createElement('hr'); hr.style.margin='14px 0'; wrapper.appendChild(hr);
-      }
-
-      const table = document.createElement('table'); table.style.width='100%'; table.style.borderCollapse='collapse';
-      const thead = document.createElement('thead'); thead.innerHTML = '<tr><th style="border:1px solid #ccc;padding:8px">Gün</th><th style="border:1px solid #ccc;padding:8px">Saat</th><th style="border:1px solid #ccc;padding:8px">Ders</th><th style="border:1px solid #ccc;padding:8px">Şube</th></tr>';
-      table.appendChild(thead);
-      const tbody = document.createElement('tbody');
-      // Sort by day order (Pazartesi...Pazar)
-      const order = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
-      const sorted = [...cart].sort((a,b)=> order.indexOf(a.day)-order.indexOf(b.day));
-      sorted.forEach(r=>{
-        const tr = document.createElement('tr'); tr.innerHTML = `<td style="border:1px solid #ccc;padding:8px">${r.day}</td><td style="border:1px solid #ccc;padding:8px">${r.time}</td><td style="border:1px solid #ccc;padding:8px">${r.course}</td><td style="border:1px solid #ccc;padding:8px">${r.section}</td>`;
-        tbody.appendChild(tr);
-      });
-      table.appendChild(tbody);
-      wrapper.appendChild(table);
-
-      document.body.appendChild(wrapper); // attach temporarily for rendering
-
-      try{
-        const canvas = await html2canvas(wrapper, {scale:2, useCORS:true, allowTaint:true});
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({unit:'px', format: orientation==='portrait' ? [800,1120] : [1200,800], orientation: orientation});
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        // fit image into pdf
-        const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
-        const imgW = canvas.width * ratio;
-        const imgH = canvas.height * ratio;
-        pdf.addImage(imgData, 'PNG', (pdfWidth - imgW)/2, 20, imgW, imgH);
-        const fileName = (school || 'ders_programi') + '_' + (teacher || '') + '.pdf';
-        pdf.save(fileName.replace(/\s+/g,'_'));
-      }catch(err){
-        console.error(err); alert('PDF oluşturulurken hata: ' + err.message);
-      }finally{
-        wrapper.remove();
-      }
-    });
-
-    // initialize
-    renderCart();
-  </script></body>
+</body>
 </html>
