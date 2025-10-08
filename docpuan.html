@@ -2,7 +2,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>İlahiyat Doçentlik Puan Hesaplama — Taş Gibi</title>
+<title>İlahiyat Temel Alanı Doçentlik Puan Hesaplama</title>
 <style>
 :root{--accent:#2e3e52;--accent-dark:#233142;--danger:#c0392b;--muted:#6b7280;--card:#fff;}
 *{box-sizing:border-box}
@@ -83,7 +83,7 @@ label{font-weight:600;font-size:.95rem;color:#111827}
 /* Taş gibi, hatasız JS — dikkat: seçenek metin renklendirmesi tüm tarayıcılarda aynı görünmeyebilir. */
 const kriterler = {
   "1. Uluslararası Makale": { zorunlu:false, bentler: {"Q1 kapsamındaki dergide yayımlanmış makale":30,"Q2 kapsamındaki dergide yayımlanmış makale":20,"Q3 kapsamındaki dergide yayımlanmış makale":15,"Q4 kapsamındaki dergide yayımlanmış makale":10,"AHCI kapsamındaki dergide yayımlanmış makale":20,"ESCI veya Scopus kapsamındaki dergide yayımlanmış makale":10,"Diğer uluslararası indeksli dergide yayımlanmış makale":5,"Editöre mektup, araştırma notu, özet veya kitap kritiği":3} },
-  "2. Ulusal Makale": { zorunlu:true, bentler: {"TR Dizin kapsamındaki dergide yayımlanmış makale":10,"Diğer hakemli dergide yayımlanmış makale":4,"Editöre mektup, araştırma notu, özet veya kitap kritiği":2} },
+  "2. Ulusal Makale (50 Puan Zorunlu)": { zorunlu:true, bentler: {"TR Dizin kapsamındaki dergide yayımlanmış makale":10,"Diğer hakemli dergide yayımlanmış makale":4,"Editöre mektup, araştırma notu, özet veya kitap kritiği":2} },
   "3. Lisansüstü Tezlerden Üretilmiş Yayın": { zorunlu:true, bentler: {"SCIE/SSCI/AHCI dergide yayımlanmış makale":20,"ESCI/Scopus dergide yayımlanmış makale":10,"Diğer uluslararası indeksli dergi makalesi":3,"TR Dizin dergide yayımlanmış makale":5,"BKCI veya Scopus kapsamındaki kitap":20,"BKCI veya Scopus kapsamındaki kitapta bölüm":10,"Diğer uluslararası/ulusal kitap":3,"Diğer uluslararası/ulusal kitapta bölüm":2,"Uluslararası tam metin CPCIdi’da yayımlanmış çalışma":5,"Diğer toplantılarda yayımlanmış çalışma":2} },
   "4. Kitap": { zorunlu:true, bentler: {"BKCI veya Scopus kapsamındaki kitap":20,"BKCI veya Scopus kapsamındaki kitapta bölüm":10,"Diğer uluslararası/ulusal kitap":20,"Diğer kitapta bölüm":5,"Tahkik (tenkitli metin neşri) türünde kitap":10} },
   "5. Atıf": { zorunlu:true, bentler: {"SCIE, SSCI, AHCI, ESCI, Scopus kapsamındaki atıf":3,"BKCI kapsamındaki kitapta yapılan atıf":2,"TR Dizin kapsamındaki dergide yapılan atıf":2,"Diğer ulusal/uluslararası atıf":1} },
