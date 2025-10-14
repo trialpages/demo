@@ -1,0 +1,160 @@
+<!doctype html>
+
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Programlar Galeri — Başlık & Açıklama</title>
+  <style>
+    :root{ --bg:#f7f7f8; --card:#ffffff; --accent:#0b66ff; --text:#222; }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; background:var(--bg); color:var(--text);}
+    .container{max-width:980px;margin:36px auto;padding:20px}header{margin-bottom:18px}
+h1{margin:0 0 6px;font-size:26px}
+p.lead{margin:0;color:#333a;}
+
+/* Card */
+.program-card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,20,40,0.06)}
+.program-meta{display:flex;gap:18px;align-items:flex-start}
+.program-text{flex:1}
+.program-title{font-size:20px;margin:0 0 6px}
+.program-desc{margin:0;color:#444;line-height:1.5}
+
+/* Thumbnails */
+.thumbs{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.thumb{width:86px;height:64px;border-radius:8px;overflow:hidden;cursor:pointer;flex:0 0 auto;border:2px solid transparent}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb:focus{outline:none;border-color:var(--accent)}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:999}
+.lightbox.show{display:flex}
+.lb-inner{position:relative;max-width:92%;max-height:86%;background:transparent;display:flex;align-items:center;justify-content:center}
+.lb-img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+
+.caption{position:absolute;left:50%;transform:translateX(-50%);bottom:-48px;color:#fff;text-align:center;max-width:90%;}
+.lb-controls{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none}
+.btn{pointer-events:auto;background:rgba(0,0,0,0.45);border:none;color:#fff;border-radius:999px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:0 8px}
+.btn:focus{outline:3px solid rgba(11,102,255,0.25)}
+
+.close-btn{position:absolute;right:8px;top:8px;background:rgba(0,0,0,0.45);width:36px;height:36px;border-radius:8px;border:none;color:#fff}
+
+/* small screens adjustments */
+@media (max-width:520px){
+  .thumb{width:72px;height:56px}
+  .program-title{font-size:18px}
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Program Başlığı Örneği</h1>
+      <p class="lead">Bu alan programın kısa tanıtımı ve öne çıkan özellikleri için. Geleneksel bir üslup ile açık ve net bilgi verin.</p>
+    </header><section class="program-card" aria-labelledby="programTitle">
+  <div class="program-meta">
+    <div class="program-text">
+      <h2 id="programTitle" class="program-title">Kısa Program Açıklaması</h2>
+      <p class="program-desc">Bu program; kullanıcıların ihtiyaçlarına göre hazırlanmış, pratik ve güvenilir bir çözümdür. Hızlı kurulum, kolay kullanım ve düşük bakım gereksinimi öne çıkan özelliklerindendir. Aşağıdaki küçük resimlere tıklayarak galeriye göz atabilirsiniz.</p>
+
+      <div class="thumbs" role="list">
+        <!-- Thumbnails: tıklandığında lightbox açılacak -->
+        <button class="thumb" data-index="0" aria-label="Görsel 1: Arayüz görüntüsü">
+          <img src="https://picsum.photos/id/1011/400/300" alt="Arayüz görüntüsü">
+        </button>
+        <button class="thumb" data-index="1" aria-label="Görsel 2: Rapor ekranı">
+          <img src="https://picsum.photos/id/1025/400/300" alt="Rapor ekranı">
+        </button>
+        <button class="thumb" data-index="2" aria-label="Görsel 3: Mobil görünüm">
+          <img src="https://picsum.photos/id/1035/400/300" alt="Mobil görünüm">
+        </button>
+        <button class="thumb" data-index="3" aria-label="Görsel 4: İş akışı">
+          <img src="https://picsum.photos/id/1040/400/300" alt="İş akışı">
+        </button>
+        <button class="thumb" data-index="4" aria-label="Görsel 5: Kurulum örneği">
+          <img src="https://picsum.photos/id/1050/400/300" alt="Kurulum örneği">
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </div>  <!-- Lightbox / Modal -->  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="lb-inner">
+      <button class="close-btn" id="lbClose" aria-label="Kapat">✕</button><div class="lb-controls">
+    <button class="btn" id="prevBtn" aria-label="Önceki">◀</button>
+    <button class="btn" id="nextBtn" aria-label="Sonraki">▶</button>
+  </div>
+
+  <img class="lb-img" id="lbImage" src="" alt="Büyük görsel gösterimi">
+  <div class="caption" id="lbCaption"></div>
+</div>
+
+  </div>  <script>
+    (function(){
+      const images = [
+        {src:'https://picsum.photos/id/1011/1200/800', alt:'Arayüz görüntüsü', caption:'Arayüz: Hızlı ve temiz tasarım.'},
+        {src:'https://picsum.photos/id/1025/1200/800', alt:'Rapor ekranı', caption:'Detaylı raporlama ve analiz paneli.'},
+        {src:'https://picsum.photos/id/1035/1200/800', alt:'Mobil görünüm', caption:'Mobil uyumlu arayüz - tablet ve telefon.'},
+        {src:'https://picsum.photos/id/1040/1200/800', alt:'İş akışı', caption:'Adım adım iş akışı yönetimi.'},
+        {src:'https://picsum.photos/id/1050/1200/800', alt:'Kurulum örneği', caption:'Kolay kurulum ve hızlı entegrasyon.'}
+      ];
+
+      const thumbs = document.querySelectorAll('.thumb');
+      const lightbox = document.getElementById('lightbox');
+      const lbImage = document.getElementById('lbImage');
+      const lbCaption = document.getElementById('lbCaption');
+      const lbClose = document.getElementById('lbClose');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+
+      let current = 0;
+
+      function open(index){
+        current = index;
+        const it = images[index];
+        lbImage.src = it.src;
+        lbImage.alt = it.alt;
+        lbCaption.textContent = it.caption;
+        lightbox.classList.add('show');
+        lightbox.setAttribute('aria-hidden','false');
+        // trap focus to close button for simplicity
+        lbClose.focus();
+      }
+
+      function close(){
+        lightbox.classList.remove('show');
+        lightbox.setAttribute('aria-hidden','true');
+        lbImage.src = '';
+      }
+
+      function next(){ open((current+1) % images.length); }
+      function prev(){ open((current-1 + images.length) % images.length); }
+
+      thumbs.forEach(btn=>{
+        btn.addEventListener('click', ()=> open(Number(btn.dataset.index)));
+        btn.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(Number(btn.dataset.index)); } });
+      });
+
+      lbClose.addEventListener('click', close);
+      nextBtn.addEventListener('click', next);
+      prevBtn.addEventListener('click', prev);
+
+      // keyboard navigation
+      document.addEventListener('keydown', (e)=>{
+        if(lightbox.classList.contains('show')){
+          if(e.key === 'Escape') close();
+          if(e.key === 'ArrowRight') next();
+          if(e.key === 'ArrowLeft') prev();
+        }
+      });
+
+      // click outside the image closes
+      lightbox.addEventListener('click', (e)=>{
+        if(e.target === lightbox) close();
+      });
+
+    })();
+  </script></body>
+</html>
