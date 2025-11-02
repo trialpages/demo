@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pushover Bildirim Gönder</title>
+  <title>Conversation Form</title>
   <style>
     body {
       background: #f2f2f2;
-      font-family: "Segoe UI", Roboto, sans-serif;
+      font-family: "Times New Roman", Roboto, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -46,7 +46,7 @@
 }
 textarea {
   width: 100%;
-  height: 200px; /* yüksekliği ayarlıyor — sayfanın üst yarısını kaplayacak kadar */
+  height: 175px; /* yüksekliği ayarlıyor — sayfanın üst yarısını kaplayacak kadar */
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ccc;
@@ -89,14 +89,14 @@ textarea {
 </head>
 <body>
   <div class="card">
-    <h2>📱 Pushover Bildirim Gönder</h2>
+    <h2>Conversation Form</h2>
     <form id="notifyForm">
       <label for="message">Mesaj</label>
-<textarea id="message" name="message" placeholder="Bir şey yaz..." required></textarea>
+<textarea id="message" name="message" placeholder="Write your message ..." required></textarea>
 
       <label for="sound">Ses</label>
       <select id="sound" name="sound">
-        <option value="pushover">Varsayılan</option>
+        <option value="pushover">Default</option>
         <option value="bike">Bisiklet</option>
         <option value="siren">Siren</option>
         <option value="echo">Echo</option>
@@ -104,7 +104,7 @@ textarea {
         <option value="magic">Magic</option>
       </select>
 
-      <button type="submit">Bildirimi Gönder</button>
+      <button type="submit">Send Message</button>
     </form>
 
     <div id="result" class="alert"></div>
@@ -132,7 +132,7 @@ textarea {
         const json = await res.json();
 
         if (json.status === 1) {
-          result.textContent = "✅ Bildirim başarıyla gönderildi!";
+          result.textContent = "✅ Message sent";
           result.className = "alert success";
         } else {
           result.textContent = "❌ Hata: " + (json.errors || "Bilinmeyen hata");
