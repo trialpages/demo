@@ -43,6 +43,17 @@
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
+}
+textarea {
+  width: 100%;
+  height: 200px; /* yüksekliği ayarlıyor — sayfanın üst yarısını kaplayacak kadar */
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  resize: vertical; /* istersen kullanıcı yüksekliği sürükleyerek değiştirebilsin */
     }
     button {
       width: 100%;
@@ -81,7 +92,7 @@
     <h2>📱 Pushover Bildirim Gönder</h2>
     <form id="notifyForm">
       <label for="message">Mesaj</label>
-      <input id="message" type="text" name="message" placeholder="Bir şey yaz..." required />
+<textarea id="message" name="message" placeholder="Bir şey yaz..." required></textarea>
 
       <label for="sound">Ses</label>
       <select id="sound" name="sound">
