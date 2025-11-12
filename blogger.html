@@ -1,0 +1,178 @@
+<!doctype html>
+
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>İstikamet Yazıları</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0b0b0b;
+      --muted:#666666;
+      --accent:#000000;
+      --card-bg: #fff;
+      --radius:14px;
+      --base-font:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;
+      font-size:var(--base-font);line-height:1.6;
+    }/* Top bar */
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #eee;position:sticky;top:0;background:linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,255,255,0.95));backdrop-filter:blur(2px);z-index:10
+}
+.hamburger{width:44px;height:44px;border-radius:10px;border:1px solid #eee;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hamburger .lines{width:18px;height:2px;background:var(--accent);position:relative}
+.hamburger .lines::before,.hamburger .lines::after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--accent)}
+.hamburger .lines::before{top:-6px}.hamburger .lines::after{top:6px}
+
+.site-title{font-weight:700;font-size:1.05rem}
+.spacer{flex:1}
+
+/* Offcanvas menu */
+.menu{
+  position:fixed;left:10px;top:70px;background:rgba(255,255,255,0.99);border:1px solid #ddd;padding:10px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.06);display:none;min-width:180px
+}
+.menu a{display:block;padding:10px;border-radius:8px;text-decoration:none;color:var(--text);font-weight:600}
+.menu a.inactive{opacity:0.5}
+.menu a.active{background:#000;color:#fff}
+
+/* Container */
+.container{max-width:900px;margin:20px auto;padding:12px}
+
+/* Posts (mobile: stacked tiles) */
+.posts{display:grid;grid-template-columns:1fr;gap:14px}
+.post-card{background:var(--card-bg);border-radius:var(--radius);padding:16px;border:1px solid #efefef;box-shadow:0 6px 20px rgba(0,0,0,0.03)}
+.post-head{display:flex;flex-direction:column;gap:8px}
+.post-title{font-weight:800;font-size:1.05rem;cursor:pointer;margin:0}
+.meta{font-size:0.75rem;color:var(--muted)}
+.excerpt{font-size:0.9rem;color:var(--muted);margin-top:8px}
+
+.post-body{margin-top:12px;display:none;border-top:1px solid #f1f1f1;padding-top:12px;font-size:1rem}
+.post-body.open{display:block}
+
+/* font size controls */
+.controls{display:flex;gap:8px;align-items:center}
+.btn{border:1px solid #ddd;padding:8px 10px;border-radius:8px;background:transparent;cursor:pointer;font-weight:700}
+
+/* Responsive: desktop grid */
+@media(min-width:850px){
+  .posts{grid-template-columns:repeat(2,1fr)}
+  .site-title{font-size:1.15rem}
+}
+
+/* Accessibility focus */
+.btn:focus,.hamburger:focus,.post-title:focus{outline:3px solid rgba(0,0,0,0.08);outline-offset:3px}
+
+/* small touches */
+.muted-small{font-size:0.8rem;color:var(--muted)}
+a.read-more{display:inline-block;margin-top:8px;font-weight:600;text-decoration:underline}
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="hamburger" aria-label="Menüyü aç" id="hamb">
+      <span class="lines" aria-hidden="true"></span>
+    </button>
+    <div class="site-title">İstikamet Yazıları</div>
+    <div class="spacer"></div>
+    <div class="controls" aria-hidden="false">
+      <button class="btn" id="dec" title="Yazı boyutunu küçült">A-</button>
+      <button class="btn" id="reset" title="Varsayılan">A</button>
+      <button class="btn" id="inc" title="Yazı boyutunu büyüt">A+</button>
+    </div>
+  </header>  <nav class="menu" id="menu" aria-hidden="true">
+    <a href="#" class="active" aria-current="page">Anasayfa</a>
+    <a href="#" class="inactive">Köşe Yazılarım</a>
+    <a href="#" class="inactive">Alıntılar</a>
+    <a href="#" class="inactive">İletişim</a>
+  </nav>  <main class="container" id="main">
+    <section class="posts" id="posts"><!-- Newest post first -->
+  <article class="post-card" data-id="1">
+    <header class="post-head">
+      <h2 class="post-title" tabindex="0">Yeni Yazı: Yolculuk ve Sükûnet</h2>
+      <div class="meta">12 Kasım 2025 — <span class="muted-small">Kısa bilgilendirme: Şehir yolculuklarının içsel yansımaları üzerine kısa bir deneme.</span></div>
+      <p class="excerpt">Bu yazıda sıkışık gündelik şehir hayatında nasıl sükûnet bulunabileceğini, küçük yöntemlerle nasıl anı daha derin yaşar hale gelebileceğimizi anlatıyorum...</p>
+    </header>
+    <div class="post-body" aria-hidden="true">
+      <p>Uzun metin örneği: Şehirler hızla akıp giderken insanın nefesini tutup etrafına bakması zorlaşıyor. Burada birkaç pratik öneri ve düşünce denemesi yer alıyor. (Tam metin örneği — yerine kendi yazınızı ekleyin.)</p>
+      <p>— Yazının devamı —</p>
+    </div>
+  </article>
+
+  <article class="post-card" data-id="2">
+    <header class="post-head">
+      <h2 class="post-title" tabindex="0">Köşe: Sessizliğin Notları</h2>
+      <div class="meta">3 Kasım 2025 — <span class="muted-small">Kısa bilgilendirme: Sessizlik ve üretkenlik ilişkisi üzerine gözlemler.</span></div>
+      <p class="excerpt">Sessizlik üretkenliği nasıl etkiler? Çalışma alanı düzeni, zaman blokları ve kısa sessizlik pratiklerini ele alıyorum...</p>
+    </header>
+    <div class="post-body" aria-hidden="true">
+      <p>Bu yazının tam metni: Sessizlik, modern insan için hem lüks hem ihtiyaçtır. Denemeler ve uygulamalarla sessizliği nasıl yerleştirebileceğimizi tartışıyorum...</p>
+    </div>
+  </article>
+
+  <article class="post-card" data-id="3">
+    <header class="post-head">
+      <h2 class="post-title" tabindex="0">Alıntı: Bir Şairin Sabahı</h2>
+      <div class="meta">28 Ekim 2025 — <span class="muted-small">Kısa bilgilendirme: Gün doğumunda yazılmış küçük bir şiir altyapısı.</span></div>
+      <p class="excerpt">Gün doğumu ve bir şairin uyanışı üzerine kısa bir alıntı ve yorum. Okurken notlarımı da bulacaksınız...</p>
+    </header>
+    <div class="post-body" aria-hidden="true">
+      <p>Alıntı metni ve küçük analiz: Sabahın ilk ışığıyla beraber başlayan düşünceler, şairin kelimelerindeki doğruluk ve nezaket...</p>
+    </div>
+  </article>
+
+</section>
+
+  </main>  <script>
+    // Menu toggle
+    const hamb = document.getElementById('hamb');
+    const menu = document.getElementById('menu');
+    hamb.addEventListener('click', ()=>{
+      const open = menu.style.display === 'block';
+      menu.style.display = open ? 'none' : 'block';
+      menu.setAttribute('aria-hidden', open ? 'true' : 'false');
+    });
+
+    // Post expand/collapse when title clicked or keyboard Enter
+    document.querySelectorAll('.post-title').forEach(title =>{
+      title.addEventListener('click', ()=> togglePost(title));
+      title.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); togglePost(title);} });
+    });
+    function togglePost(title){
+      const card = title.closest('.post-card');
+      const body = card.querySelector('.post-body');
+      const open = body.classList.toggle('open');
+      body.setAttribute('aria-hidden', !open);
+      // scroll into view smoothly when opening
+      if(open) card.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    // Font size controls (global)
+    const inc = document.getElementById('inc');
+    const dec = document.getElementById('dec');
+    const reset = document.getElementById('reset');
+    let scale = 1;
+    const step = 0.08;
+    function applyScale(){
+      document.documentElement.style.setProperty('--base-font', (16*scale)+'px');
+    }
+    inc.addEventListener('click', ()=>{ scale = Math.min(1.6, scale+step); applyScale(); });
+    dec.addEventListener('click', ()=>{ scale = Math.max(0.8, scale-step); applyScale(); });
+    reset.addEventListener('click', ()=>{ scale = 1; applyScale(); });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e)=>{
+      if(!menu.contains(e.target) && !hamb.contains(e.target)){
+        menu.style.display = 'none'; menu.setAttribute('aria-hidden','true');
+      }
+    });
+
+    // Ensure newest post first (already ordered in DOM) – placeholder for dynamic loading
+  </script></body>
+</html>
