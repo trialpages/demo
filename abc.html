@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kişisel Sosyal Medya</title>
+
+<!-- Feather Icons -->
+<script src="https://unpkg.com/feather-icons"></script>
+
+<style>
+    :root {
+        --bg: #ffffff;
+        --fg: #111111;
+        --muted: #555;
+        --border: #ddd;
+        --card: #f9f9f9;
+        --accent: #000;
+    }
+    body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, Arial, sans-serif;
+        margin: 20px;
+    }
+    .container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+    .composer {
+        background: var(--card);
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
+    textarea {
+        width: 100%;
+        min-height: 90px;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        resize: vertical;
+        font-size: 1rem;
+    }
+    .row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .btn {
+        background: var(--fg);
+        color: #fff;
+        padding: 7px 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: .9rem;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .btn:disabled {
+        opacity: .4;
+        cursor: not-allowed;
+    }
+    .posts {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .post {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 12px;
+        border-radius: 12px;
+    }
+    .meta {
+        font-size: .8rem;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+    .text {
+        white-space: pre-wrap;
+        font-size: 1rem;
+    }
+    .actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 18px;
+    }
+    .icon-btn {
+        cursor: pointer;
+        color: var(--fg);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: .87rem;
+    }
+    .icon-btn:hover {
+        color: var(--accent);
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+    <header>
+        <i data-feather="feather"></i>
+        <h1>Kişisel Sosyal Medya</h1>
+    </header>
+
+    <section class="composer">
+        <textarea id="postText" placeholder="Bir şeyler yaz..."></textarea>
+        <div class="row">
+            <span id="charCount">0 / 1000</span>
+            <button id="publishBtn" class="btn" disabled>
+                <i data-feather="send"></i> Yayınla
+            </button>
+        </div>
+    </section>
+
+    <div id="posts" class="posts"></div>
+</div>
+
+<script>
+feather.replace();
+
+const textarea = document.getElementById("postText");
+const publishBtn = document.getElementById("publishBtn");
+const postsEl = document.getElementById("posts");
+const charCount = document.getElementById("charCount");
+const MAX = 1000;
+
+function loadPosts() {
+    const saved = JSON.parse(localStorage.getItem("posts") || "[]");
+    saved.forEach(p => renderPost(p, false));
+}
+
+function savePost(post) {
+    const saved = JSON.parse(localStorage.getItem("posts") || "[]");
+    saved.unshift(post);
+    localStorage.setItem("posts", JSON.stringify(saved));
+}
+
+function updateStoredPosts(all) {
+    localStorage.setItem("posts", JSON.stringify(all));
+}
+
+function renderPost(post, prepend = true) {
+    const article = document.createElement("div");
+    article.className = "post";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = new Date(post.date).toLocaleString("tr-TR", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Europe/Istanbul"
+    });
+
+    const text = document.createElement("div");
+    text.className = "text";
+    text.textContent = post.text;
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    // Sil
+    const del = document.createElement("div");
+    del.className = "icon-btn";
+    del.innerHTML = `<i data-feather="trash-2"></i> Sil`;
+    del.onclick = () => {
+        if (confirm("Gönderi silinsin mi?")) {
+            article.remove();
+            const remaining = getAllPosts().filter(x => x.id !== post.id);
+            updateStoredPosts(remaining);
+        }
+    };
+
+    // Düzenle
+    const edit = document.createElement("div");
+    edit.className = "icon-btn";
+    edit.innerHTML = `<i data-feather="edit-2"></i> Düzenle`;
+    edit.onclick = () => {
+        const newText = prompt("Yeni metni gir:", post.text);
+        if (newText !== null && newText.trim() !== "") {
+            post.text = newText.trim();
+            text.textContent = post.text;
+            updateStoredPosts(getAllPosts().map(x => x.id === post.id ? post : x));
+        }
+    };
+
+    // Paylaş (metni kopyalar)
+    const share = document.createElement("div");
+    share.className = "icon-btn";
+    share.innerHTML = `<i data-feather="share-2"></i> Paylaş`;
+    share.onclick = async () => {
+        await navigator.clipboard.writeText(post.text);
+        alert("Metin panoya kopyalandı!");
+    };
+
+    actions.append(del, edit, share);
+
+    article.append(meta, text, actions);
+    feather.replace();
+
+    if (prepend) postsEl.prepend(article);
+    else postsEl.append(article);
+}
+
+function getAllPosts() {
+    return JSON.parse(localStorage.getItem("posts") || "[]");
+}
+
+function updateCounter() {
+    const len = textarea.value.length;
+    charCount.textContent = len + " / " + MAX;
+    publishBtn.disabled = (len === 0 || len > MAX);
+}
+
+textarea.addEventListener("input", updateCounter);
+
+publishBtn.addEventListener("click", () => {
+    const text = textarea.value.trim();
+    if (!text) return;
+
+    const post = {
+        id: Date.now(),
+        text,
+        date: new Date().toISOString()
+    };
+
+    renderPost(post, true);
+    savePost(post);
+
+    textarea.value = "";
+    updateCounter();
+    textarea.focus();
+});
+
+// Ctrl+Enter ile gönder
+textarea.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") publishBtn.click();
+});
+
+updateCounter();
+loadPosts();
+</script>
+
+</body>
+</html>
