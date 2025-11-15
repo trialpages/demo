@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kişisel Sosyal Medya</title>
+<title>Local Social</title>
 
 <!-- Feather Icons -->
 <script src="https://unpkg.com/feather-icons"></script>
@@ -45,7 +45,7 @@
         border: 1px solid var(--border);
     }
     textarea {
-        width: 95%;
+        width: 94%;
         min-height: 90px;
         padding: 10px;
         border-radius: 8px;
@@ -122,11 +122,11 @@
     </header>
 
     <section class="composer">
-        <textarea id="postText" placeholder="Bir şeyler yaz..."></textarea>
+        <textarea id="postText" placeholder="What do you think?"></textarea>
         <div class="row">
-            <span id="charCount">0 / 1000</span>
+            <span id="charCount">0 / 10000</span>
             <button id="publishBtn" class="btn" disabled>
-                <i data-feather="send"></i> Yayınla
+                <i data-feather="send"></i> Post
             </button>
         </div>
     </section>
@@ -180,9 +180,9 @@ function renderPost(post, prepend = true) {
     // Sil
     const del = document.createElement("div");
     del.className = "icon-btn";
-    del.innerHTML = `<i data-feather="trash-2"></i> Sil`;
+    del.innerHTML = `<i data-feather="trash-2"></i> Delete`;
     del.onclick = () => {
-        if (confirm("Gönderi silinsin mi?")) {
+        if (confirm("Are you sure?")) {
             article.remove();
             const remaining = getAllPosts().filter(x => x.id !== post.id);
             updateStoredPosts(remaining);
@@ -192,7 +192,7 @@ function renderPost(post, prepend = true) {
     // Düzenle
     const edit = document.createElement("div");
     edit.className = "icon-btn";
-    edit.innerHTML = `<i data-feather="edit-2"></i> Düzenle`;
+    edit.innerHTML = `<i data-feather="edit-2"></i> Edit`;
     edit.onclick = () => {
         const newText = prompt("Yeni metni gir:", post.text);
         if (newText !== null && newText.trim() !== "") {
@@ -205,10 +205,10 @@ function renderPost(post, prepend = true) {
     // Paylaş (metni kopyalar)
     const share = document.createElement("div");
     share.className = "icon-btn";
-    share.innerHTML = `<i data-feather="share-2"></i> Paylaş`;
+    share.innerHTML = `<i data-feather="share-2"></i> Copy`;
     share.onclick = async () => {
         await navigator.clipboard.writeText(post.text);
-        alert("Metin panoya kopyalandı!");
+        alert("Text copied");
     };
 
     actions.append(del, edit, share);
