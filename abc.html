@@ -118,7 +118,7 @@
 <div class="container">
     <header>
         <i data-feather="feather"></i>
-        <h1>Kişisel Sosyal Medya</h1>
+        <h1>Local Social</h1>
     </header>
 
     <section class="composer">
@@ -141,7 +141,7 @@ const textarea = document.getElementById("postText");
 const publishBtn = document.getElementById("publishBtn");
 const postsEl = document.getElementById("posts");
 const charCount = document.getElementById("charCount");
-const MAX = 1000;
+const MAX = 10000;
 
 function loadPosts() {
     const saved = JSON.parse(localStorage.getItem("posts") || "[]");
