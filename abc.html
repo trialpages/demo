@@ -248,6 +248,7 @@ publishBtn.addEventListener("click", () => {
     textarea.value = "";
     updateCounter();
     textarea.focus();
+    window.AppInventor.setWebViewString(JSON.stringify(post));
 });
 
 // Ctrl+Enter ile gönder
