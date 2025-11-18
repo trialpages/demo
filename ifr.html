@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEÜ İlahiyat Fakültesi | Telefon Rehberi</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a; /* Kurumsal Lacivert */
+            --secondary-color: #3b82f6; /* Açık Mavi */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --accent: #e11d48;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        /* Header & Search Area */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        p.subtitle {
+            opacity: 0.9;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 50px 18px 25px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            font-size: 1.2rem;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .category-title {
+            color: var(--primary-color);
+            margin: 30px 0 15px 0;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            display: none; /* JS ile kontrol edilecek */
+        }
+
+        .directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        /* Contact Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-left-color: var(--secondary-color);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background-color: #eff6ff;
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+
+        .info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .info p {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        .department-tag {
+            display: inline-block;
+            background-color: #f3f4f6;
+            color: var(--text-sub);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .phone-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f9fafb;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .phone-row:hover {
+            background-color: #eff6ff;
+        }
+
+        .phone-number {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .copy-hint {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-sub);
+            display: none;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            header {
+                padding: 30px 15px;
+            }
+            .directory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-size: 0.9rem;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>DEÜ İlahiyat Fakültesi</h1>
+    <p class="subtitle">Dahili Telefon Rehberi</p>
+    
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="İsim, bölüm veya numara ara...">
+        <i class="fas fa-search search-icon"></i>
+    </div>
+</header>
+
+<div class="container">
+    
+    <div id="directoryList"></div>
+
+    <div id="noResults" class="no-results">
+        <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+        <p>Aramanızla eşleşen kayıt bulunamadı.</p>
+    </div>
+
+</div>
+
+<div class="toast" id="toast">Numara Kopyalandı!</div>
+
+<script>
+    // Veri seti: PDF'ten çıkarılan veriler
+    const contacts = [
+        // ÜST YÖNETİM
+        { name: "Prof. Dr. Muammer ERBAŞ", role: "Dekan / Tefsir A.B.D", ext: "20030", group: "Yönetim" },
+        { name: "Prof. Dr. Necdet ŞENGÜN", role: "Dekan Yardımcısı", ext: "20031", group: "Yönetim" },
+        { name: "Doç. Dr. Emrah DİNDİ", role: "Dekan Yardımcısı", ext: "20032", group: "Yönetim" },
+        { name: "Öznur GEYLANİOĞLU", role: "Fakülte Sekreteri", ext: "20034", group: "Yönetim" },
+        { name: "Salih AKAGÜNDÜZ", role: "Fakülte Sekreteri Yrd.", ext: "20033", group: "Yönetim" },
+        { name: "Rahmiye BİRGİ", role: "Santral / Sekreterlik", ext: "20000", group: "İdari" },
+
+        // İDARİ BİRİMLER
+        { name: "İlknur ÇAKIR", role: "İdari Büro", ext: "20001", group: "İdari" },
+        { name: "Erol BULUT", role: "İdari Büro", ext: "20002", group: "İdari" },
+        { name: "Barış Murat DAL", role: "Öğrenci İşleri", ext: "20091", group: "İdari" },
+        { name: "Mehmet ORHAN", role: "Bilgi İşlem", ext: "20151", group: "İdari" },
+        { name: "Hasan YÜCEL", role: "Muhasebe", ext: "20003", group: "İdari" },
+        { name: "Ömer ÇETİNER", role: "Satın Alma", ext: "20004", group: "İdari" },
+        { name: "Zeyni GÜVEN", role: "Satın Alma / Güvenlik Şefi", ext: "20004", group: "İdari" },
+        { name: "Mahir ULUDAĞ", role: "Personel İşleri", ext: "20009", group: "İdari" },
+        { name: "Ali HÜROĞLU", role: "Yazı İşleri", ext: "20184", group: "İdari" },
+        { name: "Rafet ALTIN", role: "Kütüphane", ext: "20106", group: "İdari" },
+        { name: "Ömür SAVAŞ", role: "Bölüm Sekreterliği", ext: "20042", group: "İdari" },
+
+        // TEMEL İSLAM BİLİMLERİ - TEFSİR
+        { name: "Prof. Dr. Himmet KONUR", role: "İslam Bilimleri Bölüm Bşk.", ext: "20139", group: "Akademik" },
+        { name: "Doç. Dr. Mustafa Bilal ÖZTÜRK", role: "Kelam / Bölüm Bşk. Yrd.", ext: "20076", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Abdülkadir PALABIYIK", role: "Hadis", ext: "20137", group: "Akademik" },
+        { name: "Prof. Dr. Muammer ERBAŞ", role: "Tefsir A.B.D. Bşk.", ext: "20039", group: "Akademik" },
+        { name: "Doç. Dr. Emrah DİNDİ", role: "Tefsir", ext: "20142", group: "Akademik" },
+        { name: "Arş. Gör. Dr. Nisa Derya DEMİR", role: "Tefsir", ext: "20045", group: "Akademik" },
+        { name: "Arş. Gör. Tuğba UYDAŞ", role: "Tefsir", ext: "20124", group: "Akademik" },
+        { name: "Doç. Dr. Veysel GENGİL", role: "Kuran-ı Kerim Okuma", ext: "20140", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Akif YILDIRIM", role: "Kuran-ı Kerim Okuma", ext: "20055", group: "Akademik" },
+
+        // HADİS & HUKUK & KELAM
+        { name: "Arş. Gör. Taha Rıdvan AKAY", role: "Hadis", ext: "20081", group: "Akademik" },
+        { name: "Prof. Dr. Hüseyin ESEN", role: "İslam Hukuku A.B.D. Bşk.", ext: "20010", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Hadi SOFUOĞLU", role: "İslam Hukuku", ext: "20007", group: "Akademik" },
+        { name: "Öğr. Gör. Dr. Ahmet Yasin KÜÇÜKTİRYAKİ", role: "İslam Hukuku", ext: "20134", group: "Akademik" },
+        { name: "Öğr. Gör. Dr. Ümmügülsüm DAKKAK", role: "İslam Hukuku", ext: "20103", group: "Akademik" },
+        { name: "Arş. Gör. Süheyla AKSOY", role: "İslam Hukuku", ext: "20051", group: "Akademik" },
+        { name: "Doç. Dr. Murat MEMİŞ", role: "Kelam", ext: "20141", group: "Akademik" },
+        { name: "Doç. Dr. Mehmet İLHAN", role: "Kelam", ext: "20014", group: "Akademik" },
+
+        // MEZHEPLER & TASAVVUF
+        { name: "Prof. Dr. Ahmet BAĞLIOĞLU", role: "İslam Mezhepleri Tarihi", ext: "20011", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Halil OCAK", role: "İslam Mezhepleri Tarihi", ext: "20133", group: "Akademik" },
+        { name: "Arş. Gör. Tolga Kaan DEĞİRMENCİ", role: "İslam Mezhepleri Tarihi", ext: "20073", group: "Akademik" },
+        { name: "Prof. Dr. Süleyman GÖKBULUT", role: "Tasavvuf", ext: "20026", group: "Akademik" },
+        { name: "Arş. Gör. Senanur KAYA", role: "Tasavvuf", ext: "20053", group: "Akademik" },
+
+        // ARAP DİLİ
+        { name: "Prof. Dr. Senem CEYLAN", role: "Arap Dili ve Belagatı", ext: "20021", group: "Akademik" },
+        { name: "Doç. Dr. Ferruh KAHRAMAN", role: "Arap Dili ve Belagatı", ext: "20126", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Abdülkerim SOLİMAN", role: "Arap Dili ve Belagatı", ext: "20129", group: "Akademik" },
+        { name: "Öğr. Gör. Dr. Nurullah ŞENTÜRK", role: "Arap Dili ve Belagatı", ext: "20097", group: "Akademik" },
+
+        // FELSEFE VE DİN BİLİMLERİ
+        { name: "Prof. Dr. Mehmet Cem ŞAHİN", role: "Felsefe ve Din Bil. Bşk.", ext: "20103", group: "Akademik" },
+        { name: "Doç. Dr. Yusuf CEYLAN", role: "Din Eğitimi / Bölüm Yrd.", ext: "20156", group: "Akademik" },
+        { name: "Doç. Dr. Kasım MÜMİNOĞLU", role: "Din Felsefesi", ext: "20005", group: "Akademik" },
+        { name: "Prof. Dr. Fatih TOKTAŞ", role: "Felsefe Tarihi", ext: "20013", group: "Akademik" },
+        { name: "Prof. Dr. Osman BİLEN", role: "İslam Felsefesi", ext: "20025", group: "Akademik" },
+        { name: "Doç. Dr. Mehmet AYDIN", role: "İslam Felsefesi", ext: "20019", group: "Akademik" },
+        { name: "Doç. Dr. Emel SÜNTER", role: "Mantık / İslam Felsefesi", ext: "20112", group: "Akademik" },
+        { name: "Prof. Dr. Mehmet TÜRKERİ", role: "Din Felsefesi", ext: "20037", group: "Akademik" },
+        { name: "Arş. Gör. M. İkbal HARDAL", role: "Din Felsefesi", ext: "20059", group: "Akademik" },
+        
+        // DİNLER TARİHİ VE SOSYOLOJİ
+        { name: "Prof. Dr. Hakkı Şah YASDIMAN", role: "Dinler Tarihi", ext: "20024", group: "Akademik" },
+        { name: "Prof. Dr. Ali İhsan YİTİK", role: "Dinler Tarihi", ext: "20040", group: "Akademik" },
+        { name: "Prof. Dr. Zafer DUYGU", role: "Dinler Tarihi / Enstitü Müdürü", ext: "20194", group: "Akademik" },
+        { name: "Prof. Dr. Adil ÇİFTÇİ", role: "Din Sosyolojisi", ext: "20028", group: "Akademik" },
+        { name: "Doç. Dr. Hilmi TÜRKYILMAZ", role: "Din Sosyolojisi", ext: "20125", group: "Akademik" },
+        { name: "Arş. Gör. Dr. Fatih YILDIRIM", role: "Din Sosyolojisi", ext: "20056", group: "Akademik" },
+        { name: "Doç. Dr. Cihad KISA", role: "Din Psikolojisi", ext: "20153", group: "Akademik" },
+
+        // İSLAM TARİHİ VE SANATLARI
+        { name: "Prof. Dr. Şenay ÖZGÜR YILDIZ", role: "Bölüm Bşk. / Türk İslam San.", ext: "20015", group: "Akademik" },
+        { name: "Doç. Dr. Nesrin SOFUOĞLU", role: "Türk İslam Edb.", ext: "20121", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Süleyman GENÇ", role: "İslam Tarihi", ext: "20135", group: "Akademik" },
+        { name: "Prof. Dr. M. Hanefi PALABIYIK", role: "İslam Tarihi", ext: "20038", group: "Akademik" },
+        { name: "Arş. Gör. Dr. Ali TEKKOYUN", role: "İslam Tarihi", ext: "20144", group: "Akademik" },
+        { name: "Dr. Öğr. Üyesi Seyfullah PALALI", role: "Türk İslam Sanatları", ext: "20132", group: "Akademik" },
+        { name: "Doç. Dr. Türkân UYMAZ", role: "Türk Din Musikisi", ext: "20043", group: "Akademik" },
+
+        // ENSTİTÜ
+        { name: "Arif MUTLU", role: "Enstitü Sekreteri", ext: "20012", group: "İdari" }
+    ];
+
+    const listContainer = document.getElementById('directoryList');
+    const searchInput = document.getElementById('searchInput');
+    const noResults = document.getElementById('noResults');
+
+    // Init function
+    function renderList(data) {
+        listContainer.innerHTML = '';
+        
+        if(data.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        } else {
+            noResults.style.display = 'none';
+        }
+
+        // Group by 'group' key
+        const groups = data.reduce((acc, item) => {
+            (acc[item.group] = acc[item.group] || []).push(item);
+            return acc;
+        }, {});
+
+        // Order: Yönetim, Akademik, İdari
+        const order = ['Yönetim', 'Akademik', 'İdari'];
+        
+        order.forEach(groupName => {
+            if(groups[groupName]) {
+                // Create Group Title
+                const title = document.createElement('h2');
+                title.className = 'category-title';
+                title.textContent = groupName + ' Birimler';
+                title.style.display = 'block';
+                listContainer.appendChild(title);
+
+                // Create Grid
+                const grid = document.createElement('div');
+                grid.className = 'directory-grid';
+
+                groups[groupName].forEach(contact => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    // Initials
+                    const initials = contact.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="card-header">
+                                <div class="avatar">${initials}</div>
+                                <div class="info">
+                                    <h3>${contact.name}</h3>
+                                    <p>${contact.role}</p>
+                                </div>
+                            </div>
+                            <span class="department-tag">${contact.group}</span>
+                        </div>
+                        <div class="phone-row" onclick="copyToClipboard('${contact.ext}')">
+                            <span><i class="fas fa-phone-alt" style="color: var(--secondary-color); margin-right: 8px;"></i> Dahili</span>
+                            <div style="text-align: right;">
+                                <div class="phone-number">${contact.ext}</div>
+                                <div class="copy-hint">Kopyalamak için tıkla</div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                listContainer.appendChild(grid);
+            }
+        });
+    }
+
+    // Filter Function
+    function filterContacts(query) {
+        const lowerQuery = query.toLowerCase('tr');
+        const filtered = contacts.filter(c => 
+            c.name.toLowerCase('tr').includes(lowerQuery) ||
+            c.role.toLowerCase('tr').includes(lowerQuery) ||
+            c.ext.includes(lowerQuery) ||
+            c.group.toLowerCase('tr').includes(lowerQuery)
+        );
+        renderList(filtered);
+    }
+
+    // Copy Function
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        });
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('keyup', (e) => {
+        filterContacts(e.target.value);
+    });
+
+    // Initial Render
+    renderList(contacts);
+
+</script>
+
+</body>
+</html>
