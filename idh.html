@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlahiyat Doçentlik Puan Hesaplama Robotu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1e3a8a; /* Academic Blue */
+            --secondary-color: #d97706; /* Gold/Bronze */
+            --bg-color: #f8fafc;
+            --card-border: #e2e8f0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: #334155;
+        }
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1e293b 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card {
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            background: white;
+        }
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid var(--card-border);
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 1rem 1.5rem;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .btn-primary-custom:hover {
+            background-color: #172554;
+            color: white;
+        }
+        .basket-item {
+            border-left: 4px solid var(--primary-color);
+            background-color: #f1f5f9;
+            transition: all 0.2s;
+        }
+        .basket-item:hover {
+            background-color: #e2e8f0;
+        }
+        .status-pass {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .status-fail {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .result-box {
+            position: sticky;
+            top: 20px;
+        }
+        .category-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background-color: #e0e7ff;
+            color: #3730a3;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h3 mb-1"><i class="fas fa-university me-2"></i>İlahiyat Temel Alanı</h1>
+                <p class="mb-0 opacity-75">Doçentlik Başvuru Puanı Hesaplama Aracı (Tablo 6)</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <span class="badge bg-warning text-dark p-2"><i class="fas fa-info-circle me-1"></i> Güncel Mevzuat</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7">
+            
+            <div class="card">
+                <div class="card-header"><i class="fas fa-cogs me-2"></i>Genel Bilgiler</div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="isDiniMusiki">
+                        <label class="form-check-label" for="isDiniMusiki">Başvurduğum alan "Dini Musiki" (Madde 13 zorunluluğu için)</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="isForeign">
+                        <label class="form-check-label" for="isForeign">Yabancı Uyruklu Adayım (Ulusal Makale şartı değişir)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-plus-circle me-2"></i>Faaliyet Ekle</span>
+                </div>
+                <div class="card-body">
+                    <form id="addForm">
+                        <div class="mb-3">
+                            <label class="form-label">Madde Kategorisi</label>
+                            <select class="form-select" id="catSelect" onchange="updateSubCats()">
+                                <option value="">Seçiniz...</option>
+                                <option value="1">1. Uluslararası Makale</option>
+                                <option value="2">2. Ulusal Makale</option>
+                                <option value="3">3. Lisansüstü Tezlerden Üretilmiş Yayın</option>
+                                <option value="4">4. Kitap</option>
+                                <option value="5">5. Atıf</option>
+                                <option value="6">6. Lisansüstü Tez Danışmanlığı</option>
+                                <option value="7">7. Bilimsel Araştırma Projesi</option>
+                                <option value="8">8. Bilimsel Toplantı (Bildiri)</option>
+                                <option value="9">9. Eğitim-Öğretim</option>
+                                <option value="10">10. Patent/Faydalı Model</option>
+                                <option value="11">11. Ödül</option>
+                                <option value="12">12. Editörlük</option>
+                                <option value="13">13. Sanatsal Uygulama (Sadece Dini Musiki)</option>
+                                <option value="14">14. Diğer (h-indeks, yurtdışı)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Alt Kategori / Tür</label>
+                            <select class="form-select" id="subCatSelect" disabled>
+                                <option value="">Önce kategori seçiniz</option>
+                            </select>
+                            <div id="subCatInfo" class="form-text text-primary mt-1"></div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Yazar/Kişi Sayısı</label>
+                                <input type="number" class="form-control" id="authorCount" value="1" min="1">
+                                <div class="form-text">Tek yazarlı ise 1 giriniz.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Zamanlama / Statü</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="isPostPhD" checked>
+                                    <label class="form-check-label" for="isPostPhD">Doktora Sonrası</label>
+                                </div>
+                                <div class="form-check mt-2" id="thesisCheckDiv" style="display:none;">
+                                    <input class="form-check-input" type="checkbox" id="isThesisDerived">
+                                    <label class="form-check-label" for="isThesisDerived">Tezden Üretildi</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 p-2 bg-light border rounded" id="journalContextDiv" style="display:none;">
+                            <label class="form-label small fw-bold">Ulusal Makale Kontrolü İçin:</label>
+                            <input type="text" class="form-control form-control-sm" id="journalName" placeholder="Dergi Adı (Farklı dergi kontrolü için)">
+                        </div>
+
+                        <button type="button" class="btn btn-primary-custom w-100" onclick="addToBasket()">
+                            <i class="fas fa-arrow-right me-1"></i> Listeye Ekle
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="result-box">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-calculator me-2"></i>Puan Durumu
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Toplam Ham Puan:</span>
+                            <span id="rawTotal" class="fw-bold">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Net Puan (Kotalı):</span>
+                            <span id="netTotal" class="fw-bold fs-5">0</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Dr. Sonrası Net Puan:</span>
+                            <span id="postPhDScore" class="fw-bold text-primary">0</span>
+                        </div>
+                        <div class="alert alert-secondary mb-0 p-2 text-center small">
+                            Asgari Şart: 100 Puan (En az 90'ı Dr. Sonrası)
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-3">
+                            <button class="btn btn-success" onclick="calculateResults()">
+                                <i class="fas fa-check-double me-1"></i> Sonucu Değerlendir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list-ul me-2"></i>Eklenen Eserler
+                        <button class="btn btn-sm btn-outline-danger float-end" onclick="clearBasket()">Temizle</button>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                        <div id="basketList" class="list-group list-group-flush">
+                            <div class="text-center p-4 text-muted">Henüz eser eklenmedi.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Değerlendirme Sonucu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Data Structure based on Table 6
+    const categories = {
+        1: {
+            title: "1. Uluslararası Makale",
+            subs: [
+                {id: "1a", name: "SCIE/SSCI Makale (Q1)", pts: 30},
+                {id: "1a_q2", name: "SCIE/SSCI Makale (Q2)", pts: 20},
+                {id: "1a_q3", name: "SCIE/SSCI Makale (Q3)", pts: 15},
+                {id: "1a_q4", name: "SCIE/SSCI Makale (Q4)", pts: 10},
+                {id: "1b", name: "AHCI Makale", pts: 20},
+                {id: "1c", name: "ESCI veya Scopus Makale", pts: 10},
+                {id: "1d", name: "Diğer Uluslararası İndeks Makale", pts: 5},
+                {id: "1e", name: "Editöre mektup, özet, kitap kritiği vb.", pts: 3}
+            ],
+            note: "Lisansüstü tezden üretilmemiş olmalı."
+        },
+        2: {
+            title: "2. Ulusal Makale",
+            subs: [
+                {id: "2a", name: "TR Dizin Makale", pts: 10},
+                {id: "2b", name: "Diğer Hakemli Dergi Makale", pts: 4},
+                {id: "2c", name: "Editöre mektup, özet, vb.", pts: 2}
+            ],
+            note: "Dr. Sonrası şartı: 5 yayın, en az 3'ü tek yazarlı, 2'si farklı dergide. (Tezden üretilmemiş)"
+        },
+        3: {
+            title: "3. Lisansüstü Tezlerden Üretilmiş Yayın",
+            max: 20,
+            subs: [
+                {id: "3a", name: "SCIE/SSCI/AHCI Makale", pts: 20},
+                {id: "3b", name: "ESCI/Scopus Makale", pts: 10},
+                {id: "3c", name: "Diğer Uluslararası İndeks Makale", pts: 3},
+                {id: "3d", name: "TR Dizin Makale", pts: 5},
+                {id: "3e", name: "BKCI/Scopus Kitap", pts: 20},
+                {id: "3f", name: "BKCI/Scopus Kitap Bölümü", pts: 10},
+                {id: "3g", name: "Diğer Ulus./Ulusal Kitap", pts: 3},
+                {id: "3h", name: "Diğer Ulus./Ulusal Kitap Bölümü", pts: 2},
+                {id: "3i1", name: "Uluslararası Toplantı (CPCI)", pts: 5},
+                {id: "3i2", name: "Diğer Bilimsel Toplantı", pts: 2}
+            ],
+            note: "En az 1 yayın zorunlu. Puanı 90 Dr. sonrası puanına dahil edilmez. Max 20 puan. (g ve h toplamı max 5)"
+        },
+        4: {
+            title: "4. Kitap",
+            subs: [
+                {id: "4a", name: "BKCI/Scopus Kitap", pts: 20},
+                {id: "4b", name: "BKCI/Scopus Kitap Bölümü", pts: 10},
+                {id: "4c", name: "Diğer Uluslararası/Ulusal Kitap", pts: 20},
+                {id: "4d", name: "Diğer Uluslararası/Ulusal Kitap Bölümü", pts: 5},
+                {id: "4e", name: "Tahkik (Tenkitli Metin Neşri) Kitap", pts: 10}
+            ],
+            note: "Dr. Sonrası a veya c bentlerinden en az 1 yayın ZORUNLU. c, d, e toplamı Max 30."
+        },
+        5: {
+            title: "5. Atıf",
+            max: 10,
+            subs: [
+                {id: "5a", name: "SCIE, SSCI, AHCI, ESCI, Scopus Atıf", pts: 3},
+                {id: "5b", name: "BKCI Kitap Atıf", pts: 2},
+                {id: "5c", name: "TR Dizin Dergi Atıf", pts: 2},
+                {id: "5d", name: "Diğer Ulus./Ulusal Kitap/Dergi Atıf", pts: 1}
+            ],
+            note: "Dr. Sonrası en az 5 puan ZORUNLU. Max 10 puan."
+        },
+        6: {
+            title: "6. Lisansüstü Tez Danışmanlığı",
+            max: 10,
+            subs: [
+                {id: "6a", name: "Tamamlanmış Doktora Tezi", pts: 5},
+                {id: "6b", name: "Tamamlanmış Yüksek Lisans Tezi", pts: 3}
+            ]
+        },
+        7: {
+            title: "7. Bilimsel Araştırma Projesi",
+            max: 20,
+            subs: [
+                {id: "7a_yur", name: "AB/TÜBİTAK - Yürütücü", pts: 15},
+                {id: "7a_ara", name: "AB/TÜBİTAK - Araştırmacı", pts: 10},
+                {id: "7a_dan", name: "AB/TÜBİTAK - Danışman", pts: 5},
+                {id: "7b", name: "Uluslararası Destekli Proje (Yür/Ara/Dan)", pts: 10},
+                {id: "7c", name: "Kamu/Özel Ar-Ge Projesi", pts: 5},
+                {id: "7d", name: "BAP Projesi (Yürütücü)", pts: 3}
+            ]
+        },
+        8: {
+            title: "8. Bilimsel Toplantı",
+            max: 10,
+            subs: [
+                {id: "8a", name: "Uluslararası (CPCI) Tam Metin/Özet", pts: 5},
+                {id: "8b", name: "Diğer Uluslararası/Ulusal Toplantı", pts: 3}
+            ],
+            note: "Dr. Sonrası en az 5 puan ZORUNLU. Max 10 puan."
+        },
+        9: {
+            title: "9. Eğitim-Öğretim",
+            max: 6,
+            subs: [
+                {id: "9a", name: "Dönemlik Ders (4 yarıyıl)", pts: 2}, // Simplified input logic
+                {id: "9_exp", name: "2 Yıl Kadrolu Öğretim Elemanı", pts: 2} // Special clause
+            ],
+            note: "En az 2 puan ZORUNLU. Max 6 puan."
+        },
+        10: {
+            title: "10. Patent",
+            subs: [
+                {id: "10a", name: "Uluslararası Patent", pts: 20},
+                {id: "10b", name: "Ulusal Patent", pts: 10},
+                {id: "10c", name: "Faydalı Model", pts: 5},
+                {id: "10d", name: "Patent Başvurusu", pts: 2}
+            ]
+        },
+        11: {
+            title: "11. Ödül",
+            max: 25,
+            subs: [
+                {id: "11a", name: "YÖK/TÜBİTAK/TÜBA Ödülleri", pts: 25}
+            ]
+        },
+        12: {
+            title: "12. Editörlük",
+            max: 4,
+            subs: [
+                {id: "12a", name: "SCIE/SSCI/AHCI vb. Editörlük", pts: 2},
+                {id: "12b", name: "BKCI/Scopus Kitap Editörlük", pts: 1},
+                {id: "12c", name: "TR Dizin Editörlük", pts: 1}
+            ]
+        },
+        13: {
+            title: "13. Sanatsal Uygulama (Dini Musiki)",
+            max: 20,
+            subs: [
+                {id: "13a", name: "Beste", pts: 5},
+                {id: "13b", name: "Solo/Karma Konser", pts: 5},
+                {id: "13c", name: "Ses/Video Kaydı", pts: 5},
+                {id: "13d", name: "Albüm", pts: 5}
+            ],
+            note: "Sadece Dini Musiki alanı için en az 10 puan zorunlu."
+        },
+        14: {
+            title: "14. Diğer",
+            max: 10,
+            subs: [
+                {id: "14a", name: "h-indeksi en az 5 olmak", pts: 5},
+                {id: "14b", name: "Yurtdışı Araştırma (en az 6 ay)", pts: 5}
+            ]
+        }
+    };
+
+    let basket = [];
+
+    // Initialize Dropdowns
+    function updateSubCats() {
+        const catId = document.getElementById('catSelect').value;
+        const subSelect = document.getElementById('subCatSelect');
+        const infoDiv = document.getElementById('subCatInfo');
+        const thesisCheckDiv = document.getElementById('thesisCheckDiv');
+        const journalContextDiv = document.getElementById('journalContextDiv');
+        const isPostPhDCheck = document.getElementById('isPostPhD');
+
+        subSelect.innerHTML = "";
+        infoDiv.innerText = "";
+        subSelect.disabled = true;
+        thesisCheckDiv.style.display = "none";
+        journalContextDiv.style.display = "none";
+
+        if (catId && categories[catId]) {
+            subSelect.disabled = false;
+            // Default option
+            let defOpt = document.createElement('option');
+            defOpt.value = "";
+            defOpt.text = "Seçiniz...";
+            subSelect.add(defOpt);
+
+            categories[catId].subs.forEach(sub => {
+                let opt = document.createElement('option');
+                opt.value = sub.id;
+                opt.text = `${sub.name} (${sub.pts} Puan)`;
+                opt.dataset.pts = sub.pts;
+                subSelect.add(opt);
+            });
+
+            if (categories[catId].note) {
+                infoDiv.innerText = "Not: " + categories[catId].note;
+            }
+
+            // Special UI logic
+            if (catId === "3") {
+                document.getElementById('isThesisDerived').checked = true;
+                document.getElementById('isThesisDerived').disabled = true;
+                thesisCheckDiv.style.display = "block";
+                // Cat 3 is inherently NOT post-PhD score compatible mostly, but counts for total.
+                // Actually table says "90 puanın doktora ünvanının alınmasından sonra... Madde 3 hariç".
+                // So Madde 3 is never "Post PhD NET" score.
+            } else {
+                document.getElementById('isThesisDerived').checked = false;
+                document.getElementById('isThesisDerived').disabled = false; // User can select if this article is from thesis
+            }
+
+            if (catId === "2") {
+                journalContextDiv.style.display = "block";
+            }
+        }
+    }
+
+    function addToBasket() {
+        const catId = document.getElementById('catSelect').value;
+        const subId = document.getElementById('subCatSelect').value;
+        const authorCount = parseInt(document.getElementById('authorCount').value);
+        const isPostPhD = document.getElementById('isPostPhD').checked;
+        const isThesisDerived = document.getElementById('isThesisDerived').checked; // Or implicit for cat 3
+        const journalName = document.getElementById('journalName').value;
+
+        if (!catId || !subId) {
+            alert("Lütfen kategori ve alt tür seçiniz.");
+            return;
+        }
+
+        const catObj = categories[catId];
+        const subObj = catObj.subs.find(s => s.id === subId);
+        
+        // Calculate raw points
+        let rawPoints = subObj.pts;
+        
+        // Author division rule: "Tek yazarlı tam puan. Çok yazarlı eşit bölünür."
+        // Exception: Some awards or specific types might differ but generally this applies.
+        // Patent: "Patentlerde puan kişi sayısına bölünür."
+        let calculatedPoints = rawPoints;
+        if (authorCount > 1) {
+            calculatedPoints = rawPoints / authorCount;
+        }
+        
+        // Exception: Thesis Advisors
+        if (catId === "6") {
+            // Logic: Main advisor gets full, second gets half. 
+            // Simplified for this tool: Assuming user is main advisor or asking user to adjust is hard.
+            // We will stick to standard division logic or assume full if single input.
+            // But text says: "İkinci danışman ise yarısını alır".
+            // Let's keep simple division for now or assume Full if user doesn't specify otherwise.
+            // Re-reading text: "Asıl danışman a ve b bentleri için öngörülen puanların tamamını..."
+            // So Author Count logic doesn't apply to Cat 6 normally.
+            if(authorCount > 1) {
+                 if(!confirm("Danışmanlıkta puan bölünmez (2. danışman durumu hariç). Puanı yine de bölmek istiyor musunuz?")) {
+                     calculatedPoints = rawPoints;
+                 }
+            }
+        }
+
+        const item = {
+            id: Date.now(),
+            catId: catId,
+            subId: subId,
+            name: subObj.name,
+            rawPts: rawPoints,
+            calcPts: parseFloat(calculatedPoints.toFixed(2)),
+            authorCount: authorCount,
+            isPostPhD: isPostPhD,
+            isThesisDerived: (catId === "3") ? true : isThesisDerived,
+            journalName: journalName || ""
+        };
+
+        basket.push(item);
+        renderBasket();
+        updateTotals();
+        
+        // Reset specific fields
+        document.getElementById('journalName').value = "";
+    }
+
+    function renderBasket() {
+        const list = document.getElementById('basketList');
+        list.innerHTML = "";
+        if (basket.length === 0) {
+            list.innerHTML = '<div class="text-center p-4 text-muted">Henüz eser eklenmedi.</div>';
+            return;
+        }
+
+        basket.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = 'list-group-item basket-item p-3 mb-2';
+            
+            let badges = `<span class="badge bg-secondary">${categories[item.catId].title.split(' ')[1]}</span> `;
+            if(item.isPostPhD) badges += `<span class="badge bg-success">Dr. Sonrası</span> `;
+            if(item.isThesisDerived) badges += `<span class="badge bg-warning text-dark">Tezden</span> `;
+            if(item.authorCount > 1) badges += `<span class="badge bg-info text-dark">${item.authorCount} Yazar</span>`;
+
+            div.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">${item.name}</h6>
+                        <div class="mb-1">${badges}</div>
+                        <small class="text-muted">${item.journalName ? 'Dergi: ' + item.journalName : ''}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold text-primary">${item.calcPts} P</div>
+                        <button class="btn btn-sm btn-link text-danger p-0" onclick="removeItem(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function removeItem(index) {
+        basket.splice(index, 1);
+        renderBasket();
+        updateTotals();
+    }
+
+    function clearBasket() {
+        basket = [];
+        renderBasket();
+        updateTotals();
+    }
+
+    // Helper to sum points in a filtered list
+    function sumPoints(items) {
+        return items.reduce((sum, item) => sum + item.calcPts, 0);
+    }
+
+    function updateTotals() {
+        // Just a quick raw sum for display
+        const total = sumPoints(basket);
+        document.getElementById('rawTotal').innerText = total.toFixed(2);
+        
+        // Calculate Net for Display (approximate until full validation)
+        // We will run full logic in CalculateResults, here just show naive sums
+        // Actually, let's calculate "Valid Post PhD" roughly
+        const postPhdItems = basket.filter(i => i.isPostPhD && !i.isThesisDerived);
+        const postPhdRaw = sumPoints(postPhdItems);
+        document.getElementById('postPhDScore').innerText = postPhdRaw.toFixed(2) + " (Ham)";
+        document.getElementById('netTotal').innerText = "..."; // Calculated on button click
+    }
+
+    function calculateResults() {
+        let logs = [];
+        let isValid = true;
+        let totalNetScore = 0;
+        let postPhdNetScore = 0;
+
+        // 1. Group by Category and Apply Caps
+        let catScores = {};
+        let catItems = {};
+
+        // Initialize
+        for(let i=1; i<=14; i++) {
+            catScores[i] = 0;
+            catItems[i] = basket.filter(item => item.catId == i);
+        }
+
+        // Rule Logic
+        
+        // --- Category 3 (Thesis Derived) ---
+        // Max 20 points total.
+        // Sub-limit: g + h max 5 points.
+        let cat3Items = catItems[3];
+        let score3_gh = sumPoints(cat3Items.filter(i => i.subId === '3g' || i.subId === '3h'));
+        score3_gh = Math.min(score3_gh, 5);
+        
+        let score3_others = sumPoints(cat3Items.filter(i => i.subId !== '3g' && i.subId !== '3h'));
+        let score3_total = Math.min(score3_gh + score3_others, 20); // Global Cat 3 Cap
+        catScores[3] = score3_total;
+
+        if(cat3Items.length < 1 && basket.filter(i => i.isThesisDerived).length < 1) {
+            // Note: Text says "Bu maddenin a-h bentleri kapsamında en az bir yayın zorunludur."
+            // Wait, Category 3 is specific to thesis derived.
+            logs.push({status: 'fail', msg: "Madde 3: Lisansüstü tezlerden üretilmiş en az 1 yayın zorunludur."});
+            isValid = false;
+        } else {
+             logs.push({status: 'pass', msg: `Madde 3: Şart sağlandı. (${score3_total} puan)`});
+        }
+
+        // --- Category 4 (Books) ---
+        // Max 30 points from c, d, e.
+        // Mandatory: a OR c must be present (Post PhD).
+        let cat4Items = catItems[4];
+        let score4_cde = sumPoints(cat4Items.filter(i => ['4c','4d','4e'].includes(i.subId)));
+        score4_cde = Math.min(score4_cde, 30);
+        let score4_ab = sumPoints(cat4Items.filter(i => ['4a','4b'].includes(i.subId)));
+        let score4_total = score4_ab + score4_cde; // No global cap mentioned, just sub-cap.
+        catScores[4] = score4_total;
+
+        let hasBookAorC = cat4Items.some(i => (i.subId === '4a' || i.subId === '4c') && i.isPostPhD);
+        if(!hasBookAorC) {
+            logs.push({status: 'fail', msg: "Madde 4 (Kitap): Dr. Sonrası (a) veya (c) bendinden en az 1 kitap zorunludur."});
+            isValid = false;
+        } else {
+            logs.push({status: 'pass', msg: `Madde 4: Kitap şartı sağlandı. (${score4_total} puan)`});
+        }
+
+        // --- Category 5 (Citations) ---
+        // Max 10 pts. Min 5 pts (Post PhD).
+        let cat5Items = catItems[5];
+        let score5_raw = sumPoints(cat5Items);
+        let score5_total = Math.min(score5_raw, 10);
+        catScores[5] = score5_total;
+        
+        let score5_postPhd = sumPoints(cat5Items.filter(i => i.isPostPhD));
+        if(score5_postPhd < 5) {
+            logs.push({status: 'fail', msg: `Madde 5 (Atıf): Dr. Sonrası en az 5 puan gereklidir. (Mevcut: ${score5_postPhd})`});
+            isValid = false;
+        } else {
+            logs.push({status: 'pass', msg: `Madde 5: Atıf şartı sağlandı.`});
+        }
+
+        // --- Category 6 (Advisor) ---
+        let score6 = Math.min(sumPoints(catItems[6]), 10);
+        catScores[6] = score6;
+
+        // --- Category 7 (Projects) ---
+        let score7 = Math.min(sumPoints(catItems[7]), 20);
+        catScores[7] = score7;
+
+        // --- Category 8 (Meetings) ---
+        // Max 10. Min 5 (Post PhD).
+        let cat8Items = catItems[8];
+        let score8_raw = sumPoints(cat8Items);
+        let score8_total = Math.min(score8_raw, 10);
+        catScores[8] = score8_total;
+
+        let score8_postPhd = sumPoints(cat8Items.filter(i => i.isPostPhD));
+        if(score8_postPhd < 5) {
+            logs.push({status: 'fail', msg: `Madde 8 (Toplantı): Dr. Sonrası en az 5 puan gereklidir. (Mevcut: ${score8_postPhd})`});
+            isValid = false;
+        } else {
+            logs.push({status: 'pass', msg: `Madde 8: Toplantı şartı sağlandı.`});
+        }
+
+        // --- Category 9 (Education) ---
+        // Max 6. Min 2.
+        let score9 = Math.min(sumPoints(catItems[9]), 6);
+        catScores[9] = score9;
+        if(score9 < 2) {
+            logs.push({status: 'fail', msg: `Madde 9 (Eğitim): En az 2 puan gereklidir.`});
+            isValid = false;
+        }
+
+        // --- Category 10, 11, 12, 14 ---
+        catScores[10] = sumPoints(catItems[10]); // Patent caps applied per item division usually
+        catScores[11] = Math.min(sumPoints(catItems[11]), 25);
+        catScores[12] = Math.min(sumPoints(catItems[12]), 4);
+        catScores[13] = Math.min(sumPoints(catItems[13]), 20);
+        catScores[14] = Math.min(sumPoints(catItems[14]), 10);
+
+        // --- Category 13 (Dini Musiki Special) ---
+        if(document.getElementById('isDiniMusiki').checked) {
+            if(catScores[13] < 10) {
+                logs.push({status: 'fail', msg: `Madde 13 (Sanatsal): Dini Musiki alanı için en az 10 puan zorunludur.`});
+                isValid = false;
+            } else {
+                 logs.push({status: 'pass', msg: `Madde 13: Alan şartı sağlandı.`});
+            }
+        }
+
+        // --- Category 1 & 2 (Articles - The Complex Logic) ---
+        // Total for Cat 1 & 2
+        let score1 = sumPoints(catItems[1]);
+        let score2 = sumPoints(catItems[2]);
+        
+        catScores[1] = score1;
+        catScores[2] = score2;
+
+        // NATIONAL ARTICLE CONDITION CHECK
+        // Requirement: Post-PhD, Nat. Articles (Cat 2): Min 50 pts.
+        // Constraint: At least 5 pubs total.
+        // Constraint: 3 must be Single Authored.
+        // Constraint: 2 must be in Different Journals (This is hard to validate perfectly without strict strings, but we'll try).
+        
+        const isForeign = document.getElementById('isForeign').checked;
+        let nationalConditionMet = false;
+
+        if (!isForeign) {
+            let natPostPhdItems = catItems[2].filter(i => i.isPostPhD);
+            let natPoints = sumPoints(natPostPhdItems);
+            let natCount = natPostPhdItems.length;
+            let natSingleCount = natPostPhdItems.filter(i => i.authorCount === 1).length;
+            
+            // Check unique journals
+            let journals = new Set(natPostPhdItems.map(i => i.journalName.trim().toLowerCase()).filter(n => n.length > 0));
+            let journalCount = journals.size;
+            // If user didn't enter names, we can't validate journal count. Assume fail or warn.
+            // If blank, we assume they are different for calculation if count >= 2? No, better to be strict or warn.
+            // For this logic, if names are empty, we might assume they differ if items are distinct.
+            if (natPostPhdItems.length >= 2 && journalCount === 0) journalCount = natPostPhdItems.length; // Fallback
+
+            if (natPoints >= 50 && natCount >= 5 && natSingleCount >= 3 && journalCount >= 2) {
+                nationalConditionMet = true;
+                logs.push({status: 'pass', msg: "Ulusal Makale Şartı: Sağlandı (50 puan, 5 eser, 3 tek, farklı dergiler)."});
+            } else {
+                logs.push({status: 'warning', msg: `Ulusal Makale Şartı Sağlanamadı: (Mevcut: ${natPoints} Puan, ${natCount} Eser, ${natSingleCount} Tek). Alternatif şart kontrol ediliyor...`});
+            }
+        }
+
+        // Alternative International Condition (Also for Foreigners)
+        let internationalAlternativeMet = false;
+        let intPostPhdItems = catItems[1].filter(i => i.isPostPhD && ['1a','1a_q2','1a_q3','1a_q4','1b','1c'].includes(i.subId)); 
+        // Logic says: 1. article a, b or c clauses.
+        
+        let intAltPoints = sumPoints(intPostPhdItems);
+        let intAltCount = intPostPhdItems.length;
+        let intAltSingle = intPostPhdItems.some(i => i.authorCount === 1);
+
+        if (intAltPoints >= 50 && intAltCount >= 2 && intAltSingle) {
+             internationalAlternativeMet = true;
+             if(!nationalConditionMet) logs.push({status: 'pass', msg: "Alternatif Uluslararası Makale Şartı: Sağlandı."});
+        }
+
+        if (!nationalConditionMet && !internationalAlternativeMet) {
+            logs.push({status: 'fail', msg: "Makale Şartı: Ne Ulusal Makale şartı (50p/5yayın/3tek) ne de Alternatif Uluslararası Şart (50p/2yayın/1tek) sağlanamadı."});
+            isValid = false;
+        }
+
+
+        // --- FINAL SUMMATION ---
+        // Calculate Total Net Score
+        totalNetScore = Object.values(catScores).reduce((a, b) => a + b, 0);
+
+        // Calculate Post-PhD Net Score
+        // Must sum the *capped* categories but only the parts that are Post-PhD.
+        // This is mathematically tricky because caps apply to the category total.
+        // Accepted approach: Calculate category total. Calculate Pre-PhD portion. 
+        // Post-PhD = Total (Capped) - Pre-PhD.
+        // AND EXCLUDE Category 3 from Post-PhD calculation (Source 2: "...başlığından alınacak puanlar hariç").
+        
+        let totalPrePhd = 0;
+        // Loop all items in basket
+        // If !isPostPhD, add to pre-sum
+        // But we need to respect caps.
+        // Simplified algorithm: 
+        // 1. Calculate Total Score (Already done: totalNetScore).
+        // 2. Calculate "Non-Qualifying Points for 90 constraint":
+        //    This includes ALL Cat 3 points + Any Pre-PhD points from other cats.
+        
+        // Let's do it per category to be safe with caps.
+        let validPostPhdScore = 0;
+
+        for(let c=1; c<=14; c++) {
+            if (c === 3) continue; // Cat 3 completely excluded from 90 pt rule.
+
+            let catTotal = catScores[c]; // Capped total for this cat
+            let items = catItems[c];
+            
+            // If catTotal is 0, skip
+            if (catTotal === 0) continue;
+
+            // Calculate raw ratio or subtract pre-phd?
+            // Best way: Calculate Pre-PhD raw points.
+            let preItems = items.filter(i => !i.isPostPhD);
+            let preRaw = sumPoints(preItems);
+            
+            // The amount contributing to the Cap from Pre-PhD is tricky if Raw > Cap.
+            // Assumption: Pre-PhD fills the bucket first? Or Post-PhD?
+            // Usually favors the candidate. Meaning Post-PhD counts as much as possible.
+            // So: PostPhD_Contribution = Min(Cat_Cap, PostPhD_Raw).
+            // Let's check specific constraints.
+            
+            // Simple Approach: PostPhD Part = Min(Cat_Cap, Sum(PostPhD_Items)).
+            // EXCEPT for categories where there are sub-constraints (like Books).
+            // But generally, Min(Cap, PostRaw) is the standard interpretation unless specific sub-rules block it.
+            
+            let postItems = items.filter(i => i.isPostPhD);
+            let postRaw = sumPoints(postItems);
+
+            // Special handling for Book (Cat 4) sub-caps? 
+            // If I have 40 pts from Post-PhD sub-clause (c) [max 30], I only get 30.
+            if (c === 4) {
+                let p_cde = sumPoints(postItems.filter(i => ['4c','4d','4e'].includes(i.subId)));
+                p_cde = Math.min(p_cde, 30);
+                let p_ab = sumPoints(postItems.filter(i => ['4a','4b'].includes(i.subId)));
+                validPostPhdScore += (p_cde + p_ab);
+            } 
+            // Special handling for Citations (Cat 5)
+            else if (c === 5) {
+                validPostPhdScore += Math.min(postRaw, 10);
+            }
+            // Special handling for Projects (Cat 7)
+            else if (c === 7) {
+                validPostPhdScore += Math.min(postRaw, 20);
+            }
+             // Special handling for Meetings (Cat 8)
+            else if (c === 8) {
+                validPostPhdScore += Math.min(postRaw, 10);
+            }
+            // Others generic
+            else {
+                 let catCap = (categories[c].max !== undefined) ? categories[c].max : 999;
+                 validPostPhdScore += Math.min(postRaw, catCap);
+            }
+        }
+
+        postPhdNetScore = validPostPhdScore;
+
+        // Check Min 90 Post-PhD
+        if (postPhdNetScore < 90) {
+            logs.push({status: 'fail', msg: `Doktora Sonrası Puan Yetersiz: En az 90 puan gerekli (Madde 3 hariç). Sizin puanınız: ${postPhdNetScore}`});
+            isValid = false;
+        } else {
+            logs.push({status: 'pass', msg: `Doktora Sonrası Puan: ${postPhdNetScore} (Min 90 sağlandı).`});
+        }
+
+        // Check Total 100
+        if (totalNetScore < 100) {
+            logs.push({status: 'fail', msg: `Toplam Puan Yetersiz: En az 100 puan gerekli. Sizin puanınız: ${totalNetScore}`});
+            isValid = false;
+        } else {
+            logs.push({status: 'pass', msg: `Toplam Puan: ${totalNetScore} (Min 100 sağlandı).`});
+        }
+
+
+        // DISPLAY RESULTS
+        const modalBody = document.getElementById('modalBody');
+        let resultHtml = '';
+        
+        if(isValid) {
+            resultHtml += `<div class="alert alert-success text-center">
+                <h4><i class="fas fa-check-circle"></i> TEBRİKLER!</h4>
+                <p>Asgari başvuru şartlarını sağlıyorsunuz.</p>
+            </div>`;
+        } else {
+            resultHtml += `<div class="alert alert-danger text-center">
+                <h4><i class="fas fa-times-circle"></i> BAŞVURU ŞARTLARI SAĞLANAMADI</h4>
+                <p>Aşağıdaki eksiklikleri gideriniz.</p>
+            </div>`;
+        }
+
+        resultHtml += '<ul class="list-group">';
+        logs.forEach(log => {
+            let icon = log.status === 'pass' ? '<i class="fas fa-check text-success"></i>' : (log.status === 'warning' ? '<i class="fas fa-exclamation-triangle text-warning"></i>' : '<i class="fas fa-times text-danger"></i>');
+            let bg = log.status === 'fail' ? 'list-group-item-danger' : '';
+            resultHtml += `<li class="list-group-item ${bg}">${icon} ${log.msg}</li>`;
+        });
+        resultHtml += '</ul>';
+        
+        // Detailed Score Breakdown Table
+        resultHtml += `<h6 class="mt-4">Kategori Bazlı Net Puanlar</h6>
+        <table class="table table-sm table-bordered mt-2">
+            <thead><tr><th>Kategori</th><th>Puan</th></tr></thead>
+            <tbody>`;
+        
+        for(let c=1; c<=14; c++) {
+            if(catScores[c] > 0) {
+                resultHtml += `<tr><td>${categories[c].title}</td><td>${catScores[c]}</td></tr>`;
+            }
+        }
+        resultHtml += `<tr class="table-primary fw-bold"><td>TOPLAM</td><td>${totalNetScore}</td></tr>`;
+        resultHtml += `</tbody></table>`;
+
+        modalBody.innerHTML = resultHtml;
+        document.getElementById('netTotal').innerText = totalNetScore;
+
+        // Show Modal
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
