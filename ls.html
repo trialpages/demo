@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SocialLocal - Yerel Sosyal Ağ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1d9bf0;
+            --hover-color: #1a8cd8;
+            --bg-color: #f7f9f9;
+            --white: #ffffff;
+            --border-color: #eff3f4;
+            --text-main: #0f1419;
+            --text-secondary: #536471;
+            --delete-color: #f4212e;
+            --shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Ana Düzen */
+        .layout {
+            display: grid;
+            grid-template-columns: 275px 600px 350px;
+            gap: 20px;
+            width: 100%;
+            max-width: 1300px;
+            padding: 0 20px;
+        }
+
+        /* Sol Sidebar (Menü) */
+        .sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 400;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(29, 155, 240, 0.1);
+        }
+
+        .menu-item.active {
+            font-weight: 700;
+        }
+
+        .sidebar-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 90%;
+        }
+
+        .sidebar-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        /* Orta Bölüm (Akış) */
+        .feed {
+            background: var(--white);
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            min-height: 100vh;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Tweet Atma Kutusu */
+        .tweet-box {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #ddd;
+            background-image: url('https://api.dicebear.com/7.x/avataaars/svg?seed=Felix');
+            background-size: cover;
+        }
+
+        .input-area {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 1.2rem;
+            resize: none;
+            padding: 10px 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tweet-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .icons i {
+            color: var(--primary-color);
+            margin-right: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .tweet-btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: 0.2s;
+        }
+
+        .tweet-btn.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Post Listesi */
+        .post {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            transition: background 0.2s;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .post:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .post-content {
+            flex: 1;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 5px;
+            font-size: 15px;
+        }
+
+        .name { font-weight: 700; color: var(--text-main); }
+        .handle, .time { color: var(--text-secondary); }
+
+        .text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            white-space: pre-wrap; /* Satır boşluklarını korur */
+            word-break: break-word;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            max-width: 80%;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .action-item {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s;
+        }
+
+        .action-item:hover { color: var(--primary-color); }
+        
+        .action-item.like.liked { color: #f91880; }
+        .action-item.delete:hover { color: var(--delete-color); }
+
+        /* Sağ Sidebar */
+        .widgets {
+            padding-top: 20px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .widget-box {
+            background-color: #f7f9f9;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Mobil Uyumluluk */
+        @media (max-width: 1000px) {
+            .layout { grid-template-columns: 80px 1fr 0; }
+            .widgets { display: none; }
+            .menu-item span, .sidebar-btn { display: none; }
+            .logo { text-align: center; padding: 0; }
+            .menu-item { justify-content: center; }
+            .post-actions { max-width: 100%; }
+        }
+        
+        @media (max-width: 600px) {
+            .layout { grid-template-columns: 1fr; padding: 0; }
+            .sidebar { display: none; } /* Mobilde alt menü yapılabilir ama basitlik için gizledim */
+            .feed { width: 100%; border: none; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+        <div class="sidebar">
+            <div class="logo"><i class="fa-brands fa-twitter"></i></div>
+            <nav>
+                <a href="#" class="menu-item active"><i class="fa-solid fa-house"></i> <span>Ana Sayfa</span></a>
+                <a href="#" class="menu-item"><i class="fa-solid fa-hashtag"></i> <span>Keşfet</span></a>
+                <a href="#" class="menu-item"><i class="fa-regular fa-bell"></i> <span>Bildirimler</span></a>
+                <a href="#" class="menu-item"><i class="fa-regular fa-envelope"></i> <span>Mesajlar</span></a>
+                <a href="#" class="menu-item"><i class="fa-regular fa-user"></i> <span>Profil</span></a>
+            </nav>
+            <button class="sidebar-btn" onclick="focusInput()"><i class="fa-solid fa-pen-nib"></i> <span>Gönderi</span></button>
+        </div>
+
+        <div class="feed">
+            <div class="header" onclick="window.scrollTo(0,0)">Ana Sayfa</div>
+            
+            <div class="tweet-box">
+                <div class="avatar"></div>
+                <div class="input-area">
+                    <textarea id="tweetInput" rows="2" placeholder="Neler oluyor?"></textarea>
+                    <div class="tweet-actions">
+                        <div class="icons">
+                            <i class="fa-regular fa-image"></i>
+                            <i class="fa-solid fa-list-ul"></i>
+                            <i class="fa-regular fa-face-smile"></i>
+                        </div>
+                        <button id="postBtn" class="tweet-btn">Paylaş</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedContainer">
+                </div>
+        </div>
+
+        <div class="widgets">
+            <div class="widget-box">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem;">Gündemdekiler</h3>
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Türkiye tarihinde gündem</p>
+                    <p style="font-weight: 700;">#Yazılım</p>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">12.5 B Tweet</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Teknoloji</p>
+                    <p style="font-weight: 700;">Yapay Zeka</p>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">54 B Tweet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- VERİ YÖNETİMİ ---
+        
+        // LocalStorage anahtarımız
+        const STORAGE_KEY = 'social_local_posts_v1';
+
+        // Varsayılan kullanıcı (Siz)
+        const currentUser = {
+            name: 'Ziyaretçi',
+            handle: '@ziyaretci',
+            avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
+        };
+
+        // Başlangıç verisi (Eğer LS boşsa bu yüklenir)
+        const initialData = [
+            {
+                id: 1,
+                name: 'Elon Musk',
+                handle: '@elonmusk',
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elon',
+                text: 'Bu uygulama LocalStorage ile çalışıyor! Sayfayı yenilesen bile veriler gitmez. 🚀',
+                timestamp: new Date().getTime() - 10000000,
+                likes: 1452,
+                isLiked: false
+            },
+            {
+                id: 2,
+                name: 'Yazılım Mühendisi',
+                handle: '@kodlayanadam',
+                avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dev',
+                text: 'Bugün harika bir gün. Kod yazmaya devam! #coding #web',
+                timestamp: new Date().getTime() - 500000,
+                likes: 42,
+                isLiked: true
+            }
+        ];
+
+        // Verileri Yükle
+        function loadPosts() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : initialData;
+        }
+
+        // Verileri Kaydet
+        function savePosts(posts) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+        }
+
+        // --- DOM ELEMENTLERİ ---
+        const tweetInput = document.getElementById('tweetInput');
+        const postBtn = document.getElementById('postBtn');
+        const feedContainer = document.getElementById('feedContainer');
+
+        // --- OLAY DİNLEYİCİLERİ ---
+
+        // Input kontrolü (Butonu aktif/pasif yap)
+        tweetInput.addEventListener('input', (e) => {
+            if(e.target.value.trim().length > 0) {
+                postBtn.classList.add('active');
+            } else {
+                postBtn.classList.remove('active');
+            }
+            // Textarea otomatik yükseklik
+            e.target.style.height = 'auto';
+            e.target.style.height = e.target.scrollHeight + 'px';
+        });
+
+        // Paylaş Butonu
+        postBtn.addEventListener('click', createPost);
+
+        // --- FONKSİYONLAR ---
+
+        function renderFeed() {
+            const posts = loadPosts();
+            feedContainer.innerHTML = ''; // Temizle
+
+            // Tarihe göre sırala (Yeniden eskiye)
+            posts.sort((a, b) => b.timestamp - a.timestamp);
+
+            posts.forEach(post => {
+                const html = `
+                <div class="post" id="post-${post.id}">
+                    <div class="avatar" style="background-image: url('${post.avatar}')"></div>
+                    <div class="post-content">
+                        <div class="post-header">
+                            <div class="user-info">
+                                <span class="name">${post.name}</span>
+                                <span class="handle">${post.handle}</span>
+                                <span class="time">· ${timeAgo(post.timestamp)}</span>
+                            </div>
+                            <div class="delete-btn" onclick="deletePost(${post.id})" style="cursor:pointer; color:#ccc; font-size:0.8rem;" title="Sil">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                        </div>
+                        <div class="text">${escapeHtml(post.text)}</div>
+                        <div class="post-actions">
+                            <div class="action-item"><i class="fa-regular fa-comment"></i> <span>0</span></div>
+                            <div class="action-item"><i class="fa-solid fa-retweet"></i> <span>0</span></div>
+                            <div class="action-item like ${post.isLiked ? 'liked' : ''}" onclick="toggleLike(${post.id})">
+                                <i class="${post.isLiked ? 'fa-solid' : 'fa-regular'} fa-heart"></i> 
+                                <span>${post.likes}</span>
+                            </div>
+                            <div class="action-item"><i class="fa-solid fa-share-nodes"></i></div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                feedContainer.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function createPost() {
+            const content = tweetInput.value.trim();
+            if(!content) return;
+
+            const posts = loadPosts();
+            
+            const newPost = {
+                id: Date.now(), // Benzersiz ID
+                name: currentUser.name,
+                handle: currentUser.handle,
+                avatar: currentUser.avatar,
+                text: content,
+                timestamp: Date.now(),
+                likes: 0,
+                isLiked: false
+            };
+
+            posts.unshift(newPost); // Başa ekle
+            savePosts(posts);
+            
+            tweetInput.value = '';
+            postBtn.classList.remove('active');
+            tweetInput.style.height = 'auto';
+            
+            renderFeed();
+        }
+
+        function toggleLike(id) {
+            let posts = loadPosts();
+            const postIndex = posts.findIndex(p => p.id === id);
+            
+            if(postIndex > -1) {
+                const post = posts[postIndex];
+                if(post.isLiked) {
+                    post.likes--;
+                    post.isLiked = false;
+                } else {
+                    post.likes++;
+                    post.isLiked = true;
+                }
+                savePosts(posts);
+                renderFeed(); // Performans için sadece ilgili DOM da güncellenebilir ama şimdilik render yeterli
+            }
+        }
+
+        function deletePost(id) {
+            if(confirm('Bu gönderiyi silmek istediğinize emin misiniz?')) {
+                let posts = loadPosts();
+                posts = posts.filter(p => p.id !== id);
+                savePosts(posts);
+                renderFeed();
+            }
+        }
+
+        // Yardımcı: XSS Önlemi (HTML karakterlerini temizle)
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Yardımcı: Zaman formatı (örn: 5dk önce)
+        function timeAgo(timestamp) {
+            const seconds = Math.floor((new Date() - timestamp) / 1000);
+            let interval = seconds / 31536000;
+
+            if (interval > 1) return Math.floor(interval) + " yıl";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " ay";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " gün";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " sa";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " dk";
+            return "şimdi";
+        }
+
+        function focusInput() {
+            tweetInput.focus();
+            window.scrollTo(0,0);
+        }
+
+        // Sayfa yüklendiğinde başlat
+        window.addEventListener('DOMContentLoaded', renderFeed);
+
+    </script>
+</body>
+</html>
