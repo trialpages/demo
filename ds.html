@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İslam Hukuku Sertifika Sınavı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --navy-blue: #003366;
+            --gold: #D4AF37;
+            --white: #FFFFFF;
+            --bg-color: #f4f4f4;
+            --text-color: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- SINAV ARAYÜZÜ STİLLERİ --- */
+        .quiz-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 700px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        header {
+            background: var(--navy-blue);
+            color: var(--gold);
+            padding: 20px;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .screen { display: none; padding: 30px; animation: fadeIn 0.5s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        input[type="text"] {
+            width: 100%; padding: 15px; margin: 15px 0;
+            border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: var(--navy-blue); color: var(--white);
+            border: none; padding: 12px 30px; border-radius: 50px;
+            cursor: pointer; font-weight: 600; width: 100%;
+            transition: 0.3s; border: 2px solid var(--navy-blue);
+        }
+        .btn:hover { background: var(--white); color: var(--navy-blue); }
+
+        .option-btn {
+            display: block; width: 100%; padding: 12px; margin-bottom: 10px;
+            background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px;
+            text-align: left; cursor: pointer; transition: 0.2s;
+        }
+        .option-btn:hover { background: #e9ecef; border-color: var(--navy-blue); }
+        .option-btn.selected { background: var(--navy-blue); color: white; }
+        .option-btn.correct { background: #28a745; color: white; }
+        .option-btn.wrong { background: #dc3545; color: white; }
+
+        /* --- YENİ SERTİFİKA TASARIMI --- */
+        #certificate-wrapper {
+            display: none; /* Başlangıçta gizli */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Sertifika Kağıdı */
+        .cert-paper {
+            width: 800px;
+            height: 600px; /* Yatay A4 oranı */
+            background: #fff;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            overflow: hidden; /* Taşanları gizle */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Üst Tasarım (Mavi ve Altın V Şekli) */
+        .cert-top-design {
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            height: 160px;
+            z-index: 1;
+        }
+
+        /* Altın Katman (Arkadaki V) */
+        .cert-top-gold {
+            background: var(--gold);
+            width: 100%; height: 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%);
+            position: absolute; top: 5px; /* Hafif aşağı sarkıtarak çerçeve etkisi */
+        }
+
+        /* Mavi Katman (Öndeki V) */
+        .cert-top-blue {
+            background: var(--navy-blue);
+            width: 100%; height: 100%;
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 95%, 0 70%);
+            position: absolute; top: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .cert-title-main {
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: -30px; /* V şeklinin yukarısına çek */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .cert-title-sub {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Rozet (Badge) */
+        .cert-badge {
+            position: absolute;
+            top: 110px; /* V'nin tam ucuna gelecek şekilde */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #D4AF37 60%, #B48F17 100%);
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 3px solid #fff;
+            color: var(--navy-blue);
+            font-weight: bold;
+            text-align: center;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .cert-badge-inner {
+            border: 1px dashed var(--navy-blue);
+            border-radius: 50%;
+            width: 85px; height: 85px;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+
+        /* Gövde Metinleri */
+        .cert-body {
+            margin-top: 220px; /* Üst tasarımdan boşluk */
+            text-align: center;
+            width: 85%;
+            z-index: 2;
+        }
+
+        .cert-frame-text {
+            font-size: 10px;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: #fcfcfc;
+        }
+
+        .cert-desc {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .cert-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 80px;
+            color: var(--navy-blue);
+            margin: 10px 0;
+            line-height: 1;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
+        }
+
+        .cert-reason {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* Alt Bilgiler (Tarih ve No) */
+        .cert-footer {
+            position: absolute;
+            bottom: 50px;
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-item {
+            text-align: center;
+            width: 200px;
+        }
+
+        .footer-line {
+            border-top: 1px solid #333;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .footer-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+        }
+        
+        .footer-value {
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 10px;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
+
+        /* Çizgili Köşe Süsleri (Görseldeki sarı köşeler) */
+        .corner-line {
+            position: absolute;
+            background: var(--gold);
+            z-index: 5;
+        }
+        /* Sol Üst ve Sağ Üst zaten header ile kapalı, sadece görsellik için ekleyebiliriz ama header yeterli */
+        
+        /* Yan Şeritler (Opsiyonel, görselde yanlarda ince altın çizgiler var) */
+        .side-border {
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--gold) 50%, transparent 100%);
+            z-index: 5;
+        }
+        .left-border { left: 20px; }
+        .right-border { right: 20px; }
+
+    </style>
+</head>
+<body>
+
+<div class="quiz-container" id="quiz-app">
+    <header>
+        <h2>İslam Hukuku Araştırmaları Platformu</h2>
+    </header>
+
+    <div id="welcome-screen" class="screen active">
+        <div style="text-align: center; padding: 20px;">
+            <h3 style="color: var(--navy-blue); margin-bottom: 15px;">Ara Sınav Uygulaması</h3>
+            <p style="color: #666; margin-bottom: 20px;">
+                Sertifika almak için 10 sorudan en az 7 tanesini doğru cevaplamalısınız.
+                Süreniz 5 dakikadır.
+            </p>
+            <input type="text" id="user-name" placeholder="Adınız Soyadınız (Sertifikada görünecek)" required>
+            <button class="btn" onclick="startQuiz()">SINAVA BAŞLA</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--gold); margin-bottom: 20px;">
+            <span id="question-count">Soru 1/10</span>
+            <span id="timer-display">05:00</span>
+        </div>
+        <div id="question-text" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 20px;"></div>
+        <div id="options-container"></div>
+        <button id="next-btn" class="btn" onclick="nextQuestion()" style="margin-top: 20px;" disabled>SONRAKİ SORU</button>
+    </div>
+
+    <div id="result-screen" class="screen" style="text-align: center;">
+        <h2 id="result-title" style="margin-bottom: 20px;"></h2>
+        <p id="result-message" style="margin-bottom: 30px;"></p>
+        
+        <div id="success-actions" style="display: none;">
+            <button class="btn" onclick="generateCertificate()" style="background-color: var(--gold); border-color: var(--gold);">SERTİFİKAMI OLUŞTUR</button>
+        </div>
+        <button class="btn" onclick="location.reload()" style="background-color: #666; border-color: #666; margin-top: 10px;">TEKRAR DENE</button>
+    </div>
+</div>
+
+<div id="certificate-wrapper">
+    <div class="cert-paper" id="certificate-content">
+        <div class="side-border left-border"></div>
+        <div class="side-border right-border"></div>
+
+        <div class="cert-top-design">
+            <div class="cert-top-gold"></div>
+            <div class="cert-top-blue">
+                <div class="cert-title-main">SERTİFİKA</div>
+                <div class="cert-title-sub">İSLAM HUKUKU ARAŞTIRMALARI PLATFORMU</div>
+            </div>
+        </div>
+
+        <div class="cert-badge">
+            <div class="cert-badge-inner">
+                <span style="font-size: 18px; display: block;">BAŞARI</span>
+                <span style="font-size: 10px;">PUANI</span>
+                <span id="cert-score" style="font-size: 16px; font-weight: 900;">80</span>
+            </div>
+        </div>
+
+        <div class="cert-body">
+            <div class="cert-frame-text">
+                İslam Hukuk Tarihi, Usulü ve Füru Konularında Başarı Göstermiştir
+            </div>
+            
+            <div class="cert-desc">
+                PLATFORMUMUZ TARAFINDAN HAZIRLANAN SINAVDA SORULAN <br>
+                SORULARIN BÜYÜK ÇOĞUNLUĞUNU DOĞRU CEVAPLAYAN
+            </div>
+
+            <div class="cert-name" id="cert-name-display">Ahmet Yasin Küçüktiryaki</div>
+
+            <div class="cert-desc">
+                BU BELGEYİ ALMAYA HAK KAZANMIŞTIR.
+            </div>
+
+            <div class="cert-reason">
+                İslami ilimlere ve hukuk tarihine gösterdiği ilgi ve alakadan dolayı<br>kendisine teşekkür ederiz.
+            </div>
+        </div>
+
+        <div class="cert-footer">
+            <div class="footer-item">
+                <div class="footer-value" id="cert-date">15.11.2024</div>
+                <div class="footer-line"></div>
+                <div class="footer-label">TARİH</div>
+            </div>
+            <div class="footer-item">
+                <div class="footer-value" id="cert-id">00729205</div>
+                <div class="footer-line"></div>
+                <div class="footer-label">SERTİFİKA NO</div>
+            </div>
+        </div>
+
+        <div class="watermark">islamhukukuplatformu.org</div>
+    </div>
+
+    <br>
+    <button class="btn" onclick="downloadPDF()" style="width: auto; padding: 15px 40px; background: #B22222;">PDF OLARAK İNDİR</button>
+</div>
+
+<script>
+    /* --- SINAV VERİLERİ --- */
+    const questions = [
+        { q: "Devletlerarası hukukun klasik fıkıhtaki karşılığı hangisidir?", o: ["Diyat", "Siyer", "Feraiz", "Sulh", "Kasame"], a: 1 },
+        { q: "İslam Hukukunda 'icab ve kabul' akdin rüknü sayan mezhep hangisidir?", o: ["Hanefiler", "Şafiiler", "Malikiler", "Hanbeliler", "Zahiriler"], a: 0 },
+        { q: "Tam eda ehliyeti için gereken şartlar nelerdir?", o: ["Akıl ve Büluğ", "Büluğ ve Rüşd", "Akıl, Büluğ ve Rüşd", "Akıl ve İslam", "Hiçbiri"], a: 2 },
+        { q: "Hıyaru'r-Rücu ne anlama gelir?", o: ["Hibeyi geri alma", "Dönme muhayyerliği", "Kabulden önce icabdan vazgeçme", "Kefilin rücusu", "Alışverişten vazgeçme"], a: 2 },
+        { q: "Aşağıdakilerden hangisi 'mütekavvim' olmayan mal örneğidir?", o: ["Arpa", "Buğday", "Meyte (Leş)", "Bilgisayar", "Kitap"], a: 2 },
+        { q: "Teminat mektubu hangi akit çerçevesinde değerlendirilebilir?", o: ["Rehin", "Hibe", "Kefalet", "Havale", "Sarf"], a: 2 },
+        { q: "Vedia akdi (emanet) ücret karşılığı yapılırsa neye dönüşür?", o: ["İcare", "Karz", "Ariyet", "Hibe", "Sarf"], a: 0 },
+        { q: "'Damin' (tazmin eden) olma kuralı: 'Mütesebbib ... olmadıkça damin olmaz.' Boşluğa ne gelmelidir?", o: ["Mütecaviz", "Müteammid", "Mütemerrid", "Mütesahil", "Mütegallib"], a: 1 },
+        { q: "Banka cari hesabına para yatırma işlemi fıkhen hangi akittir?", o: ["Vedia", "Karz", "Rehin", "Mudarebe", "Muşareke"], a: 1 },
+        { q: "Akdin taraflarının karşılıklı anlaşarak akdi sona erdirmesine ne denir?", o: ["Fesih", "İnfisah", "İkale", "Rücu", "Butlan"], a: 2 }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let timeLeft = 300;
+    let timer;
+    let userName = "";
+
+    function startQuiz() {
+        userName = document.getElementById('user-name').value;
+        if(!userName) { alert("Lütfen isminizi giriniz."); return; }
+        
+        document.getElementById('welcome-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        loadQuestion();
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+            let s = (timeLeft%60).toString().padStart(2,'0');
+            document.getElementById('timer-display').textContent = `${m}:${s}`;
+            if(timeLeft<=0) finishQuiz();
+        }, 1000);
+    }
+
+    function loadQuestion() {
+        let q = questions[currentQ];
+        document.getElementById('question-text').textContent = `${currentQ+1}. ${q.q}`;
+        document.getElementById('question-count').textContent = `Soru ${currentQ+1}/10`;
+        let cont = document.getElementById('options-container');
+        cont.innerHTML = "";
+        
+        q.o.forEach((opt, i) => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(i, btn);
+            cont.appendChild(btn);
+        });
+        document.getElementById('next-btn').disabled = true;
+    }
+
+    function checkAnswer(i, btn) {
+        let opts = document.getElementsByClassName('option-btn');
+        for(let o of opts) o.disabled = true;
+        
+        if(i === questions[currentQ].a) {
+            btn.classList.add('correct');
+            score++;
+        } else {
+            btn.classList.add('wrong');
+            opts[questions[currentQ].a].classList.add('correct');
+        }
+        document.getElementById('next-btn').disabled = false;
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        if(currentQ < questions.length) loadQuestion();
+        else finishQuiz();
+    }
+
+    function finishQuiz() {
+        clearInterval(timer);
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        
+        let percent = (score/questions.length)*100;
+        let title = document.getElementById('result-title');
+        let msg = document.getElementById('result-message');
+        
+        if(percent >= 70) {
+            title.textContent = "TEBRİKLER!";
+            title.style.color = "var(--navy-blue)";
+            msg.textContent = `%${percent} başarı oranı ile sertifika almaya hak kazandınız.`;
+            document.getElementById('success-actions').style.display = "block";
+        } else {
+            title.textContent = "ÜZGÜNÜZ";
+            title.style.color = "#dc3545";
+            msg.textContent = `%${percent} başarı oranı sertifika için yeterli değil. (Gereken: %70)`;
+        }
+    }
+
+    /* --- SERTİFİKA OLUŞTURMA --- */
+    function generateCertificate() {
+        // Sınav alanını gizle, sertifika alanını aç
+        document.getElementById('quiz-app').style.display = 'none';
+        document.getElementById('certificate-wrapper').style.display = 'block';
+
+        // Bilgileri doldur
+        document.getElementById('cert-name-display').textContent = userName;
+        
+        // Tarih
+        const today = new Date();
+        document.getElementById('cert-date').textContent = today.toLocaleDateString('tr-TR');
+        
+        // Rastgele Sertifika No (Gerçekçi görünüm için)
+        const certID = Math.floor(10000000 + Math.random() * 90000000);
+        document.getElementById('cert-id').textContent = certID;
+
+        // Puanı Rozete Yaz
+        let finalScore = (score/questions.length)*100;
+        document.getElementById('cert-score').textContent = finalScore;
+    }
+
+    /* --- PDF İNDİRME FONKSİYONU --- */
+    function downloadPDF() {
+        const element = document.getElementById('certificate-content');
+        const opt = {
+            margin:       0, // Kenar boşluğu yok
+            filename:     `Sertifika_${userName.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true }, // Yüksek çözünürlük için scale 2
+            jsPDF:        { unit: 'px', format: [800, 600], orientation: 'landscape' } // Tam piksel boyutu
+        };
+        
+        // İndirme başlıyor uyarısı
+        const btn = document.querySelector('#certificate-wrapper button');
+        const oldText = btn.textContent;
+        btn.textContent = "Hazırlanıyor...";
+        btn.disabled = true;
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.textContent = oldText;
+            btn.disabled = false;
+        });
+    }
+</script>
+
+</body>
+</html>
