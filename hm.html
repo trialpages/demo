@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Şık Hesap Makinesi</title>
+  <style>
+    :root {
+      --bg: #0f172a;         /* arka plan */
+      --card: rgba(255,255,255,0.08);
+      --glass: rgba(255,255,255,0.12);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #7c3aed;     /* mor */
+      --accent-2: #22d3ee;   /* cam ışıltısı */
+      --danger: #ef4444;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(124,58,237,0.15), transparent 60%),
+        radial-gradient(800px 500px at 90% 90%, rgba(34,211,238,0.12), transparent 50%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .calc {
+      width: min(360px, 92vw);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      background: linear-gradient(180deg, var(--card), var(--glass));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .brand {
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+      box-shadow: 0 0 12px var(--accent);
+    }
+    .mode {
+      display: flex; gap: 8px;
+    }
+    .toggle {
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--muted);
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      cursor: pointer;
+      transition: all .2s ease;
+      user-select: none;
+    }
+    .toggle.active {
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(124,58,237,0.25), rgba(34,211,238,0.2));
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .display {
+      position: relative;
+      padding: 18px 16px 6px 16px;
+      min-height: 88px;
+      display: grid;
+      align-content: end;
+      gap: 6px;
+      background:
+        radial-gradient(500px 180px at 50% 0%, rgba(124,58,237,0.15), transparent 60%),
+        transparent;
+    }
+    .history {
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+      word-break: break-all;
+    }
+    .result {
+      font-size: clamp(28px, 6vw, 36px);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    }
+
+    button.key {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 16px;
+      padding: 14px 0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    button.key::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.06), transparent 60%);
+      transform: translateX(-100%);
+      transition: transform .4s ease;
+    }
+    button.key:hover::after { transform: translateX(0%); }
+    button.key:active { transform: scale(0.98); }
+
+    .key.op   { color: var(--accent-2); border-color: rgba(34,211,238,0.25); }
+    .key.fn   { color: var(--muted); }
+    .key.eq   {
+      background: linear-gradient(90deg, rgba(124,58,237,0.35), rgba(34,211,238,0.35));
+      border-color: rgba(124,58,237,0.35);
+      font-weight: 600;
+    }
+    .key.danger { color: #fecaca; border-color: rgba(239,68,68,0.35); }
+
+    .span-2 { grid-column: span 2; }
+
+    /* Küçük ekran ince ayarları */
+    @media (max-width: 380px) {
+      .grid { gap: 8px; padding: 14px; }
+      button.key { font-size: 15px; padding: 12px 0; }
+    }
+
+    /* Odak görünürlüğü */
+    button.key:focus-visible,
+    .toggle:focus-visible {
+      outline: 2px solid rgba(124,58,237,0.9);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calc" role="application" aria-label="Şık Hesap Makinesi">
+    <div class="header">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Hesap Makinesi</span>
+      </div>
+      <div class="mode" aria-label="Mod seçimi">
+        <button class="toggle active" id="mode-basic">Temel</button>
+        <button class="toggle" id="mode-adv">Gelişmiş</button>
+      </div>
+    </div>
+
+    <div class="display">
+      <div class="history" id="history" aria-live="polite"></div>
+      <div class="result" id="result" aria-live="polite">0</div>
+    </div>
+
+    <div class="grid" id="keys">
+      <!-- Temel tuşlar -->
+      <button class="key fn danger" data-action="clear">AC</button>
+      <button class="key fn" data-action="back">⌫</button>
+      <button class="key fn" data-action="percent">%</button>
+      <button class="key op" data-value="/">÷</button>
+
+      <button class="key" data-value="7">7</button>
+      <button class="key" data-value="8">8</button>
+      <button class="key" data-value="9">9</button>
+      <button class="key op" data-value="*">×</button>
+
+      <button class="key" data-value="4">4</button>
+      <button class="key" data-value="5">5</button>
+      <button class="key" data-value="6">6</button>
+      <button class="key op" data-value="-">−</button>
+
+      <button class="key" data-value="1">1</button>
+      <button class="key" data-value="2">2</button>
+      <button class="key" data-value="3">3</button>
+      <button class="key op" data-value="+">+</button>
+
+      <button class="key span-2" data-value="0">0</button>
+      <button class="key" data-value=".">,</button>
+      <button class="key eq" data-action="equals">=</button>
+
+      <!-- Gelişmiş (gizli, modla açılacak) -->
+      <button class="key fn adv" data-action="sign" style="display:none">±</button>
+      <button class="key fn adv" data-action="square" style="display:none">x²</button>
+      <button class="key fn adv" data-action="sqrt" style="display:none">√x</button>
+      <button class="key fn adv" data-action="inv" style="display:none">1/x</button>
+    </div>
+  </div>
+
+  <script>
+    const resultEl = document.getElementById('result');
+    const historyEl = document.getElementById('history');
+    const keysEl = document.getElementById('keys');
+    const modeBasic = document.getElementById('mode-basic');
+    const modeAdv = document.getElementById('mode-adv');
+
+    let expression = "";
+    let lastAns = 0;
+
+    function updateDisplay() {
+      resultEl.textContent = expression || "0";
+    }
+
+    function setHistory(text) {
+      historyEl.textContent = text ?? "";
+    }
+
+    function safeEval(expr) {
+      // Yalın dört işlem + yüzde: güvenli dönüştürme
+      const sanitized = expr
+        .replace(/÷/g, "/")
+        .replace(/×/g, "*");
+
+      try {
+        // Yüzde işlemi: "a%b" => a*(b/100)
+        const percentHandled = sanitized.replace(
+          /(\d+(?:\.\d+)?)%/g,
+          (_, num) => String(Number(num) / 100)
+        );
+        const value = Function("return " + percentHandled)();
+        return Number.isFinite(value) ? value : NaN;
+      } catch {
+        return NaN;
+      }
+    }
+
+    function handleValue(val) {
+      // Nokta yerelleştirme: "," tuşu "." olarak işlensin
+      if (val === ",") val = ".";
+      // Çift nokta engelle
+      const parts = expression.split(/([+\-*/])/);
+      const last = parts[parts.length - 1] || "";
+      if (val === "." && last.includes(".")) return;
+      // Sıfır başı: "0" + sayı => "sayı" (operatör yoksa)
+      if (/^0$/.test(expression) && /\d/.test(val)) {
+        expression = val; updateDisplay(); return;
+      }
+      expression += val;
+      updateDisplay();
+    }
+
+    function handleOperator(op) {
+      if (!expression) {
+        // Boşken + veya - ile başlatmayı izin ver
+        if (op === "+" || op === "-") {
+          expression = op; updateDisplay();
+        }
+        return;
+      }
+      // ardışık operatörleri tekine indir
+      expression = expression.replace(/([+\-*/])$/, op) === expression + op
+        ? expression + op
+        : expression.replace(/([+\-*/])$/, op);
+      updateDisplay();
+    }
+
+    function handleEquals() {
+      if (!expression) return;
+      const res = safeEval(expression);
+      if (Number.isNaN(res)) {
+        setHistory("Hata");
+        return;
+      }
+      setHistory(expression + " =");
+      expression = String(res);
+      lastAns = res;
+      updateDisplay();
+    }
+
+    function handleClear() {
+      expression = "";
+      updateDisplay();
+      setHistory("");
+    }
+
+    function handleBackspace() {
+      expression = expression.slice(0, -1);
+      updateDisplay();
+    }
+
+    // Gelişmiş fonksiyonlar
+    function handleSign() {
+      if (!expression) { expression = "-"; updateDisplay(); return; }
+      const res = safeEval(expression);
+      if (!Number.isNaN(res)) {
+        expression = String(-res);
+        updateDisplay();
+      }
+    }
+
+    function handleSquare() {
+      const res = safeEval(expression || String(lastAns));
+      if (!Number.isNaN(res)) {
+        setHistory(`(${expression || "Ans"})² =`);
+        expression = String(res * res);
+        updateDisplay();
+      }
+    }
+
+    function handleSqrt() {
+      const res = safeEval(expression || String(lastAns));
+      if (!Number.isNaN(res) && res >= 0) {
+        setHistory(`√(${expression || "Ans"}) =`);
+        expression = String(Math.sqrt(res));
+        updateDisplay();
+      } else setHistory("Geçersiz √");
+    }
+
+    function handleInv() {
+      const res = safeEval(expression || String(lastAns));
+      if (!Number.isNaN(res) && res !== 0) {
+        setHistory(`1/(${expression || "Ans"}) =`);
+        expression = String(1 / res);
+        updateDisplay();
+      } else setHistory("Geçersiz 1/x");
+    }
+
+    // Tuş basımı
+    keysEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('button.key');
+      if (!btn) return;
+
+      const val = btn.dataset.value;
+      const action = btn.dataset.action;
+
+      if (val) {
+        if (/[+\-*/]/.test(val)) handleOperator(val);
+        else handleValue(val);
+      } else if (action) {
+        switch(action) {
+          case 'equals': handleEquals(); break;
+          case 'clear': handleClear(); break;
+          case 'back': handleBackspace(); break;
+          case 'percent': handleValue('%'); break;
+          case 'sign': handleSign(); break;
+          case 'square': handleSquare(); break;
+          case 'sqrt': handleSqrt(); break;
+          case 'inv': handleInv(); break;
+        }
+      }
+    });
+
+    // Klavye desteği
+    window.addEventListener('keydown', (e) => {
+      const k = e.key;
+      if (/\d/.test(k)) return handleValue(k);
+      if (k === "," || k === ".") return handleValue(".");
+      if (["+", "-", "*", "/"].includes(k)) return handleOperator(k);
+      if (k === "Enter" || k === "=") return handleEquals();
+      if (k === "Backspace") return handleBackspace();
+      if (k.toLowerCase() === "c") return handleClear();
+      if (k === "%") return handleValue("%");
+    });
+
+    // Modlar: Temel/Gelişmiş
+    function setMode(adv=false) {
+      document.querySelectorAll('.adv').forEach(el => {
+        el.style.display = adv ? "" : "none";
+      });
+      modeBasic.classList.toggle('active', !adv);
+      modeAdv.classList.toggle('active', adv);
+    }
+    modeBasic.addEventListener('click', () => setMode(false));
+    modeAdv.addEventListener('click', () => setMode(true));
+
+    // İlk durum
+    updateDisplay();
+  </script>
+</body>
+</html>
