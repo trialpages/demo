@@ -4,180 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Türkiye Şehir Bulmaca</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     
     <style>
-        /* Genel Ayarlar */
-        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; overflow: hidden; background: #f0f0f0; }
+        /* --- TEMEL AYARLAR --- */
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; background: #f0f0f0; overflow: hidden; }
         
-        /* Harita */
+        /* Harita Kutusu */
         #map { width: 100%; height: 100vh; background: #aad3df; z-index: 1; }
 
-        /* Yükleniyor Ekranı */
-        #loading-screen {
+        /* Yükleme Ekranı */
+        #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #e30a17; z-index: 9999;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
-            color: white; transition: opacity 0.5s ease;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; transition: opacity 0.5s;
         }
-        .loader {
-            border: 5px solid rgba(255,255,255,0.3); border-top: 5px solid white;
-            border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px;
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
+            border-top: 5px solid #fff; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Oyun Arayüzü (UI) */
-        .game-ui {
+        /* --- OYUN ARAYÜZÜ --- */
+        .ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1000; pointer-events: none;
+            pointer-events: none; z-index: 1000;
         }
 
-        /* Üst Bilgi Paneli */
-        .top-panel {
+        .top-bar {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             width: 90%; max-width: 500px; pointer-events: auto;
             display: flex; flex-direction: column; align-items: center; gap: 10px;
         }
 
-        .score-board {
-            background: white; padding: 8px 20px; border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold; font-size: 1.1rem;
-            display: flex; gap: 15px;
+        .stats-box {
+            background: white; padding: 8px 25px; border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: bold;
+            display: flex; gap: 20px; font-size: 1.1rem;
         }
 
-        .question-box {
-            background: linear-gradient(135deg, #e30a17, #c0392b);
-            color: white; padding: 15px 0; width: 100%; border-radius: 10px;
-            text-align: center; box-shadow: 0 8px 20px rgba(227, 10, 23, 0.4);
-            border: 2px solid white; transition: transform 0.2s;
+        .target-box {
+            background: linear-gradient(135deg, #e30a17, #b71c1c);
+            color: white; width: 100%; padding: 15px 0; border-radius: 15px;
+            text-align: center; box-shadow: 0 10px 25px rgba(227, 10, 23, 0.4);
+            border: 2px solid #fff;
         }
 
-        .find-text { font-size: 0.8rem; opacity: 0.9; letter-spacing: 1px; }
-        .city-name { font-size: 2rem; font-weight: 800; margin-top: 5px; line-height: 1; }
+        .target-label { font-size: 0.8rem; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; }
+        .target-city { font-size: 2.2rem; font-weight: 800; margin-top: 5px; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* Geri Bildirim Mesajı */
+        #msg-box {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3.5rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            opacity: 0; transition: opacity 0.3s; text-align: center; width: 100%; pointer-events: none;
+        }
 
         /* Alt Bilgi */
-        .bottom-info {
+        .info-box {
             position: absolute; bottom: 20px; left: 20px;
-            background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px;
-            font-size: 0.85rem; color: #333; max-width: 250px;
+            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px;
+            max-width: 250px; font-size: 0.85rem; color: #333;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); pointer-events: auto;
             border-left: 5px solid #e30a17;
         }
 
-        /* Geri Bildirim (Doğru/Yanlış Yazısı) */
-        #feedback-msg {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 4rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            opacity: 0; transition: opacity 0.3s; text-align: center; width: 100%;
-        }
-
-        /* Sertifika Modal */
-        #modal-overlay {
+        /* --- SERTİFİKA MODALI --- */
+        #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000;
             justify-content: center; align-items: center; flex-direction: column;
-            backdrop-filter: blur(4px); pointer-events: auto;
+            pointer-events: auto; backdrop-filter: blur(5px);
         }
 
-        .cert-input-area {
-            background: white; padding: 30px; border-radius: 15px; text-align: center;
-            width: 90%; max-width: 400px;
+        .modal-content {
+            background: white; padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px;
         }
-
-        .input-field {
-            width: 80%; padding: 12px; font-size: 1.1rem; border: 2px solid #ccc;
-            border-radius: 5px; margin: 15px 0; text-align: center;
-        }
-
+        
+        input { padding: 15px; font-size: 1.1rem; width: 80%; margin: 20px 0; border: 2px solid #ddd; border-radius: 5px; text-align: center; }
+        
         .btn {
-            background: #e30a17; color: white; border: none; padding: 12px 25px;
-            font-size: 1rem; border-radius: 5px; cursor: pointer; font-weight: bold;
-            transition: 0.2s;
+            background: #e30a17; color: white; border: none; padding: 12px 30px;
+            font-size: 1.1rem; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s;
         }
-        .btn:hover { background: #b71c1c; }
+        .btn:hover { transform: scale(1.05); background: #c0392b; }
 
-        /* Yazdırılabilir Sertifika */
-        #printable-cert {
+        /* Yazdırılabilir Alan */
+        #print-area {
             display: none; width: 800px; height: 600px; background: #fffdf5;
             padding: 40px; border: 15px solid #2c3e50; position: relative;
-            box-sizing: border-box; text-align: center; color: #333;
-            flex-direction: column; justify-content: space-between;
+            box-sizing: border-box; color: #333; flex-direction: column; justify-content: space-between;
         }
-        #printable-cert::after {
-            content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
-            border: 2px solid #e30a17; pointer-events: none;
-        }
+        #print-area::after { content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #e30a17; pointer-events: none; }
 
-        @media (max-width: 850px) {
-            #printable-cert { width: 95%; height: auto; border-width: 5px; padding: 20px; }
-            .city-name { font-size: 1.5rem; }
-            .bottom-info { display: none; } /* Mobilde yer açmak için gizle */
+        /* Mobilde Gizleme */
+        @media (max-width: 800px) {
+            .info-box { display: none; }
+            #print-area { width: 95%; height: auto; padding: 20px; border-width: 5px; }
+            .target-city { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen">
-        <div class="loader"></div>
-        <h2>HARİTA HAZIRLANIYOR...</h2>
+    <div id="loader">
+        <div class="spinner"></div>
+        <h2 id="loader-text">TÜRKİYE HARİTASI YÜKLENİYOR...</h2>
     </div>
 
     <div id="map"></div>
 
-    <div class="game-ui" id="game-interface" style="display:none;">
-        <div class="top-panel">
-            <div class="score-board">
+    <div class="ui-layer" id="game-ui" style="display:none;">
+        <div class="top-bar">
+            <div class="stats-box">
                 <span style="color:#e30a17">PUAN: <span id="score">0</span></span>
-                <span style="color:#aaa">|</span>
+                <span style="color:#ccc">|</span>
                 <span style="color:#27ae60">SERİ: <span id="streak">0</span> / 10</span>
             </div>
-            <div class="question-box">
-                <div class="find-text">HARİTADA BUL:</div>
-                <div class="city-name" id="target-city">...</div>
+            <div class="target-box">
+                <div class="target-label">HARİTADA BUL:</div>
+                <div class="target-city" id="target-city">...</div>
             </div>
         </div>
 
-        <div id="feedback-msg"></div>
+        <div id="msg-box"></div>
 
-        <div class="bottom-info">
+        <div class="info-box">
             <b>Nasıl Oynanır?</b><br>
             Kırmızı kutuda yazan şehri haritada bul ve tıkla.<br>
-            10 tane peş peşe bilirsen sertifika kazanırsın!
+            Peş peşe 10 doğru yaparsan sertifika kazanırsın!
         </div>
     </div>
 
-    <div id="modal-overlay">
-        <div class="cert-input-area" id="input-step">
+    <div id="modal">
+        <div class="modal-content" id="input-view">
             <h2 style="color:#e30a17">TEBRİKLER!</h2>
             <p>Türkiye coğrafyasına hakimsin.</p>
-            <input type="text" class="input-field" id="player-name" placeholder="Adınızı Yazınız">
-            <button class="btn" onclick="createCert()">Sertifikayı Oluştur</button>
+            <input type="text" id="player-name" placeholder="Adınızı Soyadınızı Girin">
+            <button class="btn" onclick="generateCert()">Sertifikayı Oluştur</button>
         </div>
 
         <div id="cert-view" style="display:none; flex-direction: column; align-items: center;">
-            <div id="printable-cert" style="display:flex;">
-                <h1 style="font-family:'Times New Roman'; font-size:3rem; color:#e30a17; margin:10px 0;">BAŞARI BELGESİ</h1>
-                <h3 style="letter-spacing:3px; color:#555;">TÜRKİYE COĞRAFYA UZMANI</h3>
-                
-                <div style="margin:30px 0;">
-                    <p>Sayın,</p>
-                    <h2 id="cert-display-name" style="border-bottom:2px solid #999; display:inline-block; padding:0 20px;">İSİM</h2>
+            <div id="print-area" style="display:flex;">
+                <div style="text-align:center;">
+                    <h1 style="font-family:'Times New Roman'; font-size:3.5rem; color:#e30a17; margin:10px 0;">BAŞARI BELGESİ</h1>
+                    <h3 style="letter-spacing:4px; color:#555; text-transform: uppercase;">Türkiye Coğrafya Uzmanı</h3>
                 </div>
                 
-                <p style="font-size:1.2rem; margin:0 40px;">
-                    "Şehir Bulmaca" oyununda Türkiye'nin illerini hatasız bir şekilde bularak
-                    üstün coğrafya bilgisini ve dikkatini kanıtlamıştır.
-                </p>
+                <div style="text-align:center; margin: 20px 0;">
+                    <p style="font-style:italic;">Sayın,</p>
+                    <h2 id="cert-name" style="font-size:2.5rem; border-bottom:2px solid #999; display:inline-block; padding:0 30px 10px 30px;">AD SOYAD</h2>
+                </div>
+                
+                <div style="text-align:center; font-size:1.2rem; line-height:1.6; padding: 0 50px;">
+                    "Şehir Bulmaca" oyununda Türkiye'nin 81 ili arasından sorulan şehirleri
+                    hiç hata yapmadan bularak üstün coğrafya bilgisini kanıtlamıştır.
+                </div>
 
-                <div style="width:80px; height:80px; background:#e30a17; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; font-weight:bold; border:3px solid white; outline:3px solid #e30a17;">100<br>PUAN</div>
+                <div style="margin: 0 auto; width:90px; height:90px; background:#e30a17; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold; outline:3px solid #e30a17; border:3px solid white; box-shadow:0 5px 15px rgba(0,0,0,0.2);">TAM<br>PUAN</div>
 
-                <div style="display:flex; justify-content:space-between; margin-top:40px; align-items: flex-end;">
+                <div style="display:flex; justify-content:space-between; align-items: flex-end; margin-top:20px;">
                     <div style="text-align:left;">TARİH: <span id="cert-date"></span></div>
-                    <div style="text-align:right; border-top:1px solid #333; padding-top:5px;">OYUN YÖNETİCİSİ</div>
+                    <div style="text-align:right; border-top:1px solid #333; padding-top:5px;">Oyun Yöneticisi<br>GameMaster</div>
                 </div>
             </div>
-            <div style="margin-top:20px; display:flex; gap:10px;">
+            <div style="margin-top:20px; display:flex; gap:15px;">
                 <button class="btn" style="background:#2c3e50" onclick="window.print()">Yazdır / Kaydet</button>
                 <button class="btn" onclick="location.reload()">Yeni Oyun</button>
             </div>
@@ -188,82 +183,85 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 
     <script>
-        // --- HARİTA AYARLARI ---
-        // Türkiye koordinatları (başlangıç için, veri gelince auto-fit yapacağız)
+        // --- 1. HARİTA KURULUMU ---
         const map = L.map('map', {
-            center: [39, 35],
+            center: [39, 35], // Kabaca Türkiye ortası
             zoom: 6,
-            zoomControl: false, // Mobilde yer kaplamasın
-            attributionControl: false,
-            minZoom: 5,
-            maxZoom: 10
+            zoomControl: false, // Temiz görünüm
+            attributionControl: false
         });
 
-        // Harita Zemini (Sade, gri tonlar)
+        // Arka plan (Sade)
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
             subdomains: 'abcd',
             maxZoom: 19
         }).addTo(map);
 
+        // --- 2. DEĞİŞKENLER ---
         let geojsonLayer;
         let cities = [];
         let targetCity = "";
         let score = 0;
         let streak = 0;
 
-        // --- VERİ YÜKLEME ---
-        // Güvenilir GeoJSON kaynağı
-        const dataURL = "https://raw.githubusercontent.com/cihadturhan/tr-geojson/master/geo-json/tr-cities-utf8.json";
+        // --- 3. VERİ YÜKLEME (GÜVENLİ CDN LINKI) ---
+        // Bu link "jsDelivr" üzerinden gelir, CORS hatası vermez.
+        const DATA_URL = "https://cdn.jsdelivr.net/gh/alperongun/Turkey-Maps@master/tr-cities-utf8.json";
 
-        fetch(dataURL)
+        fetch(DATA_URL)
             .then(response => {
-                if (!response.ok) throw new Error("Ağ hatası");
+                if (!response.ok) throw new Error("Ağ Cevap Vermedi");
                 return response.json();
             })
             .then(data => {
-                // Haritaya ekle
+                // Veriyi haritaya ekle
                 geojsonLayer = L.geoJson(data, {
-                    style: style,
+                    style: defaultStyle,
                     onEachFeature: onEachFeature
                 }).addTo(map);
 
-                // Şehir isimlerini topla
+                // Şehir isimlerini listeye al
                 data.features.forEach(f => {
-                    if(f.properties && f.properties.name) {
+                    if (f.properties && f.properties.name) {
                         cities.push(f.properties.name);
                     }
                 });
 
-                // --- KRİTİK BÖLÜM: HARİTAYI EKRANA SIĞDIR ---
-                // Veri yüklendiği an harita Türkiye sınırlarına zoom yapar
+                // --- KRİTİK: HARİTAYI EKRANA SIĞDIR ---
+                // Veri yüklenince otomatik zoom yap
                 map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
                 
-                // Harita sınırlarını kilitle (Okyanusa gitmeyi engelle)
-                map.setMaxBounds(geojsonLayer.getBounds().pad(0.5));
+                // Haritayı kilitle (Çok fazla dışarı çıkamasın)
+                map.setMaxBounds(geojsonLayer.getBounds().pad(0.2));
 
-                // Yükleme ekranını kaldır, oyunu göster
-                document.getElementById('loading-screen').style.opacity = 0;
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('game-interface').style.display = 'block';
-                    nextTurn(); // Oyunu başlat
-                }, 500);
+                // Ekranı aç
+                startGame();
             })
             .catch(error => {
-                console.error(error);
-                document.querySelector('#loading-screen h2').innerText = "HATA: HARİTA YÜKLENEMEDİ.\nLütfen sayfayı yenileyin.";
+                console.error("Hata:", error);
+                document.getElementById('loader-text').innerText = "HATA: Harita Yüklenemedi!\nİnternet bağlantınızı kontrol edip sayfayı yenileyin.";
+                document.getElementById('loader-text').style.color = "yellow";
             });
 
+        // --- 4. OYUN FONKSİYONLARI ---
 
-        // --- GÖRSELLİK ---
-        function style(feature) {
+        function startGame() {
+            document.getElementById('loader').style.opacity = 0;
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('game-ui').style.display = 'block';
+                nextTurn();
+            }, 500);
+        }
+
+        function defaultStyle(feature) {
             return {
                 fillColor: '#ffffff',
                 weight: 1,
                 opacity: 1,
-                color: '#666', // Sınır rengi
+                color: '#888',
                 dashArray: '',
-                fillOpacity: 0.6
+                fillOpacity: 0.7
             };
         }
 
@@ -272,7 +270,7 @@
             layer.setStyle({
                 weight: 2,
                 color: '#e30a17',
-                fillColor: '#ffcdd2',
+                fillColor: '#ffebee',
                 fillOpacity: 0.9
             });
             if (!L.Browser.ie && !L.Browser.edge) { layer.bringToFront(); }
@@ -290,7 +288,6 @@
             });
         }
 
-        // --- OYUN MANTIĞI ---
         function nextTurn() {
             const r = Math.floor(Math.random() * cities.length);
             targetCity = cities[r];
@@ -299,22 +296,22 @@
 
         function checkAnswer(e) {
             const clickedName = e.target.feature.properties.name;
-            const msg = document.getElementById('feedback-msg');
+            const msg = document.getElementById('msg-box');
 
-            if(clickedName === targetCity) {
+            if (clickedName === targetCity) {
                 // DOĞRU
                 score += 10;
                 streak++;
                 updateUI();
-                
-                // Efekt
+
                 e.target.setStyle({ fillColor: '#27ae60', color: 'green' });
                 msg.innerHTML = "<span style='color:#27ae60'>DOĞRU!</span>";
                 msg.style.opacity = 1;
-                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+                
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
 
-                if(streak >= 10) {
-                    setTimeout(winGame, 1000);
+                if (streak >= 10) {
+                    setTimeout(winGame, 1500);
                 } else {
                     setTimeout(() => {
                         geojsonLayer.resetStyle(e.target);
@@ -331,7 +328,7 @@
                 msg.innerHTML = "<span style='color:#e30a17'>YANLIŞ!</span>";
                 msg.style.opacity = 1;
 
-                // İpucu: Doğru olanı göster
+                // Doğru olanı göster (İpucu)
                 geojsonLayer.eachLayer(l => {
                     if(l.feature.properties.name === targetCity) {
                         l.setStyle({ fillColor: '#f1c40f', fillOpacity: 0.8 });
@@ -353,7 +350,8 @@
         }
 
         function winGame() {
-            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('modal').style.display = 'flex';
+            // Kutlama Konfetisi
             var end = Date.now() + 3000;
             (function frame() {
                 confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
@@ -362,14 +360,14 @@
             }());
         }
 
-        function createCert() {
+        function generateCert() {
             const name = document.getElementById('player-name').value;
-            if(!name) { alert('Lütfen isminizi giriniz.'); return; }
-            
-            document.getElementById('cert-display-name').innerText = name.toUpperCase();
+            if (!name) { alert("Lütfen isim girin."); return; }
+
+            document.getElementById('cert-name').innerText = name.toUpperCase();
             document.getElementById('cert-date').innerText = new Date().toLocaleDateString('tr-TR');
             
-            document.getElementById('input-step').style.display = 'none';
+            document.getElementById('input-view').style.display = 'none';
             document.getElementById('cert-view').style.display = 'flex';
         }
     </script>
