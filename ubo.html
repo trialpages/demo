@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dünya Bilgini: Ülke Bulmaca</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --gold: #f1c40f;
+            --light: #ecf0f1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            background-color: #1a1a1a; /* Uzay rengi */
+            color: var(--light);
+        }
+
+        /* --- Oyun Arayüzü --- */
+        #chartdiv {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .ui-panel {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            pointer-events: none; /* Haritayı engellemesin */
+        }
+
+        .ui-top {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            text-align: center;
+            pointer-events: auto;
+        }
+
+        .score-box {
+            font-size: 1.2rem;
+        }
+
+        .score-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gold);
+            display: block;
+        }
+
+        .target-box {
+            background: rgba(231, 76, 60, 0.8);
+            padding: 15px 30px;
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .target-country {
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ui-bottom {
+            bottom: 30px;
+            left: 30px;
+            max-width: 300px;
+            pointer-events: auto;
+        }
+
+        h1 { margin: 0 0 10px 0; font-size: 1.5rem; color: var(--gold); }
+        p { font-size: 0.9rem; line-height: 1.5; }
+
+        .btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: 0.3s;
+            pointer-events: auto;
+        }
+        .btn:hover { transform: scale(1.05); background: #219150; }
+
+        /* --- Bildirimler --- */
+        #message-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 800;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 100;
+            text-align: center;
+        }
+
+        /* --- Sertifika Modalı --- */
+        #cert-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #certificate {
+            width: 800px;
+            height: 600px;
+            background: #fffdf5;
+            padding: 40px;
+            position: relative;
+            border: 20px solid var(--primary);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+            text-align: center;
+            color: #333;
+            font-family: 'Cinzel', serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* Sertifika İç Desen */
+        #certificate::before {
+            content: "";
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 2px solid var(--gold);
+            pointer-events: none;
+        }
+
+        .cert-header { font-size: 3.5rem; color: var(--primary); margin-bottom: 10px; letter-spacing: 5px; }
+        .cert-subheader { font-size: 1.5rem; color: #555; margin-bottom: 40px; }
+        .cert-name { 
+            font-size: 3rem; 
+            color: var(--accent); 
+            border-bottom: 2px solid #ccc; 
+            display: inline-block; 
+            padding: 0 50px 10px 50px;
+            font-family: 'Montserrat', sans-serif; /* İsim okunaklı olsun */
+            font-weight: 700;
+        }
+        .cert-body { font-size: 1.2rem; line-height: 1.8; margin: 40px 50px; font-family: 'Montserrat', sans-serif; }
+        .cert-footer { display: flex; justify-content: space-between; margin-top: 50px; padding: 0 50px; }
+        .signature { border-top: 1px solid #333; padding-top: 10px; width: 200px; font-style: italic; }
+        .badge {
+            width: 100px; height: 100px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+        }
+
+        /* Input Alanı */
+        #player-name-input {
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: none;
+            margin-bottom: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(231, 76, 60, 0.6); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .ui-top { flex-direction: column; gap: 10px; width: 90%; top: 10px;}
+            #certificate { width: 95%; height: auto; padding: 20px; }
+            .cert-header { font-size: 2rem; }
+        }
+    </style>
+
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div id="chartdiv"></div>
+
+    <div class="ui-panel ui-top">
+        <div class="score-box">
+            MEVCUT SERİ
+            <span class="score-val" id="score">0 / 10</span>
+        </div>
+        <div class="target-box">
+            <div>BULMAN GEREKEN:</div>
+            <div class="target-country" id="target-country">Yükleniyor...</div>
+        </div>
+    </div>
+
+    <div class="ui-panel ui-bottom">
+        <h1>NASIL OYNANIR?</h1>
+        <p>Yukarıdaki kırmızı kutuda yazan ülkeyi haritada bul ve tıkla.</p>
+        <p>• Her doğru tahmin seriye +1 ekler.<br>• Yanlış yaparsan seri sıfırlanır!<br>• Peş peşe 10 doğru yaparsan <b>Dünya Bilgini Sertifikası</b> kazanırsın.</p>
+    </div>
+
+    <div id="message-area"></div>
+
+    <div id="cert-modal">
+        <h2 style="color:white; margin-bottom:20px;">TEBRİKLER! SERTİFİKA KAZANDINIZ</h2>
+        <input type="text" id="player-name-input" placeholder="Adınızı Giriniz" />
+        <button class="btn" onclick="generateCertificate()">Sertifikayı Oluştur</button>
+        
+        <div id="certificate" style="display:none;">
+            <div class="cert-header">DÜNYA BİLGİNİ</div>
+            <div class="cert-subheader">COĞRAFYA USTALIK BELGESİ</div>
+            
+            <div style="margin: 20px 0;">Sayın,</div>
+            <div class="cert-name" id="cert-display-name">AD SOYAD</div>
+            
+            <div class="cert-body">
+                Bu sertifika, "Ülke Bulmaca" oyununda üstün coğrafya bilgisini kanıtlayarak, 
+                hiç hata yapmadan peş peşe 10 ülkenin yerini doğru tespit ettiğiniz için verilmiştir.
+                Küresel bilginiz ve dikkatiniz takdire şayandır.
+            </div>
+
+            <div class="badge">TAM<br>PUAN</div>
+
+            <div class="cert-footer">
+                <div class="signature">
+                    <span id="cert-date"></span><br>
+                    Tarih
+                </div>
+                <div class="signature">
+                    Game Master<br>
+                    Oyun Yöneticisi
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; display:none;" id="cert-actions">
+            <button class="btn" onclick="window.print()">Sertifikayı Yazdır / Kaydet</button>
+            <button class="btn" style="background:#e74c3c;" onclick="location.reload()">Yeni Oyun</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Oyun Değişkenleri ---
+        let currentStreak = 0;
+        const targetStreak = 10;
+        let targetCountryId = "";
+        let targetCountryName = "";
+        let mapChart;
+        let polygonSeries;
+        
+        // Ülke İsimleri Sözlüğü (Türkçeleştirme için)
+        const countryNamesTR = {
+            "TR": "Türkiye", "US": "Amerika Birleşik Devletleri", "RU": "Rusya", "CN": "Çin",
+            "DE": "Almanya", "FR": "Fransa", "GB": "İngiltere", "IT": "İtalya", "ES": "İspanya",
+            "BR": "Brezilya", "AR": "Arjantin", "CA": "Kanada", "AU": "Avustralya", "IN": "Hindistan",
+            "JP": "Japonya", "KR": "Güney Kore", "EG": "Mısır", "ZA": "Güney Afrika", "SA": "Suudi Arabistan",
+            "IR": "İran", "IQ": "Irak", "SY": "Suriye", "GR": "Yunanistan", "BG": "Bulgaristan",
+            "AZ": "Azerbaycan", "KZ": "Kazakistan", "UA": "Ukrayna", "PL": "Polonya", "SE": "İsveç",
+            "NO": "Norveç", "FI": "Finlandiya", "DK": "Danimarka", "NL": "Hollanda", "BE": "Belçika",
+            "PT": "Portekiz", "MX": "Meksika", "CO": "Kolombiya", "PE": "Peru", "CL": "Şili",
+            "VE": "Venezuela", "ID": "Endonezya", "MY": "Malezya", "TH": "Tayland", "VN": "Vietnam",
+            "PK": "Pakistan", "AF": "Afganistan", "UZ": "Özbekistan", "TM": "Türkmenistan", "KG": "Kırgızistan",
+            "DZ": "Cezayir", "LY": "Libya", "MA": "Fas", "NG": "Nijerya", "KE": "Kenya", "ET": "Etiyopya"
+        };
+
+        // Oyuna dahil edilecek ülke kodları (Çok küçük adaları elemek için)
+        const playableCountries = Object.keys(countryNamesTR);
+
+        // --- Harita Kurulumu (AmCharts 4) ---
+        am4core.ready(function() {
+            am4core.useTheme(am4core.themes.animated);
+
+            let chart = am4core.create("chartdiv", am4maps.MapChart);
+            
+            // Harita Ayarları
+            chart.geodata = am4geodata_worldLow;
+            
+            // 3D Projeksiyon (Google Earth Havası)
+            chart.projection = new am4maps.projections.Orthographic();
+            chart.panBehavior = "rotateLongLat";
+            chart.deltaLatitude = -20;
+            chart.padding(20,20,20,20);
+
+            // Arka plan (Deniz)
+            chart.backgroundSeries.mapPolygons.template.polygon.fill = am4core.color("#2c3e50");
+            chart.backgroundSeries.mapPolygons.template.polygon.fillOpacity = 0.1;
+
+            // Ülke Serileri
+            polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+            polygonSeries.useGeodata = true;
+            polygonSeries.exclude = ["AQ"]; // Antartika'yı çıkar
+
+            // Poligon Şablonu (Ülkelerin Görünümü)
+            let polygonTemplate = polygonSeries.mapPolygons.template;
+            polygonTemplate.tooltipText = "{name}";
+            polygonTemplate.fill = am4core.color("#34495e");
+            polygonTemplate.stroke = am4core.color("#ecf0f1"); // Sınır çizgileri
+            polygonTemplate.strokeWidth = 0.5;
+            
+            // Hover (Üzerine gelince)
+            let hs = polygonTemplate.states.create("hover");
+            hs.properties.fill = am4core.color("#f1c40f");
+
+            // Tıklama Olayı
+            polygonTemplate.events.on("hit", function(ev) {
+                checkAnswer(ev.target);
+            });
+
+            mapChart = chart;
+            
+            // Harita yüklendiğinde oyunu başlat
+            chart.events.on("ready", function() {
+                nextTurn();
+            });
+        });
+
+        // --- Oyun Mantığı ---
+
+        function nextTurn() {
+            // Rastgele bir ülke seç
+            const randomIndex = Math.floor(Math.random() * playableCountries.length);
+            targetCountryId = playableCountries[randomIndex];
+            targetCountryName = countryNamesTR[targetCountryId];
+
+            // Ekrana yaz
+            document.getElementById("target-country").innerText = targetCountryName;
+            
+            // Haritayı o ülkeye doğru yavaşça çevir (İpucu olsun diye biraz yakınına)
+            // Tam üzerine odaklamıyoruz ki oyuncu arasın.
+            let polygon = polygonSeries.getPolygonById(targetCountryId);
+            if(polygon){
+                // Hedef ülkenin koordinatlarını al ama biraz rastgele sapma ekle (Zorluk için)
+                // let targetLong = -polygon.visualLongitude;
+                // let targetLat = -polygon.visualLatitude;
+                // mapChart.animate({property:"deltaLongitude", to: targetLong}, 2000);
+                // mapChart.animate({property:"deltaLatitude", to: targetLat}, 2000);
+            }
+        }
+
+        function checkAnswer(clickedPolygon) {
+            let clickedId = clickedPolygon.dataItem.dataContext.id;
+            let messageEl = document.getElementById("message-area");
+
+            if (clickedId === targetCountryId) {
+                // DOĞRU CEVAP
+                currentStreak++;
+                document.getElementById("score").innerText = currentStreak + " / 10";
+                
+                // Görsel Geri Bildirim (Yeşil yanıp sönme)
+                let originalColor = clickedPolygon.fill;
+                clickedPolygon.fill = am4core.color("#27ae60");
+                
+                messageEl.innerText = "DOĞRU! +10 PUAN";
+                messageEl.style.color = "#27ae60";
+                messageEl.style.opacity = 1;
+                
+                // Ses efekti yerine görsel şölen
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+                setTimeout(() => {
+                    clickedPolygon.fill = originalColor; // Rengi geri al
+                    messageEl.style.opacity = 0;
+                    
+                    if (currentStreak >= targetStreak) {
+                        winGame();
+                    } else {
+                        nextTurn();
+                    }
+                }, 1500);
+
+            } else {
+                // YANLIŞ CEVAP
+                currentStreak = 0; // Seriyi sıfırla
+                document.getElementById("score").innerText = currentStreak + " / 10";
+                
+                clickedPolygon.animate({property: "fill", to: am4core.color("#e74c3c")}, 200).events.on("animationended", function(ev){
+                    ev.target.animate({property: "fill", to: am4core.color("#34495e")}, 500);
+                });
+
+                messageEl.innerText = "YANLIŞ! SERİ SIFIRLANDI";
+                messageEl.style.color = "#e74c3c";
+                messageEl.style.opacity = 1;
+
+                setTimeout(() => {
+                    messageEl.style.opacity = 0;
+                    // Yeni ülke sormuyoruz, aynı ülkeyi bulana kadar devam etsin mi? 
+                    // Hayır, seri bozuldu, yeni şans verelim.
+                    nextTurn(); 
+                }, 1500);
+            }
+        }
+
+        function winGame() {
+            // Büyük kutlama
+            var duration = 3000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+
+            // Modal aç
+            document.getElementById("cert-modal").style.display = "flex";
+        }
+
+        // --- Sertifika İşlemleri ---
+
+        function generateCertificate() {
+            let name = document.getElementById("player-name-input").value;
+            if (!name) { alert("Lütfen isminizi girin!"); return; }
+
+            document.getElementById("cert-display-name").innerText = name.toUpperCase();
+            
+            let today = new Date();
+            document.getElementById("cert-date").innerText = today.toLocaleDateString("tr-TR");
+
+            // Input alanını gizle, sertifikayı göster
+            document.getElementById("player-name-input").style.display = "none";
+            document.querySelector("#cert-modal button").style.display = "none";
+            document.querySelector("#cert-modal h2").style.display = "none";
+            
+            document.getElementById("certificate").style.display = "flex";
+            document.getElementById("cert-actions").style.display = "block";
+        }
+    </script>
+</body>
+</html>
