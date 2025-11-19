@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temel Dini Bilgiler Sertifika Sınavı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #0F3D3E; /* Derin Zümrüt Yeşili */
+            --accent-color: #C5A059;  /* Mat Altın */
+            --bg-color: #F9F7F2;      /* Krem/Kağıt Rengi */
+            --text-color: #2C3333;    /* Koyu Gri */
+            --white: #FFFFFF;
+            --success: #2e7d32;
+            --error: #c62828;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#C5A059 0.5px, transparent 0.5px);
+            background-size: 20px 20px; /* Hafif desen */
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* --- ANA KONTEYNER --- */
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(15, 61, 62, 0.15);
+            overflow: hidden;
+            position: relative;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        /* --- BAŞLIK ALANI --- */
+        header {
+            background: var(--white);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-family: 'Lato', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        /* --- EKRAN GEÇİŞLERİ --- */
+        .screen { display: none; padding: 40px; animation: fadeIn 0.6s ease-out; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- GİRİŞ EKRANI --- */
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            margin: 20px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-family: 'Lato', sans-serif;
+            transition: 0.3s;
+            outline: none;
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(15, 61, 62, 0.1);
+        }
+
+        /* --- SAYAÇ TASARIMI --- */
+        .counter-wrapper {
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .counter-box {
+            background-color: #f4f4f4;
+            color: var(--primary-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Lato', monospace; /* Sayısal font */
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: 1px solid #e0e0e0;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* --- BUTONLAR --- */
+        .btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            background: #0a2b2c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* --- SORU ALANI --- */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f4f4f4;
+        }
+
+        .timer-badge {
+            background: #FFF4E5;
+            color: #d32f2f;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-family: 'Lato', monospace;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent-color);
+            background: #fffcf5;
+        }
+
+        .option-btn.selected { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .option-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+        .option-btn.wrong { background: var(--error); color: white; border-color: var(--error); }
+
+        /* --- SERTİFİKA TASARIMI (HTML2PDF Uyumlu) --- */
+        #certificate-wrapper {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .cert-container {
+            width: 800px;
+            height: 600px;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C5A059' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            position: relative;
+            padding: 40px;
+            color: #333;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Sertifika Çerçevesi */
+        .cert-border {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .cert-border::before {
+            content: ''; position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px solid var(--accent-color);
+        }
+
+        /* Köşe Süsleri */
+        .corner {
+            position: absolute;
+            width: 40px; height: 40px;
+            border: 4px solid var(--primary-color);
+            z-index: 2;
+        }
+        .tl { top: 20px; left: 20px; border-right: none; border-bottom: none; }
+        .tr { top: 20px; right: 20px; border-left: none; border-bottom: none; }
+        .bl { bottom: 20px; left: 20px; border-right: none; border-top: none; }
+        .br { bottom: 20px; right: 20px; border-left: none; border-top: none; }
+
+        .cert-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            color: var(--primary-color);
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .cert-header h3 {
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 1px solid var(--accent-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .cert-content {
+            margin-top: 40px;
+            width: 80%;
+        }
+
+        .cert-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: #555;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .cert-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            color: var(--primary-color);
+            font-weight: 700;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin: 10px 0 30px 0;
+            text-transform: capitalize;
+        }
+
+        .cert-desc {
+            font-family: 'Lato', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Alt Mühür ve İmzalar */
+        .cert-footer {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+            width: 70%;
+            align-items: center;
+        }
+
+        .seal {
+            width: 90px; height: 90px;
+            background: radial-gradient(circle at 30% 30%, #C5A059, #8a6d3b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 3px solid #fff;
+            outline: 1px solid #C5A059;
+            position: relative;
+        }
+        
+        .seal::after {
+            content: '★'; font-size: 20px;
+        }
+
+        .signature-block {
+            text-align: center;
+        }
+        
+        .sign-line {
+            width: 150px; height: 1px; background: #333; margin-bottom: 5px;
+        }
+        
+        .sign-label {
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #666;
+        }
+
+        .date-display {
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container" id="app-ui">
+        <header>
+            <h1>Temel Dini Bilgiler</h1>
+            <h2>Sertifika Sınavı</h2>
+        </header>
+
+        <div id="welcome-screen" class="screen active">
+            <div class="welcome-text">
+                <p>Bu sınav, <strong>Temel Dini Bilgiler alanında iman esasları/itikad</strong> konusundaki yetkinliğinizi ölçmek amacıyla hazırlanmıştır.</p>
+                <p>Sınavda başarılı olabilmek için Seyfeddin Yazıcı tarafından kaleme alınan Temel Dini Bilgiler kitabından istifade edebilirsiniz.</p>
+                <ul style="text-align: left; display: inline-block; margin-top: 10px; font-size: 0.95rem; color: #666;">
+                    <li>• Toplam <strong>25 Soru</strong> bulunmaktadır.</li>
+                    <li>• Sınav süresi <strong>15 Dakikadır</strong>.</li>
+                    <li>• Sertifika için başarı barajı <strong>%70</strong>'tir.</li>
+                </ul>
+            </div>
+            <input type="text" id="user-name" placeholder="Sertifikada Görünecek Ad Soyad" required autocomplete="off">
+            <button class="btn" onclick="startQuiz()">Sınavı Başlat</button>
+
+            <div class="counter-wrapper">
+                <span>Toplam Katılımcı:</span>
+                <span id="visitor-count" class="counter-box">...</span>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <span style="font-weight: bold; color: var(--primary-color);" id="question-count">Soru 1/25</span>
+                <div class="timer-badge" id="timer-display">15:00</div>
+            </div>
+            <div class="question-text" id="question-text"></div>
+            <div class="options-grid" id="options-container"></div>
+            <button id="next-btn" class="btn" onclick="nextQuestion()" style="margin-top: 25px;" disabled>Sonraki Soru</button>
+        </div>
+
+        <div id="result-screen" class="screen" style="text-align: center;">
+            <h2 id="result-title" style="font-size: 2rem; font-family: 'Playfair Display'; margin-bottom: 15px;"></h2>
+            <div id="score-circle" style="font-size: 3rem; font-weight: 900; color: var(--primary-color); margin: 20px 0;"></div>
+            <p id="result-message" style="font-size: 1.1rem; color: #555; margin-bottom: 30px;"></p>
+            
+            <div id="success-actions" style="display: none;">
+                <button class="btn" onclick="generateCertificate()" style="background: var(--accent-color);">Sertifikamı Görüntüle</button>
+            </div>
+            <button class="btn" onclick="location.reload()" style="background: #757575; margin-top: 15px;">Tekrar Dene</button>
+        </div>
+    </div>
+
+    <div id="certificate-wrapper">
+        <div class="cert-container" id="certificate-content">
+            <div class="cert-border"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="cert-header">
+                <h1>BAŞARI SERTİFİKASI</h1>
+                <h3>Temel Dini Bilgiler Eğitimi</h3>
+            </div>
+
+            <div class="cert-content">
+                <p class="cert-text">Bu belge, aşağıda ismi bulunan katılımcının</p>
+                <div class="cert-name" id="cert-name-display">AD SOYAD</div>
+                <p class="cert-desc">
+                    <strong>Temel Dini Bilgiler Sınavı</strong>'nı üstün başarıyla tamamlayarak,<br>
+                    İslam Akaidi, İbadet Esasları ve Siyer konularında gerekli yetkinliğe<br>
+                    sahip olduğunu kanıtlaması üzerine verilmiştir.
+                </p>
+            </div>
+
+            <div class="cert-footer">
+                <div class="signature-block">
+                    <div class="date-display" id="cert-date">01.01.2024</div>
+                    <div class="sign-line" style="margin-top: 5px;"></div>
+                    <div class="sign-label">TARİH</div>
+                </div>
+
+                <div class="seal">
+                    <div style="text-align: center;">
+                        <div style="font-size: 10px;">PUAN</div>
+                        <div id="cert-score" style="font-size: 22px; line-height: 1;">100</div>
+                    </div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="date-display" style="font-family: 'Great Vibes', cursive; font-size: 20px;">Platform Yön.</div>
+                    <div class="sign-line"></div>
+                    <div class="sign-label">ONAYLAYAN</div>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 5px; font-size: 9px; color: #999;">Belge No: <span id="cert-id"></span></div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="downloadPDF()" style="width: auto; padding: 15px 50px; background: #d32f2f;">PDF Olarak İndir</button>
+        </div>
+    </div>
+
+    <script>
+        /* SORU VERİTABANI */
+        const questions = [
+            { q: "Dinin tanımı hangi seçenekte doğru verilmiştir?", o: ["Peygamberler sistemi", "Akıl sahiplerini kendi istekleriyle iyiliğe ulaştıran ilahi kanun", "Ahlak kuralları bütünü", "Bozulmuş sistem", "Toplumsal sözleşme"], a: 1 },
+            { q: "Aşağıdakilerden hangisi 'Hak Din' tanımına uymaktadır?", o: ["İnsanlarca değiştirilen dinler", "Zamanla bozulan ilahi dinler", "Değişikliğe uğramadan gelen İslam dini", "Uydurulan dinler", "Milli dinler"], a: 2 },
+            { q: "İslam Dininin hükümleri kaç kısımdır?", o: ["İman, Amel, Siyer", "Amel, Ahlak, Kelam", "İman, Amel, Ahlak", "Tevhid, Risalet, Ahiret", "Fıkıh, İtikat, Kelam"], a: 2 },
+            { q: "İslam Kolaylık Dinidir ilkesine göre, yolculara tanınan kolaylık hangisidir?", o: ["Oruç tutmaya izin", "Farz namazları iki rekat kılma (Kasr)", "Oturarak kılma", "Fidye verme", "Teyemmüm"], a: 1 },
+            { q: "İslam’ın hem dünya hem ahiret amacını özetleyen prensip hangisidir?", o: ["Ölüm size yetişecektir", "Allah katında din İslam'dır", "Hiç ölmeyecekmiş gibi dünya, yarın ölecekmiş gibi ahiret", "Kalpler Allah'ı anmakla huzur bulur", "Kitabı oku namazı kıl"], a: 2 },
+            { q: "Âmentü'de toplanan ve 'tafsili iman' olarak adlandırılan imanın şartları kaç tanedir?", o: ["Dört", "Beş", "Altı", "Yedi", "On"], a: 2 },
+            { q: "Aşağıdakilerden hangisi 'icmali iman'ın tanımıdır?", o: ["Ayrı ayrı inanmak", "Allah’a ve Peygamberine (topluca) inanmak", "Kalp ile inanıp dille söylemek", "Ayrıntılı inanmak", "Amelsiz inanç"], a: 1 },
+            { q: "Kalbi ile inanmadığı hâlde, dili ile inandığını söyleyen kimselere ne ad verilir?", o: ["Mümin", "Kafir", "Müşrik", "Münafık", "Fasık"], a: 3 },
+            { q: "'İman ye’s alinde olmamalıdır' ifadesi ne anlama gelmektedir?", o: ["İnkar etmemek", "Ölüm anında azabı görünce inanmanın fayda vermemesi", "Hükümleri güzel bulmak", "Dil ile söylemek", "Amel etmek"], a: 1 },
+            { q: "Kâinat ve mükemmel düzen, Allah’ın hangi sıfatlarını gösterir?", o: ["Kudret ve İrade", "Varlık ve Vahdaniyet (Birlik)", "Hayat ve Tekvin", "Kıdem ve Beka", "İlim ve Semi"], a: 1 },
+            { q: "Allah’ın zati sıfatlarından olan 'Muhalefetün li’l-havadis' ne demektir?", o: ["Başlangıcı olmaması", "Sonu olmaması", "Bir olması", "Yaratılmışlara benzememesi", "Kendinden olması"], a: 3 },
+            { q: "Aşağıdakilerden hangisi Allah'ın subuti sıfatlarından biri değildir?", o: ["Hayat", "İlim", "Semi", "Kıdem", "İrade"], a: 3 },
+            { q: "Meleklerin özellikleri ile ilgili verilen bilgilerden hangisi yanlıştır?", o: ["Nurdan yaratılmışlardır", "Emirleri kusursuz yaparlar", "Erkeklik ve dişilikleri vardır", "Yemez içmezler", "Günah işlemezler"], a: 2 },
+            { q: "Aşağıda verilen melek ve görev eşleştirmelerinden hangisi yanlıştır?", o: ["Kirâmen Kâtibin: Yazıcı", "Münker-Nekir: Sorgu", "Rıdvan: Cennet", "Mâlik: Cehennem", "Mâlik: Sura üfüren (İsrafil olmalı)"], a: 4 },
+            { q: "Kirâmen Kâtibin meleklerine iman, insanı hangi davranıştan sakındırır?", o: ["İbadeti terkten", "Korumasız kalmaktan", "Doğruluktan ayrılmaktan", "Gizli yerlerde fenalık yapmaktan", "Hazırlıksız olmaktan"], a: 3 },
+            { q: "Allah’ın, dilediği şeyleri vasıtasız peygamberlerin kalbine koyması hangi vahiy çeşididir?", o: ["Sadık Rüya", "İlham Yoluyla Vahiy", "Sözlü Vahiy", "Mushaf", "Kitap"], a: 1 },
+            { q: "Kendisine suhuf (sahifeler) gönderilen peygamberlerden hangisi yanlıştır?", o: ["Hz. Adem", "Hz. Şit", "Hz. İbrahim", "Hz. İdris", "Hz. Musa"], a: 4 },
+            { q: "İlk inen ve 'Oku' emrinin bulunduğu sure hangisidir?", o: ["Fatiha", "İhlas", "Alâk", "Bakara", "Müddessir"], a: 2 },
+            { q: "Hangisi Kur’an-ı Kerim’i diğer ilahî kitaplardan ayıran bir özellik değildir?", o: ["Değişmeden gelmesi", "Parça parça inmesi", "Evrensel olması", "En büyük mucize olması", "Önceki hükümleri kaldırmamış olması"], a: 4 },
+            { q: "Peygamberlerin sıfatlarından olan 'ismet' ne anlama gelir?", o: ["Tebliğ etmek", "Akıllı olmak", "Güvenilir olmak", "Günah işlememek", "Doğru olmak"], a: 3 },
+            { q: "Kur’an-ı Kerim’de ismi geçen peygamberlerin sayısı hakkında hangisi doğrudur?", o: ["Sadece 25 peygamber vardır", "Çoktur ama Kur'an'da 25 tanesinin adı geçer", "20'dir", "İlk Adem Son İsa'dır", "Hepsi kitap sahibidir"], a: 1 },
+            { q: "Öldükten sonra dirilme ve sonsuza kadar sürecek hayata ne ad verilir?", o: ["Kabir", "Kıyamet", "Haşir", "Ahiret Günü", "Berzah"], a: 3 },
+            { q: "Ahiret hayatıyla ilgili hangisi yanlıştır?", o: ["Ölüm yok oluş değildir", "Ahiret hayatı ebedidir", "Kıyameti yalnız Allah bilir", "Cennet sonsuzdur", "Kabir herkes için azap yeridir"], a: 4 },
+            { q: "Kader ve kaza terimlerinin en iyi açıklaması hangisidir?", o: ["Hareket ve sonuç", "Allah'ın yaratması ve bilmesi", "Kader plan, kaza o planın uygulanmasıdır", "Sorumluluk ve yaratma", "Gelecek ve geçmiş"], a: 2 },
+            { q: "İnsanın sorumlu tutulmasının temel sebebi nedir?", o: ["Allah'ın yaratması", "İrade ve seçme hürriyetine sahip olması", "İrade dışı işler", "Kader inancı", "Takdirin Allah'tan olması"], a: 1 }
+        ];
+
+        let currentQ = 0;
+        let score = 0;
+        let timeLeft = 15 * 60; // 15 Dakika
+        let timer;
+        let userName = "";
+
+        // --- SAYAÇ FONKSİYONU (Sayfa Yüklendiğinde Çalışır) ---
+        window.onload = function() {
+            initVisitorCounter();
+        };
+
+        function initVisitorCounter() {
+            const counterDisplay = document.getElementById('visitor-count');
+            const namespace = 'tdb_sertifika_v1_genel'; // Bu anahtar benzersizdir
+            const key = 'visits';
+            
+            // Tarayıcıda bu siteye daha önce girildi mi?
+            const hasVisited = localStorage.getItem('tdb_has_visited');
+
+            if (!hasVisited) {
+                // İLK KEZ GİRİYOR (Unique Visitor) -> API'ye HIT at (Artır)
+                fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`)
+                .then(res => res.json())
+                .then(data => {
+                    counterDisplay.textContent = data.value;
+                    localStorage.setItem('tdb_has_visited', 'true'); // Ziyareti kaydet
+                })
+                .catch(err => {
+                    console.log("Sayaç hatası (Hit):", err);
+                    counterDisplay.textContent = "1254"; // Fallback (Yedek)
+                });
+            } else {
+                // DAHA ÖNCE GİRMİŞ (Refresh) -> Sadece GET yap (Artırma)
+                fetch(`https://api.countapi.xyz/get/${namespace}/${key}`)
+                .then(res => res.json())
+                .then(data => {
+                    counterDisplay.textContent = data.value;
+                })
+                .catch(err => {
+                    console.log("Sayaç hatası (Get):", err);
+                    counterDisplay.textContent = "1254"; // Fallback
+                });
+            }
+        }
+
+        function startQuiz() {
+            const nameInput = document.getElementById('user-name');
+            userName = nameInput.value.trim();
+            
+            if(!userName) {
+                nameInput.style.borderColor = "var(--error)";
+                alert("Lütfen sertifika için isminizi giriniz.");
+                return;
+            }
+            
+            userName = userName.toLocaleUpperCase('tr-TR');
+
+            document.getElementById('welcome-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            loadQuestion();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                let m = Math.floor(timeLeft/60).toString().padStart(2,'0');
+                let s = (timeLeft%60).toString().padStart(2,'0');
+                document.getElementById('timer-display').textContent = `${m}:${s}`;
+                
+                if(timeLeft < 60) document.getElementById('timer-display').style.color = "red";
+                
+                if(timeLeft <= 0) finishQuiz();
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            let q = questions[currentQ];
+            document.getElementById('question-text').textContent = `${currentQ+1}. ${q.q}`;
+            document.getElementById('question-count').textContent = `Soru ${currentQ+1}/${questions.length}`;
+            let cont = document.getElementById('options-container');
+            cont.innerHTML = "";
+            
+            q.o.forEach((opt, i) => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(i, btn);
+                cont.appendChild(btn);
+            });
+            document.getElementById('next-btn').disabled = true;
+        }
+
+        function checkAnswer(i, btn) {
+            let opts = document.getElementsByClassName('option-btn');
+            for(let o of opts) o.disabled = true;
+            
+            if(i === questions[currentQ].a) {
+                btn.classList.add('correct');
+                score++;
+            } else {
+                btn.classList.add('wrong');
+                opts[questions[currentQ].a].classList.add('correct');
+            }
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQ++;
+            if(currentQ < questions.length) loadQuestion();
+            else finishQuiz();
+        }
+
+        function finishQuiz() {
+            clearInterval(timer);
+            document.getElementById('app-ui').style.display = 'block';
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            
+            let percent = Math.round((score/questions.length)*100);
+            let title = document.getElementById('result-title');
+            let msg = document.getElementById('result-message');
+            let circle = document.getElementById('score-circle');
+            
+            circle.textContent = `%${percent}`;
+
+            if(percent >= 70) {
+                title.textContent = "TEBRİKLER!";
+                title.style.color = "var(--primary-color)";
+                msg.innerHTML = `Harika bir iş çıkardınız.<br>Temel dini bilgiler konusunda yetkinliğinizi kanıtladınız.`;
+                document.getElementById('success-actions').style.display = "block";
+            } else {
+                title.textContent = "BAŞARISIZ";
+                title.style.color = "var(--error)";
+                circle.style.color = "var(--error)";
+                msg.textContent = `Sertifika almak için %70 başarısına ulaşmalısınız. Lütfen Seyfeddin Yazıcı tarafından kaleme alınan Temel Dini Bilgiler kitabının itikat bölümünü okuyunuz. (Puanınız: %${percent})`;
+            }
+        }
+
+        function generateCertificate() {
+            document.getElementById('app-ui').style.display = 'none';
+            document.getElementById('certificate-wrapper').style.display = 'block';
+
+            document.getElementById('cert-name-display').textContent = userName;
+            
+            const today = new Date();
+            document.getElementById('cert-date').textContent = today.toLocaleDateString('tr-TR');
+            
+            document.getElementById('cert-id').textContent = "TDB-" + Math.floor(Math.random() * 10000000);
+
+            let percent = Math.round((score/questions.length)*100);
+            document.getElementById('cert-score').textContent = percent;
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('certificate-content');
+            const btn = document.querySelector('#certificate-wrapper button');
+            
+            btn.textContent = "PDF Hazırlanıyor...";
+            btn.disabled = true;
+
+            const opt = {
+                margin:       0,
+                filename:     `Sertifika_${userName.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'px', format: [800, 600], orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.textContent = "PDF Olarak İndir";
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>
