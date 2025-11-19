@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kıble Pusulası | Yön Bulucu</title>
+    <title>Kıble Pusulası | Dinamik Yön Bulucu</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     
@@ -58,6 +58,25 @@
             border: 5px solid #1a4d3a;
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.1);
             background: #f0f5f0;
+            /* Pusulanın kendisi sabit kalacak, içindeki oklar dönecek */
+        }
+        
+        /* Kuzey İşaretçisi (Mavi Ok/İşaret) */
+        #north-indicator {
+            content: 'N';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg); /* JS ile döndürülecek */
+            width: 0;
+            height: 0;
+            margin-left: -15px; 
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 40px solid #3498db; /* Mavi Üçgen Ok */
+            transform-origin: bottom center;
+            transition: transform 0.1s linear;
+            z-index: 10;
         }
 
         /* Kıble İşaretçisi (Kırmızı Ok) */
@@ -65,26 +84,30 @@
             position: absolute;
             top: 0;
             left: 50%;
+            transform: translateX(-50%) rotate(0deg); /* JS ile döndürülecek */
             width: 0;
             height: 0;
-            margin-left: -15px; /* Yarım genişlik kadar sola kaydır */
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 40px solid #e74c3c; /* Kırmızı Üçgen Ok */
+            margin-left: -10px; /* Daha küçük ok */
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 60px solid #e74c3c; /* Kırmızı Üçgen Ok */
             transform-origin: bottom center;
-            transition: transform 0.1s linear; /* Yumuşak Dönüş */
-            z-index: 10;
+            transition: transform 0.1s linear;
+            z-index: 11; /* En üstte Kıble olsun */
         }
 
-        /* Pusula Çemberi İçindeki Merkez Noktası */
-        #compass-area::before {
-            content: 'N';
+        /* Merkez Noktası */
+        #compass-area::after {
+            content: '';
             position: absolute;
-            top: 10px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            font-weight: 800;
-            color: #1a4d3a;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a4d3a;
+            z-index: 12;
         }
 
         /* Durum Bilgisi */
@@ -103,7 +126,7 @@
             margin-top: 10px;
         }
         
-        /* İzin Butonu (Gerekirse) */
+        /* İzin Butonu */
         #permission-button {
             background-color: #1a4d3a;
             color: white;
@@ -112,19 +135,12 @@
             border-radius: 8px;
             font-size: 1rem;
             cursor: pointer;
-            display: none; /* JS ile gösterilecek */
+            display: none; 
             margin-top: 20px;
             transition: background-color 0.2s;
         }
         #permission-button:hover {
             background-color: #0d3220;
-        }
-
-        /* Footer */
-        .footer {
-            margin-top: 20px;
-            font-size: 0.75rem;
-            color: #aaa;
         }
     </style>
 </head>
@@ -132,21 +148,18 @@
 
     <div id="container">
         <h1>🕋 Kıble Pusulası</h1>
-        <p>Doğru kıble yönünü bulmak için cihazınızı düz tutun.</p>
+        <p>Kırmızı ok kıbleyi, Mavi ok Kuzey'i gösterir. Cihazı düz tutun.</p>
         
         <div id="compass-area">
-            <div id="qibla-indicator" style="transform: rotate(0deg);"></div>
+            <div id="north-indicator"></div>
+            <div id="qibla-indicator"></div>
         </div>
 
-        <div id="angle-info">Yön: 0° | Kıble Açısı: -</div>
+        <div id="angle-info">Yön: - | Kıble Açısı: -</div>
 
         <div id="status">Konumunuz bekleniyor...</div>
         
         <button id="permission-button">Pusula İzni Ver</button>
-    </div>
-    
-    <div class="footer">
-        * Bu araç, cihazınızın GPS ve manyetik sensör verilerini kullanır.
     </div>
 
     <script>
@@ -156,17 +169,17 @@
 
         let userLat = null;
         let userLon = null;
-        let qiblaDirection = null; // Kullanıcının konumundan Kıbleye olan açı
-        let compassHeading = 0; // Cihazın Kuzey'e göre manyetik yönü
+        let qiblaDirection = null; // Kuzey'e göre Kıble'nin açısı
+        let compassHeading = 0; // Cihazın manyetik kuzey'e göre yönü
 
-        const indicator = document.getElementById('qibla-indicator');
+        const qiblaIndicator = document.getElementById('qibla-indicator');
+        const northIndicator = document.getElementById('north-indicator');
         const statusDiv = document.getElementById('status');
         const angleInfoDiv = document.getElementById('angle-info');
         const permissionButton = document.getElementById('permission-button');
 
-        // --- 1. Kıble Açısını Hesaplama Fonksiyonu (Haritacılık Formülü) ---
+        // --- 1. Kıble Açısını Hesaplama Fonksiyonu ---
         function calculateQibla(lat, lon) {
-            // Dereceyi radyana çevir
             const latRad = toRadians(lat);
             const lonRad = toRadians(lon);
             const kibleLatRad = toRadians(KIBLA_LAT);
@@ -174,14 +187,11 @@
 
             const dLon = kibleLonRad - lonRad;
 
-            // Formül: Bearing = atan2(sin(Δλ) * cos(φ2), cos(φ1) * sin(φ2) - sin(φ1) * cos(φ2) * cos(Δλ))
             const y = Math.sin(dLon) * Math.cos(kibleLatRad);
             const x = Math.cos(latRad) * Math.sin(kibleLatRad) - 
                       Math.sin(latRad) * Math.cos(kibleLatRad) * Math.cos(dLon);
 
             let bearing = toDegrees(Math.atan2(y, x));
-
-            // Açı 0 ile 360 derece arasına dönüştürülür (Kuzey=0, Doğu=90)
             bearing = (bearing + 360) % 360; 
             
             return bearing;
@@ -203,13 +213,12 @@
                         userLon = position.coords.longitude;
                         qiblaDirection = calculateQibla(userLat, userLon);
                         
-                        statusDiv.innerText = `✅ Konum: ${round(userLat)}°, ${round(userLon)}°`;
+                        statusDiv.innerText = `✅ Konum alındı. Kıble Açısı: ${round(qiblaDirection)}°`;
                         
-                        // Konum alındıktan sonra pusula sensörünü başlat
                         initCompassSensor(); 
                     },
                     (error) => {
-                        statusDiv.innerText = "❌ Konum izni reddedildi veya bulunamadı! Lütfen tekrar deneyin.";
+                        statusDiv.innerText = "❌ Konum izni reddedildi veya bulunamadı! Lütfen sayfayı HTTPS üzerinden açın ve tekrar deneyin.";
                         console.error("Geolocation Error:", error);
                     },
                     {
@@ -223,18 +232,17 @@
             }
         }
 
-        // --- 3. Pusula Sensörünü Başlatma (Cihaz Yönü) ---
+        // --- 3. Pusula Sensörünü Başlatma ---
         function initCompassSensor() {
             if (window.DeviceOrientationEvent) {
-                // iOS 13+ Güvenlik Kontrolü: İzin butonu gereklidir.
+                // iOS 13+ Kontrolü
                 if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                     permissionButton.style.display = 'block';
                     permissionButton.onclick = requestPermission;
-                    statusDiv.innerText = "iOS Güvenliği: Pusula için izin gerekli.";
+                    statusDiv.innerText = "iOS: Pusula sensörü için izin gerekli.";
                 } else {
-                    // Android ve eski iOS cihazlar
                     window.addEventListener('deviceorientationabsolute', handleOrientation);
-                    statusDiv.innerText = `🧭 Pusula başlatıldı. Kıble Açısı: ${round(qiblaDirection)}°`;
+                    statusDiv.innerText = `🧭 Pusula hazır. Kıble Açısı: ${round(qiblaDirection)}°`;
                 }
             } else {
                 statusDiv.innerText = "❌ Cihazınız pusula sensörünü desteklemiyor.";
@@ -248,7 +256,7 @@
                     if (response === 'granted') {
                         window.addEventListener('deviceorientationabsolute', handleOrientation);
                         permissionButton.style.display = 'none';
-                        statusDiv.innerText = `🧭 Pusula başlatıldı. Kıble Açısı: ${round(qiblaDirection)}°`;
+                        statusDiv.innerText = `🧭 Pusula hazır. Kıble Açısı: ${round(qiblaDirection)}°`;
                     } else {
                         statusDiv.innerText = "❌ Pusula izni verilmedi.";
                     }
@@ -259,41 +267,37 @@
                 });
         }
 
-        // --- 4. Yön Değişikliğini İşleme ---
+        // --- 4. Yön Değişikliğini İşleme (DİNAMİK PUSULA) ---
         function handleOrientation(event) {
             if (qiblaDirection === null) return;
 
-            // 'alpha' değeri Kuzey'den (0°) itibaren saat yönünde cihazın yönünü verir (0-360)
-            // Bu değer manyetik kuzeydir (çoğu cihazda manyetik kuzeye göre ayar yaparız)
+            // 'alpha' değeri cihazın Kuzey'den itibaren saat yönünde (0-360) olan yönüdür.
             compassHeading = event.alpha; 
             
-            // Kıble yönü = (Cihazın Kuzey'e göre yönü) - (Kuzey'e göre Kıble açısı)
-            // Ya da tam tersi: Kıble Okunun Yönü = Kıble Açısı - Cihazın Yönü
-            
-            // Bu, cihazın kuzeyden sapma açısıdır.
-            let deviceRotation = 360 - compassHeading; 
-            
-            // Kıble Okunun Dönüş Açısı: (Kıbleye olan açı) - (Cihazın Kuzeye göre yönü)
-            // Eğer sonuç negatifse, 360 eklenerek 0-360 arasına çekilir.
-            let rotationAngle = qiblaDirection - compassHeading; 
-            
-            // Okun dönüş açısı (Kıble her zaman 0 derecede yukarıyı gösteriyor gibi düşünülür)
-            rotationAngle = (rotationAngle + 360) % 360; 
+            // 1. KUZEY OKUNUN DÖNÜŞÜ (Cihaz ne yöne bakıyorsa, Kuzey Oku o yönü göstermelidir)
+            // Ok, cihazın ters yönünde dönerek Kuzey'i işaret eder.
+            // Örnek: Cihaz 90° (Doğu) gösteriyorsa, Ok -90° dönmelidir.
+            let northRotationAngle = 360 - compassHeading;
+            northIndicator.style.transform = `rotate(${northRotationAngle}deg)`;
 
-            // Okun dönüş açısını uygula (Cihaz döndükçe ok sabit bir yöne döner)
-            indicator.style.transform = `rotate(${rotationAngle}deg)`;
+            // 2. KIBLE OKUNUN DÖNÜŞÜ (Kıble Açısı - Cihazın Yönü)
+            // Kıble Oku, (Kuzey'e göre Kıble açısı) - (Cihazın Kuzey'e göre yönü) kadar dönmelidir.
+            let qiblaRotationAngle = qiblaDirection - compassHeading; 
+            qiblaRotationAngle = (qiblaRotationAngle + 360) % 360; 
+
+            qiblaIndicator.style.transform = `rotate(${qiblaRotationAngle}deg)`;
 
             angleInfoDiv.innerHTML = `Yön: ${round(compassHeading)}° | Kıble Açısı: ${round(qiblaDirection)}°`;
             
-            // Cihazın kuzeye göre sapması 5 derece içindeyse, Kıbleye dönmüş demektir.
-            const kıbleyeUzaklık = Math.min(rotationAngle, 360 - rotationAngle);
+            // Kıbleye olan uzaklık (0°'ye ne kadar yakın)
+            const kıbleyeUzaklık = Math.min(qiblaRotationAngle, 360 - qiblaRotationAngle);
 
             if (kıbleyeUzaklık < 5 || kıbleyeUzaklık > 355) {
-                statusDiv.innerText = "⭐ Kıble Yönü Bulundu! ⭐";
-                indicator.style.borderBottomColor = '#27ae60'; // Yeşil yap
+                statusDiv.innerText = "⭐ Kıble Yönü Bulundu! Sabit tutun. ⭐";
+                qiblaIndicator.style.borderBottomColor = '#27ae60'; // Yeşil yap
             } else {
                 statusDiv.innerText = "Cihazı Kıbleye döndürün.";
-                indicator.style.borderBottomColor = '#e74c3c'; // Kırmızı yap
+                qiblaIndicator.style.borderBottomColor = '#e74c3c'; // Kırmızı yap
             }
         }
 
