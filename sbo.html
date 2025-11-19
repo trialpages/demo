@@ -2,87 +2,72 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Türkiye Şehir Bulmaca</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkiye Şehir Bulmaca: Garantili Sürüm</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    
     <style>
-        /* --- TEMEL AYARLAR --- */
-        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; background: #f0f0f0; overflow: hidden; }
+        /* --- TASARIM AYARLARI --- */
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; background: #f4f7f6; overflow: hidden; }
         
-        /* Harita Kutusu */
-        #map { width: 100%; height: 100vh; background: #aad3df; z-index: 1; }
+        /* Harita Alanı */
+        #chartdiv { width: 100%; height: 100vh; background: #aad3df; } /* Deniz Rengi */
 
-        /* Yükleme Ekranı */
-        #loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #e30a17; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: white; transition: opacity 0.5s;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid #fff; border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- OYUN ARAYÜZÜ --- */
+        /* Arayüz Katmanı */
         .ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1000;
+            pointer-events: none; z-index: 100;
         }
 
+        /* Üst Panel */
         .top-bar {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 500px; pointer-events: auto;
             display: flex; flex-direction: column; align-items: center; gap: 10px;
+            pointer-events: auto; width: 90%; max-width: 500px;
         }
 
-        .stats-box {
-            background: white; padding: 8px 25px; border-radius: 50px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-weight: bold;
-            display: flex; gap: 20px; font-size: 1.1rem;
+        .score-board {
+            background: white; padding: 8px 25px; border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold; color: #333;
+            display: flex; gap: 15px; font-size: 1.1rem;
         }
 
         .target-box {
-            background: linear-gradient(135deg, #e30a17, #b71c1c);
-            color: white; width: 100%; padding: 15px 0; border-radius: 15px;
-            text-align: center; box-shadow: 0 10px 25px rgba(227, 10, 23, 0.4);
-            border: 2px solid #fff;
+            background: linear-gradient(135deg, #e30a17, #b71c1c); /* Türk Bayrağı */
+            color: white; padding: 15px 0; width: 100%; border-radius: 15px;
+            text-align: center; box-shadow: 0 8px 20px rgba(227, 10, 23, 0.4);
+            border: 3px solid white; transition: transform 0.2s;
         }
 
-        .target-label { font-size: 0.8rem; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; }
-        .target-city { font-size: 2.2rem; font-weight: 800; margin-top: 5px; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .target-label { font-size: 0.85rem; letter-spacing: 2px; opacity: 0.9; text-transform: uppercase; }
+        .target-city { font-size: 2.2rem; font-weight: 900; margin-top: 5px; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        /* Geri Bildirim Mesajı */
-        #msg-box {
+        /* Mesaj Kutusu */
+        #feedback-msg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 3.5rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            font-size: 4rem; font-weight: 900; text-shadow: 0 5px 25px rgba(0,0,0,0.5);
             opacity: 0; transition: opacity 0.3s; text-align: center; width: 100%; pointer-events: none;
         }
 
         /* Alt Bilgi */
         .info-box {
             position: absolute; bottom: 20px; left: 20px;
-            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px;
-            max-width: 250px; font-size: 0.85rem; color: #333;
+            background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px;
+            font-size: 0.85rem; color: #333; max-width: 250px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1); pointer-events: auto;
             border-left: 5px solid #e30a17;
         }
 
-        /* --- SERTİFİKA MODALI --- */
+        /* Sertifika Modal */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000;
             justify-content: center; align-items: center; flex-direction: column;
-            pointer-events: auto; backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px); pointer-events: auto;
         }
 
         .modal-content {
             background: white; padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         
         input { padding: 15px; font-size: 1.1rem; width: 80%; margin: 20px 0; border: 2px solid #ddd; border-radius: 5px; text-align: center; }
@@ -93,79 +78,80 @@
         }
         .btn:hover { transform: scale(1.05); background: #c0392b; }
 
-        /* Yazdırılabilir Alan */
+        /* Yazdırılabilir Sertifika Alanı */
         #print-area {
             display: none; width: 800px; height: 600px; background: #fffdf5;
-            padding: 40px; border: 15px solid #2c3e50; position: relative;
+            padding: 40px; border: 20px solid #2c3e50; position: relative;
             box-sizing: border-box; color: #333; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
         #print-area::after { content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px; border: 2px solid #e30a17; pointer-events: none; }
 
-        /* Mobilde Gizleme */
-        @media (max-width: 800px) {
+        @media (max-width: 850px) {
             .info-box { display: none; }
-            #print-area { width: 95%; height: auto; padding: 20px; border-width: 5px; }
+            #print-area { width: 95%; height: auto; border-width: 10px; padding: 20px; }
             .target-city { font-size: 1.8rem; }
         }
     </style>
+
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/geodata/turkeyLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <h2 id="loader-text">TÜRKİYE HARİTASI YÜKLENİYOR...</h2>
-    </div>
+    <div id="chartdiv"></div>
 
-    <div id="map"></div>
-
-    <div class="ui-layer" id="game-ui" style="display:none;">
+    <div class="ui-layer">
         <div class="top-bar">
-            <div class="stats-box">
+            <div class="score-board">
                 <span style="color:#e30a17">PUAN: <span id="score">0</span></span>
                 <span style="color:#ccc">|</span>
                 <span style="color:#27ae60">SERİ: <span id="streak">0</span> / 10</span>
             </div>
             <div class="target-box">
                 <div class="target-label">HARİTADA BUL:</div>
-                <div class="target-city" id="target-city">...</div>
+                <div class="target-city" id="target-city">Yükleniyor...</div>
             </div>
         </div>
 
-        <div id="msg-box"></div>
+        <div id="feedback-msg"></div>
 
         <div class="info-box">
             <b>Nasıl Oynanır?</b><br>
             Kırmızı kutuda yazan şehri haritada bul ve tıkla.<br>
-            Peş peşe 10 doğru yaparsan sertifika kazanırsın!
+            Hatasız 10 şehir bulursan sertifika kazanırsın!
         </div>
     </div>
 
     <div id="modal">
         <div class="modal-content" id="input-view">
             <h2 style="color:#e30a17">TEBRİKLER!</h2>
-            <p>Türkiye coğrafyasına hakimsin.</p>
-            <input type="text" id="player-name" placeholder="Adınızı Soyadınızı Girin">
+            <p>Türkiye haritası bilgin mükemmel.</p>
+            <input type="text" id="player-name" placeholder="Adınızı Girin">
             <button class="btn" onclick="generateCert()">Sertifikayı Oluştur</button>
         </div>
 
         <div id="cert-view" style="display:none; flex-direction: column; align-items: center;">
             <div id="print-area" style="display:flex;">
                 <div style="text-align:center;">
-                    <h1 style="font-family:'Times New Roman'; font-size:3.5rem; color:#e30a17; margin:10px 0;">BAŞARI BELGESİ</h1>
+                    <h1 style="font-family:'Times New Roman', serif; font-size:3.5rem; color:#e30a17; margin:10px 0;">BAŞARI BELGESİ</h1>
                     <h3 style="letter-spacing:4px; color:#555; text-transform: uppercase;">Türkiye Coğrafya Uzmanı</h3>
                 </div>
                 
                 <div style="text-align:center; margin: 20px 0;">
                     <p style="font-style:italic;">Sayın,</p>
-                    <h2 id="cert-name" style="font-size:2.5rem; border-bottom:2px solid #999; display:inline-block; padding:0 30px 10px 30px;">AD SOYAD</h2>
+                    <h2 id="cert-name" style="font-size:2.5rem; border-bottom:2px solid #999; display:inline-block; padding:0 30px 10px 30px; font-family: 'Montserrat', sans-serif;">İSİM SOYAD</h2>
                 </div>
                 
                 <div style="text-align:center; font-size:1.2rem; line-height:1.6; padding: 0 50px;">
                     "Şehir Bulmaca" oyununda Türkiye'nin 81 ili arasından sorulan şehirleri
-                    hiç hata yapmadan bularak üstün coğrafya bilgisini kanıtlamıştır.
+                    hiç hata yapmadan peş peşe bularak üstün coğrafya bilgisini kanıtlamıştır.
                 </div>
 
-                <div style="margin: 0 auto; width:90px; height:90px; background:#e30a17; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold; outline:3px solid #e30a17; border:3px solid white; box-shadow:0 5px 15px rgba(0,0,0,0.2);">TAM<br>PUAN</div>
+                <div style="margin: 0 auto; width:100px; height:100px; background:#e30a17; color:white; border-radius:50%; display:flex; justify-content:center; align-items:center; font-weight:bold; outline:3px solid #e30a17; border:3px solid white; box-shadow:0 5px 15px rgba(0,0,0,0.2); font-size:1.2rem;">TAM<br>PUAN</div>
 
                 <div style="display:flex; justify-content:space-between; align-items: flex-end; margin-top:20px;">
                     <div style="text-align:left;">TARİH: <span id="cert-date"></span></div>
@@ -179,179 +165,151 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
     <script>
-        // --- 1. HARİTA KURULUMU ---
-        const map = L.map('map', {
-            center: [39, 35], // Kabaca Türkiye ortası
-            zoom: 6,
-            zoomControl: false, // Temiz görünüm
-            attributionControl: false
-        });
-
-        // Arka plan (Sade)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(map);
-
-        // --- 2. DEĞİŞKENLER ---
-        let geojsonLayer;
-        let cities = [];
-        let targetCity = "";
+        // --- OYUN DEĞİŞKENLERİ ---
+        let targetCityName = "";
+        let targetCityId = "";
         let score = 0;
         let streak = 0;
+        let availableCities = [];
+        let polygonSeries;
 
-        // --- 3. VERİ YÜKLEME (GÜVENLİ CDN LINKI) ---
-        // Bu link "jsDelivr" üzerinden gelir, CORS hatası vermez.
-        const DATA_URL = "https://cdn.jsdelivr.net/gh/alperongun/Turkey-Maps@master/tr-cities-utf8.json";
+        // --- HARİTA KURULUMU (AMCHARTS 4) ---
+        am4core.ready(function() {
+            am4core.useTheme(am4core.themes.animated);
 
-        fetch(DATA_URL)
-            .then(response => {
-                if (!response.ok) throw new Error("Ağ Cevap Vermedi");
-                return response.json();
-            })
-            .then(data => {
-                // Veriyi haritaya ekle
-                geojsonLayer = L.geoJson(data, {
-                    style: defaultStyle,
-                    onEachFeature: onEachFeature
-                }).addTo(map);
+            let chart = am4core.create("chartdiv", am4maps.MapChart);
+            
+            // Geodata'yı doğrudan JS değişkeninden alıyoruz (Fetch yok, hata yok)
+            chart.geodata = am4geodata_turkeyLow;
+            
+            // Projeksiyon (Düz harita)
+            chart.projection = new am4maps.projections.Mercator();
 
-                // Şehir isimlerini listeye al
-                data.features.forEach(f => {
-                    if (f.properties && f.properties.name) {
-                        cities.push(f.properties.name);
+            // Türkiye'ye odaklan (Otomatik sığdırır)
+            chart.homeZoomLevel = 1;
+            chart.seriesContainer.draggable = false; // Kaydırmayı kapat (sabit kalsın)
+            chart.seriesContainer.resizable = false; // Zoom'u kapat (isteğe bağlı, burada mobilde kolaylık olsun diye sabit tuttum)
+            // Eğer zoom yapılsın istersen yukarıdaki iki satırı sil.
+
+            // Arka Plan (Deniz)
+            chart.backgroundSeries.mapPolygons.template.polygon.fill = am4core.color("#aad3df");
+            chart.backgroundSeries.mapPolygons.template.polygon.fillOpacity = 1;
+
+            // --- POLİGON SERİSİ (İLLER) ---
+            polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+            polygonSeries.useGeodata = true;
+
+            // Poligon Şablonu
+            let polygonTemplate = polygonSeries.mapPolygons.template;
+            polygonTemplate.tooltipText = "{name}"; // Üzerine gelince isim yazar
+            polygonTemplate.fill = am4core.color("#ffffff"); // İller beyaz
+            polygonTemplate.stroke = am4core.color("#888888"); // Sınırlar gri
+            polygonTemplate.strokeWidth = 0.5;
+            
+            // Hover Efekti
+            let hs = polygonTemplate.states.create("hover");
+            hs.properties.fill = am4core.color("#e30a17"); // Türk bayrağı kırmızısı
+            hs.properties.fillOpacity = 0.2;
+
+            // Tıklama Olayı
+            polygonTemplate.events.on("hit", function(ev) {
+                checkAnswer(ev.target);
+            });
+
+            // Harita hazır olduğunda oyunu başlat
+            chart.events.on("ready", function() {
+                // Şehir listesini oluştur
+                polygonSeries.mapPolygons.each(function(polygon) {
+                    if(polygon.dataItem.dataContext.name) {
+                        availableCities.push({
+                            id: polygon.dataItem.dataContext.id,
+                            name: polygon.dataItem.dataContext.name
+                        });
                     }
                 });
-
-                // --- KRİTİK: HARİTAYI EKRANA SIĞDIR ---
-                // Veri yüklenince otomatik zoom yap
-                map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
-                
-                // Haritayı kilitle (Çok fazla dışarı çıkamasın)
-                map.setMaxBounds(geojsonLayer.getBounds().pad(0.2));
-
-                // Ekranı aç
-                startGame();
-            })
-            .catch(error => {
-                console.error("Hata:", error);
-                document.getElementById('loader-text').innerText = "HATA: Harita Yüklenemedi!\nİnternet bağlantınızı kontrol edip sayfayı yenileyin.";
-                document.getElementById('loader-text').style.color = "yellow";
-            });
-
-        // --- 4. OYUN FONKSİYONLARI ---
-
-        function startGame() {
-            document.getElementById('loader').style.opacity = 0;
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('game-ui').style.display = 'block';
                 nextTurn();
-            }, 500);
-        }
-
-        function defaultStyle(feature) {
-            return {
-                fillColor: '#ffffff',
-                weight: 1,
-                opacity: 1,
-                color: '#888',
-                dashArray: '',
-                fillOpacity: 0.7
-            };
-        }
-
-        function highlightFeature(e) {
-            var layer = e.target;
-            layer.setStyle({
-                weight: 2,
-                color: '#e30a17',
-                fillColor: '#ffebee',
-                fillOpacity: 0.9
             });
-            if (!L.Browser.ie && !L.Browser.edge) { layer.bringToFront(); }
-        }
+        });
 
-        function resetHighlight(e) {
-            geojsonLayer.resetStyle(e.target);
-        }
-
-        function onEachFeature(feature, layer) {
-            layer.on({
-                mouseover: highlightFeature,
-                mouseout: resetHighlight,
-                click: checkAnswer
-            });
-        }
-
+        // --- OYUN MANTIĞI ---
         function nextTurn() {
-            const r = Math.floor(Math.random() * cities.length);
-            targetCity = cities[r];
-            document.getElementById('target-city').innerText = targetCity;
+            if(availableCities.length === 0) return;
+
+            let randomIndex = Math.floor(Math.random() * availableCities.length);
+            let selection = availableCities[randomIndex];
+            
+            targetCityName = selection.name;
+            targetCityId = selection.id;
+
+            document.getElementById("target-city").innerText = targetCityName;
         }
 
-        function checkAnswer(e) {
-            const clickedName = e.target.feature.properties.name;
-            const msg = document.getElementById('msg-box');
+        function checkAnswer(clickedPolygon) {
+            let clickedId = clickedPolygon.dataItem.dataContext.id;
+            let msgBox = document.getElementById("feedback-msg");
 
-            if (clickedName === targetCity) {
-                // DOĞRU
+            if (clickedId === targetCityId) {
+                // DOĞRU CEVAP
                 score += 10;
                 streak++;
                 updateUI();
 
-                e.target.setStyle({ fillColor: '#27ae60', color: 'green' });
-                msg.innerHTML = "<span style='color:#27ae60'>DOĞRU!</span>";
-                msg.style.opacity = 1;
+                // Efektler
+                let originalFill = clickedPolygon.fill;
+                clickedPolygon.fill = am4core.color("#27ae60"); // Yeşil
                 
-                confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+                msgBox.innerHTML = "<span style='color:#27ae60'>DOĞRU!</span>";
+                msgBox.style.opacity = 1;
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
 
                 if (streak >= 10) {
                     setTimeout(winGame, 1500);
                 } else {
                     setTimeout(() => {
-                        geojsonLayer.resetStyle(e.target);
-                        msg.style.opacity = 0;
+                        clickedPolygon.fill = originalFill; // Rengi eski haline getir
+                        msgBox.style.opacity = 0;
                         nextTurn();
                     }, 1000);
                 }
+
             } else {
-                // YANLIŞ
+                // YANLIŞ CEVAP
                 streak = 0;
                 updateUI();
-                
-                e.target.setStyle({ fillColor: '#e30a17', color: 'darkred' });
-                msg.innerHTML = "<span style='color:#e30a17'>YANLIŞ!</span>";
-                msg.style.opacity = 1;
 
-                // Doğru olanı göster (İpucu)
-                geojsonLayer.eachLayer(l => {
-                    if(l.feature.properties.name === targetCity) {
-                        l.setStyle({ fillColor: '#f1c40f', fillOpacity: 0.8 });
-                        setTimeout(() => geojsonLayer.resetStyle(l), 1500);
-                    }
+                clickedPolygon.animate({property: "fill", to: am4core.color("#e30a17")}, 200).events.on("animationended", function(ev){
+                    ev.target.animate({property: "fill", to: am4core.color("#ffffff")}, 500);
                 });
 
+                msgBox.innerHTML = "<span style='color:#e30a17'>YANLIŞ!</span>";
+                msgBox.style.opacity = 1;
+
+                // Doğru şehri göster (İpucu)
+                let correctPolygon = polygonSeries.getPolygonById(targetCityId);
+                if(correctPolygon) {
+                    correctPolygon.animate({property: "fill", to: am4core.color("#f1c40f")}, 300).events.on("animationended", function(ev){
+                        setTimeout(() => {
+                             ev.target.animate({property: "fill", to: am4core.color("#ffffff")}, 500);
+                        }, 1000);
+                    });
+                }
+
                 setTimeout(() => {
-                    geojsonLayer.resetStyle(e.target);
-                    msg.style.opacity = 0;
+                    msgBox.style.opacity = 0;
                     nextTurn();
                 }, 1500);
             }
         }
 
         function updateUI() {
-            document.getElementById('score').innerText = score;
-            document.getElementById('streak').innerText = streak;
+            document.getElementById("score").innerText = score;
+            document.getElementById("streak").innerText = streak;
         }
 
         function winGame() {
-            document.getElementById('modal').style.display = 'flex';
-            // Kutlama Konfetisi
+            document.getElementById("modal").style.display = "flex";
+            // Kutlama
             var end = Date.now() + 3000;
             (function frame() {
                 confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
@@ -361,14 +319,14 @@
         }
 
         function generateCert() {
-            const name = document.getElementById('player-name').value;
-            if (!name) { alert("Lütfen isim girin."); return; }
+            let name = document.getElementById("player-name").value;
+            if(!name) { alert("Lütfen isim giriniz."); return; }
 
-            document.getElementById('cert-name').innerText = name.toUpperCase();
-            document.getElementById('cert-date').innerText = new Date().toLocaleDateString('tr-TR');
-            
-            document.getElementById('input-view').style.display = 'none';
-            document.getElementById('cert-view').style.display = 'flex';
+            document.getElementById("cert-name").innerText = name.toUpperCase();
+            document.getElementById("cert-date").innerText = new Date().toLocaleDateString("tr-TR");
+
+            document.getElementById("input-view").style.display = "none";
+            document.getElementById("cert-view").style.display = "flex";
         }
     </script>
 </body>
