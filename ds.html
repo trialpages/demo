@@ -206,7 +206,7 @@
         }
 
         .cert-name {
-            font-family: 'Great Vibes', cursive;
+            font-family: 'Times New Roman', cursive;
             font-size: 80px;
             color: var(--navy-blue);
             margin: 10px 0;
@@ -294,10 +294,10 @@
 
     <div id="welcome-screen" class="screen active">
         <div style="text-align: center; padding: 20px;">
-            <h3 style="color: var(--navy-blue); margin-bottom: 15px;">Ara Sınav Uygulaması</h3>
+            <h3 style="color: var(--navy-blue); margin-bottom: 15px;">Sınav Uygulaması</h3>
             <p style="color: #666; margin-bottom: 20px;">
-                Sertifika almak için 10 sorudan en az 7 tanesini doğru cevaplamalısınız.
-                Süreniz 5 dakikadır.
+                Sertifika alabilmek için soruların %70'ini doğru cevaplamalısınız.
+                Süreniz 3 dakikadır.
             </p>
             <input type="text" id="user-name" placeholder="Adınız Soyadınız (Sertifikada görünecek)" required>
             <button class="btn" onclick="startQuiz()">SINAVA BAŞLA</button>
@@ -307,7 +307,7 @@
     <div id="quiz-screen" class="screen">
         <div style="display: flex; justify-content: space-between; font-weight: bold; color: var(--gold); margin-bottom: 20px;">
             <span id="question-count">Soru 1/10</span>
-            <span id="timer-display">05:00</span>
+            <span id="timer-display">03:00</span>
         </div>
         <div id="question-text" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 20px;"></div>
         <div id="options-container"></div>
@@ -352,8 +352,8 @@
             </div>
             
             <div class="cert-desc">
-                PLATFORMUMUZ TARAFINDAN HAZIRLANAN SINAVDA SORULAN <br>
-                SORULARIN BÜYÜK ÇOĞUNLUĞUNU DOĞRU CEVAPLAYAN
+                İSLAM HUKUKU ARAŞTIRMALARI PLAFORMU TARAFINDAN HAZIRLANAN SINAVI <br>
+                BAŞARIYLA TAMAMLAYAN
             </div>
 
             <div class="cert-name" id="cert-name-display">Ahmet Yasin Küçüktiryaki</div>
@@ -363,7 +363,7 @@
             </div>
 
             <div class="cert-reason">
-                İslami ilimlere ve hukuk tarihine gösterdiği ilgi ve alakadan dolayı<br>kendisine teşekkür ederiz.
+                İslami ilimlere ve İslam Hukukuna gösterdiği ilgi ve alakadan dolayı<br>kendisine teşekkür ederiz.
             </div>
         </div>
 
@@ -380,7 +380,7 @@
             </div>
         </div>
 
-        <div class="watermark">islamhukukuplatformu.org</div>
+        <div class="watermark">İslam Hukuku Araştırmaları Platformu</div>
     </div>
 
     <br>
