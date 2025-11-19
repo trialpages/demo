@@ -343,7 +343,8 @@
 
         <div id="welcome-screen" class="screen active">
             <div class="welcome-text">
-                <p>Bu sınav, <strong>Temel Dini Bilgiler (İman, İbadet, Ahlak)</strong> konusundaki yetkinliğinizi ölçmek amacıyla hazırlanmıştır.</p>
+                <p>Bu sınav, <strong>Temel Dini Bilgiler alanında iman esasları/itikad</strong> konusundaki yetkinliğinizi ölçmek amacıyla hazırlanmıştır.</p>
+                <p>Bu sınav, <strong>Sınavda başarılı olabilmek için Seyfeddin Yazıcı tarafından kaleme alınan Temel Dini Bilgiler kitabından istifade edebilirsiniz.</strong> konusundaki yetkinliğinizi ölçmek amacıyla hazırlanmıştır.</p>
                 <ul style="text-align: left; display: inline-block; margin-top: 10px; font-size: 0.95rem; color: #666;">
                     <li>• Toplam <strong>25 Soru</strong> bulunmaktadır.</li>
                     <li>• Sınav süresi <strong>15 Dakikadır</strong>.</li>
@@ -432,29 +433,29 @@
            Kaynak: tdb_sorular.docx 
         */
         const questions = [
-            { q: "Din neye denir? Kaynakta geçen dinin tanımı en doğru hangisidir?", o: ["Peygamberler sistemi", "Akıl sahiplerini kendi istekleriyle iyiliğe ulaştıran ilahi kanun", "Ahlak kuralları bütünü", "Bozulmuş sistem", "Toplumsal sözleşme"], a: 1 }, // Cevap B [cite: 7]
+            { q: "Dinin tanımı hangi seçenekte doğru verilmiştir?", o: ["Peygamberler sistemi", "Akıl sahiplerini kendi istekleriyle iyiliğe ulaştıran ilahi kanun", "Ahlak kuralları bütünü", "Bozulmuş sistem", "Toplumsal sözleşme"], a: 1 }, // Cevap B [cite: 7]
             { q: "Aşağıdakilerden hangisi 'Hak Din' tanımına uymaktadır?", o: ["İnsanlarca değiştirilen dinler", "Zamanla bozulan ilahi dinler", "Değişikliğe uğramadan gelen İslam dini", "Uydurulan dinler", "Milli dinler"], a: 2 }, // Cevap C [cite: 14]
             { q: "İslam Dininin hükümleri kaç kısımdır?", o: ["İman, Amel, Siyer", "Amel, Ahlak, Kelam", "İman, Amel, Ahlak", "Tevhid, Risalet, Ahiret", "Fıkıh, İtikat, Kelam"], a: 2 }, // Cevap C [cite: 18]
-            { q: "İslam Kolaylık Dinidir ilkesine göre, yolculara tanınan kolaylık hangisidir?", o: ["Oruç tutmamaya izin", "Farz namazları iki rekat kılma (Kasr)", "Oturarak kılma", "Fidye verme", "Teyemmüm"], a: 1 }, // Cevap B [cite: 24]
+            { q: "İslam Kolaylık Dinidir ilkesine göre, yolculara tanınan kolaylık hangisidir?", o: ["Oruç tutmaya izin", "Farz namazları iki rekat kılma (Kasr)", "Oturarak kılma", "Fidye verme", "Teyemmüm"], a: 1 }, // Cevap B [cite: 24]
             { q: "İslam’ın hem dünya hem ahiret amacını özetleyen prensip hangisidir?", o: ["Ölüm size yetişecektir", "Allah katında din İslam'dır", "Hiç ölmeyecekmiş gibi dünya, yarın ölecekmiş gibi ahiret", "Kalpler Allah'ı anmakla huzur bulur", "Kitabı oku namazı kıl"], a: 2 }, // Cevap C [cite: 30]
-            { q: "Âmentü'de toplanan ve 'Tafsili İman' olarak adlandırılan imanın şartları kaç tanedir?", o: ["Dört", "Beş", "Altı", "Yedi", "On"], a: 2 }, // Cevap C [cite: 35]
-            { q: "Aşağıdakilerden hangisi 'İcmali İman'ın tanımıdır?", o: ["Ayrı ayrı inanmak", "Allah’a ve Peygamberine (topluca) inanmak", "Kalp ile inanıp dille söylemek", "Ayrıntılı inanmak", "Amelsiz inanç"], a: 1 }, // Cevap B [cite: 41]
+            { q: "Âmentü'de toplanan ve 'tafsili iman' olarak adlandırılan imanın şartları kaç tanedir?", o: ["Dört", "Beş", "Altı", "Yedi", "On"], a: 2 }, // Cevap C [cite: 35]
+            { q: "Aşağıdakilerden hangisi 'icmali iman'ın tanımıdır?", o: ["Ayrı ayrı inanmak", "Allah’a ve Peygamberine (topluca) inanmak", "Kalp ile inanıp dille söylemek", "Ayrıntılı inanmak", "Amelsiz inanç"], a: 1 }, // Cevap B [cite: 41]
             { q: "Kalbi ile inanmadığı hâlde, dili ile inandığını söyleyen kimselere ne ad verilir?", o: ["Mümin", "Kafir", "Müşrik", "Münafık", "Fasık"], a: 3 }, // Cevap D [cite: 45]
-            { q: "'İman Ye’s Halinde Olmamalıdır' ifadesi ne anlama gelmektedir?", o: ["İnkar etmemek", "Ölüm anında azabı görünce inanmanın fayda vermemesi", "Hükümleri güzel bulmak", "Dil ile söylemek", "Amel etmek"], a: 1 }, // Cevap B [cite: 51]
+            { q: "'İman ye’s alinde olmamalıdır' ifadesi ne anlama gelmektedir?", o: ["İnkar etmemek", "Ölüm anında azabı görünce inanmanın fayda vermemesi", "Hükümleri güzel bulmak", "Dil ile söylemek", "Amel etmek"], a: 1 }, // Cevap B [cite: 51]
             { q: "Kâinat ve mükemmel düzen, Allah’ın hangi sıfatlarını gösterir?", o: ["Kudret ve İrade", "Varlık ve Vahdaniyet (Birlik)", "Hayat ve Tekvin", "Kıdem ve Beka", "İlim ve Semi"], a: 1 }, // Cevap B [cite: 58]
             { q: "Allah’ın zati sıfatlarından olan 'Muhalefetün li’l-havadis' ne demektir?", o: ["Başlangıcı olmaması", "Sonu olmaması", "Bir olması", "Yaratılmışlara benzememesi", "Kendinden olması"], a: 3 }, // Cevap D [cite: 63]
-            { q: "Aşağıdakilerden hangisi Allah'ın Subuti sıfatlarından biri değildir?", o: ["Hayat", "İlim", "Semi", "Kıdem", "İrade"], a: 3 }, // Cevap D (Kıdem Zatidir) [cite: 67]
+            { q: "Aşağıdakilerden hangisi Allah'ın subuti sıfatlarından biri değildir?", o: ["Hayat", "İlim", "Semi", "Kıdem", "İrade"], a: 3 }, // Cevap D (Kıdem Zatidir) [cite: 67]
             { q: "Meleklerin özellikleri ile ilgili verilen bilgilerden hangisi yanlıştır?", o: ["Nurdan yaratılmışlardır", "Emirleri kusursuz yaparlar", "Erkeklik ve dişilikleri vardır", "Yemez içmezler", "Günah işlemezler"], a: 2 }, // Cevap C [cite: 73]
             { q: "Aşağıda verilen melek ve görev eşleştirmelerinden hangisi yanlıştır?", o: ["Kirâmen Kâtibin: Yazıcı", "Münker-Nekir: Sorgu", "Rıdvan: Cennet", "Mâlik: Cehennem", "Mâlik: Sura üfüren (İsrafil olmalı)"], a: 4 }, // Cevap E [cite: 79]
             { q: "Kirâmen Kâtibin meleklerine iman, insanı hangi davranıştan sakındırır?", o: ["İbadeti terkten", "Korumasız kalmaktan", "Doğruluktan ayrılmaktan", "Gizli yerlerde fenalık yapmaktan", "Hazırlıksız olmaktan"], a: 3 }, // Cevap D [cite: 84]
             { q: "Allah’ın, dilediği şeyleri vasıtasız peygamberlerin kalbine koyması hangi vahiy çeşididir?", o: ["Sadık Rüya", "İlham Yoluyla Vahiy", "Sözlü Vahiy", "Mushaf", "Kitap"], a: 1 }, // Cevap B [cite: 89]
-            { q: "Kendisine Suhuf (Sahifeler) gönderilen peygamberlerden hangisi yanlıştır?", o: ["Hz. Adem", "Hz. Şit", "Hz. İbrahim", "Hz. İdris", "Hz. Musa"], a: 4 }, // Cevap E (Musa'ya Kitap/Tevrat indi) [cite: 93]
+            { q: "Kendisine suhuf (sahifeler) gönderilen peygamberlerden hangisi yanlıştır?", o: ["Hz. Adem", "Hz. Şit", "Hz. İbrahim", "Hz. İdris", "Hz. Musa"], a: 4 }, // Cevap E (Musa'ya Kitap/Tevrat indi) [cite: 93]
             { q: "İlk inen ve 'Oku' emrinin bulunduğu sure hangisidir?", o: ["Fatiha", "İhlas", "Alâk", "Bakara", "Müddessir"], a: 2 }, // Cevap C [cite: 97]
             { q: "Hangisi Kur’an-ı Kerim’i diğer ilahî kitaplardan ayıran bir özellik değildir?", o: ["Değişmeden gelmesi", "Parça parça inmesi", "Evrensel olması", "En büyük mucize olması", "Önceki hükümleri kaldırmamış olması"], a: 4 }, // Cevap E (Hükümleri kaldırmıştır) [cite: 104]
-            { q: "Peygamberlerin sıfatlarından olan 'İsmet' ne anlama gelir?", o: ["Tebliğ etmek", "Akıllı olmak", "Güvenilir olmak", "Günah işlememek", "Doğru olmak"], a: 3 }, // Cevap D [cite: 110]
+            { q: "Peygamberlerin sıfatlarından olan 'ismet' ne anlama gelir?", o: ["Tebliğ etmek", "Akıllı olmak", "Güvenilir olmak", "Günah işlememek", "Doğru olmak"], a: 3 }, // Cevap D [cite: 110]
             { q: "Kur’an-ı Kerim’de ismi geçen peygamberlerin sayısı hakkında hangisi doğrudur?", o: ["Sadece 25 peygamber vardır", "Çoktur ama Kur'an'da 25 tanesinin adı geçer", "20'dir", "İlk Adem Son İsa'dır", "Hepsi kitap sahibidir"], a: 1 }, // Cevap B [cite: 116]
             { q: "Öldükten sonra dirilme ve sonsuza kadar sürecek hayata ne ad verilir?", o: ["Kabir", "Kıyamet", "Haşir", "Ahiret Günü", "Berzah"], a: 3 }, // Cevap D [cite: 121]
-            { q: "Ahiret hayatıyla ilgili hangisi yanlıştır?", o: ["Ölüm yok oluş değildir", "Ruh ölmez", "Kıyameti yalnız Allah bilir", "Cennet sonsuzdur", "Kabir herkes için azap yeridir"], a: 4 }, // Cevap E [cite: 127]
+            { q: "Ahiret hayatıyla ilgili hangisi yanlıştır?", o: ["Ölüm yok oluş değildir", "Ahiret hayatı ebedidir", "Kıyameti yalnız Allah bilir", "Cennet sonsuzdur", "Kabir herkes için azap yeridir"], a: 4 }, // Cevap E [cite: 127]
             { q: "Kader ve kaza terimlerinin en iyi açıklaması hangisidir?", o: ["Hareket ve sonuç", "Allah'ın yaratması ve bilmesi", "Kader plan, kaza o planın uygulanmasıdır", "Sorumluluk ve yaratma", "Gelecek ve geçmiş"], a: 2 }, // Cevap C [cite: 134]
             { q: "İnsanın sorumlu tutulmasının temel sebebi nedir?", o: ["Allah'ın yaratması", "İrade ve seçme hürriyetine sahip olması", "İrade dışı işler", "Kader inancı", "Takdirin Allah'tan olması"], a: 1 } // Cevap B [cite: 140]
         ];
@@ -554,7 +555,7 @@
                 title.textContent = "BAŞARISIZ";
                 title.style.color = "var(--error)";
                 circle.style.color = "var(--error)";
-                msg.textContent = `Sertifika almak için %70 başarısına ulaşmalısınız. (Puanınız: %${percent})`;
+                msg.textContent = `Sertifika almak için %70 başarısına ulaşmalısınız. Lütfen Seyfeddin Yazıcı tarafından kaleme alınan Temel Dini Bilgiler kitabının itikat bölümünü okuyunuz. (Puanınız: %${percent})`;
             }
         }
 
