@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Ülke Bulmaca - Coğrafya Oyunu</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --primary-green: #1a3c34;
+            --accent-gold: #c5a059;
+            --bg-color: #aad3df;
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Rubik', sans-serif; overflow: hidden; background: var(--bg-color); }
+        
+        /* --- Harita --- */
+        #map { width: 100%; height: 100vh; background: var(--bg-color); z-index: 1; }
+
+        /* --- UI Katmanları --- */
+        .game-ui {
+            position: absolute; z-index: 1000; pointer-events: none;
+            width: 100%; height: 100%; top: 0; left: 0;
+        }
+
+        /* --- Tasarım İmzası (SOL ÜST) --- */
+        .designer-credit {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.75rem;
+            color: #2c3e50;
+            background: rgba(255,255,255,0.7);
+            padding: 6px 12px;
+            border-radius: 20px;
+            pointer-events: auto;
+            font-weight: 600;
+            z-index: 1002; /* Zoom kontrolünün üzerinde olsun */
+            backdrop-filter: blur(3px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .designer-credit a {
+            color: #c0392b;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .designer-credit a:hover { color: #e74c3c; }
+
+        /* --- Üst Panel (Skor) --- */
+        .top-panel {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            pointer-events: auto; width: 90%; max-width: 500px;
+        }
+
+        .score-board {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 20px; border-radius: 50px;
+            font-weight: 800; color: #2c3e50;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-size: 1rem; display: flex; align-items: center; gap: 10px;
+        }
+
+        .question-box {
+            background: #e74c3c; color: white;
+            padding: 15px 20px; border-radius: 15px;
+            text-align: center; box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 100%;
+        }
+        
+        .find-text { font-size: 0.85rem; opacity: 0.9; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
+        .country-name { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+
+        /* --- Bilgi Kutusu (Mobil Uyumlu) --- */
+        .bottom-info {
+            position: absolute; bottom: 20px; left: 20px;
+            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 12px;
+            max-width: 280px; font-size: 0.85rem; color: #444;
+            pointer-events: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-left: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Info Butonu (Mobilde görünür) */
+        .info-toggle-btn {
+            display: none; position: absolute; bottom: 60px; left: 20px;
+            width: 40px; height: 40px; background: #fff;
+            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            align-items: center; justify-content: center;
+            font-size: 1.2rem; color: #3498db; pointer-events: auto;
+            z-index: 1002; cursor: pointer;
+        }
+
+        #feedback-msg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; width: 100%; z-index: 1001;
+        }
+
+        /* --- Modal & Sertifika --- */
+        #modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 2000;
+            justify-content: center; align-items: center; flex-direction: column;
+            backdrop-filter: blur(8px); overflow-y: auto;
+        }
+        
+        .input-container {
+            background: #fff; padding: 40px; width: 90%; max-width: 500px;
+            text-align: center; border-radius: 20px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .cert-input { 
+            padding: 15px; font-size: 1.1rem; width: 80%; margin: 20px 0; 
+            border: 2px solid #eee; border-radius: 8px; outline: none; transition: 0.3s;
+        }
+        .cert-input:focus { border-color: var(--accent-gold); }
+        
+        .btn { 
+            background: var(--primary-green); color: white; padding: 15px 30px; 
+            border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; 
+            font-weight: bold; transition: transform 0.2s; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* --- SERTİFİKA GÖRÜNÜMÜ --- */
+        #final-cert-wrapper {
+            display: none; width: 95%; max-width: 900px;
+            background: transparent; padding: 20px;
+        }
+
+        /* Yazdırılabilir Alan (A4 oranlarına yakın tutmak iyidir ama responsive yaptık) */
+        .certificate-paper {
+            background: #fff; position: relative; padding: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            /* PDF oluştururken beyaz kenarlık sorunu olmaması için */
+            margin: 0 auto;
+        }
+
+        .cert-border-outer {
+            border: 8px solid var(--primary-green);
+            padding: 5px; box-sizing: border-box; position: relative;
+        }
+
+        .cert-border-inner {
+            border: 2px solid var(--primary-green); padding: 40px; text-align: center;
+            position: relative;
+            background-image: radial-gradient(#f5f5f5 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Süsler */
+        .corner-decoration {
+            position: absolute; width: 40px; height: 40px;
+            border-color: var(--accent-gold); border-style: solid;
+        }
+        .tl { top: 10px; left: 10px; border-width: 3px 0 0 3px; }
+        .tr { top: 10px; right: 10px; border-width: 3px 3px 0 0; }
+        .bl { bottom: 10px; left: 10px; border-width: 0 0 3px 3px; }
+        .br { bottom: 10px; right: 10px; border-width: 0 3px 3px 0; }
+
+        .cert-header {
+            font-family: 'Cinzel', serif; font-size: 3rem; color: var(--primary-green);
+            font-weight: 700; letter-spacing: 2px; margin-top: 20px; margin-bottom: 5px; text-transform: uppercase;
+        }
+
+        .cert-subheader {
+            font-family: 'Rubik', sans-serif; color: var(--accent-gold); text-transform: uppercase;
+            font-weight: 600; letter-spacing: 3px; font-size: 0.9rem; margin-bottom: 40px;
+            border-bottom: 1px solid #ddd; display: inline-block; padding-bottom: 10px;
+        }
+
+        .cert-body-text {
+            font-family: 'Playfair Display', serif; font-size: 1.1rem; color: #555; font-style: italic; margin-bottom: 20px;
+        }
+
+        .cert-name {
+            font-family: 'Cinzel', serif; font-size: 2.8rem; color: var(--primary-green);
+            font-weight: 700; margin: 20px 0; text-transform: uppercase;
+            border-bottom: 2px solid #eee; display: inline-block; padding: 0 20px 10px 20px;
+        }
+
+        .cert-reason {
+            font-family: 'Rubik', sans-serif; color: #444; line-height: 1.6; max-width: 80%; margin: 0 auto 40px auto;
+        }
+
+        .cert-footer {
+            display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px; padding: 0 40px;
+        }
+
+        .cert-sign-box { text-align: center; }
+        .sign-line { width: 200px; border-bottom: 1px solid #333; margin-bottom: 5px; }
+        .sign-title { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--primary-green); font-weight: bold; }
+        .sign-img { font-family: 'Playfair Display', cursive; font-size: 1.5rem; color: #2c3e50; margin-bottom: -10px; }
+
+        .gold-badge {
+            width: 100px; height: 100px;
+            background: linear-gradient(45deg, #c5a059, #eacda3, #d4af37);
+            border-radius: 50%; color: #fff;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-weight: bold; box-shadow: 0 5px 15px rgba(197, 160, 89, 0.5);
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+        }
+
+        .cert-meta {
+            position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+            font-size: 0.6rem; color: #999;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;
+        }
+        .btn-outline {
+            background: transparent; border: 2px solid #fff; color: #fff;
+        }
+        .btn-download {
+            background: #34495e; display: flex; align-items: center; gap: 8px;
+        }
+        
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        @media (max-width: 600px) {
+            .country-name { font-size: 1.3rem; }
+            .top-panel { width: 95%; top: 10px; }
+            .score-board { font-size: 0.9rem; padding: 5px 15px; }
+            
+            /* Mobilde bilgi kutusu */
+            .bottom-info { display: none; bottom: 80px; left: 5%; width: 85%; z-index: 1100; }
+            .bottom-info.active { display: block; animation: popIn 0.3s; }
+            .info-toggle-btn { display: flex; }
+
+            /* Sertifika */
+            .cert-header { font-size: 1.8rem; }
+            .cert-name { font-size: 1.5rem; }
+            .cert-border-inner { padding: 15px; }
+            .cert-footer { flex-direction: column; gap: 20px; padding: 0; align-items: center; }
+            .gold-badge { position: relative; bottom: auto; left: auto; transform: none; margin: 20px auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <div class="designer-credit">
+        Designed by <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a> & Gemini
+    </div>
+
+    <div class="game-ui">
+        <div class="top-panel">
+            <div class="score-board">
+                <span>PUAN:</span>
+                <span id="score-txt" style="color:#e74c3c">0</span>
+                <span style="color:#ccc; margin: 0 5px;">|</span>
+                <span>SERİ:</span>
+                <span id="streak-txt" style="color:#27ae60">0</span> / 10
+            </div>
+            <div class="question-box">
+                <div class="find-text">HARİTADA BUL:</div>
+                <div class="country-name" id="target-name">Yükleniyor...</div>
+            </div>
+        </div>
+
+        <div id="feedback-msg"></div>
+
+        <div class="info-toggle-btn" onclick="toggleInfo()">
+            <i class="fas fa-info"></i>
+        </div>
+
+        <div class="bottom-info" id="info-box">
+            <b style="color:#2980b9">Nasıl Oynanır?</b><br>
+            <div style="margin-top:5px; line-height:1.4;">
+                Kırmızı kutuda yazan ülkeye haritada tıkla.<br>
+                Zoom: Tekerlek veya iki parmak.<br>
+                <strong style="color:#e74c3c">Hedef:</strong> 10 seri yap, sertifikayı kap!
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="input-container" id="input-step">
+            <h2 style="color:#27ae60; font-family:'Rubik';">TEBRİKLER!</h2>
+            <p style="color:#555;">10 Ülkeyi hatasız buldun.</p>
+            <input type="text" class="cert-input" id="player-name" placeholder="Adınızı Soyadınızı Yazın" autocomplete="off">
+            <button class="btn" onclick="createCertificate()">Sertifikamı Oluştur</button>
+        </div>
+
+        <div id="final-cert-wrapper">
+            <div class="certificate-paper" id="printable-area">
+                <div class="cert-border-outer">
+                    <div class="cert-border-inner">
+                        <div class="corner-decoration tl"></div>
+                        <div class="corner-decoration tr"></div>
+                        <div class="corner-decoration bl"></div>
+                        <div class="corner-decoration br"></div>
+
+                        <div class="cert-header">BAŞARI SERTİFİKASI</div>
+                        <div class="cert-subheader">TEMEL COĞRAFYA BİLGİSİ EĞİTİMİ</div>
+                        
+                        <div class="cert-body-text">
+                            Bu belge, aşağıda ismi bulunan katılımcının
+                        </div>
+
+                        <div class="cert-name" id="cert-name-display">AD SOYAD</div>
+
+                        <div class="cert-reason">
+                            Ülkeler coğrafyasına dair bilginiz ve ülke konumlarını başarılı şekilde tespitiniz sebebiyle bu sertifikayı almaya hak kazanmıştır.
+                        </div>
+
+                        <div class="gold-badge">
+                            <div style="font-size:1.5rem;">100</div>
+                            <div style="font-size:0.7rem;">TAM PUAN</div>
+                        </div>
+
+                        <div class="cert-footer">
+                            <div class="cert-sign-box">
+                                <div id="cert-date" style="font-family:'Playfair Display'; font-weight:bold; margin-bottom:5px;"></div>
+                                <div class="sign-line"></div>
+                                <div class="sign-title">TARİH</div>
+                            </div>
+                            <div class="cert-sign-box">
+                                <div class="sign-img">CPuzzle Yön.</div>
+                                <div class="sign-line"></div>
+                                <div class="sign-title">ONAYLAYAN</div>
+                            </div>
+                        </div>
+                        
+                        <div class="cert-meta">
+                            Belge No: <span id="cert-id"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-download" onclick="downloadCert('pdf')">
+                    <i class="fas fa-file-pdf"></i> PDF İndir
+                </button>
+                <button class="btn btn-download" onclick="downloadCert('jpeg')">
+                    <i class="fas fa-image"></i> JPEG İndir
+                </button>
+                <button class="btn btn-outline" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Yeni Oyun
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // --- AYARLAR ---
+        const map = L.map('map', {
+            center: [20, 0], zoom: 2, minZoom: 2, maxZoom: 6, zoomControl: false
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy;OpenStreetMap, &copy;CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+
+        let geojsonLayer;
+        let targetFeature = null;
+        let score = 0;
+        let streak = 0;
+        
+        const dictionary = {
+            "Turkey": "Türkiye", "United States of America": "ABD", "Russia": "Rusya", "China": "Çin",
+            "Brazil": "Brezilya", "India": "Hindistan", "Canada": "Kanada", "Australia": "Avustralya",
+            "Argentina": "Arjantin", "Kazakhstan": "Kazakistan", "Algeria": "Cezayir", "DR Congo": "Kongo DC",
+            "Greenland": "Grönland", "Saudi Arabia": "Suudi Arabistan", "Mexico": "Meksika", "Indonesia": "Endonezya",
+            "Sudan": "Sudan", "Libya": "Libya", "Iran": "İran", "Mongolia": "Moğolistan", "Peru": "Peru",
+            "Chad": "Çad", "Niger": "Nijer", "Angola": "Angola", "Mali": "Mali", "South Africa": "Güney Afrika",
+            "Colombia": "Kolombiya", "Ethiopia": "Etiyopya", "Bolivia": "Bolivya", "Mauritania": "Moritanya",
+            "Egypt": "Mısır", "Tanzania": "Tanzanya", "Nigeria": "Nijerya", "Venezuela": "Venezuela",
+            "Pakistan": "Pakistan", "Namibia": "Namibya", "Mozambique": "Mozambik", "Thailand": "Tayland",
+            "Chile": "Şili", "Zambia": "Zambiya", "Myanmar": "Myanmar", "France": "Fransa", "Afghanistan": "Afganistan",
+            "Somalia": "Somali", "Ukraine": "Ukrayna", "Madagascar": "Madagaskar", "Botswana": "Botsvana",
+            "Kenya": "Kenya", "Yemen": "Yemen", "Iraq": "Irak", "Morocco": "Fas", "Paraguay": "Paraguay",
+            "Zimbabwe": "Zimbabve", "Japan": "Japonya", "Germany": "Almanya", "Finland": "Finlandiya",
+            "Malaysia": "Malezya", "Philippines": "Filipinler", "Ecuador": "Ekvador", "United Kingdom": "İngiltere",
+            "Italy": "İtalya", "Spain": "İspanya", "Poland": "Polonya", "Romania": "Romanya", "Greece": "Yunanistan",
+            "South Korea": "Güney Kore", "Portugal": "Portekiz", "Hungary": "Macaristan", "Sweden": "İsveç",
+            "Norway": "Norveç", "Iceland": "İzlanda", "Syria": "Suriye"
+        };
+
+        fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+            .then(res => res.json())
+            .then(data => {
+                geojsonLayer = L.geoJson(data, { style: style, onEachFeature: onEachFeature }).addTo(map);
+                nextTurn();
+            });
+
+        function style(feature) {
+            return { fillColor: '#ffffff', weight: 1, opacity: 1, color: '#999', dashArray: '3', fillOpacity: 0.5 };
+        }
+
+        function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({ weight: 2, color: '#666', dashArray: '', fillOpacity: 0.7, fillColor: '#f1c40f' });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
+        }
+        function resetHighlight(e) { geojsonLayer.resetStyle(e.target); }
+        function onEachFeature(feature, layer) {
+            layer.on({ mouseover: highlightFeature, mouseout: resetHighlight, click: checkAnswer });
+        }
+
+        function nextTurn() {
+            let keys = Object.keys(dictionary);
+            let randomEngName = keys[Math.floor(Math.random() * keys.length)];
+            let found = false;
+            geojsonLayer.eachLayer(function(layer){
+                if(layer.feature.properties.name === randomEngName) {
+                    targetFeature = layer.feature; found = true;
+                }
+            });
+            if(found) {
+                document.getElementById('target-name').innerText = dictionary[randomEngName];
+            } else { nextTurn(); }
+        }
+
+        function checkAnswer(e) {
+            let clickedName = e.target.feature.properties.name;
+            let targetName = targetFeature.properties.name;
+            let feedback = document.getElementById('feedback-msg');
+
+            if (clickedName === targetName) {
+                score += 10; streak++;
+                e.target.setStyle({ fillColor: '#27ae60', fillOpacity: 0.9, color: 'green' });
+                feedback.innerHTML = "<span style='color:#27ae60'>DOĞRU!</span>";
+                feedback.style.opacity = 1;
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+                updateUI();
+                if(streak >= 10) { setTimeout(winGame, 1000); }
+                else { setTimeout(() => { geojsonLayer.resetStyle(e.target); feedback.style.opacity = 0; nextTurn(); }, 1000); }
+            } else {
+                streak = 0; updateUI();
+                e.target.setStyle({ fillColor: '#e74c3c', fillOpacity: 0.9 });
+                feedback.innerHTML = "<span style='color:#c0392b'>YANLIŞ!</span>";
+                feedback.style.opacity = 1;
+                geojsonLayer.eachLayer(function(layer){
+                    if(layer.feature.properties.name === targetName) {
+                        layer.setStyle({ fillColor: '#f39c12', fillOpacity: 0.8 });
+                        setTimeout(() => { geojsonLayer.resetStyle(layer); }, 1500);
+                    }
+                });
+                setTimeout(() => { geojsonLayer.resetStyle(e.target); feedback.style.opacity = 0; nextTurn(); }, 1500);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('score-txt').innerText = score;
+            document.getElementById('streak-txt').innerText = streak;
+        }
+
+        function winGame() {
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function toggleInfo() {
+            const box = document.getElementById('info-box');
+            if(box.style.display === 'block') {
+                box.style.display = 'none';
+            } else {
+                box.style.display = 'block';
+                box.classList.add('active');
+            }
+        }
+
+        function createCertificate() {
+            let name = document.getElementById('player-name').value;
+            if(!name) { alert("İsim girmelisin!"); return; }
+            document.getElementById('cert-name-display').innerText = name;
+            document.getElementById('cert-date').innerText = new Date().toLocaleDateString('tr-TR');
+            document.getElementById('cert-id').innerText = "CP-" + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('input-step').style.display = 'none';
+            document.getElementById('final-cert-wrapper').style.display = 'block';
+            
+            // Confetti tekrar
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        }
+
+        // --- İNDİRME FONKSİYONLARI ---
+        window.jspdf = window.jspdf || { jsPDF: window.jspdf.jsPDF };
+
+        function downloadCert(type) {
+            const element = document.getElementById('printable-area');
+            // İndirilirken kullanıcıya bilgi verelim
+            const originalText = type === 'pdf' ? "PDF Hazırlanıyor..." : "JPEG Hazırlanıyor...";
+            // html2canvas ile yüksek çözünürlükte yakala (scale: 3)
+            html2canvas(element, { scale: 3, useCORS: true, allowTaint: true }).then(canvas => {
+                
+                if (type === 'jpeg') {
+                    const link = document.createElement('a');
+                    link.download = 'cografya-basari-sertifikasi.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                } 
+                else if (type === 'pdf') {
+                    const { jsPDF } = window.jspdf;
+                    // A4 Yatay (Landscape) - mm cinsinden
+                    const doc = new jsPDF('l', 'mm', 'a4');
+                    const pageWidth = 297; // A4 Genişlik
+                    const pageHeight = 210; // A4 Yükseklik
+                    
+                    const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                    
+                    // Görüntüyü sayfaya tam sığdır
+                    doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                    doc.save('cografya-basari-sertifikasi.pdf');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
