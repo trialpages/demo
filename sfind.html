@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Media Downloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --border-radius: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, #1e1b4b, transparent 40%),
+                              radial-gradient(circle at bottom left, #1e1b4b, transparent 40%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0,0,0,0.2);
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Input Area */
+        .input-group { position: relative; margin-bottom: 20px; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            padding-right: 50px;
+            background-color: #0f172a;
+            border: 2px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Main Button */
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .action-btn:active { transform: translateY(0); }
+
+        /* Result Area */
+        .result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-area.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .result-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .file-info h4 { font-size: 0.9rem; margin-bottom: 4px; }
+        .file-info p { font-size: 0.8rem; color: var(--text-muted); }
+
+        .download-link {
+            text-decoration: none;
+            background: var(--bg-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            border: 1px solid var(--success);
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Icons */
+        .icon { width: 20px; height: 20px; fill: currentColor; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Nexus Downloader</h1>
+        <p>Tek link, sınırsız erişim. YouTube, Sosyal Medya ve Dizi/Film.</p>
+    </div>
+
+    <div class="card">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('yt')">YouTube MP3</button>
+            <button class="tab-btn" onclick="switchTab('social')">Sosyal Medya</button>
+            <button class="tab-btn" onclick="switchTab('stream')">Stream Extractor</button>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Youtube video linkini yapıştırın...">
+        </div>
+
+        <button class="action-btn" onclick="processLink()">
+            <span class="btn-text">Dönüştür ve İndir</span>
+            <div class="spinner"></div>
+        </button>
+
+        <div id="resultArea" class="result-area">
+            <div class="result-content">
+                <div class="file-info">
+                    <h4 id="resTitle">Dosya Hazırlandı</h4>
+                    <p id="resMeta">MP3 • 4.5 MB</p>
+                    <small id="resUrl" style="display:none; color:#94a3b8; font-family:monospace; margin-top:5px; display:block; word-break:break-all;"></small>
+                </div>
+                <a href="#" id="downloadBtn" class="download-link" target="_blank">İndir / Kopyala</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentMode = 'yt';
+
+    const placeholders = {
+        'yt': 'Youtube video linkini yapıştırın (örn: youtube.com/watch?v=...)',
+        'social': 'Instagram, Twitter veya Facebook linki...',
+        'stream': 'Dizi/Film izleme sayfası linki...'
+    };
+
+    const btnTexts = {
+        'yt': 'MP3\'e Dönüştür',
+        'social': 'Videoyu Getir',
+        'stream': 'Kök URL\'yi Bul'
+    };
+
+    function switchTab(mode) {
+        currentMode = mode;
+        
+        // Update UI classes
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // Update Placeholders
+        document.getElementById('urlInput').placeholder = placeholders[mode];
+        document.querySelector('.btn-text').innerText = btnTexts[mode];
+        
+        // Reset Results
+        document.getElementById('resultArea').style.display = 'none';
+        document.getElementById('urlInput').value = '';
+    }
+
+    function processLink() {
+        const input = document.getElementById('urlInput').value;
+        const btnText = document.querySelector('.btn-text');
+        const spinner = document.querySelector('.spinner');
+        const resultArea = document.getElementById('resultArea');
+
+        // Basit Validasyon
+        if(!input.trim().startsWith('http')) {
+            alert('Lütfen geçerli bir http/https linki giriniz.');
+            return;
+        }
+
+        // UI Loading State
+        btnText.style.display = 'none';
+        spinner.style.display = 'block';
+        resultArea.style.display = 'none';
+        resultArea.classList.remove('error');
+
+        // SİMÜLASYON (API GEREKSİNİMİ)
+        // Gerçek dünyada burada bir fetch() isteği ile backend servisine gidilir.
+        // Tarayıcı güvenliği sebebiyle sunucusuz bu işlem yapılamaz.
+        // Bu kod, işlem başarılı olduğunda arayüzün nasıl tepki vereceğini gösterir.
+
+        setTimeout(() => {
+            spinner.style.display = 'none';
+            btnText.style.display = 'block';
+            resultArea.style.display = 'block';
+
+            const resTitle = document.getElementById('resTitle');
+            const resMeta = document.getElementById('resMeta');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resUrl = document.getElementById('resUrl');
+
+            if(currentMode === 'yt') {
+                resTitle.innerText = "Music: " + "Awesome Track.mp3";
+                resMeta.innerText = "MP3 • 128kbps • Ready";
+                downloadBtn.innerText = "İndir";
+                downloadBtn.href = "#"; // Buraya backend'den gelen MP3 linki konur
+                resUrl.style.display = 'none';
+            } 
+            else if (currentMode === 'social') {
+                resTitle.innerText = "Video Bulundu";
+                resMeta.innerText = "MP4 • HD Quality";
+                downloadBtn.innerText = "İndir";
+                downloadBtn.href = "#"; // Buraya backend'den gelen Video linki konur
+                resUrl.style.display = 'none';
+            }
+            else if (currentMode === 'stream') {
+                resTitle.innerText = "Stream Kaynağı Çözüldü";
+                resMeta.innerText = "M3U8 / MP4 Kaynağı";
+                downloadBtn.innerText = "Kopyala";
+                // Simüle edilmiş kök URL
+                const fakeRootUrl = "https://cdn-stream-server.xyz/hls/" + Math.random().toString(36).substring(7) + "/index.m3u8";
+                resUrl.style.display = 'block';
+                resUrl.innerText = fakeRootUrl;
+                
+                downloadBtn.onclick = (e) => {
+                    e.preventDefault();
+                    navigator.clipboard.writeText(fakeRootUrl);
+                    downloadBtn.innerText = "Kopyalandı!";
+                };
+            }
+
+        }, 1500); // 1.5 saniye bekleme simülasyonu
+    }
+</script>
+
+</body>
+</html>
