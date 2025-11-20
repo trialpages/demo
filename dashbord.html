@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeOS - Kişisel Yönetim Paneli</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --text-light: #f8fafc;
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: var(--card-dark);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-light);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-control, .form-select {
+            background-color: #334155;
+            border: 1px solid #475569;
+            color: white;
+        }
+        
+        .form-control:focus {
+            background-color: #334155;
+            color: white;
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+            border-color: var(--accent);
+        }
+
+        .nav-pills .nav-link {
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .fab-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .list-group-item {
+            background-color: var(--card-dark);
+            border-color: rgba(255,255,255,0.05);
+            color: var(--text-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hidden { display: none !important; }
+        
+        /* Password blurring */
+        .blur-text { filter: blur(5px); transition: filter 0.3s; cursor: pointer; }
+        .blur-text:hover, .blur-text.revealed { filter: none; }
+
+        .badge-income { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-expense { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        #auth-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="auth-container" class="container">
+        <div class="card p-5" style="max-width: 400px; width: 100%;">
+            <h2 class="text-center mb-4"><i class="fas fa-shield-alt text-primary"></i> LifeOS</h2>
+            <div class="mb-3">
+                <label>E-posta</label>
+                <input type="email" id="email" class="form-control" placeholder="ornek@mail.com">
+            </div>
+            <div class="mb-3">
+                <label>Şifre</label>
+                <input type="password" id="password" class="form-control" placeholder="******">
+            </div>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" onclick="login()">Giriş Yap</button>
+                <button class="btn btn-outline-light" onclick="register()">Kayıt Ol</button>
+            </div>
+            <p class="mt-3 text-center text-muted small" id="auth-message"></p>
+        </div>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
+            <div class="container">
+                <a class="navbar-brand" href="#"><i class="fas fa-fingerprint"></i> LifeOS</a>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-warning" onclick="exportData()"><i class="fas fa-download"></i> Yedekle (Export)</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="switchTab('finance')"><i class="fas fa-wallet"></i> Finans</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchTab('passwords')"><i class="fas fa-key"></i> Kasa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchTab('notes')"><i class="fas fa-sticky-note"></i> Notlar</a>
+                </li>
+            </ul>
+
+            <div id="tab-finance" class="view-section">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center">
+                            <h5 class="text-muted">Toplam Bakiye</h5>
+                            <h2 id="total-balance">0.00 ₺</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center border-success">
+                            <h5 class="text-success">Gelirler</h5>
+                            <h3 id="total-income">0.00 ₺</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-3 text-center border-danger">
+                            <h5 class="text-danger">Giderler</h5>
+                            <h3 id="total-expense">0.00 ₺</h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3">Hareketler</h5>
+                <ul class="list-group" id="finance-list">
+                    <li class="list-group-item text-center text-muted">Yükleniyor...</li>
+                </ul>
+            </div>
+
+            <div id="tab-passwords" class="view-section hidden">
+                <div class="alert alert-warning small"><i class="fas fa-exclamation-triangle"></i> Parolalarınızı şifreli notlar içinde tutmanız önerilir. Burası basit saklama içindir.</div>
+                <input type="text" class="form-control mb-3" id="search-pass" placeholder="Parola ara..." onkeyup="filterPasswords()">
+                <div class="row" id="password-list">
+                    </div>
+            </div>
+
+            <div id="tab-notes" class="view-section hidden">
+                <div class="row" id="notes-list">
+                    </div>
+            </div>
+
+        </div>
+
+        <button class="btn btn-primary fab-btn" data-bs-toggle="modal" data-bs-target="#addModal">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Yeni Ekle</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select mb-3" id="add-type" onchange="updateModalFields()">
+                        <option value="finance">Finans (Gelir/Gider/Borç)</option>
+                        <option value="password">Parola Kaydı</option>
+                        <option value="note">Not</option>
+                    </select>
+
+                    <div id="fields-finance" class="input-group-set">
+                        <input type="text" id="fin-title" class="form-control mb-2" placeholder="Başlık (Örn: Maaş, Kira)">
+                        <input type="number" id="fin-amount" class="form-control mb-2" placeholder="Tutar (TL)">
+                        <select id="fin-category" class="form-select mb-2">
+                            <option value="income">Gelir (+)</option>
+                            <option value="expense">Gider (-)</option>
+                            <option value="debt">Borç (Alacak/Verecek)</option>
+                        </select>
+                    </div>
+
+                    <div id="fields-password" class="input-group-set hidden">
+                        <input type="text" id="pass-site" class="form-control mb-2" placeholder="Site/Uygulama Adı">
+                        <input type="text" id="pass-user" class="form-control mb-2" placeholder="Kullanıcı Adı / E-posta">
+                        <input type="text" id="pass-key" class="form-control mb-2" placeholder="Parola">
+                    </div>
+
+                    <div id="fields-note" class="input-group-set hidden">
+                        <input type="text" id="note-title" class="form-control mb-2" placeholder="Not Başlığı">
+                        <textarea id="note-content" class="form-control mb-2" rows="4" placeholder="Not içeriği..."></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="saveData()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ==========================================
+        // 1. FIREBASE YAPILANDIRMASI
+        // ==========================================
+        // BURAYA KENDİ FIREBASE CONFIG BİLGİLERİNİ YAPIŞTIRACAKSIN
+        const firebaseConfig = {
+            apiKey: "API_KEY_BURAYA",
+            authDomain: "PROJE_ID.firebaseapp.com",
+            projectId: "PROJE_ID",
+            storageBucket: "PROJE_ID.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+        // ==========================================
+
+        // Firebase Başlatma
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        let currentUser = null;
+        let currentTab = 'finance';
+
+        // Auth Dinleyici
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                loadAllData();
+            } else {
+                currentUser = null;
+                document.getElementById('auth-container').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+            }
+        });
+
+        // Giriş İşlemleri
+        async function login() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (e) {
+                document.getElementById('auth-message').innerText = "Hata: " + e.message;
+                document.getElementById('auth-message').className = "text-danger mt-3 text-center";
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            try {
+                await auth.createUserWithEmailAndPassword(email, pass);
+            } catch (e) {
+                document.getElementById('auth-message').innerText = "Hata: " + e.message;
+            }
+        }
+
+        function logout() { auth.signOut(); }
+
+        // Tab Değiştirme
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            // Modal seçimini de güncelle
+            const select = document.getElementById('add-type');
+            if(tabName === 'passwords') select.value = 'password';
+            else if(tabName === 'notes') select.value = 'note';
+            else select.value = 'finance';
+            updateModalFields();
+        }
+
+        // Modal Alanlarını Göster/Gizle
+        function updateModalFields() {
+            const type = document.getElementById('add-type').value;
+            document.querySelectorAll('.input-group-set').forEach(el => el.classList.add('hidden'));
+            document.getElementById('fields-' + type).classList.remove('hidden');
+        }
+
+        // Veri Kaydetme (Create)
+        async function saveData() {
+            if(!currentUser) return;
+            
+            const type = document.getElementById('add-type').value;
+            let collection = '';
+            let data = { createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+
+            if (type === 'finance') {
+                collection = 'finance';
+                data.title = document.getElementById('fin-title').value;
+                data.amount = parseFloat(document.getElementById('fin-amount').value);
+                data.type = document.getElementById('fin-category').value; // income, expense, debt
+                if(!data.title || !data.amount) return alert("Eksik bilgi");
+            } 
+            else if (type === 'password') {
+                collection = 'passwords';
+                data.site = document.getElementById('pass-site').value;
+                data.username = document.getElementById('pass-user').value;
+                data.password = document.getElementById('pass-key').value;
+                if(!data.site || !data.password) return alert("Eksik bilgi");
+            }
+            else if (type === 'note') {
+                collection = 'notes';
+                data.title = document.getElementById('note-title').value;
+                data.content = document.getElementById('note-content').value;
+                if(!data.title) return alert("Başlık gerekli");
+            }
+
+            // Firestore'a Kayıt: users/{uid}/{collection}/...
+            try {
+                await db.collection('users').doc(currentUser.uid).collection(collection).add(data);
+                
+                // Modalı kapat ve temizle
+                const modalEl = document.getElementById('addModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+                document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+                
+                loadAllData(); // Listeyi yenile
+            } catch (e) {
+                console.error("Kayıt hatası", e);
+                alert("Hata oluştu: " + e.message);
+            }
+        }
+
+        // Verileri Çekme ve Listeleme (Read)
+        function loadAllData() {
+            if(!currentUser) return;
+            const uid = currentUser.uid;
+
+            // 1. Finans Verileri
+            db.collection('users').doc(uid).collection('finance').orderBy('createdAt', 'desc').get().then(snap => {
+                const list = document.getElementById('finance-list');
+                let totalInc = 0, totalExp = 0;
+                list.innerHTML = '';
+
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const badgeClass = d.type === 'income' ? 'badge-income' : (d.type === 'expense' ? 'badge-expense' : 'bg-warning text-dark');
+                    const sign = d.type === 'income' ? '+' : (d.type === 'expense' ? '-' : '~');
+                    
+                    if(d.type === 'income') totalInc += d.amount;
+                    if(d.type === 'expense') totalExp += d.amount;
+
+                    list.innerHTML += `
+                        <li class="list-group-item">
+                            <div>
+                                <span class="badge ${badgeClass} me-2">${d.type.toUpperCase()}</span>
+                                <strong>${d.title}</strong>
+                            </div>
+                            <div>
+                                <span class="me-3 fw-bold">${sign}${d.amount} ₺</span>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="deleteItem('finance', '${doc.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </li>
+                    `;
+                });
+
+                document.getElementById('total-income').innerText = totalInc.toFixed(2) + " ₺";
+                document.getElementById('total-expense').innerText = totalExp.toFixed(2) + " ₺";
+                document.getElementById('total-balance').innerText = (totalInc - totalExp).toFixed(2) + " ₺";
+            });
+
+            // 2. Parolalar
+            db.collection('users').doc(uid).collection('passwords').orderBy('createdAt', 'desc').get().then(snap => {
+                const list = document.getElementById('password-list');
+                list.innerHTML = '';
+
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    list.innerHTML += `
+                        <div class="col-md-6 mb-3 item-card">
+                            <div class="card p-3 h-100">
+                                <div class="d-flex justify-content-between">
+                                    <h5>${d.site}</h5>
+                                    <button class="btn btn-sm text-danger" onclick="deleteItem('passwords', '${doc.id}')"><i class="fas fa-trash"></i></button>
+                                </div>
+                                <div class="text-muted small">${d.username}</div>
+                                <div class="mt-2 bg-dark p-2 rounded d-flex justify-content-between align-items-center">
+                                    <span class="blur-text" onclick="this.classList.toggle('revealed')">${d.password}</span>
+                                    <i class="fas fa-eye small text-secondary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            // 3. Notlar
+            db.collection('users').doc(uid).collection('notes').orderBy('createdAt', 'desc').get().then(snap => {
+                const list = document.getElementById('notes-list');
+                list.innerHTML = '';
+
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    list.innerHTML += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <h5 class="card-title text-primary">${d.title}</h5>
+                                        <button class="btn btn-sm text-danger p-0" onclick="deleteItem('notes', '${doc.id}')"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                    <p class="card-text small" style="white-space: pre-line;">${d.content}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Veri Silme (Delete)
+        async function deleteItem(collection, id) {
+            if(confirm("Silmek istediğine emin misin?")) {
+                await db.collection('users').doc(currentUser.uid).collection(collection).doc(id).delete();
+                loadAllData();
+            }
+        }
+
+        // Export Data (Tüm veriyi indir)
+        async function exportData() {
+            if(!currentUser) return;
+            const uid = currentUser.uid;
+            const exportObj = { finance: [], passwords: [], notes: [] };
+
+            const finSnap = await db.collection('users').doc(uid).collection('finance').get();
+            finSnap.forEach(d => exportObj.finance.push(d.data()));
+
+            const passSnap = await db.collection('users').doc(uid).collection('passwords').get();
+            passSnap.forEach(d => exportObj.passwords.push(d.data()));
+
+            const noteSnap = await db.collection('users').doc(uid).collection('notes').get();
+            noteSnap.forEach(d => exportObj.notes.push(d.data()));
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "LifeOS_Backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function filterPasswords() {
+            const term = document.getElementById('search-pass').value.toLowerCase();
+            document.querySelectorAll('#password-list .item-card').forEach(card => {
+                const txt = card.innerText.toLowerCase();
+                card.style.display = txt.includes(term) ? 'block' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
