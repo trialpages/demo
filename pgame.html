@@ -2,567 +2,470 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Türkiye Şehir Bulmaca - PGame Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Türkiye Şehir Avcısı | PGame Pro</title>
     
-    <script src="https://unpkg.com/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Cinzel:wght@700&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
     <style>
         :root {
             --primary: #2c3e50;
             --accent: #e74c3c;
             --success: #27ae60;
-            --gold: #d4af37;
-            --bg: #ecf0f1;
-            --text: #333;
+            --bg-water: #aadaff;
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+        body { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; overflow: hidden; background: var(--bg-water); }
+        
+        /* --- HARİTA --- */
+        #map { width: 100%; height: 100vh; background: var(--bg-water); z-index: 1; }
+
+        /* --- UI KATMANLARI --- */
+        .game-ui {
+            position: absolute; z-index: 1000; pointer-events: none;
+            width: 100%; height: 100%; top: 0; left: 0;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        /* --- UI Elementleri --- */
-        #game-ui {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
+        /* Üst Panel */
+        .top-panel {
+            margin-top: 20px; align-self: center;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            pointer-events: auto; width: 90%; max-width: 450px;
+        }
+
+        .score-board {
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            text-align: center;
-            backdrop-filter: blur(5px);
-            min-width: 300px;
+            padding: 8px 20px; border-radius: 50px;
+            font-weight: 800; color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            font-size: 1rem; display: flex; align-items: center; gap: 15px;
         }
 
-        h1 { margin: 0; font-size: 1.2rem; color: var(--primary); }
-        #target-city { font-size: 2rem; color: var(--accent); font-weight: 800; margin: 10px 0; }
-        #score-board { font-size: 0.9rem; color: var(--text); }
-        .streak-box { font-weight: bold; color: var(--success); }
-
-        /* --- Harita Alanı --- */
-        #map-container {
-            width: 100%;
-            height: 100%;
-            background: #a8d0e6; /* Deniz rengi */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            cursor: grab;
-        }
-        #map-container:active { cursor: grabbing; }
-        
-        svg {
-            width: 100%;
-            height: 100%;
-            transition: fill 0.3s;
+        .question-box {
+            background: var(--accent); color: white;
+            padding: 15px 0; border-radius: 12px;
+            text-align: center; box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+            width: 100%; transition: transform 0.2s;
         }
         
-        svg path {
-            fill: #bdc3c7;
-            stroke: #fff;
-            stroke-width: 0.5;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        
-        svg path:hover { fill: #95a5a6; }
-        svg path.correct { fill: #27ae60 !important; }
-        svg path.wrong { fill: #c0392b !important; animation: shake 0.5s; }
+        .find-text { font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;}
+        .city-name { font-size: 2rem; font-weight: 800; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
+        /* Alt Alanlar */
+        .bottom-area {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            padding: 20px; pointer-events: auto;
         }
 
-        /* --- Footer Bilgileri --- */
-        #footer-left {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 100;
-        }
-
+        /* Sol Alt Bilgi */
         .info-box {
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 8px;
-            width: 250px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            font-size: 0.85rem;
-            line-height: 1.4;
-            display: block;
+            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px;
+            width: 260px; font-size: 0.85rem; color: #444; line-height: 1.4;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        .info-toggle { display: none; width: 40px; height: 40px; background: white; border-radius: 50%; text-align: center; line-height: 40px; font-weight: bold; font-size: 1.2rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); color: var(--primary); }
 
-        .info-toggle {
-            display: none;
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        #footer-right {
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
-            z-index: 100;
+        /* Sağ Alt Footer (Sayaç & Credits) */
+        .footer-right {
             text-align: right;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
         }
 
-        #stats-counter {
-            background: rgba(44, 62, 80, 0.9);
-            color: #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            cursor: pointer;
+        .counter-wrapper {
+            background: rgba(255,255,255,0.8);
+            padding: 2px 8px; border-radius: 4px;
+            font-size: 0; /* İçindeki iframe boşluklarını silmek için */
             display: inline-block;
-            transition: all 0.3s;
-            margin-bottom: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transform: scale(0.8); transform-origin: right bottom;
+            cursor: pointer;
         }
 
-        #stats-counter:hover { transform: scale(1.05); }
-        #stats-details { display: none; border-top: 1px solid #555; margin-top: 5px; padding-top: 5px; }
-
-        #credits {
-            font-size: 0.7rem;
-            color: var(--primary);
-            opacity: 0.7;
+        .credits {
+            font-size: 0.7rem; color: var(--primary); background: rgba(255,255,255,0.6);
+            padding: 4px 8px; border-radius: 4px; font-weight: 600;
         }
-        #credits a { color: var(--primary); text-decoration: none; font-weight: bold; }
+        .credits a { color: var(--accent); text-decoration: none; }
 
-        /* --- Modal & Sertifika --- */
-        #cert-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+        /* Mesajlar */
+        #feedback-msg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 4rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            opacity: 0; pointer-events: none; z-index: 2000;
+        }
+
+        /* --- SERTİFİKA MODAL --- */
+        #modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 62, 80, 0.9); z-index: 3000;
+            justify-content: center; align-items: center; flex-direction: column;
+            backdrop-filter: blur(8px);
         }
         
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+        .modal-card {
+            background: #fff; padding: 40px; width: 90%; max-width: 500px;
+            text-align: center; border-radius: 15px; position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .modal-input {
-            width: 80%;
-            padding: 10px;
-            margin: 15px 0;
-            border: 2px solid #eee;
-            border-radius: 5px;
-            font-family: inherit;
+            width: 80%; padding: 12px; margin: 20px 0;
+            border: 2px solid #ddd; border-radius: 6px; font-size: 1rem;
+            font-family: 'Montserrat', sans-serif; text-align: center;
         }
 
         .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            margin: 5px;
-            transition: background 0.2s;
+            background: var(--primary); color: white; border: none;
+            padding: 12px 30px; border-radius: 6px; font-size: 1rem;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
         }
-        .btn:hover { background: #34495e; }
-        .btn-download { background: var(--gold); color: #000; }
+        .btn:hover { background: #34495e; transform: translateY(-2px); }
+        .btn-download { background: var(--success); margin-top: 10px; }
 
-        /* Mobilde sol alt kutu gizleme */
+        /* Gizli Canvas Alanı (Sertifika Çizimi İçin) */
+        #cert-canvas { display: none; }
+
+        /* Mobil Ayarları */
         @media (max-width: 768px) {
             .info-box { display: none; }
             .info-toggle { display: block; }
-            #game-ui { width: 80%; padding: 10px; }
-            #target-city { font-size: 1.5rem; }
+            .city-name { font-size: 1.5rem; }
+            .question-box { padding: 10px 0; }
+            .bottom-area { padding: 10px; }
+            .credits { font-size: 0.6rem; }
         }
-        
-        /* Gizli Canvas */
-        #certificate-canvas { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="game-ui">
-        <h1>ŞEHRİ BUL</h1>
-        <div id="target-city">Yükleniyor...</div>
-        <div id="score-board">
-            Seri: <span id="streak" class="streak-box">0</span>/10
-        </div>
-    </div>
+    <div id="map"></div>
 
-    <div id="map-container">
-        </div>
-
-    <div id="footer-left">
-        <div class="info-toggle" onclick="toggleInfo()">i</div>
-        <div class="info-box" id="game-info">
-            <strong>Nasıl Oynanır?</strong><br>
-            Ekranın üstünde yazan şehri haritada bulun ve üzerine tıklayın.<br>
-            <br>
-            10 kez üst üste doğru cevap verirseniz, isminize özel <strong>Coğrafya Uzmanı Sertifikası</strong> kazanacaksınız.<br>
-            <em>Zoom: Mouse tekerleği veya parmak hareketi.</em>
-        </div>
-    </div>
-
-    <div id="footer-right">
-        <div id="stats-counter" onclick="toggleStats()">
-            <span>● Online: <span id="online-count">...</span></span>
-            <div id="stats-details">
-                Toplam Ziyaret: <span id="total-visits">...</span>
+    <div class="game-ui">
+        <div class="top-panel">
+            <div class="score-board">
+                <span>Seri: <span id="streak-txt" style="color:var(--success)">0</span>/10</span>
+            </div>
+            <div class="question-box">
+                <div class="find-text">Haritada Bul:</div>
+                <div class="city-name" id="target-name">Yükleniyor...</div>
             </div>
         </div>
-        <div id="credits">
-            designed by hmdysn & gemini | <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a>
+
+        <div id="feedback-msg"></div>
+
+        <div class="bottom-area">
+            <div class="left-wrapper">
+                <div class="info-toggle" onclick="toggleInfo()">i</div>
+                <div class="info-box" id="game-info">
+                    <strong>Nasıl Oynanır?</strong><br>
+                    Üstte yazan şehri haritada bul ve tıkla.<br>
+                    10 seri doğru cevapta ismine özel sertifikayı kazan!<br>
+                    <em style="font-size:0.75rem; color:#888;">Zoom yapmak için çift tıkla veya tekerleği kullan.</em>
+                </div>
+            </div>
+
+            <div class="footer-right">
+                <div class="counter-wrapper" title="Ziyaretçi İstatistikleri">
+                   <script language="JavaScript" type="text/javascript" src="https://gnrcounter.com/counter.php?accId=17583012f9e4e7c1713eb7aba95897be"></script>
+                    <noscript>
+                    <a href="https://gnrcounter.com" title="Web Analytics">Web Analytics</a>
+                    </noscript>
+                    </div>
+                
+                <div class="credits">
+                    designed by hmdysn & gemini | <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="cert-modal">
-        <div class="modal-content">
-            <h2 style="color:var(--gold); font-family: 'Cinzel', serif;">TEBRİKLER!</h2>
-            <p>10 Şehri başarıyla bildiniz. Sertifika için isminizi giriniz:</p>
-            <input type="text" id="player-name" class="modal-input" placeholder="Ad Soyad">
-            <br>
-            <button class="btn" onclick="generateCertificate()">Sertifikayı Oluştur</button>
-            <div id="download-area" style="display:none; margin-top:15px;">
-                <p>Sertifikanız hazır!</p>
-                <button class="btn btn-download" onclick="downloadJPG()">JPEG İndir</button>
+    <div id="modal-overlay">
+        <div class="modal-card">
+            <h2 style="color:var(--success); font-family:'Cinzel', serif; margin:0;">TEBRİKLER!</h2>
+            <p style="color:#7f8c8d;">Türkiye Coğrafyası bilginizi kanıtladınız.</p>
+            
+            <div id="input-section">
+                <p>Sertifika için isminizi giriniz:</p>
+                <input type="text" id="player-name" class="modal-input" placeholder="Ad Soyad">
+                <br>
+                <button class="btn" onclick="generateCertificate()">Sertifikayı Hazırla</button>
+            </div>
+
+            <div id="download-section" style="display:none;">
+                <p style="font-weight:bold; color:var(--primary);">Sertifikanız Hazır!</p>
                 <button class="btn btn-download" onclick="downloadPDF()">PDF İndir</button>
+                <button class="btn btn-download" style="background:#e67e22" onclick="downloadJPG()">JPEG İndir</button>
                 <br><br>
-                <button class="btn" style="background:#e74c3c" onclick="location.reload()">Tekrar Oyna</button>
+                <button class="btn" style="background:#95a5a6; font-size:0.8rem;" onclick="location.reload()">Yeni Oyun</button>
             </div>
         </div>
     </div>
 
-    <canvas id="certificate-canvas" width="1123" height="794"></canvas> <script>
-        // --- Yapılandırma ve Veriler ---
-        const mapUrl = 'https://upload.wikimedia.org/wikipedia/commons/2/25/Turkey_provinces_blank_gray.svg';
-        let panzoomInstance;
-        let currentStreak = 0;
-        let targetCityId = "";
-        
-        // Şehir İsimleri ve Tahmini ID Eşleştirmesi
-        // Not: Wikimedia SVG'si genellikle plaka kodu veya isim kullanır.
-        // Biz burada güvenli bir yöntem olarak DOM yüklendiğinde ID'leri kontrol edeceğiz.
-        // Şimdilik standart plaka kodlarını bir listeye alalım.
-        const cities = [
-            "Adana", "Adıyaman", "Afyonkarahisar", "Ağrı", "Amasya", "Ankara", "Antalya", "Artvin", "Aydın", "Balıkesir",
-            "Bilecik", "Bingöl", "Bitlis", "Bolu", "Burdur", "Bursa", "Çanakkale", "Çankırı", "Çorum", "Denizli",
-            "Diyarbakır", "Edirne", "Elazığ", "Erzincan", "Erzurum", "Eskişehir", "Gaziantep", "Giresun", "Gümüşhane", "Hakkari",
-            "Hatay", "Isparta", "Mersin", "İstanbul", "İzmir", "Kars", "Kastamonu", "Kayseri", "Kırklareli", "Kırşehir",
-            "Kocaeli", "Konya", "Kütahya", "Malatya", "Manisa", "Kahramanmaraş", "Mardin", "Muğla", "Muş", "Nevşehir",
-            "Niğde", "Ordu", "Rize", "Sakarya", "Samsun", "Siirt", "Sinop", "Sivas", "Tekirdağ", "Tokat",
-            "Trabzon", "Tunceli", "Şanlıurfa", "Uşak", "Van", "Yozgat", "Zonguldak", "Aksaray", "Bayburt", "Karaman",
-            "Kırıkkale", "Batman", "Şırnak", "Bartın", "Ardahan", "Iğdır", "Yalova", "Karabük", "Kilis", "Osmaniye", "Düzce"
-        ];
+    <canvas id="cert-canvas" width="2000" height="1414"></canvas>
 
-        // --- Başlangıç ---
-        window.onload = function() {
-            loadMap();
-            initStats();
-        };
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        // --- Harita Yükleme ve İşleme ---
-        async function loadMap() {
-            try {
-                const response = await fetch(mapUrl);
-                if (!response.ok) throw new Error("Harita yüklenemedi");
-                const svgText = await response.text();
+    <script>
+        // --- AYARLAR ---
+        const map = L.map('map', {
+            center: [39.0, 35.5], // Türkiye Merkezi
+            zoom: 6,
+            minZoom: 5,
+            maxZoom: 9,
+            zoomControl: false,
+            attributionControl: false
+        });
+
+        // Arka Plan (Sade, etiketsiz)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '©OpenStreetMap, ©CartoDB'
+        }).addTo(map);
+
+        let geojsonLayer;
+        let targetCity = null;
+        let streak = 0;
+        let locked = false;
+
+        // --- VERİ YÜKLEME ---
+        // Türkiye İller GeoJSON (Güvenilir Kaynak)
+        fetch('https://raw.githubusercontent.com/cihadturhan/tr-geojson/master/geo/tr-iller.json')
+            .then(res => res.json())
+            .then(data => {
+                geojsonLayer = L.geoJson(data, {
+                    style: style,
+                    onEachFeature: onEachFeature
+                }).addTo(map);
                 
-                const container = document.getElementById('map-container');
-                container.innerHTML = svgText;
-
-                const svgElement = container.querySelector('svg');
-                svgElement.setAttribute('width', '100%');
-                svgElement.setAttribute('height', '100%');
-                
-                // ID Düzeltme ve Event Listener Ekleme
-                processMapPaths(svgElement);
-
-                // PanZoom Başlat
-                panzoomInstance = Panzoom(container, {
-                    maxScale: 5,
-                    minScale: 1,
-                    contain: 'outside'
-                });
-                container.parentElement.addEventListener('wheel', panzoomInstance.zoomWithWheel);
-
-                // Oyunu Başlat
                 nextQuestion();
+            })
+            .catch(err => {
+                document.getElementById('target-name').innerText = "Harita Yüklenemedi!";
+                console.error(err);
+            });
 
-            } catch (error) {
-                document.getElementById('target-city').innerText = "Harita Hatası!";
-                console.error(error);
-            }
+        // --- STİL & OLAYLAR ---
+        function style(feature) {
+            return {
+                fillColor: '#ecf0f1',
+                weight: 1,
+                opacity: 1,
+                color: '#bdc3c7',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
         }
 
-        let pathMapping = {}; // ID -> Şehir İsmi
+        function highlightFeature(e) {
+            if(locked) return;
+            var layer = e.target;
+            layer.setStyle({
+                weight: 2,
+                color: '#7f8c8d',
+                dashArray: '',
+                fillOpacity: 0.9,
+                fillColor: '#f1c40f'
+            });
+            layer.bringToFront();
+        }
 
-        function processMapPaths(svg) {
-            const paths = svg.querySelectorAll('path');
-            // Wikimedia SVG'lerindeki ID yapısı karışık olabilir.
-            // Genellikle plaka sırasına göre veya id="tr-01" gibidir.
-            // Biz burada basitçe sırasına göre plakaları atayacağız (Riskli ama en iyi tahmin)
-            // Veya title varsa onu kullanacağız.
-            
-            paths.forEach((path, index) => {
-                // Önce mevcut ID veya title'ı temizleyelim ve standartlaştıralım
-                let cityIndex = index; 
-                // Not: SVG path sırası plaka sırasına uymayabilir. 
-                // Ancak "Turkey_provinces_blank_gray.svg" dosyasında genellikle alfabetik veya plaka sırası olmayabilir.
-                // Bu demo için ID'si varsa ID'sini, yoksa indexi kullanacağız.
-                // Gerçek bir prodüksiyon için her path'in ID'sini manuel kontrol edip bir objeye yazmak gerekir.
-                
-                // *Hileli Çözüm*: Oyuncunun tıkladığı yere göre değil, 
-                // soruyu sorarken rastgele bir path seçip, o path'in ne olduğunu soracağız.
-                // Böylece isim eşleştirmesine gerek kalmaz.
-                
-                path.id = `city-${index}`;
-                path.setAttribute('class', 'province');
-                
-                // Tıklama Olayı
-                path.addEventListener('click', (e) => handleCityClick(e, index));
-                
-                // Dokunmatik cihazlar için (Panzoom ile çakışmayı önlemek için)
-                path.addEventListener('touchend', (e) => {
-                    // Panzoom hareketi yoksa tıkla
-                   handleCityClick(e, index);
-                });
+        function resetHighlight(e) {
+            if(locked) return;
+            geojsonLayer.resetStyle(e.target);
+        }
+
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: checkAnswer
             });
         }
 
-        let currentTargetPathId = null;
-        let currentCityName = "";
-
-        // Oyunu asıl yöneten kısım: Rastgele bir PATH seçiyoruz.
-        // Ancak bu path'in hangi şehir olduğunu bilmemiz lazım.
-        // Wikimedia haritasında pathlerde <title> varsa onu okuruz. 
-        // Eğer title yoksa, bu harita için manuel mapping yapmak gerekir.
-        // Bu örnekte linkteki haritanın yapısını bilmediğimiz için:
-        // **Yöntem:** Plaka kodlarına göre sıralı olduğunu varsayarak bir mapping deneyeceğiz.
-        // (Eğer sıralama yanlışsa, şehir isimleri yanlış çıkar, ama oyun mekaniği çalışır).
-        
+        // --- OYUN MANTIĞI ---
         function nextQuestion() {
-            // Tüm pathleri al
-            const paths = document.querySelectorAll('path');
-            const randomIndex = Math.floor(Math.random() * paths.length);
-            const targetPath = paths[randomIndex];
+            if (!geojsonLayer) return;
             
-            // Şehir ismini belirle (Varsayım: paths sırası plaka sırasına göredir - Değilse düzeltilmeli)
-            // Doğru yöntem: SVG içindeki id'lerden maplemek.
-            // Örneğin id="TR-01" ise Adana.
+            const layers = geojsonLayer.getLayers();
+            const randomLayer = layers[Math.floor(Math.random() * layers.length)];
             
-            let cityCode = targetPath.id.replace('tr-', '').replace('city-', '');
-            // Basitlik için cities array'inden random isim seçip, 
-            // doğrusunu bulana kadar bekleyebiliriz ama haritayı bilmek lazım.
+            targetCity = randomLayer.feature.properties; 
+            // GeoJSON property kontrolü: Genelde 'name' veya 'il_adi' kullanılır.
+            // Bu GeoJSON kaynağında 'name' kullanılıyor.
             
-            // GÜVENLİ YÖNTEM: 
-            // Haritadaki path ID'leri (genelde TR-01 ... TR-81) formatında ise:
-            // Biz random bir şehir seçelim (cities arrayinden), sonra ona uygun ID'yi bulalım.
-            
-            const randomCityIndex = Math.floor(Math.random() * cities.length);
-            currentCityName = cities[randomCityIndex];
-            
-            // Hedef ID'yi tahmin et (Plaka kodu: index + 1)
-            // Plakası tek haneli olanlara 0 ekle (01, 02...)
-            let plate = (randomCityIndex + 1).toString().padStart(2, '0');
-            
-            // Wikimedia SVG'sinde genelde class veya id içinde plaka kodu geçer veya path sırası önemlidir.
-            // Bu kodda, oyunu oynanabilir kılmak için:
-            // Kullanıcıya "Şu bölgeyi tıkla" demek yerine,
-            // "Adana Nerede?" diye soracağız. Cevap kontrolünü ID üzerinden yapacağız.
-            // Linkteki haritada ID'ler muhtemelen plaka kodu değilse:
-            // **Bu demo için Simüle Ediyoruz:**
-            // Gerçekte ID eşleşmesi yapılmalı. Burada 'paths[randomCityIndex]' i hedef alıyoruz.
-            // (Not: Bu harita alfabetik veya plaka sırasına göre çizilmemiş olabilir, bu durumda isimler kayabilir.
-            // Prodüksiyon ortamında `const idMap = { "path344": "Adana", ... }` şeklinde elle tanımlanmalıdır.)
-            
-            currentTargetPathId = paths[randomCityIndex].id; 
-            // Ekrana yazarken listeden ismini alıyoruz (Riskli eşleşme, ama demo için gerekli)
-            document.getElementById('target-city').innerText = currentCityName;
-
-            // İpucu: Console'a doğru ID'yi yaz (Test için)
-            // console.log("Hedef ID: " + currentTargetPathId);
+            document.getElementById('target-name').innerText = targetCity.name;
+            locked = false;
         }
 
-        function handleCityClick(e, index) {
-            // PanZoom sürüklemesi ise tıklamayı iptal et
-            if(e.defaultPrevented) return;
-
-            const clickedPath = e.target;
+        function checkAnswer(e) {
+            if(locked) return;
             
-            // Daha önce bilinenleri veya yanlışları resetlemek istersen buraya kod ekle
-            // Biz sadece mevcut soruya bakacağız.
+            const clickedProps = e.target.feature.properties;
+            const feedback = document.getElementById('feedback-msg');
 
-            if (clickedPath.id === currentTargetPathId) {
+            if (clickedProps.name === targetCity.name) {
                 // DOĞRU
-                clickedPath.classList.add('correct');
-                currentStreak++;
-                document.getElementById('streak').innerText = currentStreak;
-                
-                if (currentStreak >= 10) {
-                    setTimeout(() => {
-                        showCertificateModal();
-                    }, 500);
+                locked = true;
+                streak++;
+                document.getElementById('streak-txt').innerText = streak;
+
+                e.target.setStyle({ fillColor: '#27ae60', color: '#1e8449', dashArray: '' });
+                feedback.innerHTML = "<span style='color:#27ae60'>DOĞRU!</span>";
+                feedback.style.opacity = 1;
+
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
+
+                if (streak >= 10) {
+                    setTimeout(winGame, 1000);
                 } else {
                     setTimeout(() => {
-                        clickedPath.classList.remove('correct'); // Rengi geri al
+                        geojsonLayer.resetStyle(e.target);
+                        feedback.style.opacity = 0;
                         nextQuestion();
-                    }, 800);
+                    }, 1200);
                 }
+
             } else {
                 // YANLIŞ
-                clickedPath.classList.add('wrong');
-                currentStreak = 0;
-                document.getElementById('streak').innerText = currentStreak;
+                locked = true;
+                e.target.setStyle({ fillColor: '#c0392b', color: '#922b21' });
+                
+                feedback.innerHTML = "<span style='color:#c0392b'>YANLIŞ!</span>";
+                feedback.style.opacity = 1;
+                streak = 0;
+                document.getElementById('streak-txt').innerText = streak;
+
+                // Doğrusunu Göster
+                geojsonLayer.eachLayer(layer => {
+                    if(layer.feature.properties.name === targetCity.name) {
+                        layer.setStyle({ fillColor: '#f39c12', fillOpacity: 1 });
+                    }
+                });
+
                 setTimeout(() => {
-                    clickedPath.classList.remove('wrong');
-                }, 500);
+                    geojsonLayer.eachLayer(layer => geojsonLayer.resetStyle(layer)); // Hepsini resetle
+                    feedback.style.opacity = 0;
+                    nextQuestion();
+                }, 2000);
             }
         }
 
-        // --- Sertifika İşlemleri ---
-        function showCertificateModal() {
-            document.getElementById('cert-modal').style.display = 'flex';
+        // --- SERTİFİKA OLUŞTURMA ---
+        function winGame() {
+            var end = Date.now() + (3 * 1000);
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+            document.getElementById('modal-overlay').style.display = 'flex';
         }
 
         function generateCertificate() {
             const name = document.getElementById('player-name').value;
-            if (!name) { alert("Lütfen isminizi girin."); return; }
+            if(!name) { alert("Lütfen isim giriniz."); return; }
 
-            const canvas = document.getElementById('certificate-canvas');
+            const canvas = document.getElementById('cert-canvas');
             const ctx = canvas.getContext('2d');
             
-            // Temizle
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             // Arkaplan
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
             
-            // Çerçeve (Altın)
-            ctx.strokeStyle = "#d4af37";
-            ctx.lineWidth = 20;
-            ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
-            ctx.lineWidth = 2;
-            ctx.strokeRect(55, 55, canvas.width - 110, canvas.height - 110);
+            // Çerçeve
+            ctx.lineWidth = 40;
+            ctx.strokeStyle = "#2c3e50";
+            ctx.strokeRect(40,40, canvas.width-80, canvas.height-80);
+            
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "#e74c3c"; // Accent rengi
+            ctx.strokeRect(90,90, canvas.width-180, canvas.height-180);
 
+            // Yazılar
+            ctx.textAlign = "center";
+            
             // Başlık
             ctx.fillStyle = "#2c3e50";
-            ctx.font = "bold 80px 'Cinzel'";
-            ctx.textAlign = "center";
-            ctx.fillText("BAŞARI SERTİFİKASI", canvas.width / 2, 180);
-
-            // Alt Başlık
-            ctx.font = "30px 'Montserrat'";
-            ctx.fillStyle = "#7f8c8d";
-            ctx.fillText("Bu sertifika", canvas.width / 2, 240);
+            ctx.font = "bold 140px 'Cinzel'";
+            ctx.fillText("BAŞARI SERTİFİKASI", canvas.width/2, 350);
 
             // İsim
-            ctx.font = "bold 60px 'Montserrat'";
-            ctx.fillStyle = "#d4af37";
-            ctx.fillText(name.toUpperCase(), canvas.width / 2, 320);
+            ctx.fillStyle = "#c0392b";
+            ctx.font = "bold 120px 'Montserrat'";
+            ctx.fillText(name.toUpperCase(), canvas.width/2, 600);
+            
+            // Çizgi
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2 - 400, 650);
+            ctx.lineTo(canvas.width/2 + 400, 650);
+            ctx.strokeStyle = "#bdc3c7";
+            ctx.lineWidth = 5;
+            ctx.stroke();
 
-            // Metin
-            ctx.font = "italic 24px 'Montserrat'";
-            ctx.fillStyle = "#333";
-            const text = "Türkiye coğrafyasına dair bilginiz ve şehirlerin coğrafi konumlarını";
-            const text2 = "başarıyla tespitiniz dolayısıyla bu sertifikayı almaya hak kazandınız.";
-            ctx.fillText(text, canvas.width / 2, 400);
-            ctx.fillText(text2, canvas.width / 2, 440);
+            // Açıklama Metni (İstenilen İfade)
+            ctx.fillStyle = "#34495e";
+            ctx.font = "italic 50px 'Montserrat'";
+            const text1 = "Türkiye coğrafyasına dair bilginiz ve şehirlerin";
+            const text2 = "coğrafi konumlarını başarıyla tespitiniz dolayısıyla";
+            const text3 = "bu sertifikayı almaya hak kazandınız.";
+            
+            ctx.fillText(text1, canvas.width/2, 800);
+            ctx.fillText(text2, canvas.width/2, 880);
+            ctx.fillText(text3, canvas.width/2, 960);
 
-            // Alt Kısım
-            const date = new Date().toLocaleDateString('tr-TR');
-            const serial = "SN-" + Math.floor(Math.random() * 10000000);
-
+            // Alt Bilgiler
             ctx.textAlign = "left";
-            ctx.font = "20px 'Montserrat'";
-            ctx.fillStyle = "#555";
-            ctx.fillText("Tarih: " + date, 150, 600);
-            ctx.fillText("Seri No: " + serial, 150, 630);
+            ctx.font = "40px 'Montserrat'";
+            ctx.fillStyle = "#7f8c8d";
+            const date = new Date().toLocaleDateString('tr-TR');
+            const serial = "PG-" + Math.floor(Math.random() * 999999);
+            
+            ctx.fillText("Tarih: " + date, 200, 1200);
+            ctx.fillText("Seri No: " + serial, 200, 1260);
 
             // İmza
             ctx.textAlign = "right";
-            ctx.font = "40px 'Great Vibes'"; // El yazısı fontu
+            ctx.font = "80px 'Great Vibes'";
             ctx.fillStyle = "#2c3e50";
-            ctx.fillText("PGame Pro.", canvas.width - 150, 600);
-            ctx.fillRect(canvas.width - 300, 610, 180, 2); // İmza çizgisi
+            ctx.fillText("PGame Pro.", canvas.width - 200, 1200);
+            
+            ctx.fillRect(canvas.width - 500, 1220, 320, 3); // İmza çizgisi
 
-            // Butonları göster
-            document.getElementById('download-area').style.display = 'block';
+            // UI Değişimi
+            document.getElementById('input-section').style.display = 'none';
+            document.getElementById('download-section').style.display = 'block';
         }
 
         function downloadJPG() {
-            const canvas = document.getElementById('certificate-canvas');
+            const canvas = document.getElementById('cert-canvas');
             const link = document.createElement('a');
-            link.download = 'PGame_Sertifika.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 1.0);
+            link.download = 'PGame_Turkiye_Sertifika.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
         }
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
-            const canvas = document.getElementById('certificate-canvas');
-            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const canvas = document.getElementById('cert-canvas');
+            const imgData = canvas.toDataURL('image/jpeg', 0.9);
             
-            const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape, mm, A4
-            const width = pdf.internal.pageSize.getWidth();
-            const height = pdf.internal.pageSize.getHeight();
+            // A4 Yatay (Landscape)
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
             
-            pdf.addImage(imgData, 'JPEG', 0, 0, width, height);
-            pdf.save('PGame_Sertifika.pdf');
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('PGame_Turkiye_Sertifika.pdf');
         }
 
-        // --- Sayaç ve UI Fonksiyonları ---
-        function initStats() {
-            // Online kişi sayısı (Simülasyon)
-            const online = Math.floor(Math.random() * 40) + 12;
-            document.getElementById('online-count').innerText = online;
-
-            // Toplam Ziyaretçi (LocalStorage ile basit sayaç)
-            let visits = localStorage.getItem('pgame_visits');
-            if (!visits) visits = 1240; // Başlangıç sahte değer
-            else visits = parseInt(visits) + 1;
-            
-            localStorage.setItem('pgame_visits', visits);
-            document.getElementById('total-visits').innerText = visits;
-        }
-
-        function toggleStats() {
-            const details = document.getElementById('stats-details');
-            details.style.display = details.style.display === 'block' ? 'none' : 'block';
-        }
-
+        // --- UI YARDIMCILARI ---
         function toggleInfo() {
             const info = document.getElementById('game-info');
-            info.style.display = info.style.display === 'block' ? 'none' : 'block';
+            info.style.display = (info.style.display === 'block') ? 'none' : 'block';
         }
     </script>
 </body>
