@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Oda 1 - Test Bağlantısı</h2>
+
+<button onclick="zarAt()">Zar At</button>
+
+<p id="sonuc"></p>
+
+<!-- Firebase scriptleri -->
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js"></script>
+
+<script>
+  // 🔥 BURAYI Firebase'in sana verdiği kod ile değiştir
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvSi7bBWMGJhceLJytqWqy2tjKbGdVv2I",
+    authDomain: "back-gammon1.firebaseapp.com",
+    projectId: "back-gammon1",
+    storageBucket: "back-gammon1.firebasestorage.app",
+    messagingSenderId: "388506855062",
+    appId: "1:388506855062:web:05efcc04b2604f8c2b44b7",
+    measurementId: "G-0PQRJXWJDV"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function zarAt() {
+    const z1 = Math.ceil(Math.random()*6);
+    const z2 = Math.ceil(Math.random()*6);
+
+    db.ref("oyunlar/oda1/zar").set({
+      birinci: z1,
+      ikinci: z2
+    });
+  }
+
+  // Veri değiştikçe ekrana yaz
+  db.ref("oyunlar/oda1/zar").on("value", snap => {
+    if (snap.exists()) {
+      document.getElementById("sonuc").innerHTML =
+        "Gelen zar: " + snap.val().birinci + " - " + snap.val().ikinci;
+    }
+  });
+</script>
+
+</body>
+</html>
