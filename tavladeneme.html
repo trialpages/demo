@@ -2,18 +2,18 @@
 <html>
 <body>
 
-<h2>Oda 1 - Test Bağlantısı</h2>
+<h2>Oda 1 - Zar Testi</h2>
 
 <button onclick="zarAt()">Zar At</button>
 
 <p id="sonuc"></p>
 
-<!-- Firebase scriptleri -->
-<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js"></script>
+<!-- MODÜLER Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
 
-<script>
-  // 🔥 BURAYI Firebase'in sana verdiği kod ile değiştir
+  // 🔥 SİZİN CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyAvSi7bBWMGJhceLJytqWqy2tjKbGdVv2I",
     authDomain: "back-gammon1.firebaseapp.com",
@@ -21,29 +21,35 @@
     storageBucket: "back-gammon1.firebasestorage.app",
     messagingSenderId: "388506855062",
     appId: "1:388506855062:web:05efcc04b2604f8c2b44b7",
-    measurementId: "G-0PQRJXWJDV"
+    measurementId: "G-0PQRJXWJDV",
+    databaseURL: "https://back-gammon1-default-rtdb.europe-west1.firebasedatabase.app"
   };
 
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
+  // Zar fonksiyonu
   function zarAt() {
-    const z1 = Math.ceil(Math.random()*6);
-    const z2 = Math.ceil(Math.random()*6);
+    const z1 = Math.ceil(Math.random() * 6);
+    const z2 = Math.ceil(Math.random() * 6);
 
-    db.ref("oyunlar/oda1/zar").set({
+    set(ref(db, "oyunlar/oda1/zar"), {
       birinci: z1,
       ikinci: z2
     });
   }
 
-  // Veri değiştikçe ekrana yaz
-  db.ref("oyunlar/oda1/zar").on("value", snap => {
-    if (snap.exists()) {
+  // Değişiklikleri dinle
+  onValue(ref(db, "oyunlar/oda1/zar"), (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
       document.getElementById("sonuc").innerHTML =
-        "Gelen zar: " + snap.val().birinci + " - " + snap.val().ikinci;
+        "Gelen zar: " + data.birinci + " - " + data.ikinci;
     }
   });
+
+  // Butonun görebilmesi için fonksiyonu window'a ekle
+  window.zarAt = zarAt;
 </script>
 
 </body>
