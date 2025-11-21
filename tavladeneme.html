@@ -1,56 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tavla - Zar Testi (Room)</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; }
+    button { margin: 6px; padding: 10px 14px; font-size: 16px; }
+    .dice { font-weight: bold; font-size: 20px; }
+  </style>
+</head>
 <body>
 
-<h2>Oda 1 - Zar Testi</h2>
+  <h2>Oda: room1 — Eşzamanlı Zar Testi</h2>
 
-<button onclick="zarAt()">Zar At</button>
+  <div>
+    <button onclick="roll1()">1. Oyuncu Zar At</button>
+    <button onclick="roll2()">2. Oyuncu Zar At</button>
+  </div>
 
-<p id="sonuc"></p>
+  <div style="margin-top:12px;">
+    Zar 1: <span id="dice1" class="dice">-</span><br/>
+    Zar 2: <span id="dice2" class="dice">-</span>
+  </div>
 
-<!-- MODÜLER Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-database.js";
+  <!-- Tek bir module script kullan -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-  // 🔥 SİZİN CONFIG
-  const firebaseConfig = {
-    apiKey: "AIzaSyAvSi7bBWMGJhceLJytqWqy2tjKbGdVv2I",
-    authDomain: "back-gammon1.firebaseapp.com",
-    projectId: "back-gammon1",
-    storageBucket: "back-gammon1.firebasestorage.app",
-    messagingSenderId: "388506855062",
-    appId: "1:388506855062:web:05efcc04b2604f8c2b44b7",
-    measurementId: "G-0PQRJXWJDV",
-    databaseURL: "https://back-gammon1-default-rtdb.europe-west1.firebasedatabase.app"
-  };
+    // SENİN CONFIG (databaseURL kesin olmalı)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAvSi7bBWMGJhceLJytqWqy2tjKbGdVv2I",
+      authDomain: "back-gammon1.firebaseapp.com",
+      projectId: "back-gammon1",
+      storageBucket: "back-gammon1.firebasestorage.app",
+      messagingSenderId: "388506855062",
+      appId: "1:388506855062:web:05efcc04b2604f8c2b44b7",
+      measurementId: "G-0PQRJXWJDV",
+      // Aşağıdaki URL projenin Realtime Database URL'sidir — bu kesinlikle gerekli
+      databaseURL: "https://back-gammon1-default-rtdb.europe-west1.firebasedatabase.app"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-  // Zar fonksiyonu
-  function zarAt() {
-    const z1 = Math.ceil(Math.random() * 6);
-    const z2 = Math.ceil(Math.random() * 6);
+    // Oda yolu (herkesin dinlediği ortak yol)
+    const roomPath = "diceGame/room1";
 
-    set(ref(db, "oyunlar/oda1/zar"), {
-      birinci: z1,
-      ikinci: z2
-    });
-  }
-
-  // Değişiklikleri dinle
-  onValue(ref(db, "oyunlar/oda1/zar"), (snapshot) => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
-      document.getElementById("sonuc").innerHTML =
-        "Gelen zar: " + data.birinci + " - " + data.ikinci;
+    // Zar atma fonksiyonları
+    function rollDice(playerKey) {
+      const value = Math.floor(Math.random() * 6) + 1;
+      update(ref(db, roomPath), { [playerKey]: value })
+        .catch(err => console.error("Yazma hatası:", err));
     }
-  });
 
-  // Butonun görebilmesi için fonksiyonu window'a ekle
-  window.zarAt = zarAt;
-</script>
+    window.roll1 = () => rollDice("dice1");
+    window.roll2 = () => rollDice("dice2");
+
+    // Odayı dinle — her değişiklik tüm cihazlarda görünür
+    onValue(ref(db, roomPath), (snap) => {
+      const data = snap.val() || {};
+      document.getElementById("dice1").innerText = data.dice1 ?? "-";
+      document.getElementById("dice2").innerText = data.dice2 ?? "-";
+    }, (err) => {
+      console.error("Dinleme hatası:", err);
+    });
+  </script>
 
 </body>
 </html>
