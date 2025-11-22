@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأخبار للمستويات المختلفة - YDS Arapça</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #004b79; /* News in Levels mavisi */
+            --accent-color: #008CBA;  /* Buton rengi */
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Ana Konteyner */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        /* Haber Kartı */
+        .news-card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .news-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: 20px;
+        }
+
+        .news-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .news-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin: 0 0 15px 0;
+        }
+
+        /* Seviye Butonları */
+        .level-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .level-btn {
+            background-color: var(--white);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .level-btn:hover, .level-btn.active {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+
+        /* Metin Alanı */
+        .text-content {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Bilinmeyen Kelimeler Kutusu */
+        .vocab-box {
+            background-color: #eef6f9;
+            border-right: 5px solid var(--accent-color);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+
+        .vocab-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .vocab-list {
+            list-style-type: none; /* Madde işaretlerini kaldırdık */
+            padding: 0;
+            margin: 0;
+        }
+
+        .vocab-list li {
+            margin-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        
+        .vocab-list li strong {
+            color: #d9534f; /* Kelime vurgusu için kırmızımsı renk */
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>الأخبار للمستويات المختلفة</h1>
+    </header>
+
+    <div class="container">
+        <div class="news-card">
+            <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1000&auto=format&fit=crop" alt="News Image" class="news-image">
+            
+            <div class="news-content">
+                <span class="news-date">22 Kasım 2025</span>
+                <h2 class="news-title">Örnek Haber: Eğitimde Teknoloji</h2>
+
+                <div class="level-tabs">
+                    <button class="level-btn active" onclick="showLevel(1)">مستوى ١</button>
+                    <button class="level-btn" onclick="showLevel(2)">مستوى ٢</button>
+                    <button class="level-btn" onclick="showLevel(3)">مستوى ٣</button>
+                </div>
+
+                <div id="level-1" class="text-content">
+                    <p>
+                        اليوم، يستخدم الطلاب الحواسيب في المدارس. هذا شيء جيد. الدراسة أصبحت أسهل. يمكن للطلاب البحث عن المعلومات بسرعة. المدرسون سعداء أيضاً. التكنولوجيا مهمة جداً في حياتنا.
+                    </p>
+                    <div class="vocab-box">
+                        <span class="vocab-title">الكلمات الصعبة (مستوى ١):</span>
+                        <ul class="vocab-list">
+                            <li><strong>الحواسيب:</strong> Bilgisayarlar</li>
+                            <li><strong>البحث:</strong> Araştırma</li>
+                            <li><strong>المعلومات:</strong> Bilgiler</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="level-2" class="text-content hidden">
+                    <p>
+                        في الوقت الحاضر، أصبح استخدام التكنولوجيا والحواسيب أمراً شائعاً في المدارس. هذا التطور يساعد الطلاب على التعلم بشكل أسرع وأكثر متعة. بفضل الإنترنت، يستطيع الطلاب الوصول إلى مصادر متنوعة. ومع ذلك، يجب استخدام هذه الأدوات بحكمة.
+                    </p>
+                    <div class="vocab-box">
+                        <span class="vocab-title">الكلمات الصعبة (مستوى ٢):</span>
+                        <ul class="vocab-list">
+                            <li><strong>شائعاً:</strong> Yaygın</li>
+                            <li><strong>التطور:</strong> Gelişim</li>
+                            <li><strong>مصادر متنوعة:</strong> Çeşitli kaynaklar</li>
+                            <li><strong>بحكمة:</strong> Bilgelikle / Akıllıca</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="level-3" class="text-content hidden">
+                    <p>
+                        شهد قطاع التعليم تحولاً جذرياً إثر دمج التقنيات الحديثة في المناهج الدراسية. تساهم هذه النقلة النوعية في تعزيز مهارات البحث العلمي لدى الطلاب وتوسيع آفاقهم المعرفية. ورغم الإيجابيات العديدة، يظل التحدي الأكبر هو ضمان تكافؤ الفرص بين جميع الفئات الاجتماعية في الوصول إلى هذه التقنيات المتقدمة.
+                    </p>
+                    <div class="vocab-box">
+                        <span class="vocab-title">الكلمات الصعبة (مستوى ٣ - YDS):</span>
+                        <ul class="vocab-list">
+                            <li><strong>تحولاً جذرياً:</strong> Köklü değişim</li>
+                            <li><strong>دمج:</strong> Entegre etmek / Birleştirmek</li>
+                            <li><strong>المناهج الدراسية:</strong> Müfredat</li>
+                            <li><strong>النقلة النوعية:</strong> Niteliksel sıçrama (Paradigma değişimi)</li>
+                            <li><strong>آفاق:</strong> Ufuklar</li>
+                            <li><strong>تكافؤ الفرص:</strong> Fırsat eşitliği</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 YDS Arapça Çalışma Platformu</p>
+    </footer>
+
+    <script>
+        function showLevel(level) {
+            // Tüm metinleri gizle
+            document.getElementById('level-1').classList.add('hidden');
+            document.getElementById('level-2').classList.add('hidden');
+            document.getElementById('level-3').classList.add('hidden');
+
+            // Seçilen seviyeyi göster
+            document.getElementById('level-' + level).classList.remove('hidden');
+
+            // Tüm butonların aktiflik durumunu kaldır
+            const buttons = document.getElementsByClassName('level-btn');
+            for (let btn of buttons) {
+                btn.classList.remove('active');
+            }
+
+            // Tıklanan butonu (veya o sıradaki butonu) aktif yap
+            // Not: Button sırası 0, 1, 2 olduğu için level-1 kullanıyoruz
+            buttons[level - 1].classList.add('active');
+        }
+    </script>
+</body>
+</html>
