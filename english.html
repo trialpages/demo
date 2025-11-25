@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lexicon Luminary - English Vocab Trainer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-cyan: #00e5ff;
+            --accent-green: #00c853;
+            --accent-red: #ff3d00;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header & Stats */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .stat-box span {
+            color: var(--accent-cyan);
+        }
+
+        /* Timer Bar */
+        #timer-container {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--accent-cyan);
+            transition: width 0.1s linear;
+        }
+
+        /* Hint Area */
+        #hint-box {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #hint-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        #hint-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Word Grid */
+        #word-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .word-tile {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .word-tile:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-3px);
+            background: #2a2a2a;
+        }
+
+        .word-tile.correct {
+            background: var(--accent-green) !important;
+            border-color: var(--accent-green);
+            color: white;
+        }
+
+        .word-tile.wrong {
+            background: var(--accent-red) !important;
+            border-color: var(--accent-red);
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        /* Game Over & Start Screen */
+        #overlay-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(18, 18, 18, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .title { font-size: 2.5rem; font-weight: 800; color: var(--accent-cyan); margin-bottom: 10px; }
+        .subtitle { color: var(--text-secondary); margin-bottom: 30px; font-size: 1.1rem; }
+        
+        .btn {
+            background: var(--accent-cyan);
+            color: var(--bg-color);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 229, 255, 0.4); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @media (min-width: 768px) {
+            #word-grid { grid-template-columns: repeat(3, 1fr); }
+            #hint-text { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay-screen">
+        <div class="title">LEXICON LUMINARY</div>
+        <div class="subtitle">Hızlı düşün. Kelime dağarcığını genişlet.</div>
+        <div id="final-score" style="display:none; font-size: 1.5rem; margin-bottom: 20px;"></div>
+        <button class="btn" onclick="startGame()" id="start-btn">BAŞLA</button>
+    </div>
+
+    <div id="game-container">
+        <header>
+            <div class="stat-box">Skor: <span id="score">0</span></div>
+            <div class="stat-box" style="letter-spacing: 1px;">LUMINARY MODE</div>
+        </header>
+
+        <div id="timer-container">
+            <div id="timer-bar"></div>
+        </div>
+
+        <div id="hint-box">
+            <div id="hint-label">İpucu (Anlamı / Eş Anlamlısı)</div>
+            <div id="hint-text">...</div>
+        </div>
+
+        <div id="word-grid">
+            </div>
+    </div>
+
+<script>
+    // --- KELİME VERİTABANI (Genişletilebilir) ---
+    // Eğitici olması için orta-üst seviye, iş ve akademik hayatta yararlı kelimeler seçildi.
+    const vocabDatabase = [
+        { word: "Ubiquitous", hint: "Her yerde bulunan, yaygın." },
+        { word: "Pragmatic", hint: "Pratik, faydacı, gerçekçi." },
+        { word: "Ephemeral", hint: "Kısa ömürlü, geçici." },
+        { word: "Alleviate", hint: "Hafifletmek, azaltmak (acı vb.)." },
+        { word: "Ambiguous", hint: "Muğlak, belirsiz, çok anlamlı." },
+        { word: "Bolster", hint: "Desteklemek, güçlendirmek." },
+        { word: "Candid", hint: "İçten, samimi, açık sözlü." },
+        { word: "Dilemma", hint: "İkilem, zor seçim." },
+        { word: "Eloquent", hint: "Düzgün ve etkili konuşan." },
+        { word: "Fallacy", hint: "Yanlış inanç, mantık hatası." },
+        { word: "Gregarious", hint: "Sosyal, girişken, topluluk seven." },
+        { word: "Hypothetical", hint: "Varsayımsal, hayali." },
+        { word: "Inevitable", hint: "Kaçınılmaz, beklenen." },
+        { word: "Juxtapose", hint: "Karşılaştırmak için yan yana koymak." },
+        { word: "Lucid", hint: "Açık, net, anlaşılır (zihin/ifade)." },
+        { word: "Meticulous", hint: "Kılı kırk yaran, çok titiz." },
+        { word: "Nostalgia", hint: "Geçmişe özlem." },
+        { word: "Obsolete", hint: "Modası geçmiş, artık kullanılmayan." },
+        { word: "Paradox", hint: "Çelişki gibi görünen doğru." },
+        { word: "Resilient", hint: "Dirençli, çabuk iyileşen." },
+        { word: "Subtle", hint: "Hemen göze çarpmayan, ince, kurnazca." },
+        { word: "Tangible", hint: "Somut, elle tutulur." },
+        { word: "Vulnerable", hint: "Savunmasız, yaralanabilir." },
+        { word: "Zealous", hint: "Ateşli, gayretli, fanatik." },
+        { word: "Acquire", hint: "Edinmek, elde etmek." },
+        { word: "Beneficial", hint: "Faydalı, yararlı." },
+        { word: "Coherent", hint: "Tutarlı, mantıklı, uyumlu." },
+        { word: "Diverse", hint: "Çeşitli, farklı." },
+        { word: "Enhance", hint: "Geliştirmek, artırmak (kaliteyi)." },
+        { word: "Fluctuate", hint: "Dalgalanmak, inip çıkmak." },
+        { word: "Generate", hint: "Üretmek, oluşturmak." },
+        { word: "Hierarchy", hint: "Hiyerarşi, ast-üst düzeni." },
+        { word: "Implement", hint: "Uygulamak, yerine getirmek." },
+        { word: "Justify", hint: "Haklı çıkarmak, gerekçelendirmek." },
+        { word: "Keen", hint: "Keskin, hevesli, istekli." },
+        { word: "Legitimate", hint: "Yasal, meşru, mantıklı." },
+        { word: "Modify", hint: "Değiştirmek, modifiye etmek." },
+        { word: "Negate", hint: "Çürütmek, olumsuzlamak, reddetmek." },
+        { word: "Optimum", hint: "En uygun, ideal koşul." },
+        { word: "Perceive", hint: "Algılamak, fark etmek." },
+        { word: "Qualitative", hint: "Niteliksel, kaliteye dayalı." },
+        { word: "Reinforce", hint: "Takviye etmek, sağlamlaştırmak." },
+        { word: "Significant", hint: "Önemli, kayda değer." },
+        { word: "Tedious", hint: "Sıkıcı, bıktırıcı, uzun süren." },
+        { word: "Utilize", hint: "Kullanmak, yararlanmak." },
+        { word: "Valid", hint: "Geçerli, mantıklı." },
+        { word: "Widespread", hint: "Yaygın, geniş çaplı." },
+        { word: "Yield", hint: "Ürün vermek / Teslim olmak." },
+        { word: "Arbitrary", hint: "Keyfi, rastgele seçilmiş." },
+        { word: "Bias", hint: "Önyargı, eğilim." }
+    ];
+
+    // --- OYUN DEĞİŞKENLERİ ---
+    let score = 0;
+    let currentTarget = null;
+    let isProcessing = false;
+    let timerInterval;
+    let timeLeft;
+    const MAX_TIME = 100; // Timer bar yüzdesi için
+    let timeDecreaseRate = 0.5; // Her döngüde ne kadar azalacak (Zorluk)
+
+    // --- DOM ELEMENTLERİ ---
+    const overlay = document.getElementById('overlay-screen');
+    const startBtn = document.getElementById('start-btn');
+    const finalScoreEl = document.getElementById('final-score');
+    const scoreEl = document.getElementById('score');
+    const hintTextEl = document.getElementById('hint-text');
+    const gridEl = document.getElementById('word-grid');
+    const timerBarEl = document.getElementById('timer-bar');
+
+    // --- OYUN FONKSİYONLARI ---
+
+    function startGame() {
+        score = 0;
+        timeDecreaseRate = 0.5; // Zorluğu sıfırla
+        scoreEl.textContent = score;
+        overlay.style.display = 'none';
+        finalScoreEl.style.display = 'none';
+        startBtn.innerText = "TEKRAR OYNA";
+        
+        nextLevel();
+    }
+
+    function endGame() {
+        clearInterval(timerInterval);
+        overlay.style.display = 'flex';
+        document.querySelector('.title').innerText = "OYUN BİTTİ";
+        document.querySelector('.subtitle').innerText = "Kelime hazinen gelişiyor!";
+        finalScoreEl.innerText = `Toplam Skor: ${score}`;
+        finalScoreEl.style.display = 'block';
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = MAX_TIME;
+        timerBarEl.style.width = `${timeLeft}%`;
+        timerBarEl.style.backgroundColor = 'var(--accent-cyan)';
+
+        timerInterval = setInterval(() => {
+            timeLeft -= timeDecreaseRate;
+            timerBarEl.style.width = `${timeLeft}%`;
+
+            // Zaman azalınca renk değiştir
+            if(timeLeft < 30) {
+                timerBarEl.style.backgroundColor = 'var(--accent-red)';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endGame();
+            }
+        }, 50); // Her 50ms'de bir güncelle
+    }
+
+    function nextLevel() {
+        isProcessing = false;
+        gridEl.innerHTML = ''; // Izgarayı temizle
+
+        // 1. Rastgele bir hedef kelime seç
+        const randomIndex = Math.floor(Math.random() * vocabDatabase.length);
+        currentTarget = vocabDatabase[randomIndex];
+
+        // 2. İpucunu göster
+        hintTextEl.innerText = currentTarget.hint;
+
+        // 3. Şıklar için havuz oluştur (Hedef + 5 rastgele yanlış cevap)
+        let optionsPool = [currentTarget];
+        let distractors = [...vocabDatabase].filter(item => item.word !== currentTarget.word);
+        
+        // Rastgele 5 yanlış cevap seç
+        for(let i=0; i<5; i++) {
+            const rIdx = Math.floor(Math.random() * distractors.length);
+            optionsPool.push(distractors[rIdx]);
+            distractors.splice(rIdx, 1); // Seçileni çıkar ki tekrar gelmesin
+        }
+
+        // 4. Şıkları karıştır (Fisher-Yates Shuffle)
+        for (let i = optionsPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [optionsPool[i], optionsPool[j]] = [optionsPool[j], optionsPool[i]];
+        }
+
+        // 5. Izgaraya yerleştir
+        optionsPool.forEach(item => {
+            const tile = document.createElement('div');
+            tile.classList.add('word-tile');
+            tile.innerText = item.word;
+            tile.onclick = () => handleSelection(tile, item.word);
+            gridEl.appendChild(tile);
+        });
+
+        // 6. Zamanı başlat ve zorluğu biraz artır
+        timeDecreaseRate += 0.02; 
+        startTimer();
+    }
+
+    function handleSelection(tileElement, selectedWord) {
+        if (isProcessing) return; // Zaten tıklanmışsa işlem yapma
+        isProcessing = true;
+        clearInterval(timerInterval); // Zamanı durdur
+
+        if (selectedWord === currentTarget.word) {
+            // DOĞRU CEVAP
+            tileElement.classList.add('correct');
+            score += 10 + Math.floor(timeLeft / 5); // Kalan zamana göre bonus puan
+            scoreEl.textContent = score;
+            
+            setTimeout(() => {
+                nextLevel();
+            }, 800); // 0.8 saniye bekle sonraki soruya geç
+
+        } else {
+            // YANLIŞ CEVAP
+            tileElement.classList.add('wrong');
+            
+            // Doğru olanı göster
+            const tiles = document.querySelectorAll('.word-tile');
+            tiles.forEach(t => {
+                if(t.innerText === currentTarget.word) {
+                    t.classList.add('correct');
+                }
+            });
+
+            setTimeout(() => {
+                endGame();
+            }, 1500); // Yanlışı görmesi için biraz daha uzun bekle
+        }
+    }
+
+    // Sayfa yüklendiğinde overlay açık başlar.
+</script>
+
+</body>
+</html>
