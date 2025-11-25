@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelime Ustası</title>
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50E3C2;
+            --board-bg: #f0f2f5;
+            --tile-color: #fff8dc;
+            --tile-text: #333;
+            --bonus-dl: #a8d5e2; /* 2 Harf */
+            --bonus-tw: #ff6b6b; /* 3 Kelime */
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c3e50;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* --- Giriş Ekranı --- */
+        #login-screen {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 1.5rem; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button.start-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: transform 0.1s;
+        }
+
+        button.start-btn:active { transform: scale(0.98); }
+
+        /* --- Oyun Alanı --- */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .player-info h2 { margin: 0; font-size: 1.2rem; }
+        .score-box { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
+
+        /* Tahta */
+        #board {
+            display: grid;
+            grid-template-columns: repeat(11, 1fr);
+            gap: 2px;
+            background: #bbb;
+            padding: 2px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 450px; /* Karelerin boyutu için */
+            aspect-ratio: 1 / 1;
+        }
+
+        .cell {
+            background: var(--board-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #777;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 2px;
+        }
+
+        .cell.bonus-dl { background-color: var(--bonus-dl); color: #2c3e50; }
+        .cell.bonus-tw { background-color: var(--bonus-tw); color: white; }
+        .cell.center-star { background-color: #ffd700; font-size: 1.2rem; }
+
+        /* Taş (Harf) Tasarımı */
+        .tile {
+            width: 90%;
+            height: 90%;
+            background: var(--tile-color);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            position: relative;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .tile span.points {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 0.5rem;
+            color: #666;
+        }
+
+        .tile.selected {
+            border: 2px solid var(--primary-color);
+            background: #e3f2fd;
+            transform: scale(1.1);
+        }
+
+        .tile.locked {
+            background: #e0dacc;
+            cursor: default;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        /* Alt Panel (Rack ve Butonlar) */
+        #rack {
+            display: flex;
+            gap: 5px;
+            background: #6c757d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            min-height: 50px;
+            justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #rack .tile {
+            width: 40px;
+            height: 40px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-play { background: #28a745; color: white; }
+        .btn-recall { background: #ffc107; color: #333; }
+        .btn-pass { background: #dc3545; color: white; }
+
+        /* Mesaj Kutusu */
+        #message-area {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 480px) {
+            .tile { font-size: 1rem; }
+            #board { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="message-area"></div>
+
+    <div id="login-screen">
+        <h1>Kelime Ustası</h1>
+        <p>Lütfen bilgilerinizi giriniz.</p>
+        <input type="text" id="player-name" placeholder="Adınız" maxlength="15">
+        <input type="text" id="player-nick" placeholder="Rumuzunuz" maxlength="10">
+        <button class="start-btn" onclick="startGame()">Oyuna Başla</button>
+    </div>
+
+    <div id="game-container">
+        <header>
+            <div class="player-info">
+                <h2 id="display-nick">Oyuncu</h2>
+                <small id="display-name">İsim</small>
+            </div>
+            <div class="score-box">
+                Puan: <span id="score">0</span>
+            </div>
+        </header>
+
+        <div id="board">
+            </div>
+
+        <div id="rack">
+            </div>
+
+        <div class="controls">
+            <button class="action-btn btn-recall" onclick="recallTiles()">Geri Al</button>
+            <button class="action-btn btn-pass" onclick="passTurn()">Pas Geç</button>
+            <button class="action-btn btn-play" onclick="playMove()">OYNA</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: #666; text-align: center;">
+            En az 3 harfli kelime oluşturmalısınız. <br>Harfi seçmek için tıkla, tahtaya koymak için kareye tıkla.
+        </div>
+    </div>
+
+<script>
+    // --- OYUN VERİLERİ ---
+    const BOARD_SIZE = 11;
+    const MIN_WORD_LENGTH = 3;
+    
+    // Türkçe Harfler ve Puanları
+    const LETTER_POOL = {
+        'A': { count: 12, points: 1 }, 'B': { count: 2, points: 3 }, 'C': { count: 2, points: 4 },
+        'Ç': { count: 2, points: 4 }, 'D': { count: 3, points: 3 }, 'E': { count: 8, points: 1 },
+        'F': { count: 1, points: 7 }, 'G': { count: 1, points: 5 }, 'Ğ': { count: 1, points: 8 },
+        'H': { count: 1, points: 5 }, 'I': { count: 4, points: 2 }, 'İ': { count: 7, points: 1 },
+        'J': { count: 1, points: 10 }, 'K': { count: 7, points: 1 }, 'L': { count: 7, points: 1 },
+        'M': { count: 4, points: 2 }, 'N': { count: 5, points: 1 }, 'O': { count: 3, points: 2 },
+        'Ö': { count: 1, points: 7 }, 'P': { count: 1, points: 5 }, 'R': { count: 6, points: 1 },
+        'S': { count: 3, points: 2 }, 'Ş': { count: 2, points: 4 }, 'T': { count: 5, points: 1 },
+        'U': { count: 3, points: 2 }, 'Ü': { count: 2, points: 3 }, 'V': { count: 1, points: 5 },
+        'Y': { count: 2, points: 3 }, 'Z': { count: 2, points: 4 }
+    };
+
+    // Bonus Kare Koordinatları (row, col) - 0-indexed
+    const BONUS_DL = ["0,3", "0,7", "2,6", "6,2", "6,8", "7,0", "3,0", "3,10"]; // 2 Kat Harf
+    const BONUS_TW = ["0,0", "0,10", "10,0", "10,10", "5,5"]; // 3 Kat Kelime (Merkez dahil değil)
+
+    // Oyun Durumu
+    let bag = [];
+    let rack = [];
+    let boardState = []; // Board'daki harfleri tutar
+    let currentTurnTiles = []; // Bu tur konulan harfler
+    let totalScore = 0;
+    let selectedTileIndex = null; // Rack'ten seçilen harf
+
+    // --- BAŞLANGIÇ ---
+    function initGame() {
+        // Torbayı doldur
+        for (let char in LETTER_POOL) {
+            for (let i = 0; i < LETTER_POOL[char].count; i++) {
+                bag.push(char);
+            }
+        }
+        // Karıştır
+        shuffleArray(bag);
+        
+        // Tahtayı oluştur
+        createBoard();
+        
+        // İlk harfleri çek
+        refillRack();
+    }
+
+    function startGame() {
+        const name = document.getElementById('player-name').value;
+        const nick = document.getElementById('player-nick').value;
+
+        if (!name || !nick) {
+            showMessage("Lütfen isim ve rumuz giriniz.");
+            return;
+        }
+
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('display-nick').innerText = "@" + nick;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+
+        initGame();
+    }
+
+    // --- TAHTA VE GÖRÜNÜM ---
+    function createBoard() {
+        const boardEl = document.getElementById('board');
+        boardEl.innerHTML = '';
+        boardState = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null));
+
+        for (let r = 0; r < BOARD_SIZE; r++) {
+            for (let c = 0; c < BOARD_SIZE; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.r = r;
+                cell.dataset.c = c;
+                cell.onclick = () => handleCellClick(r, c);
+
+                // Bonus sınıfları ekle
+                const coord = `${r},${c}`;
+                if (r === 5 && c === 5) {
+                    cell.classList.add('center-star');
+                    cell.innerHTML = '★';
+                } else if (BONUS_TW.includes(coord)) {
+                    cell.classList.add('bonus-tw');
+                    cell.innerText = '3K';
+                } else if (BONUS_DL.includes(coord)) {
+                    cell.classList.add('bonus-dl');
+                    cell.innerText = '2H';
+                }
+
+                boardEl.appendChild(cell);
+            }
+        }
+    }
+
+    function renderRack() {
+        const rackEl = document.getElementById('rack');
+        rackEl.innerHTML = '';
+        rack.forEach((char, index) => {
+            if (char === null) return; // Kullanılmış boşluk
+            
+            const tile = createTileElement(char, LETTER_POOL[char].points);
+            tile.onclick = (e) => {
+                e.stopPropagation();
+                selectTileInRack(index);
+            };
+            if (selectedTileIndex === index) {
+                tile.classList.add('selected');
+            }
+            rackEl.appendChild(tile);
+        });
+    }
+
+    function createTileElement(char, points) {
+        const div = document.createElement('div');
+        div.classList.add('tile');
+        div.innerHTML = `${char}<span class="points">${points}</span>`;
+        return div;
+    }
+
+    // --- OYNANIŞ MANTIĞI ---
+
+    function selectTileInRack(index) {
+        if (selectedTileIndex === index) {
+            selectedTileIndex = null; // Seçimi kaldır
+        } else {
+            selectedTileIndex = index;
+        }
+        renderRack();
+    }
+
+    function handleCellClick(r, c) {
+        // Eğer bir harf seçiliyse ve kare boşsa, yerleştir
+        if (selectedTileIndex !== null && boardState[r][c] === null) {
+            const char = rack[selectedTileIndex];
+            
+            // Veri güncelle
+            placeTileOnBoard(r, c, char);
+            
+            // Rack'ten sil (ama index kaymasın diye null yapıyoruz geçici olarak)
+            rack[selectedTileIndex] = null; 
+            
+            // Seçimi sıfırla
+            selectedTileIndex = null;
+            
+            // Görünümü güncelle
+            renderRack();
+        } else if (selectedTileIndex === null && boardState[r][c] !== null) {
+             // Eğer taş henüz kilitlenmediyse (bu tur konduysa) geri alabiliriz
+             const existingTile = currentTurnTiles.find(t => t.r === r && t.c === c);
+             if (existingTile) {
+                 // Taşı geri al
+                 returnTileToRack(existingTile);
+             }
+        }
+    }
+
+    function placeTileOnBoard(r, c, char) {
+        boardState[r][c] = char;
+        currentTurnTiles.push({ r, c, char });
+        
+        // Görsel olarak ekle
+        const index = r * BOARD_SIZE + c;
+        const cell = document.getElementById('board').children[index];
+        const tileEl = createTileElement(char, LETTER_POOL[char].points);
+        
+        // Yıldız veya bonus yazısını gizlemesi için temizlemiyoruz, üstüne append ediyoruz ama absolute ile? 
+        // Basit olsun: hücre içeriğini temizle ve tile koy
+        cell.innerText = ''; 
+        cell.appendChild(tileEl);
+    }
+
+    function returnTileToRack(tileObj) {
+        // Board'dan sil
+        boardState[tileObj.r][tileObj.c] = null;
+        
+        // Current turn'den sil
+        currentTurnTiles = currentTurnTiles.filter(t => t !== tileObj);
+        
+        // Rack'teki ilk null boşluğa geri koy
+        const emptyIdx = rack.indexOf(null);
+        if (emptyIdx !== -1) {
+            rack[emptyIdx] = tileObj.char;
+        } else {
+            rack.push(tileObj.char); // Ne olur ne olmaz
+        }
+
+        // Hücreyi eski haline getir (Bonus yazıları geri gelsin)
+        const cellIndex = tileObj.r * BOARD_SIZE + tileObj.c;
+        const cell = document.getElementById('board').children[cellIndex];
+        cell.innerHTML = '';
+        
+        const coord = `${tileObj.r},${tileObj.c}`;
+        if (tileObj.r === 5 && tileObj.c === 5) {
+            cell.classList.add('center-star');
+            cell.innerHTML = '★';
+        } else if (BONUS_TW.includes(coord)) {
+            cell.innerText = '3K';
+        } else if (BONUS_DL.includes(coord)) {
+            cell.innerText = '2H';
+        }
+
+        renderRack();
+    }
+
+    function recallTiles() {
+        // Kopyasını alıp döngüye sokalım çünkü diziden eleman sileceğiz
+        const tilesToReturn = [...currentTurnTiles];
+        tilesToReturn.forEach(t => returnTileToRack(t));
+    }
+
+    // --- KONTROL VE PUANLAMA ---
+
+    function playMove() {
+        if (currentTurnTiles.length === 0) {
+            showMessage("Henüz hamle yapmadınız.");
+            return;
+        }
+
+        // 1. Kontrol: Hepsi aynı satırda veya aynı sütunda mı?
+        const rows = new Set(currentTurnTiles.map(t => t.r));
+        const cols = new Set(currentTurnTiles.map(t => t.c));
+
+        if (rows.size > 1 && cols.size > 1) {
+            showMessage("Harfler tek bir satır veya sütunda olmalı.");
+            recallTiles();
+            return;
+        }
+
+        // 2. Kontrol: Kelime bitişik mi ve uzunluğu en az 3 mü?
+        // Bu basit versiyonda, sadece konulan taşların puanını hesaplayacağız.
+        // Gerçek bir Scrabble algoritması çok karmaşıktır, bu versiyonda "Koyduğun Kelime" üzerinden puan verilir.
+        
+        // Puan Hesapla
+        let moveScore = 0;
+        let wordMultiplier = 1;
+
+        currentTurnTiles.forEach(t => {
+            let charPoints = LETTER_POOL[t.char].points;
+            const coord = `${t.r},${t.c}`;
+
+            // Harf Bonusları
+            if (BONUS_DL.includes(coord)) charPoints *= 2;
+            
+            // Kelime Bonus Çarpanlarını Biriktir
+            if (BONUS_TW.includes(coord) || (t.r === 5 && t.c === 5)) {
+                // Merkez de 3K etkisi yapsın ilk başta veya 2K
+                wordMultiplier *= 3;
+            }
+
+            moveScore += charPoints;
+        });
+
+        // Eğer kelime 3 harften kısaysa uyar (Sadece bu tur koyulanlara bakıyoruz basitleştirme için)
+        // İdealde board'daki komşularla birleşip birleşmediğine bakılır.
+        let totalLen = currentTurnTiles.length; 
+        // Basit validasyon: Eğer ilk hamle ise ve merkez dolu değilse hata
+        const centerFilled = currentTurnTiles.some(t => t.r === 5 && t.c === 5);
+        if (totalScore === 0 && !centerFilled) {
+             showMessage("İlk kelime merkeze (Yıldız) değmeli.");
+             recallTiles();
+             return;
+        }
+        
+        // Puanı güncelle
+        moveScore = moveScore * wordMultiplier;
+        
+        // Ekstra uzunluk bonusu (Bingo benzeri)
+        if (currentTurnTiles.length === 7) moveScore += 50;
+
+        totalScore += moveScore;
+        document.getElementById('score').innerText = totalScore;
+
+        showMessage(`Harika! ${moveScore} puan aldın.`);
+
+        // Taşları kilitle
+        lockTiles();
+        
+        // Yeni taş çek
+        rack = rack.filter(c => c !== null); // Boşlukları temizle
+        refillRack();
+    }
+
+    function lockTiles() {
+        currentTurnTiles.forEach(t => {
+            const index = t.r * BOARD_SIZE + t.c;
+            const cell = document.getElementById('board').children[index];
+            const tileDiv = cell.querySelector('.tile');
+            if(tileDiv) tileDiv.classList.add('locked');
+        });
+        currentTurnTiles = [];
+    }
+
+    function passTurn() {
+        recallTiles();
+        // Taşları torbaya geri at
+        rack.forEach(c => bag.push(c));
+        rack = [];
+        shuffleArray(bag);
+        refillRack();
+        showMessage("Pas geçildi, taşlar değiştirildi.");
+    }
+
+    function refillRack() {
+        while (rack.length < 7 && bag.length > 0) {
+            rack.push(bag.pop());
+        }
+        renderRack();
+        
+        if (rack.length === 0 && bag.length === 0) {
+            alert("Oyun Bitti! Toplam Puan: " + totalScore);
+        }
+    }
+
+    // --- YARDIMCI FONKSİYONLAR ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function showMessage(msg) {
+        const el = document.getElementById('message-area');
+        el.innerText = msg;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 2500);
+    }
+</script>
+
+</body>
+</html>
