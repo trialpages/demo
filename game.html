@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Untie the Problems - Interactive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            font-family: 'Lato', sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* UI Overlay */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through to canvas if needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+        }
+
+        #start-screen {
+            pointer-events: auto;
+            text-align: center;
+            background: rgba(0, 20, 20, 0.85);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #f0e6d2;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        p.subtitle {
+            color: #a8b2b2;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        button#solve-btn {
+            background: linear-gradient(135deg, #d4af37, #c5a028);
+            border: none;
+            padding: 15px 40px;
+            color: #1a2e1a;
+            font-family: 'Lato', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button#solve-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+        }
+
+        button#solve-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Language Toggle */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            pointer-events: auto;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        .lang-switch:hover { opacity: 1; }
+
+        /* Final Message */
+        #final-message {
+            position: absolute;
+            top: 20%;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+            transform: translateY(20px);
+            pointer-events: none;
+        }
+
+        #final-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #final-message h2 {
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+            font-size: 2rem;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.8);
+            margin: 0;
+            padding: 0 20px;
+            line-height: 1.4;
+        }
+        
+        #replay-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 10px 30px;
+            font-family: 'Lato', sans-serif;
+            cursor: pointer;
+            border-radius: 30px;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s;
+        }
+        
+        #replay-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="ui-layer">
+        <div class="lang-switch" onclick="toggleLanguage()">EN / TR</div>
+        
+        <div id="start-screen">
+            <h1 id="title-text">Untie the Problems</h1>
+            <p class="subtitle" id="subtitle-text">Science, Health, Education, Business</p>
+            <button id="solve-btn" onclick="startGame()">Solve Problems</button>
+        </div>
+
+        <div id="final-message">
+            <h2 id="success-text">Science, health, education and business are grateful to you.</h2>
+            <button id="replay-btn" onclick="resetGame()">REPLAY</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * UNTIE THE PROBLEMS - PROTOTYPE
+ * Uses HTML5 Canvas for rendering (No external assets required)
+ */
+
+// --- Configuration ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+
+// State
+let gameState = 'IDLE'; // IDLE, WALKING, PREPARING, SWINGING, IMPACT, CELEBRATING
+let currentLang = 'EN';
+let startTime = 0;
+let animationFrameId;
+
+// Entities
+let character = { x: -100, y: 0, scale: 1, frame: 0 };
+let rope = { straightness: 0, tension: 0 }; // 0 = knotted, 1 = straight
+let particles = [];
+let confetti = [];
+let camera = { x: 0, y: 0, shake: 0 };
+
+// Text Content
+const texts = {
+    EN: {
+        title: "Untie the Problems",
+        subtitle: "Science, Health, Education, Business",
+        btn: "Solve Problems",
+        success: "Science, health, education and business are grateful to you.",
+        knotLabel: "Real Issues"
+    },
+    TR: {
+        title: "Sorunları Çöz",
+        subtitle: "Bilim, Sağlık, Eğitim, İş Dünyası",
+        btn: "Sorunları Çöz",
+        success: "Bilim, sağlık, eğitim ve iş dünyası sana minnettardır.",
+        knotLabel: "Gerçek Sorunlar"
+    }
+};
+
+// Plaques
+const plaques = [
+    { label: "Science", xPercent: 0.15, color: "#4a6fa5" },
+    { label: "Health", xPercent: 0.38, color: "#4aa56e" },
+    { label: "Education", xPercent: 0.62, color: "#d4af37" },
+    { label: "Business", xPercent: 0.85, color: "#a54a4a" }
+];
+
+// --- Initialization ---
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    character.y = height * 0.75;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function toggleLanguage() {
+    currentLang = currentLang === 'EN' ? 'TR' : 'EN';
+    document.getElementById('title-text').innerText = texts[currentLang].title;
+    document.getElementById('subtitle-text').innerText = texts[currentLang].subtitle;
+    document.getElementById('solve-btn').innerText = texts[currentLang].btn;
+    document.getElementById('success-text').innerText = texts[currentLang].success;
+    
+    // Update plaque labels for TR
+    if(currentLang === 'TR') {
+        plaques[0].label = "Bilim";
+        plaques[1].label = "Sağlık";
+        plaques[2].label = "Eğitim";
+        plaques[3].label = "İş Dünyası";
+    } else {
+        plaques[0].label = "Science";
+        plaques[1].label = "Health";
+        plaques[2].label = "Education";
+        plaques[3].label = "Business";
+    }
+}
+
+// --- Logic ---
+
+function startGame() {
+    document.getElementById('start-screen').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('start-screen').style.display = 'none';
+        gameState = 'WALKING';
+        startTime = Date.now();
+        loop();
+    }, 500);
+}
+
+function resetGame() {
+    document.getElementById('final-message').className = '';
+    document.getElementById('replay-btn').className = '';
+    
+    // Reset variables
+    character.x = -100;
+    rope.straightness = 0;
+    rope.tension = 0;
+    particles = [];
+    confetti = [];
+    
+    gameState = 'WALKING'; // Loop restart
+}
+
+function update() {
+    const now = Date.now();
+    const elapsed = now - startTime;
+
+    // 1. Character enters
+    if (gameState === 'WALKING') {
+        character.x += 4; // Move right
+        character.frame += 0.15; // Animation speed
+        
+        // Stop at center
+        if (character.x > width / 2 - 50) {
+            gameState = 'PREPARING';
+            setTimeout(() => { gameState = 'SWINGING'; }, 500);
+        }
+    }
+
+    // 2. Swing Staff
+    if (gameState === 'SWINGING') {
+        // Animation handled in draw
+        setTimeout(() => { 
+            gameState = 'IMPACT'; 
+            camera.shake = 15; // Camera shake
+            createImpactParticles(width/2, height * 0.75);
+            // Play sound here (placeholder)
+        }, 300);
+    }
+
+    // 3. Impact & Untie
+    if (gameState === 'IMPACT') {
+        if (camera.shake > 0) camera.shake *= 0.8; // Dampen shake
+        
+        // Morph the rope
+        rope.straightness += 0.02;
+        if (rope.straightness >= 1) {
+            rope.straightness = 1;
+            gameState = 'CELEBRATING';
+            triggerCelebration();
+        }
+    }
+
+    // 4. Celebration
+    if (gameState === 'CELEBRATING') {
+        updateConfetti();
+    }
+    
+    updateParticles();
+}
+
+function createImpactParticles(x, y) {
+    for(let i=0; i<30; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            vx: (Math.random() - 0.5) * 15,
+            vy: (Math.random() - 1) * 15,
+            life: 1.0,
+            color: '#d4af37'
+        });
+    }
+}
+
+function triggerCelebration() {
+    document.getElementById('final-message').classList.add('visible');
+    setTimeout(() => {
+         document.getElementById('replay-btn').classList.add('visible');
+    }, 2000);
+
+    for(let i=0; i<150; i++) {
+        confetti.push({
+            x: Math.random() * width,
+            y: -Math.random() * height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: Math.random() * 5 + 2,
+            rotation: Math.random() * 360,
+            color: `hsl(${Math.random()*360}, 70%, 50%)`,
+            size: Math.random() * 8 + 4
+        });
+    }
+}
+
+function updateParticles() {
+    for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.5; // Gravity
+        p.life -= 0.03;
+        if (p.life <= 0) particles.splice(i, 1);
+    }
+}
+
+function updateConfetti() {
+    confetti.forEach(c => {
+        c.y += c.vy;
+        c.x += Math.sin(c.y * 0.05); // Sway
+        c.rotation += 5;
+        if (c.y > height) c.y = -10; // Loop
+    });
+}
+
+// --- Rendering ---
+
+function draw() {
+    // Clear & Camera Shake
+    ctx.save();
+    let shakeX = (Math.random() - 0.5) * camera.shake;
+    let shakeY = (Math.random() - 0.5) * camera.shake;
+    ctx.translate(shakeX, shakeY);
+    ctx.clearRect(0, 0, width, height);
+
+    drawBackground();
+    drawPlaques();
+    drawRope();
+    drawCharacter();
+    drawParticles();
+    
+    if (gameState === 'CELEBRATING') {
+        drawConfetti();
+    }
+
+    ctx.restore();
+}
+
+function drawBackground() {
+    // Sky
+    let grad = ctx.createLinearGradient(0, 0, 0, height);
+    grad.addColorStop(0, '#0f1729');
+    grad.addColorStop(1, '#1e3c72');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+
+    // Ground (Garden)
+    ctx.fillStyle = '#112211'; // Dark Garden Green
+    ctx.fillRect(0, height * 0.75, width, height * 0.25);
+    
+    // Vignette
+    let radial = ctx.createRadialGradient(width/2, height/2, width/4, width/2, height/2, width);
+    radial.addColorStop(0, 'rgba(0,0,0,0)');
+    radial.addColorStop(1, 'rgba(0,0,0,0.6)');
+    ctx.fillStyle = radial;
+    ctx.fillRect(0,0,width,height);
+}
+
+function drawPlaques() {
+    const groundY = height * 0.75;
+    
+    plaques.forEach((p, index) => {
+        let x = width * p.xPercent;
+        let y = groundY - 80;
+        
+        // Glow effect on success
+        if (gameState === 'CELEBRATING') {
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = p.color;
+        }
+
+        // Post
+        ctx.fillStyle = '#333';
+        ctx.fillRect(x - 5, y + 40, 10, 40);
+
+        // Board
+        ctx.fillStyle = '#1a1a1a';
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(x - 60, y, 120, 50, 5);
+        ctx.fill();
+        ctx.stroke();
+
+        // Text
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px Playfair Display';
+        ctx.textAlign = 'center';
+        ctx.shadowBlur = 0;
+        ctx.fillText(p.label, x, y + 30);
+    });
+}
+
+function drawRope() {
+    const startX = 0;
+    const endX = width;
+    const y = height * 0.65; // Rope height
+    const midX = width / 2;
+    
+    ctx.strokeStyle = '#d2b48c'; // Rope color
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(startX, y);
+
+    // Procedural Knot Logic
+    // We draw a sine wave that flattens as rope.straightness goes to 1
+    const segments = 100;
+    for (let i = 0; i <= segments; i++) {
+        let px = (width / segments) * i;
+        
+        // Calculate knot intensity based on distance to center
+        let dist = Math.abs(px - midX);
+        let knotZone = Math.max(0, 1 - dist / 150); // Influence only center 300px
+        
+        // Knot complexity decreases as straightness increases
+        let amplitude = 60 * knotZone * (1 - rope.straightness); 
+        let freq = 0.2;
+        
+        // Add "messy" noise for knot look
+        let noise = (Math.sin(i * 1.5) * 20) * knotZone * (1 - rope.straightness);
+
+        let py = y + Math.sin(i * freq) * amplitude + noise;
+        ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Draw the "Real Issues" tag if knotted
+    if (rope.straightness < 0.8) {
+        ctx.fillStyle = '#ff4444';
+        ctx.fillRect(midX - 10, y + 20, 60, 20);
+        ctx.fillStyle = 'white';
+        ctx.font = '10px Lato';
+        ctx.fillText(texts[currentLang].knotLabel, midX + 20, y + 34);
+        
+        // Line connecting tag to rope
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(midX, y);
+        ctx.lineTo(midX, y + 20);
+        ctx.stroke();
+    }
+}
+
+function drawCharacter() {
+    let cx = character.x;
+    let cy = character.y;
+    
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // Simple bobbing animation
+    let bob = Math.sin(character.frame) * 5;
+    if (gameState === 'IDLE' || gameState === 'CELEBRATING') bob = 0;
+    
+    // Scale for direction if needed
+    ctx.scale(1, 1); 
+
+    // Cloak (Body)
+    ctx.fillStyle = '#0a0a0a'; // Black cloak
+    ctx.beginPath();
+    ctx.moveTo(0, 0); // Bottom center
+    ctx.lineTo(-30, -140 + bob); // Shoulder L
+    ctx.lineTo(30, -140 + bob); // Shoulder R
+    ctx.lineTo(40, 0); // Bottom R
+    ctx.lineTo(-40, 0); // Bottom L
+    ctx.fill();
+
+    // Head (Hood)
+    ctx.fillStyle = '#151515';
+    ctx.beginPath();
+    ctx.arc(0, -150 + bob, 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Staff Logic
+    ctx.strokeStyle = '#8b5a2b'; // Wood
+    ctx.lineWidth = 4;
+    
+    let staffRotation = 0;
+    if (gameState === 'WALKING') staffRotation = Math.sin(character.frame) * 0.2;
+    if (gameState === 'PREPARING') staffRotation = -1.0; // Wind up
+    if (gameState === 'SWINGING' || gameState === 'IMPACT') staffRotation = 1.5; // Strike
+
+    ctx.save();
+    ctx.translate(15, -130 + bob); // Pivot at hand/shoulder
+    ctx.rotate(staffRotation);
+    ctx.beginPath();
+    ctx.moveTo(0, 20); // Hand grip
+    ctx.lineTo(0, -100); // Staff top
+    ctx.lineTo(0, 60); // Staff bottom
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.restore();
+}
+
+function drawParticles() {
+    particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    });
+}
+
+function drawConfetti() {
+    confetti.forEach(c => {
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(c.rotation * Math.PI / 180);
+        ctx.fillStyle = c.color;
+        ctx.fillRect(-c.size/2, -c.size/2, c.size, c.size);
+        ctx.restore();
+    });
+}
+
+function loop() {
+    update();
+    draw();
+    animationFrameId = requestAnimationFrame(loop);
+}
+
+// Initial draw (static background)
+// Wait for font load in real app, here simple timeout
+setTimeout(() => {
+    resize();
+    drawBackground();
+    drawPlaques();
+    drawRope(); 
+}, 100);
+
+</script>
+</body>
+</html>
