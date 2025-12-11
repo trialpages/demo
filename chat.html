@@ -3,28 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sohbet</title>
+    <title>Sohbet Odası</title>
     <style>
-        /* Kenar boşluklarını sıfırla ve tam ekran yap */
-        body, html {
+        body {
             margin: 0;
             padding: 0;
+            background-color: #f0f2f5;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+
+        .chat-box {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Sayfa kaydırmayı engelle */
+            max-width: 1200px; /* İsterseniz genişliği sınırlandırın */
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-        
+
         iframe {
             border: none;
             width: 100%;
             height: 100%;
-            display: block; /* Iframe altındaki boşluğu sil */
         }
     </style>
 </head>
 <body>
 
-    <iframe src="https://kiwiirc.com/client/irc.kiwiirc.com/#demo"></iframe>
+    <div class="chat-box">
+        <iframe src="https://kiwiirc.com/nextclient/irc.chattingcorner.net/#ChatWorld"></iframe>
+    </div>
 
 </body>
 </html>
