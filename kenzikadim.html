@@ -12,16 +12,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- TEMEL AYARLAR --- */
         :root {
-            --primary-green: #2b4a3e;
+            --primary-green: #2b4a3e; /* Koyu Nefti Yeşil */
             --secondary-green: #1e362d; 
-            --accent-gold: #c5a059;
+            --accent-gold: #c5a059; /* Altın Sarısı */
             --text-dark: #333333;
             --text-light: #f4f4f4;
             --bg-cream: #f9f7f2;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         html { scroll-behavior: smooth; }
 
         body {
@@ -30,11 +32,14 @@
             color: var(--text-dark);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
         h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--primary-green); }
 
-        /* HEADER */
+        a { text-decoration: none; transition: 0.3s; }
+
+        /* --- HEADER --- */
         header {
             background: linear-gradient(rgba(43, 74, 62, 0.95), rgba(30, 54, 45, 0.95)), url('https://www.transparenttextures.com/patterns/arches.png');
             color: var(--text-light);
@@ -49,7 +54,6 @@
             color: var(--accent-gold);
             margin: 0 10px;
             font-size: 1.2rem;
-            transition: 0.3s;
         }
         .header-socials a:hover { color: #fff; transform: scale(1.1); }
 
@@ -65,6 +69,7 @@
             font-size: 1.8rem;
             color: var(--accent-gold);
             margin: 5px 0 10px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .tagline {
@@ -77,7 +82,7 @@
             padding-top: 10px;
         }
 
-        /* MENÜ */
+        /* --- MENÜ (NAVBAR) --- */
         nav {
             background-color: var(--primary-green);
             padding: 0 20px;
@@ -97,43 +102,60 @@
         }
 
         nav ul { display: flex; list-style: none; }
+        
         nav ul li a {
             display: block;
             padding: 15px 15px;
             color: var(--text-light);
-            text-decoration: none;
             font-family: 'Cinzel', serif;
             font-size: 0.9rem;
-            transition: 0.3s;
             border-bottom: 3px solid transparent;
         }
+        
         nav ul li a:hover {
             color: var(--accent-gold);
             border-bottom: 3px solid var(--accent-gold);
         }
 
-        .menu-toggle { display: none; color: var(--accent-gold); font-size: 1.5rem; cursor: pointer; padding: 10px; }
+        .menu-toggle { 
+            display: none; 
+            color: var(--accent-gold); 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            padding: 10px; 
+        }
 
-        /* BÖLÜMLER */
+        /* --- BÖLÜM GENEL STİLLERİ --- */
         section {
-            min-height: 80vh;
+            min-height: 70vh; /* İçerik az olsa bile sayfa dolu dursun */
             padding: 60px 20px;
             max-width: 1100px;
             margin: 0 auto;
             border-bottom: 1px solid #eee;
-            scroll-margin-top: 60px;
+            scroll-margin-top: 60px; /* Menü payı */
         }
 
-        /* Başlık stili temizlendi (Sarı şekiller kaldırıldı) */
+        /* Başlık Stili - Düzeltildi */
         .section-title {
             text-align: center;
             font-size: 2.2rem;
             margin-bottom: 40px;
-            padding-bottom: 10px;
-            /* Altındaki süslemeler kaldırıldı */
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        /* Şık Çizgi (Elmas yok, sadece çizgi) */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px; /* Çizgi uzunluğu */
+            height: 3px;  /* Çizgi kalınlığı */
+            background-color: var(--accent-gold);
+            margin: 10px auto 0;
+            border-radius: 2px;
         }
 
-        /* SLIDER */
+        /* --- VİDEO SLIDER --- */
         .slider-wrapper {
             position: relative;
             max-width: 800px;
@@ -142,11 +164,12 @@
             border: 4px solid var(--primary-green);
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .video-responsive {
             overflow: hidden;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* 16:9 Oran */
             position: relative;
             height: 0;
         }
@@ -157,8 +180,7 @@
 
         .slider-btn {
             position: absolute;
-            top: 0; 
-            bottom: 0; /* Tam boy kaplasın */
+            top: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.1); /* Çok hafif gölge */
             color: #fff;
             border: none;
@@ -184,46 +206,78 @@
         }
         .dot.active { background-color: var(--primary-green); transform: scale(1.2); }
 
-        /* KARTLAR */
+        /* --- KART TASARIMLARI --- */
         .card {
-            background: #fff; padding: 30px; text-align: center;
-            border: 1px solid #e0e0e0; border-radius: 8px; transition: 0.4s;
-            position: relative; overflow: hidden;
+            background: #fff; 
+            padding: 30px; 
+            text-align: center;
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            transition: 0.4s;
+            position: relative;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-color: var(--accent-gold); }
 
-        /* İLETİŞİM */
-        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        /* --- İLETİŞİM --- */
+        .contact-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
         .contact-box {
-            background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex; align-items: center; transition: 0.3s; border-left: 4px solid var(--primary-green);
+            background: #fff; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; 
+            align-items: center; 
+            transition: 0.3s; 
+            border-left: 4px solid var(--primary-green);
         }
         .contact-box:hover { transform: translateX(5px); background: #fafafa; }
         .contact-box i { font-size: 1.5rem; color: var(--accent-gold); margin-right: 15px; width: 30px; text-align: center; }
-        .contact-box a { text-decoration: none; color: var(--text-dark); font-weight: 700; }
+        .contact-box div { display: flex; flex-direction: column; }
+        .contact-box strong { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
+        .contact-box a { color: var(--text-dark); font-weight: 700; }
 
-        /* MOBİL */
-        @media (max-width: 768px) {
-            .nav-container { justify-content: space-between; padding: 10px 0; }
-            .menu-toggle { display: block; margin-left: auto; }
-            nav ul {
-                display: none; flex-direction: column; width: 100%;
-                background-color: var(--primary-green); position: absolute;
-                top: 100%; left: 0; text-align: center;
-            }
-            nav ul.active { display: flex; }
-            nav ul li { border-bottom: 1px solid rgba(255,255,255,0.1); }
-            section { min-height: auto; padding: 40px 15px; }
-            .section-title { font-size: 1.8rem; }
+        /* --- FOOTER & BACK TO TOP --- */
+        footer {
+            background-color: var(--secondary-green);
+            color: #aaa;
+            text-align: center;
+            padding: 40px;
+            font-size: 0.9rem;
+            border-top: 4px solid var(--accent-gold);
+            margin-top: 40px;
         }
 
-        /* BACK TO TOP */
         #backToTop {
             display: none; position: fixed; bottom: 20px; right: 20px;
             background: var(--accent-gold); color: white; border: none;
             border-radius: 50%; width: 45px; height: 45px; cursor: pointer; z-index: 999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-    </script>
+
+        /* --- MOBİL UYUM (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            .nav-container { justify-content: space-between; padding: 10px 0; }
+            .menu-toggle { display: block; margin-left: auto; }
+            nav ul {
+                display: none; 
+                flex-direction: column; 
+                width: 100%;
+                background-color: var(--primary-green); 
+                position: absolute;
+                top: 100%; left: 0; 
+                text-align: center;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+            nav ul.active { display: flex; }
+            nav ul li { border-bottom: 1px solid rgba(255,255,255,0.1); }
+            section { min-height: auto; padding: 40px 15px; }
+            header h1 { font-size: 2rem; }
+        }
+    </style>
 </head>
 <body>
 
@@ -280,7 +334,7 @@
             <p><strong>"Kenz-i Kadîm"</strong>, tâ Asr-i Saadet'ten başlayan fâzıl ve kâmil zevâtın irfânını anlatır.</p>
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
             <h3>Fatih Küçüktiryaki</h3>
-            <p style="color:#666;">(İçerik bekleniyor...)</p>
+            <p style="color:#666; margin-top:5px;">(Biyografi metni bekleniyor...)</p>
         </div>
     </section>
 
@@ -288,12 +342,14 @@
         <h2 class="section-title">Yolumuzun Büyükleri</h2>
         <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
             <div class="card">
+                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:15px;"></i>
                 <h3>Hüsnü Gülzari (k.s.)</h3>
-                <p>Hayatı ve menkıbeleri...</p>
+                <p style="margin-top:10px;">Hayatı ve menkıbeleri...</p>
             </div>
             <div class="card">
+                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:15px;"></i>
                 <h3>İbrahim İpek Efendi (rh.a.)</h3>
-                <p>Hayatı ve menkıbeleri...</p>
+                <p style="margin-top:10px;">Hayatı ve menkıbeleri...</p>
             </div>
         </div>
     </section>
@@ -301,25 +357,29 @@
     <section id="kitaplar">
         <h2 class="section-title">Kitaplar</h2>
         <div class="card">
-            <i class="fas fa-book-open fa-3x" style="color:var(--primary-green);"></i>
-            <h3 style="margin-top:15px;">SADE(CE) İNSAN</h3>
+            <i class="fas fa-book-open fa-3x" style="color:var(--primary-green); margin-bottom:15px;"></i>
+            <h3 style="font-size:1.8rem;">SADE(CE) İNSAN</h3>
             <p>İbrahim İpek (rh.a.) Hazretlerinin hayatına dair eser.</p>
         </div>
     </section>
 
     <section id="divanlar">
         <h2 class="section-title">Divanlar</h2>
-        <div class="card"><p>Divan içerikleri hazırlanıyor...</p></div>
+        <div class="card">
+            <p>Divan içerikleri hazırlanıyor...</p>
+        </div>
     </section>
 
     <section id="etkinlikler">
         <h2 class="section-title">Diğer Etkinlikler</h2>
         <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
             <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
-                <i class="fas fa-quran fa-2x"></i><h3>Tefsir Dersleri</h3>
+                <i class="fas fa-quran fa-2x" style="color:var(--primary-green);"></i>
+                <h3 style="margin-top:10px;">Tefsir Dersleri</h3>
             </a>
             <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
-                <i class="fas fa-users fa-2x"></i><h3>Dergah Sohbetleri</h3>
+                <i class="fas fa-users fa-2x" style="color:var(--primary-green);"></i>
+                <h3 style="margin-top:10px;">Dergah Sohbetleri</h3>
             </a>
         </div>
     </section>
@@ -333,23 +393,23 @@
             </div>
             <div class="contact-box">
                 <i class="fab fa-instagram"></i>
-                <div><strong>INSTAGRAM</strong><a href="https://instagram.com/kenzikadim">/kenzikadim</a></div>
+                <div><strong>INSTAGRAM</strong><a href="https://instagram.com/kenzikadim" target="_blank">/kenzikadim</a></div>
+            </div>
+            <div class="contact-box">
+                <i class="fab fa-facebook"></i>
+                <div><strong>FACEBOOK</strong><a href="https://facebook.com/kenzikadim" target="_blank">/kenzikadim</a></div>
+            </div>
+            <div class="contact-box">
+                <i class="fab fa-x-twitter"></i>
+                <div><strong>X (TWITTER)</strong><a href="https://x.com/kenzikadim" target="_blank">/kenzikadim</a></div>
+            </div>
+            <div class="contact-box">
+                <i class="fab fa-tiktok"></i>
+                <div><strong>TIKTOK</strong><a href="https://tiktok.com/kenzikadim" target="_blank">/kenzikadim</a></div>
             </div>
             <div class="contact-box">
                 <i class="fab fa-youtube"></i>
-                <div><strong>YOUTUBE</strong><a href="https://youtube.com/@KenziKadim">@KenziKadim</a></div>
-            </div>
-             <div class="contact-box">
-                <i class="fab fa-facebook"></i>
-                <div><strong>FACEBOOK</strong><a href="https://facebook.com/kenzikadim">/kenzikadim</a></div>
-            </div>
-             <div class="contact-box">
-                <i class="fab fa-x-twitter"></i>
-                <div><strong>X (TWITTER)</strong><a href="https://x.com/kenzikadim">/kenzikadim</a></div>
-            </div>
-             <div class="contact-box">
-                <i class="fab fa-tiktok"></i>
-                <div><strong>TIKTOK</strong><a href="https://tiktok.com/kenzikadim">/kenzikadim</a></div>
+                <div><strong>YOUTUBE</strong><a href="https://youtube.com/@KenziKadim" target="_blank">@KenziKadim</a></div>
             </div>
         </div>
     </section>
@@ -361,11 +421,13 @@
     <button onclick="scrollToTop()" id="backToTop"><i class="fas fa-arrow-up"></i></button>
 
     <script>
+        // --- Video Verileri ---
         const videoIds = ["8uuNOmynhf0", "S52PamErUQU", "nW0FzGrXYps", "lLPhWH4AbsI"];
         let currentVideoIndex = 0;
         const iframe = document.getElementById('main-video');
         const indicatorsContainer = document.getElementById('indicators');
 
+        // --- Video Fonksiyonları ---
         function updateVideo() {
             iframe.src = "https://www.youtube.com/embed/" + videoIds[currentVideoIndex] + "?rel=0";
             updateIndicators();
@@ -381,6 +443,7 @@
             updateVideo();
         }
 
+        // Noktaları Oluştur
         videoIds.forEach((_, idx) => {
             let dot = document.createElement('span');
             dot.className = idx === 0 ? 'dot active' : 'dot';
@@ -395,16 +458,25 @@
             });
         }
 
+        // --- Menü Fonksiyonları ---
         function toggleMenu() {
             document.getElementById('nav-list').classList.toggle('active');
         }
+
         function closeMenu() {
             document.getElementById('nav-list').classList.remove('active');
         }
 
+        // --- Scroll Fonksiyonları ---
         window.onscroll = function() {
-            document.getElementById("backToTop").style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? "block" : "none";
+            const btn = document.getElementById("backToTop");
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
         };
+
         function scrollToTop() {
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
