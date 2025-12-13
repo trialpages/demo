@@ -4,40 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>İlahiyat Kariyer Rehberi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- RENK PALETİ VE TEMEL AYARLAR --- */
+        /* --- RENK PALETİ --- */
         :root {
             --primary: #0295A9;      /* Koyu Turkuaz */
             --secondary: #12ADC1;    /* Açık Turkuaz */
-            --accent: #FDD037;       /* Sarı */
+            --accent: #FDD037;       /* Parlak Sarı */
             --white: #FFFFFF;
-            --text-dark: #333333;
-            --text-light: #666666;
-            --bg-overlay: rgba(255, 255, 255, 0.94); /* Arka planı yumuşatmak için */
+            --light-bg: #E8F6F8;     /* Header için çok açık turkuaz */
+            --text-dark: #2C3E50;
+            --text-gray: #555555;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Roboto', sans-serif;
             color: var(--text-dark);
-            line-height: 1.6;
-            /* Arka plan: Kitap/Kariyer Temalı */
-            background-image: url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=2070&auto=format&fit=crop'); 
+            line-height: 1.7;
+            background-image: url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
         }
 
-        /* Tüm sayfayı kaplayan beyaz filtre */
+        /* Sayfa Kaplaması */
         .page-wrapper {
-            background-color: var(--bg-overlay);
+            background-color: rgba(255, 255, 255, 0.96); /* Daha opak beyaz */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -46,45 +42,78 @@
         a { text-decoration: none; color: inherit; transition: 0.3s; }
         ul { list-style: none; }
 
-        /* --- HEADER --- */
+        /* --- ZENGİNLEŞTİRİLMİŞ HEADER --- */
         header {
-            background-color: var(--white);
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 5px solid var(--accent);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, var(--light-bg) 0%, #ffffff 50%, var(--light-bg) 100%);
+            padding: 30px 0;
+            border-bottom: 5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
         }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header İkonları (SVG) */
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            fill: var(--primary);
+            opacity: 0.8;
+            margin: 0 30px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .brand { text-align: center; }
 
         .brand h1 {
-            font-family: 'Playfair Display', serif; /* Akademik/Klasik hava */
-            font-size: 2.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
             color: var(--primary);
-            letter-spacing: 1px;
-        }
-        
-        .brand span {
-            color: var(--secondary);
+            font-weight: 900;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            letter-spacing: -1px;
+            line-height: 1.2;
         }
 
-        /* --- NAVIGASYON (MENÜ) --- */
+        .brand h1 span { color: var(--secondary); }
+
+        .slogan {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            font-style: italic;
+            margin-top: 5px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .slogan::before, .slogan::after {
+            content: "—";
+            color: var(--accent);
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        /* --- NAVİGASYON --- */
         .navbar {
-            background-color: var(--primary);
-            color: var(--white);
+            background: linear-gradient(to right, var(--primary), var(--secondary));
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(2, 149, 169, 0.3);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
         .nav-container {
             display: flex;
-            justify-content: space-between; /* Mobilde hamburgeri sağa itmek için */
+            justify-content: space-between;
             align-items: center;
             height: 60px;
         }
@@ -95,277 +124,264 @@
             width: 100%;
         }
 
-        .nav-item {
-            position: relative;
-            margin: 0 15px;
-        }
+        .nav-item { position: relative; margin: 0 5px; }
 
         .nav-link {
             color: var(--white);
             font-weight: 500;
-            padding: 18px 10px;
-            display: block;
+            padding: 0 15px;
+            height: 60px;
+            display: flex;
+            align-items: center;
             font-size: 1rem;
-            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
 
-        .nav-link:hover {
-            background-color: var(--secondary);
-            border-bottom: 3px solid var(--accent);
+        .nav-link:hover, .nav-item.active > .nav-link {
+            background-color: rgba(255,255,255,0.15);
+            color: var(--accent);
         }
 
-        /* Dropdown Menü */
+        /* Dropdown Menü (Masaüstü) */
         .dropdown-menu {
             display: none;
             position: absolute;
             background-color: var(--white);
-            min-width: 220px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            min-width: 240px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             top: 100%;
             left: 0;
-            border-top: 3px solid var(--accent);
+            border-top: 4px solid var(--accent);
+            border-radius: 0 0 8px 8px;
             z-index: 1001;
-            border-radius: 0 0 5px 5px;
+            overflow: hidden;
         }
 
-        .dropdown-menu li {
-            border-bottom: 1px solid #eee;
-        }
-
-        .dropdown-menu li:last-child {
-            border-bottom: none;
-        }
-
+        .dropdown-menu li { border-bottom: 1px solid #f4f4f4; }
+        
         .dropdown-menu a {
             color: var(--text-dark);
-            padding: 12px 16px;
+            padding: 14px 20px;
             display: block;
             font-size: 0.95rem;
+            transition: 0.3s;
         }
 
         .dropdown-menu a:hover {
-            background-color: #f9f9f9;
+            background-color: #fafafa;
             color: var(--primary);
-            padding-left: 20px; /* Hover efekti */
+            padding-left: 25px;
+            border-left: 4px solid var(--primary);
         }
 
-        /* Hover ile açılma (Masaüstü) */
-        .nav-item:hover .dropdown-menu {
-            display: block;
-            animation: fadeIn 0.3s ease;
+        /* Masaüstü Hover */
+        @media (min-width: 769px) {
+            .nav-item:hover .dropdown-menu {
+                display: block;
+                animation: slideUp 0.3s ease;
+            }
         }
 
-        @keyframes fadeIn {
+        @keyframes slideUp {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Hamburger Menü İkonu (Mobilde Görünür) */
-        .hamburger {
-            display: none;
-            cursor: pointer;
-        }
-        
-        .bar {
-            display: block;
-            width: 25px;
-            height: 3px;
-            margin: 5px auto;
-            background-color: var(--white);
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* --- ANA İÇERİK DÜZENİ --- */
+        /* --- İÇERİK YAPISI --- */
         .main-layout {
             display: grid;
-            grid-template-columns: 3fr 1fr; /* 3 birim içerik, 1 birim sidebar */
-            gap: 30px;
-            padding: 40px 0;
-            flex: 1; /* Footer'ı aşağı itmek için */
+            grid-template-columns: 3fr 1fr;
+            gap: 40px;
+            padding: 50px 0;
+            flex: 1;
         }
 
+        /* Ana Makale Alanı */
         .content-area {
             background: var(--white);
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--primary);
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-top: 5px solid var(--accent);
+            position: relative;
         }
 
         .content-area h2 {
-            color: var(--primary);
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
         }
 
-        .content-area p {
-            margin-bottom: 20px;
+        /* Sola Yaslanmış Görsel (Rich Design) */
+        .featured-image {
+            float: left;
+            width: 40%;
+            margin-right: 30px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 4px solid var(--white);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        /* Görsel efekti */
+        .featured-image img {
+            width: 100%;
+            display: block;
+            border-radius: 4px;
+        }
+
+        .content-text {
             font-size: 1.1rem;
-            color: var(--text-dark);
             text-align: justify;
+            color: #444;
+        }
+        
+        .content-text p { margin-bottom: 20px; }
+
+        .highlight {
+            background-color: rgba(253, 208, 55, 0.2);
+            padding: 0 5px;
+            border-radius: 3px;
         }
 
-        /* --- SIDEBAR (SAĞ BLOK) --- */
+        /* Sidebar */
         .sidebar-block {
             background: var(--white);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--accent);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--secondary);
         }
 
         .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
             color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
         }
+        
+        .sidebar-title::before {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--accent);
+            margin-right: 10px;
+            border-radius: 50%;
+        }
 
-        .news-item, .announcement-item {
+        .news-item {
             margin-bottom: 15px;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
         }
         
-        .news-item:last-child { border-bottom: none; }
-
-        .date-badge {
-            background-color: var(--secondary);
-            color: var(--white);
-            font-size: 0.75rem;
-            padding: 2px 6px;
+        .news-date {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 3px 8px;
             border-radius: 4px;
-            margin-right: 5px;
+            font-size: 0.75rem;
+            margin-bottom: 5px;
         }
 
         .news-link {
-            font-weight: 500;
-            font-size: 0.95rem;
             display: block;
-            margin-top: 5px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-dark);
         }
+        
+        .news-link:hover { color: var(--secondary); }
 
-        .news-link:hover { color: var(--primary); }
+        /* --- RESPONSIVE (MOBİL) --- */
+        .hamburger { display: none; cursor: pointer; }
+        .bar { width: 25px; height: 3px; background: var(--white); margin: 5px; transition: 0.3s; }
+
+        @media (max-width: 768px) {
+            .header-icon { display: none; } /* Mobilde ikonları gizle ki yer açılsın */
+            .brand h1 { font-size: 2rem; }
+            .slogan { font-size: 1rem; }
+            
+            .hamburger { display: block; }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px;
+                flex-direction: column;
+                background-color: var(--primary);
+                width: 100%;
+                height: calc(100vh - 60px);
+                justify-content: flex-start;
+                padding: 20px 0;
+                transition: 0.3s;
+                overflow-y: auto;
+            }
+
+            .nav-menu.active { left: 0; }
+            .nav-item { width: 100%; margin: 0; }
+            
+            .nav-link {
+                justify-content: space-between;
+                padding: 15px 25px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                height: auto;
+            }
+
+            /* Mobilde Dropdown Açılma Mantığı */
+            .dropdown-menu {
+                position: static;
+                width: 100%;
+                box-shadow: none;
+                border: none;
+                background-color: rgba(0,0,0,0.1);
+                display: none; /* Varsayılan gizli */
+            }
+            
+            /* JS ile 'open' sınıfı eklenince açılacak */
+            .nav-item.open .dropdown-menu {
+                display: block;
+            }
+
+            /* Ok işareti döndürme */
+            .nav-item.open .nav-link::after {
+                transform: rotate(180deg);
+            }
+            
+            .nav-link::after {
+                content: '▼';
+                font-size: 0.7rem;
+                margin-left: 10px;
+                transition: 0.3s;
+            }
+            
+            .main-layout { grid-template-columns: 1fr; padding: 20px 10px; }
+            .content-area { padding: 25px; }
+            .featured-image { float: none; width: 100%; margin: 0 0 20px 0; }
+        }
 
         /* --- FOOTER --- */
         footer {
             background-color: var(--primary);
             color: var(--white);
-            padding: 40px 0 20px;
+            padding: 40px 0;
             margin-top: auto;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-icon svg {
-            fill: var(--white);
-            width: 24px;
-            height: 24px;
-            transition: 0.3s;
-        }
-
-        .social-icon:hover svg {
-            fill: var(--accent);
-            transform: scale(1.1);
-        }
-
-        .copyright {
             text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.8;
         }
+        
+        .social-icons { margin: 20px 0; }
+        .social-icon svg { fill: var(--white); width: 28px; transition: 0.3s; margin: 0 10px; }
+        .social-icon:hover svg { fill: var(--accent); transform: scale(1.2); }
 
-        /* --- RESPONSIVE TASARIM (MOBİL) --- */
-        @media (max-width: 768px) {
-            .hamburger {
-                display: block;
-            }
-
-            .hamburger.active .bar:nth-child(2) { opacity: 0; }
-            .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-            .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-            .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 60px; /* Header yüksekliği kadar */
-                flex-direction: column;
-                background-color: var(--primary);
-                width: 100%;
-                height: calc(100vh - 60px); /* Ekranın geri kalanı */
-                text-align: left;
-                transition: 0.3s;
-                justify-content: flex-start;
-                padding-top: 20px;
-                overflow-y: auto;
-            }
-
-            .nav-menu.active {
-                left: 0;
-            }
-
-            .nav-item {
-                margin: 0;
-                width: 100%;
-            }
-
-            .nav-link {
-                padding: 15px 25px;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-
-            /* Mobilde dropdown davranışı */
-            .dropdown-menu {
-                position: static;
-                display: none; /* JS ile aç kapa yapılabilir veya CSS ile */
-                background-color: rgba(0,0,0,0.1);
-                box-shadow: none;
-                border: none;
-                width: 100%;
-            }
-            
-            .nav-item:hover .dropdown-menu {
-                display: block; /* Mobilde de hover mantığı basitçe çalışsın */
-            }
-
-            .dropdown-menu a {
-                color: var(--white);
-                padding-left: 40px;
-            }
-
-            .dropdown-menu a:hover {
-                background-color: rgba(0,0,0,0.2);
-                color: var(--accent);
-            }
-
-            /* Main Layout Grid'i tek sütuna düşür */
-            .main-layout {
-                grid-template-columns: 1fr;
-                padding: 20px 0;
-            }
-            
-            .content-area, .sidebar-block {
-                margin: 0 15px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -373,67 +389,62 @@
 <div class="page-wrapper">
 
     <header>
-        <div class="container">
+        <div class="container header-content">
+            <svg class="header-icon" viewBox="0 0 24 24">
+                <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
+            </svg>
+
             <div class="brand">
                 <h1>İlahiyat <span>Kariyer</span> Rehberi</h1>
+                <p class="slogan">İlimden İrfana, Teoriden Pratiğe Yolculuk</p>
             </div>
+
+            <svg class="header-icon" viewBox="0 0 24 24">
+                <path d="M7.127 22.564l-7.126 1.436 1.438-7.125 5.688 5.689zm-4.27-7.124l7.127 7.126 17.581-17.584-7.128-7.127-17.58 17.585z"/>
+            </svg>
         </div>
     </header>
 
     <nav class="navbar">
         <div class="container nav-container">
-            <div style="font-weight:bold; font-size:1.2rem; display:none;" class="mobile-brand">Menü</div>
+            <div style="width:10px;"></div>
 
             <ul class="nav-menu">
                 <li class="nav-item">
                     <a href="#" class="nav-link">Anasayfa</a>
                 </li>
-                
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Lisansüstü ▾</a>
+                <li class="nav-item has-dropdown">
+                    <a href="javascript:void(0)" class="nav-link">Lisansüstü</a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Yüksek Lisans</a></li>
                         <li><a href="#">Doktora</a></li>
                         <li><a href="#">YLSY (Burs)</a></li>
                     </ul>
                 </li>
-
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Akademisyenlik ▾</a>
+                <li class="nav-item has-dropdown">
+                    <a href="javascript:void(0)" class="nav-link">Akademisyenlik</a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Araştırma Görevlisi</a></li>
                         <li><a href="#">Öğretim Görevlisi</a></li>
                         <li><a href="#">Dr. Öğretim Üyesi</a></li>
                         <li><a href="#">Doçentlik</a></li>
-                        <li><a href="#">Profesörlük</a></li>
                     </ul>
                 </li>
-
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Diyanet ▾</a>
+                <li class="nav-item has-dropdown">
+                    <a href="javascript:void(0)" class="nav-link">Diyanet</a>
                     <ul class="dropdown-menu">
                         <li><a href="#">İmam-Hatip</a></li>
                         <li><a href="#">Müezzin-Kayyım</a></li>
-                        <li><a href="#">Vaiz</a></li>
+                        <li><a href="#">Vaiz / Vaize</a></li>
                         <li><a href="#">Müftü</a></li>
-                        <li><a href="#">Uzman Yardımcısı</a></li>
                     </ul>
                 </li>
-
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Milli Eğitim ▾</a>
+                <li class="nav-item has-dropdown">
+                    <a href="javascript:void(0)" class="nav-link">Milli Eğitim</a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Öğretmen (DKAB/İHL)</a></li>
-                        <li><a href="#">Uzman Yardımcısı</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Yurt Dışı ▾</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">YLSY</a></li>
-                        <li><a href="#">Dil Bursları</a></li>
-                        <li><a href="#">Yurt Dışı Görevler</a></li>
+                        <li><a href="#">Öğretmenlik (DKAB)</a></li>
+                        <li><a href="#">Öğretmenlik (İHL)</a></li>
+                        <li><a href="#">Müfettişlik</a></li>
                     </ul>
                 </li>
             </ul>
@@ -449,48 +460,55 @@
     <div class="container main-layout">
         
         <main class="content-area">
-            <h2>Geleceğinizi İnşa Edin</h2>
-            <p>
-                İlahiyat Kariyer Rehberi, ilahiyat fakültesi öğrencileri ve mezunlarının kariyer planlamalarına ışık tutmak, akademik ve mesleki yolculuklarında onlara rehberlik etmek amacıyla hazırlanmış kapsamlı bir platformdur. Amacımız, teorik bilgilerinizi profesyonel hayatta nasıl değerlendirebileceğiniz konusunda doğru yönlendirmeler sunmaktır.
-            </p>
-            <p>
-                Platformumuzda; akademik kariyer basamaklarından Milli Eğitim Bakanlığı bünyesindeki öğretmenlik fırsatlarına, Diyanet İşleri Başkanlığı'ndaki çeşitli görev tanımlarından yurt dışı eğitim ve burs imkanlarına kadar geniş bir yelpazede detaylı bilgilere ulaşabilirsiniz. Her bir alan için gerekli şartlar, sınav süreçleri ve mülakat teknikleri hakkında güncel verileri derliyoruz.
-            </p>
-            <p>
-                Kariyer yolculuğu sadece bir iş bulmak değil, aynı zamanda kendinizi gerçekleştirebileceğiniz, topluma fayda sağlayabileceğiniz bir hizmet alanını keşfetmektir. Bu rehber ile hedeflerinize giden yolda sağlam adımlar atmanız için yanınızdayız.
-            </p>
+            <h2>Geleceğinizi Bilgiyle İnşa Edin</h2>
             
-            <div style="margin-top:30px;">
-                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop" alt="Kütüphane Çalışma" style="width:100%; border-radius:5px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-            </div>
+            <div class="content-text">
+                <div class="featured-image">
+                    <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop" alt="İlahiyat Çalışma">
+                </div>
+
+                <p>
+                    <span class="highlight">İlahiyat Kariyer Rehberi</span>, ilahiyat fakültesi öğrencileri ve mezunlarının kariyer planlamalarına ışık tutmak, akademik ve mesleki yolculuklarında onlara rehberlik etmek amacıyla hazırlanmış kapsamlı bir platformdur. Amacımız, fakülte sıralarında edindiğiniz kadim bilgileri, modern dünyanın profesyonel alanlarında nasıl hizmete dönüştürebileceğinizi göstermektir.
+                </p>
+                <p>
+                    Platformumuzda; akademik kariyer basamaklarından (Araştırma Görevliliği, Öğretim Üyeliği) Milli Eğitim Bakanlığı bünyesindeki öğretmenlik fırsatlarına, Diyanet İşleri Başkanlığı'ndaki idari ve irşad görevlerinden yurt dışı eğitim imkanlarına kadar geniş bir yelpazede detaylı bilgilere ulaşabilirsiniz.
+                </p>
+                <p>
+                    Her bir alan için gerekli KPSS, YDS, DHBT puan türleri, mülakat teknikleri ve kurumların beklentileri hakkında güncel verileri derliyoruz. Kariyer sadece bir "iş" değil, bir "oluş" sürecidir. Bu süreçte yalnız değilsiniz.
+                </p>
+                <div style="clear:both;"></div> </div>
         </main>
 
         <aside class="sidebar">
             <div class="sidebar-block">
-                <div class="sidebar-title">Haberler</div>
+                <div class="sidebar-title">Güncel Haberler</div>
+                
                 <div class="news-item">
-                    <span class="date-badge">12 Ara</span>
-                    <a href="#" class="news-link">2025 Yılı DHBT Sınav Takvimi Açıklandı</a>
+                    <span class="news-date">12 Ara 2025</span>
+                    <a href="#" class="news-link">2025 Yılı DHBT Sınav Takvimi ve Başvuru Şartları Açıklandı</a>
                 </div>
+                
                 <div class="news-item">
-                    <span class="date-badge">10 Ara</span>
-                    <a href="#" class="news-link">Akademik Teşvik Ödeneği Başvuruları Başladı</a>
+                    <span class="news-date">10 Ara 2025</span>
+                    <a href="#" class="news-link">Akademik Teşvik Ödeneği Başvurularında Değişiklik</a>
                 </div>
+                
                 <div class="news-item">
-                    <span class="date-badge">05 Ara</span>
-                    <a href="#" class="news-link">YLSY Bursiyerleri İçin Yeni Ülke Kontenjanları</a>
+                    <span class="news-date">05 Ara 2025</span>
+                    <a href="#" class="news-link">MEB, İHL Meslek Dersleri Öğretmeni Atama Kontenjanı</a>
                 </div>
             </div>
 
             <div class="sidebar-block">
-                <div class="sidebar-title">Duyurular</div>
-                <div class="announcement-item">
-                    <p style="font-size:0.9rem;"><strong>Seminer:</strong> "İlahiyatçılar İçin Modern Çağda İletişim Dili" - Prof. Dr. Ahmet Yılmaz</p>
-                    <small style="color:#888;">Yer: Konferans Salonu, 24 Aralık</small>
-                </div>
-                <div class="announcement-item" style="margin-top:10px;">
-                    <p style="font-size:0.9rem;"><strong>Sınav:</strong> Arapça YDS Hazırlık Kursu Kayıtları devam ediyor.</p>
-                </div>
+                <div class="sidebar-title">Duyurular & Etkinlikler</div>
+                <p style="font-size:0.95rem; margin-bottom:10px;">
+                    <strong>Seminer:</strong> "Modern Çağda Din Dili"<br>
+                    <span style="color:#777; font-size:0.85rem;">📅 24 Aralık 2025 | Konferans Salonu</span>
+                </p>
+                <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+                <p style="font-size:0.95rem;">
+                    <strong>Kurs:</strong> YDS Arapça Hızlandırma Programı kayıtları başlamıştır.
+                </p>
             </div>
         </aside>
 
@@ -498,34 +516,20 @@
 
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <div class="contact-info">
-                    <h3 style="font-family:'Playfair Display'; margin-bottom:10px;">İletişim</h3>
-                    <p style="font-size:0.9rem;">E-posta: info@ilahiyatkariyer.com</p>
-                    <p style="font-size:0.9rem;">Tel: +90 312 000 00 00</p>
-                </div>
-
-                <div class="social-icons">
-                    <a href="#" class="social-icon" title="Twitter">
-                        <svg viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
-                    </a>
-                    <a href="#" class="social-icon" title="Instagram">
-                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    </a>
-                     <a href="#" class="social-icon" title="YouTube">
-                        <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
-                    </a>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; 2025 İlahiyat Kariyer Rehberi. Tüm Hakları Saklıdır.
+            <h3 style="font-family:'Playfair Display'; font-size:1.5rem; margin-bottom:15px;">İlahiyat Kariyer Rehberi</h3>
+            <p style="opacity:0.8;">Tüm hakları saklıdır &copy; 2025</p>
+            
+            <div class="social-icons">
+                <a href="#" class="social-icon"><svg viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg></a>
+                <a href="#" class="social-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+                <a href="#" class="social-icon"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>
             </div>
         </div>
     </footer>
-
 </div>
 
 <script>
+    // Mobil Menü Hamburger
     const hamburger = document.querySelector(".hamburger");
     const navMenu = document.querySelector(".nav-menu");
 
@@ -534,11 +538,30 @@
         navMenu.classList.toggle("active");
     });
 
-    // Linke tıklandığında menüyü kapat
-    document.querySelectorAll(".nav-link").forEach(n => n.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        navMenu.classList.remove("active");
-    }));
+    // Mobilde Dropdown Açma/Kapama Mantığı
+    const dropdownItems = document.querySelectorAll('.nav-item.has-dropdown > .nav-link');
+
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Sadece mobil görünümde (768px altı) bu JS çalışsın
+            if (window.innerWidth <= 768) {
+                e.preventDefault(); // Sayfa yenilenmesini engelle
+                
+                // Tıklanan menünün ebeveyni (li)
+                const parent = item.parentElement;
+                
+                // Diğer açık menüleri kapat (İsteğe bağlı - akordeon etkisi)
+                document.querySelectorAll('.nav-item.open').forEach(openedItem => {
+                    if (openedItem !== parent) {
+                        openedItem.classList.remove('open');
+                    }
+                });
+
+                // Tıklananı aç veya kapat
+                parent.classList.toggle('open');
+            }
+        });
+    });
 </script>
 
 </body>
