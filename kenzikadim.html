@@ -13,16 +13,15 @@
 
     <style>
         :root {
-            /* Renk Paleti - Görsellerden Alınan */
             --primary-green: #2b4a3e; /* Koyu Nefti Yeşil */
-            --secondary-green: #1e362d; /* Daha koyu ton */
+            --secondary-green: #1e362d; 
             --accent-gold: #c5a059; /* Altın Sarısı */
+            --light-gold: #e6c888;
             --text-dark: #333333;
             --text-light: #f4f4f4;
-            --bg-cream: #f9f7f2; /* Kağıt/Krem rengi zemin */
+            --bg-cream: #f9f7f2;
         }
 
-        /* Genel Ayarlar */
         * {
             margin: 0;
             padding: 0;
@@ -38,6 +37,7 @@
             background-color: var(--bg-cream);
             color: var(--text-dark);
             line-height: 1.6;
+            overflow-x: hidden; /* Yatay taşmayı engelle */
         }
 
         h1, h2, h3 {
@@ -45,407 +45,528 @@
             color: var(--primary-green);
         }
 
-        .arabic-text {
-            font-family: 'Amiri', serif;
-            font-size: 2.5rem;
-            color: var(--accent-gold);
-            margin: 10px 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* Navigasyon */
-        nav {
-            background-color: var(--secondary-green);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            border-bottom: 2px solid var(--accent-gold);
-        }
-
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            flex-wrap: wrap;
-        }
-
-        nav ul li {
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-family: 'Cinzel', serif;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        nav ul li a:hover {
-            color: var(--accent-gold);
-        }
-
-        /* Header / Hero Alanı */
+        /* --- Header Alanı --- */
         header {
-            background: linear-gradient(rgba(43, 74, 62, 0.9), rgba(43, 74, 62, 0.9)), url('https://www.transparenttextures.com/patterns/arches.png');
+            background: linear-gradient(rgba(43, 74, 62, 0.95), rgba(30, 54, 45, 0.95)), url('https://www.transparenttextures.com/patterns/arches.png');
             color: var(--text-light);
             text-align: center;
-            padding: 100px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 20px; /* Boyut kısaltıldı */
+            position: relative;
+            border-bottom: 4px solid var(--accent-gold);
+        }
+
+        .header-socials {
+            margin-bottom: 15px;
+        }
+
+        .header-socials a {
+            color: var(--accent-gold);
+            margin: 0 10px;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .header-socials a:hover {
+            color: #fff;
+            transform: scale(1.2);
         }
 
         header h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             color: var(--text-light);
-            margin-bottom: 0;
-            letter-spacing: 3px;
-            border-bottom: 1px solid var(--accent-gold);
-            padding-bottom: 10px;
-            display: inline-block;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin: 5px 0 15px 0;
         }
 
         .tagline {
             font-style: italic;
-            margin-top: 20px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #ddd;
-            max-width: 800px;
+            max-width: 700px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(197, 160, 89, 0.3);
+            padding-top: 15px;
         }
 
-        .separator {
+        /* --- Navigasyon --- */
+        nav {
+            background-color: var(--primary-green);
+            padding: 0 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative; /* Tavana yapışık değil, header altında */
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            transition: max-height 0.3s ease-out;
+        }
+
+        nav ul li {
+            margin: 0;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 20px 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            transition: background 0.3s, color 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        nav ul li a:hover {
+            background-color: rgba(255,255,255,0.05);
             color: var(--accent-gold);
-            font-size: 1.5rem;
-            margin: 20px 0;
+            border-bottom: 3px solid var(--accent-gold);
         }
 
-        /* Bölüm Genel Stilleri */
+        /* Hamburger Menu Icon (Mobile) */
+        .menu-toggle {
+            display: none;
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 15px;
+        }
+
+        /* --- Sayfa Yapısı ve Scroll Ayarı --- */
         section {
-            padding: 80px 20px;
+            /* İçerik az olsa bile sayfa dolu görünsün */
+            min-height: 85vh; 
+            padding: 60px 20px;
             max-width: 1100px;
             margin: 0 auto;
-            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* İçerik yukarıdan başlasın */
+            
+            /* Menüye tıklanınca başlığın tam görünmesi için offset ayarı */
+            scroll-margin-top: 20px; 
+            border-bottom: 1px solid #eee;
         }
 
-        section:last-of-type {
-            border-bottom: none;
+        section:nth-child(even) {
+            background-color: #fff; /* Bir dolu bir boş renk hissi */
         }
 
         .section-title {
             text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 50px;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
             position: relative;
+            padding-bottom: 15px;
         }
 
         .section-title::after {
-            content: '';
+            content: '♦';
             display: block;
-            width: 100px;
-            height: 3px;
-            background-color: var(--accent-gold);
-            margin: 15px auto 0;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background-color: var(--primary-green);
         }
 
-        /* Anasayfa (Video) */
-        .video-container {
+        /* --- Video Slider --- */
+        .slider-wrapper {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            overflow: hidden;
-            border: 5px solid var(--primary-green);
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border: 4px solid var(--primary-green);
+            border-radius: 8px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
 
-        .video-container iframe {
+        .video-responsive {
+            overflow: hidden;
+            padding-bottom: 56.25%;
+            position: relative;
+            height: 0;
+        }
+
+        .video-responsive iframe {
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(43, 74, 62, 0.8);
+            color: var(--accent-gold);
+            border: none;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slider-btn:hover {
+            background: var(--accent-gold);
+            color: var(--primary-green);
+        }
+
+        .prev-btn { left: -25px; }
+        .next-btn { right: -25px; }
+
+        .video-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .dot {
+            height: 12px;
+            width: 12px;
+            background-color: #ccc;
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: var(--primary-green);
+            transform: scale(1.2);
+        }
+
+        /* --- Genel Kart Tasarımları --- */
+        .card {
+            background: #fff;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--accent-gold);
+        }
+
+        .card::before {
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-        }
-
-        /* Hakkımızda */
-        .about-content {
-            background-color: #fff;
-            padding: 40px;
-            border-left: 5px solid var(--accent-gold);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            font-size: 1.1rem;
-            text-align: justify;
-        }
-
-        .person-info {
-            margin-top: 30px;
-            background: #fdfdfd;
-            padding: 20px;
-            border: 1px solid #eee;
-        }
-
-        /* Yolumuzun Büyükleri & Kartlar */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            padding: 30px;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 4px solid var(--primary-green);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .card h3 {
-            margin-bottom: 15px;
-            color: var(--secondary-green);
-        }
-
-        /* Kitaplar */
-        .book-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #fff;
-            padding: 40px;
-            border: 1px double var(--accent-gold);
-        }
-        
-        .book-title {
-            font-size: 2rem;
-            font-family: 'Cinzel', serif;
-            color: var(--primary-green);
-            margin-bottom: 10px;
-        }
-
-        .book-desc {
-            font-style: italic;
-            color: #555;
-        }
-
-        /* Diğer Etkinlikler */
-        .activity-links a {
-            display: block;
+            height: 4px;
             background: var(--primary-green);
-            color: #fff;
-            padding: 20px;
-            margin: 15px 0;
-            text-align: center;
-            text-decoration: none;
-            font-family: 'Cinzel', serif;
-            border-radius: 4px;
-            transition: background 0.3s;
+            transition: width 0.3s;
         }
 
-        .activity-links a:hover {
-            background: var(--accent-gold);
-            color: var(--secondary-green);
+        /* --- Kitap Bölümü --- */
+        .book-showcase {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            background: linear-gradient(135deg, #fff 0%, #fcfcfc 100%);
+            border: 1px solid #ddd;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+            border-radius: 5px;
         }
 
-        /* İletişim */
+        /* --- İletişim Izgarası --- */
         .contact-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        .contact-item {
+        .contact-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
+            transition: transform 0.3s;
+            border-left: 5px solid var(--primary-green);
         }
 
-        .contact-item:hover {
-            transform: translateX(5px);
-            border-left: 4px solid var(--accent-gold);
+        .contact-box:hover {
+            transform: translateX(10px);
+            background-color: #fafafa;
         }
 
-        .contact-item i {
-            font-size: 24px;
-            color: var(--primary-green);
-            margin-right: 15px;
-            width: 30px;
+        .contact-box i {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            margin-right: 20px;
+            min-width: 40px;
             text-align: center;
         }
-
-        .contact-item .info {
+        
+        .contact-box div {
             display: flex;
             flex-direction: column;
         }
-
-        .contact-item span {
-            font-size: 0.8rem;
+        
+        .contact-box strong {
+            font-size: 0.9rem;
             color: #888;
-            text-transform: uppercase;
+            margin-bottom: 3px;
         }
-
-        .contact-item a {
-            color: var(--text-dark);
+        
+        .contact-box a {
             text-decoration: none;
-            font-weight: bold;
-            font-family: 'Lato', sans-serif;
+            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
-        .contact-item a:hover {
-            color: var(--accent-gold);
-        }
-
-        /* Footer */
+        /* --- Footer --- */
         footer {
             background-color: var(--secondary-green);
             color: #aaa;
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             font-size: 0.9rem;
-            margin-top: 50px;
+            border-top: 4px solid var(--accent-gold);
         }
 
-        /* Back to Top Button */
         #backToTop {
             display: none;
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 99;
-            font-size: 18px;
-            border: none;
-            outline: none;
+            bottom: 25px;
+            right: 25px;
             background-color: var(--accent-gold);
             color: white;
-            cursor: pointer;
-            padding: 15px;
+            border: none;
             border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: background-color 0.3s;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            z-index: 999;
         }
-
+        
         #backToTop:hover {
             background-color: var(--primary-green);
+            transform: translateY(-5px);
         }
 
-        /* Mobile Responsive */
+        /* --- MOBILE RESPONSIVE --- */
         @media (max-width: 768px) {
-            header h1 { font-size: 2.5rem; }
-            nav ul { flex-direction: column; text-align: center; }
-            nav ul li { margin: 10px 0; }
-            .section-title { font-size: 2rem; }
+            header { padding: 30px 15px; }
+            header h1 { font-size: 2.2rem; }
+            .arabic-text { font-size: 1.6rem; }
+
+            .nav-container {
+                justify-content: space-between;
+                padding: 10px 0;
+            }
+
+            .menu-toggle {
+                display: block; /* Hamburger butonu göster */
+                margin-left: auto; /* Sağa yasla */
+            }
+
+            nav ul {
+                display: none; /* Varsayılan gizle */
+                flex-direction: column;
+                width: 100%;
+                background-color: var(--primary-green);
+                position: absolute;
+                top: 100%; /* Nav barın hemen altı */
+                left: 0;
+                text-align: center;
+                box-shadow: 0 10px 10px rgba(0,0,0,0.2);
+            }
+
+            nav ul.active {
+                display: flex; /* Toggle ile açıldığında göster */
+            }
+
+            nav ul li {
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            nav ul li a {
+                padding: 15px;
+            }
+
+            .slider-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .prev-btn { left: -10px; }
+            .next-btn { right: -10px; }
+            
+            section {
+                min-height: auto; /* Mobilde çok uzamasın */
+                padding: 40px 15px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav>
-        <ul>
-            <li><a href="#anasayfa">Anasayfa</a></li>
-            <li><a href="#hakkimizda">Hakkımızda</a></li>
-            <li><a href="#buyukler">Yolumuzun Büyükleri</a></li>
-            <li><a href="#kitaplar">Kitaplar</a></li>
-            <li><a href="#divanlar">Divanlar</a></li>
-            <li><a href="#etkinlikler">Etkinlikler</a></li>
-            <li><a href="#iletisim">İletişim</a></li>
-        </ul>
-    </nav>
-
     <header>
+        <div class="header-socials">
+            <a href="mailto:kenzikadim@gmail.com"><i class="fas fa-envelope"></i></a>
+            <a href="https://instagram.com/kenzikadim" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.youtube.com/@KenziKadim" target="_blank"><i class="fab fa-youtube"></i></a>
+            <a href="https://x.com/kenzikadim" target="_blank"><i class="fab fa-x-twitter"></i></a>
+        </div>
+
         <h1>KENZ-İ KADÎM</h1>
         <div class="arabic-text">كنز قديم</div>
-        <div class="separator">♦</div>
         <p class="tagline">"Kadim ulemanın sadrından satırlara dökülen irfan hazineleri"</p>
     </header>
 
-    <section id="anasayfa">
-        <h2 class="section-title">En Yeni Videolar</h2>
-        <div class="video-container">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLFvps8XA01tLIAs5verUT8EZwFKauB9ca" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <nav>
+        <div class="nav-container">
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul id="nav-list">
+                <li><a href="#anasayfa" onclick="closeMenu()">Anasayfa</a></li>
+                <li><a href="#hakkimizda" onclick="closeMenu()">Hakkımızda</a></li>
+                <li><a href="#buyukler" onclick="closeMenu()">Yolumuzun Büyükleri</a></li>
+                <li><a href="#kitaplar" onclick="closeMenu()">Kitaplar</a></li>
+                <li><a href="#divanlar" onclick="closeMenu()">Divanlar</a></li>
+                <li><a href="#etkinlikler" onclick="closeMenu()">Etkinlikler</a></li>
+                <li><a href="#iletisim" onclick="closeMenu()">İletişim</a></li>
+            </ul>
         </div>
+    </nav>
+
+    <section id="anasayfa">
+        <h2 class="section-title">Öne Çıkan Videolar</h2>
+        
+        <div class="slider-wrapper">
+            <button class="slider-btn prev-btn" onclick="prevVideo()"><i class="fas fa-chevron-left"></i></button>
+            
+            <div class="video-responsive">
+                <iframe id="main-video" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            
+            <button class="slider-btn next-btn" onclick="nextVideo()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
+        <div class="video-indicators" id="indicators">
+            </div>
+
     </section>
 
     <section id="hakkimizda">
         <h2 class="section-title">Hakkımızda</h2>
-        <div class="about-content">
-            <p>
-                Asr-ı Saadet insanlık tarihinin zirve noktasıdır. Sonra gelen tüm zamanların kıymet ve fazileti bu saadetli/kerâmetli/bereketli zaman dilimine olan yakınlığı nisbetinde anlaşılır.
-            </p>
+        <div class="card" style="text-align: left; line-height: 1.8;">
+            <p><strong><i class="fas fa-quote-left" style="color:var(--accent-gold); margin-right:10px;"></i></strong> Asr-ı Saadet insanlık tarihinin zirve noktasıdır. Sonra gelen tüm zamanların kıymet ve fazileti bu saadetli/kerâmetli/bereketli zaman dilimine olan yakınlığı nisbetinde anlaşılır.</p>
             <br>
-            <p>
-                İşte "Kenz-i Kadîm" terkîbi de bize tâ Asr-i Saadet'ten başlayan Kur'ân ve Sünnet kaynaklı fâzıl ve kâmil zevâtın sinelerinde kök salmış ulüm, hikmet ve irfânı anlatır bizlere.
-            </p>
+            <p>İşte <strong>"Kenz-i Kadîm"</strong> terkîbi de bize tâ Asr-i Saadet'ten başlayan Kur'ân ve Sünnet kaynaklı fâzıl ve kâmil zevâtın sinelerinde kök salmış ulüm, hikmet ve irfânı anlatır bizlere.</p>
             <br>
-            <p>
-                Sayfamızda kâmillerin sadrından satırlara dökülen mana ve hikmetlere dair sohbetler, içerikler ve görseller bulacaksınız…
-            </p>
-
-            <div class="person-info">
-                <h3>Fatih Küçüktiryaki</h3>
-                <p style="margin-top:10px; color:#666;">
-                    (Bu alana Fatih Küçüktiryaki hakkında biyografik bilgi eklenecektir.)
-                </p>
-            </div>
+            <p>Sayfamızda kâmillerin sadrından satırlara dökülen mana ve hikmetlere dair sohbetler, içerikler ve görseller bulacaksınız…</p>
+            
+            <hr style="margin: 30px 0; border:0; border-top:1px solid #eee;">
+            
+            <h3>Fatih Küçüktiryaki</h3>
+            <p style="color:#666; margin-top:10px;">(Biyografi içeriği hazırlanmaktadır...)</p>
         </div>
     </section>
 
     <section id="buyukler">
         <h2 class="section-title">Yolumuzun Büyükleri</h2>
-        <div class="grid-container">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px; width:100%;">
+            
             <div class="card">
-                <i class="fas fa-user-circle fa-3x" style="color:var(--accent-gold); margin-bottom:15px;"></i>
+                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:20px;"></i>
                 <h3>Hüsnü Gülzari (k.s.)</h3>
-                <p>Hayatına dair bilgiler ve menkıbeler bu alanda yer alacaktır.</p>
+                <p style="margin-top:15px; color:#555;">Hayatı, eserleri ve manevi şahsiyeti hakkında bilgiler bu alanda derlenecektir.</p>
             </div>
+
             <div class="card">
-                <i class="fas fa-user-circle fa-3x" style="color:var(--accent-gold); margin-bottom:15px;"></i>
+                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:20px;"></i>
                 <h3>İbrahim İpek Efendi (rh.a.)</h3>
-                <p>Hayatına dair bilgiler ve menkıbeler bu alanda yer alacaktır.</p>
+                <p style="margin-top:15px; color:#555;">Hayatı, eserleri ve manevi şahsiyeti hakkında bilgiler bu alanda derlenecektir.</p>
             </div>
+
         </div>
     </section>
 
     <section id="kitaplar">
         <h2 class="section-title">Kitaplar</h2>
-        <div class="book-card">
-            <i class="fas fa-book-open fa-3x" style="color:var(--primary-green); margin-bottom:20px;"></i>
-            <div class="book-title">SADE(CE) İNSAN</div>
-            <p class="book-desc">Halveti Uşşaki meşayıhından İbrahim İpek'in (rh.a.) hayatına dair bir eserdir.</p>
+        <div class="book-showcase">
+            <i class="fas fa-book-reader fa-3x" style="color:var(--accent-gold); margin-bottom:20px;"></i>
+            <h3 style="font-size:2rem; margin-bottom:10px;">SADE(CE) İNSAN</h3>
+            <p style="font-style:italic; color:#444;">Halveti Uşşaki meşayıhından İbrahim İpek'in (rh.a.) hayatına dair eser.</p>
         </div>
     </section>
 
     <section id="divanlar">
         <h2 class="section-title">Divanlar</h2>
-        <div class="grid-container">
-            <div class="card">
-                <h3>Divan-ı Hikmet</h3>
-                <p>İçerikler hazırlanmaktadır.</p>
-            </div>
-            <div class="card">
-                <h3>Divan-ı İlahiyat</h3>
-                <p>İçerikler hazırlanmaktadır.</p>
-            </div>
+        <div style="text-align:center; color:#777;">
+            <i class="fas fa-feather-alt fa-3x" style="color:var(--light-gold); margin-bottom:20px;"></i>
+            <p>Divan içerikleri yakında eklenecektir.</p>
         </div>
     </section>
 
     <section id="etkinlikler">
         <h2 class="section-title">Diğer Etkinlikler</h2>
-        <div class="activity-links">
-            <a href="#"><i class="fas fa-quran"></i> Tefsir Dersleri</a>
-            <a href="#"><i class="fas fa-users"></i> Dergah Sohbetleri</a>
+        <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+            <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
+                <i class="fas fa-quran fa-2x" style="color:var(--primary-green);"></i>
+                <h3 style="margin-top:15px;">Tefsir Dersleri</h3>
+            </a>
+            <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
+                <i class="fas fa-users fa-2x" style="color:var(--primary-green);"></i>
+                <h3 style="margin-top:15px;">Dergah Sohbetleri</h3>
+            </a>
         </div>
     </section>
 
@@ -453,50 +574,50 @@
         <h2 class="section-title">İletişim</h2>
         <div class="contact-grid">
             
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fas fa-envelope"></i>
-                <div class="info">
-                    <span>E-Posta</span>
+                <div>
+                    <strong>E-POSTA</strong>
                     <a href="mailto:kenzikadim@gmail.com">kenzikadim@gmail.com</a>
                 </div>
             </div>
 
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fab fa-instagram"></i>
-                <div class="info">
-                    <span>Instagram</span>
+                <div>
+                    <strong>INSTAGRAM</strong>
                     <a href="https://instagram.com/kenzikadim" target="_blank">/kenzikadim</a>
                 </div>
             </div>
 
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fab fa-facebook"></i>
-                <div class="info">
-                    <span>Facebook</span>
+                <div>
+                    <strong>FACEBOOK</strong>
                     <a href="https://facebook.com/kenzikadim" target="_blank">/kenzikadim</a>
                 </div>
             </div>
 
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fab fa-x-twitter"></i>
-                <div class="info">
-                    <span>X (Twitter)</span>
+                <div>
+                    <strong>X (TWITTER)</strong>
                     <a href="https://x.com/kenzikadim" target="_blank">/kenzikadim</a>
                 </div>
             </div>
 
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fab fa-tiktok"></i>
-                <div class="info">
-                    <span>TikTok</span>
+                <div>
+                    <strong>TIKTOK</strong>
                     <a href="https://tiktok.com/kenzikadim" target="_blank">/kenzikadim</a>
                 </div>
             </div>
 
-            <div class="contact-item">
+            <div class="contact-box">
                 <i class="fab fa-youtube"></i>
-                <div class="info">
-                    <span>YouTube</span>
+                <div>
+                    <strong>YOUTUBE</strong>
                     <a href="https://www.youtube.com/@KenziKadim" target="_blank">@KenziKadim</a>
                 </div>
             </div>
@@ -506,34 +627,89 @@
 
     <footer>
         <p>&copy; 2025 Kenz-i Kadîm. Tüm hakları saklıdır.</p>
-        <p style="font-size:0.8rem; margin-top:5px; opacity:0.6;">Sitedeki materyaller kaynak gösterilerek paylaşılabilir.</p>
     </footer>
 
-    <button onclick="topFunction()" id="backToTop" title="Başa Dön">
+    <button onclick="scrollToTop()" id="backToTop" title="Başa Dön">
         <i class="fas fa-arrow-up"></i>
     </button>
 
     <script>
-        // Butonu al
-        let mybutton = document.getElementById("backToTop");
+        // --- VİDEO SLIDER AYARLARI ---
+        const videoIds = [
+            "8uuNOmynhf0", // Video 1 ID
+            "S52PamErUQU", // Video 2 ID
+            "nW0FzGrXYps", // Video 3 ID
+            "lLPhWH4AbsI"  // Video 4 ID
+        ];
+        
+        let currentVideoIndex = 0;
+        const iframe = document.getElementById('main-video');
+        const indicatorsContainer = document.getElementById('indicators');
 
-        // Sayfa 20px aşağı kaydırıldığında butonu göster
-        window.onscroll = function() {scrollFunction()};
-
-        function scrollFunction() {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                mybutton.style.display = "block";
-            } else {
-                mybutton.style.display = "none";
-            }
+        function loadVideo(index) {
+            // Youtube Embed URL formatı
+            iframe.src = `https://www.youtube.com/embed/${videoIds[index]}?rel=0`;
+            updateIndicators(index);
         }
 
-        // Tıklandığında en başa git
-        function topFunction() {
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+        function nextVideo() {
+            currentVideoIndex = (currentVideoIndex + 1) % videoIds.length;
+            loadVideo(currentVideoIndex);
+        }
+
+        function prevVideo() {
+            currentVideoIndex = (currentVideoIndex - 1 + videoIds.length) % videoIds.length;
+            loadVideo(currentVideoIndex);
+        }
+
+        // Nokta (Indicator) Oluşturma
+        function createIndicators() {
+            videoIds.forEach((_, idx) => {
+                let dot = document.createElement('span');
+                dot.classList.add('dot');
+                dot.onclick = () => {
+                    currentVideoIndex = idx;
+                    loadVideo(currentVideoIndex);
+                };
+                indicatorsContainer.appendChild(dot);
+            });
+        }
+
+        function updateIndicators(index) {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[index].classList.add('active');
+        }
+
+        // İlk açılışta video yükle
+        createIndicators();
+        loadVideo(0);
+
+        // --- MOBİL MENÜ ---
+        function toggleMenu() {
+            const navList = document.getElementById('nav-list');
+            navList.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            const navList = document.getElementById('nav-list');
+            // Sadece mobildeyken kapatmak mantıklı ama her durumda remove class zararsızdır
+            navList.classList.remove('active');
+        }
+
+        // --- BAŞA DÖN BUTONU ---
+        window.onscroll = function() {
+            const btn = document.getElementById("backToTop");
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                btn.style.display = "block";
+            } else {
+                btn.style.display = "none";
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
     </script>
-
 </body>
 </html>
