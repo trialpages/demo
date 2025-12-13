@@ -39,7 +39,7 @@
             background: linear-gradient(rgba(43, 74, 62, 0.95), rgba(30, 54, 45, 0.95)), url('https://www.transparenttextures.com/patterns/arches.png');
             color: var(--text-light);
             text-align: center;
-            padding: 30px 15px; /* Kısa header */
+            padding: 30px 15px;
             border-bottom: 4px solid var(--accent-gold);
             position: relative;
         }
@@ -54,7 +54,7 @@
         .header-socials a:hover { color: #fff; transform: scale(1.1); }
 
         header h1 {
-            font-size: 2.5rem; /* Daha kompakt başlık */
+            font-size: 2.5rem;
             color: var(--text-light);
             margin: 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
@@ -82,7 +82,7 @@
             background-color: var(--primary-green);
             padding: 0 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: sticky; /* Menü yukarıda kalsın ama header altında */
+            position: sticky;
             top: 0;
             z-index: 1000;
         }
@@ -116,29 +116,24 @@
 
         /* BÖLÜMLER */
         section {
-            min-height: 80vh; /* Boş olsa bile dolu görünsün */
+            min-height: 80vh;
             padding: 60px 20px;
             max-width: 1100px;
             margin: 0 auto;
             border-bottom: 1px solid #eee;
-            scroll-margin-top: 60px; /* Menü yüksekliği kadar pay */
+            scroll-margin-top: 60px;
         }
 
+        /* Başlık stili temizlendi (Sarı şekiller kaldırıldı) */
         .section-title {
             text-align: center;
             font-size: 2.2rem;
             margin-bottom: 40px;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        .section-title::after {
-            content: '♦'; display: block; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: var(--accent-gold);
-        }
-        .section-title::before {
-            content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 80px; height: 2px; background: var(--primary-green);
+            padding-bottom: 10px;
+            /* Altındaki süslemeler kaldırıldı */
         }
 
-        /* VİDEO SLIDER - DÜZELTİLDİ */
+        /* SLIDER */
         .slider-wrapper {
             position: relative;
             max-width: 800px;
@@ -146,12 +141,12 @@
             background: #000;
             border: 4px solid var(--primary-green);
             border-radius: 8px;
-            overflow: hidden; /* Taşmaları gizle */
+            overflow: hidden;
         }
 
         .video-responsive {
             overflow: hidden;
-            padding-bottom: 56.25%; /* 16:9 Oran */
+            padding-bottom: 56.25%;
             position: relative;
             height: 0;
         }
@@ -160,16 +155,14 @@
             left: 0; top: 0; height: 100%; width: 100%; position: absolute;
         }
 
-        /* Butonlar İçeri Alındı */
         .slider-btn {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5); /* Şeffaf siyah */
+            top: 0; 
+            bottom: 0; /* Tam boy kaplasın */
+            background: rgba(0, 0, 0, 0.1); /* Çok hafif gölge */
             color: #fff;
             border: none;
             width: 50px;
-            height: 100%; /* Tüm yükseklik boyunca basılabilir alan */
             cursor: pointer;
             font-size: 24px;
             z-index: 10;
@@ -179,7 +172,7 @@
             justify-content: center;
         }
 
-        .slider-btn:hover { background: rgba(0, 0, 0, 0.8); color: var(--accent-gold); }
+        .slider-btn:hover { background: rgba(0, 0, 0, 0.6); color: var(--accent-gold); }
         .prev-btn { left: 0; }
         .next-btn { right: 0; }
 
@@ -199,7 +192,7 @@
         }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        /* İLETİŞİM KUTULARI */
+        /* İLETİŞİM */
         .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .contact-box {
             background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
@@ -209,7 +202,7 @@
         .contact-box i { font-size: 1.5rem; color: var(--accent-gold); margin-right: 15px; width: 30px; text-align: center; }
         .contact-box a { text-decoration: none; color: var(--text-dark); font-weight: 700; }
 
-        /* MOBİL UYUM */
+        /* MOBİL */
         @media (max-width: 768px) {
             .nav-container { justify-content: space-between; padding: 10px 0; }
             .menu-toggle { display: block; margin-left: auto; }
@@ -221,6 +214,7 @@
             nav ul.active { display: flex; }
             nav ul li { border-bottom: 1px solid rgba(255,255,255,0.1); }
             section { min-height: auto; padding: 40px 15px; }
+            .section-title { font-size: 1.8rem; }
         }
 
         /* BACK TO TOP */
@@ -229,7 +223,7 @@
             background: var(--accent-gold); color: white; border: none;
             border-radius: 50%; width: 45px; height: 45px; cursor: pointer; z-index: 999;
         }
-    </style>
+    </script>
 </head>
 <body>
 
@@ -264,7 +258,6 @@
         <h2 class="section-title">En Yeni Videolar</h2>
         <div class="slider-wrapper">
             <button class="slider-btn prev-btn" onclick="prevVideo()"><i class="fas fa-chevron-left"></i></button>
-            
             <div class="video-responsive">
                 <iframe id="main-video" 
                         src="https://www.youtube.com/embed/8uuNOmynhf0?rel=0" 
@@ -274,7 +267,6 @@
                         allowfullscreen>
                 </iframe>
             </div>
-            
             <button class="slider-btn next-btn" onclick="nextVideo()"><i class="fas fa-chevron-right"></i></button>
         </div>
         <div class="video-indicators" id="indicators"></div>
@@ -369,14 +361,12 @@
     <button onclick="scrollToTop()" id="backToTop"><i class="fas fa-arrow-up"></i></button>
 
     <script>
-        // Videoların Sadece Kimlikleri
         const videoIds = ["8uuNOmynhf0", "S52PamErUQU", "nW0FzGrXYps", "lLPhWH4AbsI"];
         let currentVideoIndex = 0;
         const iframe = document.getElementById('main-video');
         const indicatorsContainer = document.getElementById('indicators');
 
         function updateVideo() {
-            // URL formatı düzeltildi
             iframe.src = "https://www.youtube.com/embed/" + videoIds[currentVideoIndex] + "?rel=0";
             updateIndicators();
         }
@@ -391,7 +381,6 @@
             updateVideo();
         }
 
-        // Göstergeleri (Noktalar) oluştur
         videoIds.forEach((_, idx) => {
             let dot = document.createElement('span');
             dot.className = idx === 0 ? 'dot active' : 'dot';
@@ -406,7 +395,6 @@
             });
         }
 
-        // Menü Aç/Kapa
         function toggleMenu() {
             document.getElementById('nav-list').classList.toggle('active');
         }
@@ -414,7 +402,6 @@
             document.getElementById('nav-list').classList.remove('active');
         }
 
-        // Başa Dön
         window.onscroll = function() {
             document.getElementById("backToTop").style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? "block" : "none";
         };
