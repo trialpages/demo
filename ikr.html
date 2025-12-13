@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlahiyat Kariyer Rehberi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- RENK PALETİ VE TEMEL AYARLAR --- */
+        :root {
+            --primary: #0295A9;      /* Koyu Turkuaz */
+            --secondary: #12ADC1;    /* Açık Turkuaz */
+            --accent: #FDD037;       /* Sarı */
+            --white: #FFFFFF;
+            --text-dark: #333333;
+            --text-light: #666666;
+            --bg-overlay: rgba(255, 255, 255, 0.94); /* Arka planı yumuşatmak için */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            /* Arka plan: Kitap/Kariyer Temalı */
+            background-image: url('https://images.unsplash.com/photo-1457369804613-52c61a468e7d?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        /* Tüm sayfayı kaplayan beyaz filtre */
+        .page-wrapper {
+            background-color: var(--bg-overlay);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- HEADER --- */
+        header {
+            background-color: var(--white);
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .brand h1 {
+            font-family: 'Playfair Display', serif; /* Akademik/Klasik hava */
+            font-size: 2.5rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+        
+        .brand span {
+            color: var(--secondary);
+        }
+
+        /* --- NAVIGASYON (MENÜ) --- */
+        .navbar {
+            background-color: var(--primary);
+            color: var(--white);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between; /* Mobilde hamburgeri sağa itmek için */
+            align-items: center;
+            height: 60px;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .nav-item {
+            position: relative;
+            margin: 0 15px;
+        }
+
+        .nav-link {
+            color: var(--white);
+            font-weight: 500;
+            padding: 18px 10px;
+            display: block;
+            font-size: 1rem;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background-color: var(--secondary);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* Dropdown Menü */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: var(--white);
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            top: 100%;
+            left: 0;
+            border-top: 3px solid var(--accent);
+            z-index: 1001;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .dropdown-menu li {
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-menu a {
+            color: var(--text-dark);
+            padding: 12px 16px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f9f9f9;
+            color: var(--primary);
+            padding-left: 20px; /* Hover efekti */
+        }
+
+        /* Hover ile açılma (Masaüstü) */
+        .nav-item:hover .dropdown-menu {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hamburger Menü İkonu (Mobilde Görünür) */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+        
+        .bar {
+            display: block;
+            width: 25px;
+            height: 3px;
+            margin: 5px auto;
+            background-color: var(--white);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* --- ANA İÇERİK DÜZENİ --- */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 3fr 1fr; /* 3 birim içerik, 1 birim sidebar */
+            gap: 30px;
+            padding: 40px 0;
+            flex: 1; /* Footer'ı aşağı itmek için */
+        }
+
+        .content-area {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
+        }
+
+        .content-area h2 {
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .content-area p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            text-align: justify;
+        }
+
+        /* --- SIDEBAR (SAĞ BLOK) --- */
+        .sidebar-block {
+            background: var(--white);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent);
+        }
+
+        .sidebar-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .news-item, .announcement-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .news-item:last-child { border-bottom: none; }
+
+        .date-badge {
+            background-color: var(--secondary);
+            color: var(--white);
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .news-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .news-link:hover { color: var(--primary); }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 40px 0 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon svg {
+            fill: var(--white);
+            width: 24px;
+            height: 24px;
+            transition: 0.3s;
+        }
+
+        .social-icon:hover svg {
+            fill: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* --- RESPONSIVE TASARIM (MOBİL) --- */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            .hamburger.active .bar:nth-child(2) { opacity: 0; }
+            .hamburger.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 60px; /* Header yüksekliği kadar */
+                flex-direction: column;
+                background-color: var(--primary);
+                width: 100%;
+                height: calc(100vh - 60px); /* Ekranın geri kalanı */
+                text-align: left;
+                transition: 0.3s;
+                justify-content: flex-start;
+                padding-top: 20px;
+                overflow-y: auto;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-item {
+                margin: 0;
+                width: 100%;
+            }
+
+            .nav-link {
+                padding: 15px 25px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+
+            /* Mobilde dropdown davranışı */
+            .dropdown-menu {
+                position: static;
+                display: none; /* JS ile aç kapa yapılabilir veya CSS ile */
+                background-color: rgba(0,0,0,0.1);
+                box-shadow: none;
+                border: none;
+                width: 100%;
+            }
+            
+            .nav-item:hover .dropdown-menu {
+                display: block; /* Mobilde de hover mantığı basitçe çalışsın */
+            }
+
+            .dropdown-menu a {
+                color: var(--white);
+                padding-left: 40px;
+            }
+
+            .dropdown-menu a:hover {
+                background-color: rgba(0,0,0,0.2);
+                color: var(--accent);
+            }
+
+            /* Main Layout Grid'i tek sütuna düşür */
+            .main-layout {
+                grid-template-columns: 1fr;
+                padding: 20px 0;
+            }
+            
+            .content-area, .sidebar-block {
+                margin: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <header>
+        <div class="container">
+            <div class="brand">
+                <h1>İlahiyat <span>Kariyer</span> Rehberi</h1>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div style="font-weight:bold; font-size:1.2rem; display:none;" class="mobile-brand">Menü</div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Anasayfa</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Lisansüstü ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Yüksek Lisans</a></li>
+                        <li><a href="#">Doktora</a></li>
+                        <li><a href="#">YLSY (Burs)</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Akademisyenlik ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Araştırma Görevlisi</a></li>
+                        <li><a href="#">Öğretim Görevlisi</a></li>
+                        <li><a href="#">Dr. Öğretim Üyesi</a></li>
+                        <li><a href="#">Doçentlik</a></li>
+                        <li><a href="#">Profesörlük</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Diyanet ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">İmam-Hatip</a></li>
+                        <li><a href="#">Müezzin-Kayyım</a></li>
+                        <li><a href="#">Vaiz</a></li>
+                        <li><a href="#">Müftü</a></li>
+                        <li><a href="#">Uzman Yardımcısı</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Milli Eğitim ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Öğretmen (DKAB/İHL)</a></li>
+                        <li><a href="#">Uzman Yardımcısı</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Yurt Dışı ▾</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">YLSY</a></li>
+                        <li><a href="#">Dil Bursları</a></li>
+                        <li><a href="#">Yurt Dışı Görevler</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-layout">
+        
+        <main class="content-area">
+            <h2>Geleceğinizi İnşa Edin</h2>
+            <p>
+                İlahiyat Kariyer Rehberi, ilahiyat fakültesi öğrencileri ve mezunlarının kariyer planlamalarına ışık tutmak, akademik ve mesleki yolculuklarında onlara rehberlik etmek amacıyla hazırlanmış kapsamlı bir platformdur. Amacımız, teorik bilgilerinizi profesyonel hayatta nasıl değerlendirebileceğiniz konusunda doğru yönlendirmeler sunmaktır.
+            </p>
+            <p>
+                Platformumuzda; akademik kariyer basamaklarından Milli Eğitim Bakanlığı bünyesindeki öğretmenlik fırsatlarına, Diyanet İşleri Başkanlığı'ndaki çeşitli görev tanımlarından yurt dışı eğitim ve burs imkanlarına kadar geniş bir yelpazede detaylı bilgilere ulaşabilirsiniz. Her bir alan için gerekli şartlar, sınav süreçleri ve mülakat teknikleri hakkında güncel verileri derliyoruz.
+            </p>
+            <p>
+                Kariyer yolculuğu sadece bir iş bulmak değil, aynı zamanda kendinizi gerçekleştirebileceğiniz, topluma fayda sağlayabileceğiniz bir hizmet alanını keşfetmektir. Bu rehber ile hedeflerinize giden yolda sağlam adımlar atmanız için yanınızdayız.
+            </p>
+            
+            <div style="margin-top:30px;">
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2070&auto=format&fit=crop" alt="Kütüphane Çalışma" style="width:100%; border-radius:5px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-block">
+                <div class="sidebar-title">Haberler</div>
+                <div class="news-item">
+                    <span class="date-badge">12 Ara</span>
+                    <a href="#" class="news-link">2025 Yılı DHBT Sınav Takvimi Açıklandı</a>
+                </div>
+                <div class="news-item">
+                    <span class="date-badge">10 Ara</span>
+                    <a href="#" class="news-link">Akademik Teşvik Ödeneği Başvuruları Başladı</a>
+                </div>
+                <div class="news-item">
+                    <span class="date-badge">05 Ara</span>
+                    <a href="#" class="news-link">YLSY Bursiyerleri İçin Yeni Ülke Kontenjanları</a>
+                </div>
+            </div>
+
+            <div class="sidebar-block">
+                <div class="sidebar-title">Duyurular</div>
+                <div class="announcement-item">
+                    <p style="font-size:0.9rem;"><strong>Seminer:</strong> "İlahiyatçılar İçin Modern Çağda İletişim Dili" - Prof. Dr. Ahmet Yılmaz</p>
+                    <small style="color:#888;">Yer: Konferans Salonu, 24 Aralık</small>
+                </div>
+                <div class="announcement-item" style="margin-top:10px;">
+                    <p style="font-size:0.9rem;"><strong>Sınav:</strong> Arapça YDS Hazırlık Kursu Kayıtları devam ediyor.</p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="contact-info">
+                    <h3 style="font-family:'Playfair Display'; margin-bottom:10px;">İletişim</h3>
+                    <p style="font-size:0.9rem;">E-posta: info@ilahiyatkariyer.com</p>
+                    <p style="font-size:0.9rem;">Tel: +90 312 000 00 00</p>
+                </div>
+
+                <div class="social-icons">
+                    <a href="#" class="social-icon" title="Twitter">
+                        <svg viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.84 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon" title="Instagram">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                     <a href="#" class="social-icon" title="YouTube">
+                        <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 İlahiyat Kariyer Rehberi. Tüm Hakları Saklıdır.
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<script>
+    const hamburger = document.querySelector(".hamburger");
+    const navMenu = document.querySelector(".nav-menu");
+
+    hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("active");
+        navMenu.classList.toggle("active");
+    });
+
+    // Linke tıklandığında menüyü kapat
+    document.querySelectorAll(".nav-link").forEach(n => n.addEventListener("click", () => {
+        hamburger.classList.remove("active");
+        navMenu.classList.remove("active");
+    }));
+</script>
+
+</body>
+</html>
