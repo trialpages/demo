@@ -13,95 +13,77 @@
 
     <style>
         :root {
-            --primary-green: #2b4a3e; /* Koyu Nefti Yeşil */
+            --primary-green: #2b4a3e;
             --secondary-green: #1e362d; 
-            --accent-gold: #c5a059; /* Altın Sarısı */
-            --light-gold: #e6c888;
+            --accent-gold: #c5a059;
             --text-dark: #333333;
             --text-light: #f4f4f4;
             --bg-cream: #f9f7f2;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Lato', sans-serif;
             background-color: var(--bg-cream);
             color: var(--text-dark);
             line-height: 1.6;
-            overflow-x: hidden; /* Yatay taşmayı engelle */
+            overflow-x: hidden;
         }
 
-        h1, h2, h3 {
-            font-family: 'Cinzel', serif;
-            color: var(--primary-green);
-        }
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--primary-green); }
 
-        /* --- Header Alanı --- */
+        /* HEADER */
         header {
             background: linear-gradient(rgba(43, 74, 62, 0.95), rgba(30, 54, 45, 0.95)), url('https://www.transparenttextures.com/patterns/arches.png');
             color: var(--text-light);
             text-align: center;
-            padding: 40px 20px; /* Boyut kısaltıldı */
-            position: relative;
+            padding: 30px 15px; /* Kısa header */
             border-bottom: 4px solid var(--accent-gold);
+            position: relative;
         }
 
-        .header-socials {
-            margin-bottom: 15px;
-        }
-
+        .header-socials { margin-bottom: 10px; }
         .header-socials a {
             color: var(--accent-gold);
             margin: 0 10px;
             font-size: 1.2rem;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
-
-        .header-socials a:hover {
-            color: #fff;
-            transform: scale(1.2);
-        }
+        .header-socials a:hover { color: #fff; transform: scale(1.1); }
 
         header h1 {
-            font-size: 3rem;
+            font-size: 2.5rem; /* Daha kompakt başlık */
             color: var(--text-light);
-            letter-spacing: 2px;
             margin: 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .arabic-text {
             font-family: 'Amiri', serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--accent-gold);
-            margin: 5px 0 15px 0;
+            margin: 5px 0 10px 0;
         }
 
         .tagline {
             font-style: italic;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #ddd;
             max-width: 700px;
             margin: 0 auto;
             border-top: 1px solid rgba(197, 160, 89, 0.3);
-            padding-top: 15px;
+            padding-top: 10px;
         }
 
-        /* --- Navigasyon --- */
+        /* MENÜ */
         nav {
             background-color: var(--primary-green);
             padding: 0 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: relative; /* Tavana yapışık değil, header altında */
+            position: sticky; /* Menü yukarıda kalsın ama header altında */
+            top: 0;
             z-index: 1000;
         }
 
@@ -111,62 +93,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 50px;
         }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-            transition: max-height 0.3s ease-out;
-        }
-
-        nav ul li {
-            margin: 0;
-        }
-
+        nav ul { display: flex; list-style: none; }
         nav ul li a {
             display: block;
-            padding: 20px 15px;
+            padding: 15px 15px;
             color: var(--text-light);
             text-decoration: none;
             font-family: 'Cinzel', serif;
             font-size: 0.9rem;
-            transition: background 0.3s, color 0.3s;
+            transition: 0.3s;
             border-bottom: 3px solid transparent;
         }
-
         nav ul li a:hover {
-            background-color: rgba(255,255,255,0.05);
             color: var(--accent-gold);
             border-bottom: 3px solid var(--accent-gold);
         }
 
-        /* Hamburger Menu Icon (Mobile) */
-        .menu-toggle {
-            display: none;
-            color: var(--accent-gold);
-            font-size: 1.8rem;
-            cursor: pointer;
-            padding: 15px;
-        }
+        .menu-toggle { display: none; color: var(--accent-gold); font-size: 1.5rem; cursor: pointer; padding: 10px; }
 
-        /* --- Sayfa Yapısı ve Scroll Ayarı --- */
+        /* BÖLÜMLER */
         section {
-            /* İçerik az olsa bile sayfa dolu görünsün */
-            min-height: 85vh; 
+            min-height: 80vh; /* Boş olsa bile dolu görünsün */
             padding: 60px 20px;
             max-width: 1100px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; /* İçerik yukarıdan başlasın */
-            
-            /* Menüye tıklanınca başlığın tam görünmesi için offset ayarı */
-            scroll-margin-top: 20px; 
             border-bottom: 1px solid #eee;
-        }
-
-        section:nth-child(even) {
-            background-color: #fff; /* Bir dolu bir boş renk hissi */
+            scroll-margin-top: 60px; /* Menü yüksekliği kadar pay */
         }
 
         .section-title {
@@ -176,30 +131,14 @@
             position: relative;
             padding-bottom: 15px;
         }
-
         .section-title::after {
-            content: '♦';
-            display: block;
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--accent-gold);
-            font-size: 1.2rem;
+            content: '♦'; display: block; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: var(--accent-gold);
         }
-        
         .section-title::before {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 2px;
-            background-color: var(--primary-green);
+            content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 80px; height: 2px; background: var(--primary-green);
         }
 
-        /* --- Video Slider --- */
+        /* VİDEO SLIDER - DÜZELTİLDİ */
         .slider-wrapper {
             position: relative;
             max-width: 800px;
@@ -207,250 +146,88 @@
             background: #000;
             border: 4px solid var(--primary-green);
             border-radius: 8px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            overflow: hidden; /* Taşmaları gizle */
         }
 
         .video-responsive {
             overflow: hidden;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* 16:9 Oran */
             position: relative;
             height: 0;
         }
 
         .video-responsive iframe {
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 100%;
-            position: absolute;
+            left: 0; top: 0; height: 100%; width: 100%; position: absolute;
         }
 
+        /* Butonlar İçeri Alındı */
         .slider-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(43, 74, 62, 0.8);
-            color: var(--accent-gold);
+            background: rgba(0, 0, 0, 0.5); /* Şeffaf siyah */
+            color: #fff;
             border: none;
             width: 50px;
-            height: 50px;
+            height: 100%; /* Tüm yükseklik boyunca basılabilir alan */
             cursor: pointer;
             font-size: 24px;
             z-index: 10;
-            border-radius: 50%;
-            transition: all 0.3s;
+            transition: 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .slider-btn:hover {
-            background: var(--accent-gold);
-            color: var(--primary-green);
-        }
-
-        .prev-btn { left: -25px; }
-        .next-btn { right: -25px; }
+        .slider-btn:hover { background: rgba(0, 0, 0, 0.8); color: var(--accent-gold); }
+        .prev-btn { left: 0; }
+        .next-btn { right: 0; }
 
         .video-indicators {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-            gap: 10px;
+            display: flex; justify-content: center; margin-top: 15px; gap: 10px;
         }
-
         .dot {
-            height: 12px;
-            width: 12px;
-            background-color: #ccc;
-            border-radius: 50%;
-            display: inline-block;
-            transition: background-color 0.3s;
-            cursor: pointer;
+            height: 12px; width: 12px; background-color: #ccc; border-radius: 50%; cursor: pointer; transition: 0.3s;
         }
+        .dot.active { background-color: var(--primary-green); transform: scale(1.2); }
 
-        .dot.active {
-            background-color: var(--primary-green);
-            transform: scale(1.2);
-        }
-
-        /* --- Genel Kart Tasarımları --- */
+        /* KARTLAR */
         .card {
-            background: #fff;
-            padding: 30px;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
+            background: #fff; padding: 30px; text-align: center;
+            border: 1px solid #e0e0e0; border-radius: 8px; transition: 0.4s;
+            position: relative; overflow: hidden;
         }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            border-color: var(--accent-gold);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--primary-green);
-            transition: width 0.3s;
-        }
-
-        /* --- Kitap Bölümü --- */
-        .book-showcase {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 40px;
-            background: linear-gradient(135deg, #fff 0%, #fcfcfc 100%);
-            border: 1px solid #ddd;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
-            border-radius: 5px;
-        }
-
-        /* --- İletişim Izgarası --- */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
+        /* İLETİŞİM KUTULARI */
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .contact-box {
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            transition: transform 0.3s;
-            border-left: 5px solid var(--primary-green);
+            background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex; align-items: center; transition: 0.3s; border-left: 4px solid var(--primary-green);
         }
+        .contact-box:hover { transform: translateX(5px); background: #fafafa; }
+        .contact-box i { font-size: 1.5rem; color: var(--accent-gold); margin-right: 15px; width: 30px; text-align: center; }
+        .contact-box a { text-decoration: none; color: var(--text-dark); font-weight: 700; }
 
-        .contact-box:hover {
-            transform: translateX(10px);
-            background-color: #fafafa;
-        }
-
-        .contact-box i {
-            font-size: 2rem;
-            color: var(--accent-gold);
-            margin-right: 20px;
-            min-width: 40px;
-            text-align: center;
-        }
-        
-        .contact-box div {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .contact-box strong {
-            font-size: 0.9rem;
-            color: #888;
-            margin-bottom: 3px;
-        }
-        
-        .contact-box a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        /* --- Footer --- */
-        footer {
-            background-color: var(--secondary-green);
-            color: #aaa;
-            text-align: center;
-            padding: 40px;
-            font-size: 0.9rem;
-            border-top: 4px solid var(--accent-gold);
-        }
-
-        #backToTop {
-            display: none;
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background-color: var(--accent-gold);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: 0.3s;
-            z-index: 999;
-        }
-        
-        #backToTop:hover {
-            background-color: var(--primary-green);
-            transform: translateY(-5px);
-        }
-
-        /* --- MOBILE RESPONSIVE --- */
+        /* MOBİL UYUM */
         @media (max-width: 768px) {
-            header { padding: 30px 15px; }
-            header h1 { font-size: 2.2rem; }
-            .arabic-text { font-size: 1.6rem; }
-
-            .nav-container {
-                justify-content: space-between;
-                padding: 10px 0;
-            }
-
-            .menu-toggle {
-                display: block; /* Hamburger butonu göster */
-                margin-left: auto; /* Sağa yasla */
-            }
-
+            .nav-container { justify-content: space-between; padding: 10px 0; }
+            .menu-toggle { display: block; margin-left: auto; }
             nav ul {
-                display: none; /* Varsayılan gizle */
-                flex-direction: column;
-                width: 100%;
-                background-color: var(--primary-green);
-                position: absolute;
-                top: 100%; /* Nav barın hemen altı */
-                left: 0;
-                text-align: center;
-                box-shadow: 0 10px 10px rgba(0,0,0,0.2);
+                display: none; flex-direction: column; width: 100%;
+                background-color: var(--primary-green); position: absolute;
+                top: 100%; left: 0; text-align: center;
             }
+            nav ul.active { display: flex; }
+            nav ul li { border-bottom: 1px solid rgba(255,255,255,0.1); }
+            section { min-height: auto; padding: 40px 15px; }
+        }
 
-            nav ul.active {
-                display: flex; /* Toggle ile açıldığında göster */
-            }
-
-            nav ul li {
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-            
-            nav ul li a {
-                padding: 15px;
-            }
-
-            .slider-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-            
-            .prev-btn { left: -10px; }
-            .next-btn { right: -10px; }
-            
-            section {
-                min-height: auto; /* Mobilde çok uzamasın */
-                padding: 40px 15px;
-            }
+        /* BACK TO TOP */
+        #backToTop {
+            display: none; position: fixed; bottom: 20px; right: 20px;
+            background: var(--accent-gold); color: white; border: none;
+            border-radius: 50%; width: 45px; height: 45px; cursor: pointer; z-index: 999;
         }
     </style>
 </head>
@@ -463,7 +240,6 @@
             <a href="https://www.youtube.com/@KenziKadim" target="_blank"><i class="fab fa-youtube"></i></a>
             <a href="https://x.com/kenzikadim" target="_blank"><i class="fab fa-x-twitter"></i></a>
         </div>
-
         <h1>KENZ-İ KADÎM</h1>
         <div class="arabic-text">كنز قديم</div>
         <p class="tagline">"Kadim ulemanın sadrından satırlara dökülen irfan hazineleri"</p>
@@ -471,9 +247,7 @@
 
     <nav>
         <div class="nav-container">
-            <div class="menu-toggle" onclick="toggleMenu()">
-                <i class="fas fa-bars"></i>
-            </div>
+            <div class="menu-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
             <ul id="nav-list">
                 <li><a href="#anasayfa" onclick="closeMenu()">Anasayfa</a></li>
                 <li><a href="#hakkimizda" onclick="closeMenu()">Hakkımızda</a></li>
@@ -487,85 +261,73 @@
     </nav>
 
     <section id="anasayfa">
-        <h2 class="section-title">Öne Çıkan Videolar</h2>
-        
+        <h2 class="section-title">En Yeni Videolar</h2>
         <div class="slider-wrapper">
             <button class="slider-btn prev-btn" onclick="prevVideo()"><i class="fas fa-chevron-left"></i></button>
             
             <div class="video-responsive">
-                <iframe id="main-video" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe id="main-video" 
+                        src="https://www.youtube.com/embed/8uuNOmynhf0?rel=0" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
             </div>
             
             <button class="slider-btn next-btn" onclick="nextVideo()"><i class="fas fa-chevron-right"></i></button>
         </div>
-        
-        <div class="video-indicators" id="indicators">
-            </div>
-
+        <div class="video-indicators" id="indicators"></div>
     </section>
 
     <section id="hakkimizda">
         <h2 class="section-title">Hakkımızda</h2>
-        <div class="card" style="text-align: left; line-height: 1.8;">
-            <p><strong><i class="fas fa-quote-left" style="color:var(--accent-gold); margin-right:10px;"></i></strong> Asr-ı Saadet insanlık tarihinin zirve noktasıdır. Sonra gelen tüm zamanların kıymet ve fazileti bu saadetli/kerâmetli/bereketli zaman dilimine olan yakınlığı nisbetinde anlaşılır.</p>
+        <div class="card" style="text-align: left;">
+            <p><i class="fas fa-quote-left" style="color:var(--accent-gold);"></i> Asr-ı Saadet insanlık tarihinin zirve noktasıdır. Sonra gelen tüm zamanların kıymet ve fazileti bu saadetli zaman dilimine olan yakınlığı nisbetinde anlaşılır.</p>
             <br>
-            <p>İşte <strong>"Kenz-i Kadîm"</strong> terkîbi de bize tâ Asr-i Saadet'ten başlayan Kur'ân ve Sünnet kaynaklı fâzıl ve kâmil zevâtın sinelerinde kök salmış ulüm, hikmet ve irfânı anlatır bizlere.</p>
-            <br>
-            <p>Sayfamızda kâmillerin sadrından satırlara dökülen mana ve hikmetlere dair sohbetler, içerikler ve görseller bulacaksınız…</p>
-            
-            <hr style="margin: 30px 0; border:0; border-top:1px solid #eee;">
-            
+            <p><strong>"Kenz-i Kadîm"</strong>, tâ Asr-i Saadet'ten başlayan fâzıl ve kâmil zevâtın irfânını anlatır.</p>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
             <h3>Fatih Küçüktiryaki</h3>
-            <p style="color:#666; margin-top:10px;">(Biyografi içeriği hazırlanmaktadır...)</p>
+            <p style="color:#666;">(İçerik bekleniyor...)</p>
         </div>
     </section>
 
     <section id="buyukler">
         <h2 class="section-title">Yolumuzun Büyükleri</h2>
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px; width:100%;">
-            
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px;">
             <div class="card">
-                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:20px;"></i>
                 <h3>Hüsnü Gülzari (k.s.)</h3>
-                <p style="margin-top:15px; color:#555;">Hayatı, eserleri ve manevi şahsiyeti hakkında bilgiler bu alanda derlenecektir.</p>
+                <p>Hayatı ve menkıbeleri...</p>
             </div>
-
             <div class="card">
-                <i class="fas fa-user-tie fa-4x" style="color:var(--secondary-green); margin-bottom:20px;"></i>
                 <h3>İbrahim İpek Efendi (rh.a.)</h3>
-                <p style="margin-top:15px; color:#555;">Hayatı, eserleri ve manevi şahsiyeti hakkında bilgiler bu alanda derlenecektir.</p>
+                <p>Hayatı ve menkıbeleri...</p>
             </div>
-
         </div>
     </section>
 
     <section id="kitaplar">
         <h2 class="section-title">Kitaplar</h2>
-        <div class="book-showcase">
-            <i class="fas fa-book-reader fa-3x" style="color:var(--accent-gold); margin-bottom:20px;"></i>
-            <h3 style="font-size:2rem; margin-bottom:10px;">SADE(CE) İNSAN</h3>
-            <p style="font-style:italic; color:#444;">Halveti Uşşaki meşayıhından İbrahim İpek'in (rh.a.) hayatına dair eser.</p>
+        <div class="card">
+            <i class="fas fa-book-open fa-3x" style="color:var(--primary-green);"></i>
+            <h3 style="margin-top:15px;">SADE(CE) İNSAN</h3>
+            <p>İbrahim İpek (rh.a.) Hazretlerinin hayatına dair eser.</p>
         </div>
     </section>
 
     <section id="divanlar">
         <h2 class="section-title">Divanlar</h2>
-        <div style="text-align:center; color:#777;">
-            <i class="fas fa-feather-alt fa-3x" style="color:var(--light-gold); margin-bottom:20px;"></i>
-            <p>Divan içerikleri yakında eklenecektir.</p>
-        </div>
+        <div class="card"><p>Divan içerikleri hazırlanıyor...</p></div>
     </section>
 
     <section id="etkinlikler">
         <h2 class="section-title">Diğer Etkinlikler</h2>
         <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
             <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
-                <i class="fas fa-quran fa-2x" style="color:var(--primary-green);"></i>
-                <h3 style="margin-top:15px;">Tefsir Dersleri</h3>
+                <i class="fas fa-quran fa-2x"></i><h3>Tefsir Dersleri</h3>
             </a>
             <a href="#" class="card" style="text-decoration:none; color:inherit; min-width:250px;">
-                <i class="fas fa-users fa-2x" style="color:var(--primary-green);"></i>
-                <h3 style="margin-top:15px;">Dergah Sohbetleri</h3>
+                <i class="fas fa-users fa-2x"></i><h3>Dergah Sohbetleri</h3>
             </a>
         </div>
     </section>
@@ -573,55 +335,30 @@
     <section id="iletisim">
         <h2 class="section-title">İletişim</h2>
         <div class="contact-grid">
-            
             <div class="contact-box">
                 <i class="fas fa-envelope"></i>
-                <div>
-                    <strong>E-POSTA</strong>
-                    <a href="mailto:kenzikadim@gmail.com">kenzikadim@gmail.com</a>
-                </div>
+                <div><strong>E-POSTA</strong><a href="mailto:kenzikadim@gmail.com">kenzikadim@gmail.com</a></div>
             </div>
-
             <div class="contact-box">
                 <i class="fab fa-instagram"></i>
-                <div>
-                    <strong>INSTAGRAM</strong>
-                    <a href="https://instagram.com/kenzikadim" target="_blank">/kenzikadim</a>
-                </div>
+                <div><strong>INSTAGRAM</strong><a href="https://instagram.com/kenzikadim">/kenzikadim</a></div>
             </div>
-
-            <div class="contact-box">
-                <i class="fab fa-facebook"></i>
-                <div>
-                    <strong>FACEBOOK</strong>
-                    <a href="https://facebook.com/kenzikadim" target="_blank">/kenzikadim</a>
-                </div>
-            </div>
-
-            <div class="contact-box">
-                <i class="fab fa-x-twitter"></i>
-                <div>
-                    <strong>X (TWITTER)</strong>
-                    <a href="https://x.com/kenzikadim" target="_blank">/kenzikadim</a>
-                </div>
-            </div>
-
-            <div class="contact-box">
-                <i class="fab fa-tiktok"></i>
-                <div>
-                    <strong>TIKTOK</strong>
-                    <a href="https://tiktok.com/kenzikadim" target="_blank">/kenzikadim</a>
-                </div>
-            </div>
-
             <div class="contact-box">
                 <i class="fab fa-youtube"></i>
-                <div>
-                    <strong>YOUTUBE</strong>
-                    <a href="https://www.youtube.com/@KenziKadim" target="_blank">@KenziKadim</a>
-                </div>
+                <div><strong>YOUTUBE</strong><a href="https://youtube.com/@KenziKadim">@KenziKadim</a></div>
             </div>
-
+             <div class="contact-box">
+                <i class="fab fa-facebook"></i>
+                <div><strong>FACEBOOK</strong><a href="https://facebook.com/kenzikadim">/kenzikadim</a></div>
+            </div>
+             <div class="contact-box">
+                <i class="fab fa-x-twitter"></i>
+                <div><strong>X (TWITTER)</strong><a href="https://x.com/kenzikadim">/kenzikadim</a></div>
+            </div>
+             <div class="contact-box">
+                <i class="fab fa-tiktok"></i>
+                <div><strong>TIKTOK</strong><a href="https://tiktok.com/kenzikadim">/kenzikadim</a></div>
+            </div>
         </div>
     </section>
 
@@ -629,84 +366,58 @@
         <p>&copy; 2025 Kenz-i Kadîm. Tüm hakları saklıdır.</p>
     </footer>
 
-    <button onclick="scrollToTop()" id="backToTop" title="Başa Dön">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <button onclick="scrollToTop()" id="backToTop"><i class="fas fa-arrow-up"></i></button>
 
     <script>
-        // --- VİDEO SLIDER AYARLARI ---
-        const videoIds = [
-            "8uuNOmynhf0", // Video 1 ID
-            "S52PamErUQU", // Video 2 ID
-            "nW0FzGrXYps", // Video 3 ID
-            "lLPhWH4AbsI"  // Video 4 ID
-        ];
-        
+        // Videoların Sadece Kimlikleri
+        const videoIds = ["8uuNOmynhf0", "S52PamErUQU", "nW0FzGrXYps", "lLPhWH4AbsI"];
         let currentVideoIndex = 0;
         const iframe = document.getElementById('main-video');
         const indicatorsContainer = document.getElementById('indicators');
 
-        function loadVideo(index) {
-            // Youtube Embed URL formatı
-            iframe.src = `https://www.youtube.com/embed/${videoIds[index]}?rel=0`;
-            updateIndicators(index);
+        function updateVideo() {
+            // URL formatı düzeltildi
+            iframe.src = "https://www.youtube.com/embed/" + videoIds[currentVideoIndex] + "?rel=0";
+            updateIndicators();
         }
 
         function nextVideo() {
             currentVideoIndex = (currentVideoIndex + 1) % videoIds.length;
-            loadVideo(currentVideoIndex);
+            updateVideo();
         }
 
         function prevVideo() {
             currentVideoIndex = (currentVideoIndex - 1 + videoIds.length) % videoIds.length;
-            loadVideo(currentVideoIndex);
+            updateVideo();
         }
 
-        // Nokta (Indicator) Oluşturma
-        function createIndicators() {
-            videoIds.forEach((_, idx) => {
-                let dot = document.createElement('span');
-                dot.classList.add('dot');
-                dot.onclick = () => {
-                    currentVideoIndex = idx;
-                    loadVideo(currentVideoIndex);
-                };
-                indicatorsContainer.appendChild(dot);
+        // Göstergeleri (Noktalar) oluştur
+        videoIds.forEach((_, idx) => {
+            let dot = document.createElement('span');
+            dot.className = idx === 0 ? 'dot active' : 'dot';
+            dot.onclick = () => { currentVideoIndex = idx; updateVideo(); };
+            indicatorsContainer.appendChild(dot);
+        });
+
+        function updateIndicators() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((d, i) => {
+                d.className = i === currentVideoIndex ? 'dot active' : 'dot';
             });
         }
 
-        function updateIndicators(index) {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[index].classList.add('active');
-        }
-
-        // İlk açılışta video yükle
-        createIndicators();
-        loadVideo(0);
-
-        // --- MOBİL MENÜ ---
+        // Menü Aç/Kapa
         function toggleMenu() {
-            const navList = document.getElementById('nav-list');
-            navList.classList.toggle('active');
+            document.getElementById('nav-list').classList.toggle('active');
         }
-
         function closeMenu() {
-            const navList = document.getElementById('nav-list');
-            // Sadece mobildeyken kapatmak mantıklı ama her durumda remove class zararsızdır
-            navList.classList.remove('active');
+            document.getElementById('nav-list').classList.remove('active');
         }
 
-        // --- BAŞA DÖN BUTONU ---
+        // Başa Dön
         window.onscroll = function() {
-            const btn = document.getElementById("backToTop");
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                btn.style.display = "block";
-            } else {
-                btn.style.display = "none";
-            }
+            document.getElementById("backToTop").style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? "block" : "none";
         };
-
         function scrollToTop() {
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
