@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstikamet Yazıları</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@1&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #1a3c6e; /* Koyu Asil Mavi */
+            --secondary-color: #2b5592; /* Orta Mavi */
+            --accent-color: #f0f4f8; /* Çok açık gri-mavi arka plan */
+            --text-dark: #333333;
+            --text-light: #666666;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--accent-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* --- HEADER BÖLÜMÜ --- */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .site-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 0.5rem;
+        }
+
+        .site-title i {
+            font-size: 2rem;
+            color: #dbeafe; /* Hafif açık mavi ikon rengi */
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .verse-container {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        .verse-arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .verse-meal {
+            font-size: 0.95rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        /* --- NAVİGASYON --- */
+        nav {
+            background-color: var(--white);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 15px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin: 0;
+        }
+
+        .nav-menu a {
+            display: block;
+            padding: 20px 25px;
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu a:hover {
+            background-color: var(--accent-color);
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 17px; /* Border eklenince kaymayı önlemek için */
+        }
+
+        /* --- ANA İÇERİK YAPISI (GRID) --- */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 3fr 1fr; /* Sol 3 birim, Sağ 1 birim */
+            gap: 2rem;
+        }
+
+        /* Sol Taraf: Makaleler */
+        .content-area article {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .article-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .article-content p {
+            margin-bottom: 1.2rem;
+            font-size: 1.05rem;
+            color: #444;
+            text-align: justify;
+        }
+
+        /* Hakkında Kutusu (Homepage Özel) */
+        .about-box {
+            background: linear-gradient(to right, #ffffff, #f8fbfd);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--secondary-color);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .about-box h3 {
+            color: var(--primary-color);
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1rem;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar .widget {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .widget-content ul {
+            list-style: none;
+        }
+
+        .widget-content li {
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+        
+        .widget-content li:last-child {
+            border-bottom: none;
+        }
+
+        .widget-content a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        .widget-content a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Sosyal Medya İkonları */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 1rem;
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .social-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--primary-color);
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        /* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 2rem;
+            }
+            
+            .verse-arabic {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                grid-template-columns: 1fr; /* Mobilde tek sütun */
+            }
+
+            .menu-toggle {
+                display: block; /* Hamburger menüyü göster */
+            }
+
+            .nav-menu {
+                display: none; /* Menüyü varsayılan olarak gizle */
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px; /* Header yüksekliğine göre ayar */
+                left: 0;
+                background-color: var(--white);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex; /* JS ile tetiklenince göster */
+            }
+
+            .nav-menu li {
+                width: 100%;
+                text-align: center;
+                border-bottom: 1px solid #eee;
+            }
+
+            .nav-menu a:hover {
+                border-bottom: none;
+                background-color: var(--accent-color);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div class="site-title">
+                <span>İstikamet Yazıları</span>
+                <i class="fas fa-feather-alt"></i> </div>
+            <div class="subtitle">Dini, Siyasi, Sosyal Aktüel meselelere dair istikamet yazıları</div>
+            
+            <div class="verse-container">
+                <span class="verse-arabic">فَاسْتَقِمْ كَمَا أُمِرْتَ</span>
+                <span class="verse-meal">"Emrolunduğun gibi dosdoğru ol"</span>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-container">
+            <div class="menu-toggle" id="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#">Anasayfa</a></li>
+                <li><a href="#">Makaleler</a></li>
+                <li><a href="#">Fetvalar</a></li>
+                <li><a href="#">Alıntılar</a></li>
+                <li><a href="#">Manzum</a></li>
+                <li><a href="#">İletişim</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <main class="content-area">
+            
+            <section class="about-box">
+                <h3>Site Hakkında</h3>
+                <p>İstikamet Yazıları; güncel meselelere sahih bir perspektiften bakmayı amaçlayan, ilmi disiplin ve toplumsal sorumluluk bilinciyle hazırlanmış bir platformdur. Amacımız, bilgi kirliliğinin arttığı çağımızda hakikatin sesini istikamet üzere duyurmaktır.</p>
+            </section>
+
+            <article>
+                <h1 class="article-title">Meal Okunmalı mı?</h1>
+                <div class="article-content">
+                    <p>Kur’ân-ı Kerîm’in mealinin baştan sona okunması, okuyucuda asgari düzeyde bir haberdarlık sağlamak bakımından elbette anlamlıdır. Ancak standart bir vatandaş açısından bu, çoğu zaman işlevsellik arz etmez. Nitekim günümüzde insanlar, Türkiye Cumhuriyeti Anayasa ve kanunlarına uygun yaşadıklarını iddia ederler; fakat nüfusun büyük çoğunluğu bu kanun metinlerini baştan sona okumamıştır. Buna rağmen hukuk düzeni işler, toplum da az çok bu kurallara uygun bir hayat sürer. Hiçbir hukukçu veya sosyal bilimci, halkın Anayasayı okumadığı gerçeğini temel bir problem olarak görmez. Çünkü yazılı kuralların hayat pratiğine intikali, çoğu zaman doğrudan metnin okunmasıyla değil; kurumlar, gelenekler, eğitim, çevre ve otorite aracılığıyla gerçekleşir.</p>
+
+                    <p>Kur’ân-ı Kerîm de bir “yaşam kitabı”dır. Aynı sûrede yer alan ayetlerin dahi farklı zamanlarda nazil olması, onun hayatla doğrudan irtibatlı ve sürece yayılan bir kitap olduğunun göstergesidir. Bu açıdan Kur’an, sadece bireysel bir okuma nesnesi değil; toplumsal ve tarihsel bağlamda yaşanan olaylara ilahi müdahalenin yazılı tecellisidir. Tıpkı Anayasalar ve kanunlar gibi, halkın çoğu ayetleri tek tek okumasa da dinî hayatını bu çerçeveye uygun yaşamaya gayret eder. Burada mesele, meal okumaktan ziyade Kurani yaşama biçiminin emsallerinin azalması meselesidir.</p>
+
+                    <p>Bununla birlikte modern dönemde bazı modernist ilahiyatçılar kendilerini geleneksel dini birikime muhalefet üzerinden konumlandırmışlardır. Tek sermayeleri, klasik Ehl-i Sünnet çizgisinden kopuş ve modern zihin dünyasına intibak olmuştur. Bu intibak, modern insanın beklentilerini tatmin eden süslü aforizmalarla meşrulaştırılmaya çalışılmaktadır. Oysa Kur’ân’da, “Kur’an okuduğunda kovulmuş şeytandan Allah’a sığın” (Nahl, 98) emri, okumanın salt zihinsel bir faaliyet olmadığını; niyetin sahih tutulması gerektiğini açıkça gösterir. Modernist yaklaşımlarda ise niyet, sahih imanî kaygıdan ziyade, modern insanın hazır alışkanlıklarına Kur’an’dan meşruiyet aramak şeklinde tezahür etmektedir.</p>
+
+                    <p>Ehl-i Sünnet ulemasının tavrı ise baştan itibaren nettir: Kur’an’ı okuyun, tefsirini öğrenin. Bugün de pek çok muhafazakâr hoca ve kurum bu çağrıyı yinelemektedir. Tefsir dersleri yapılmakta, sahih kaynaklar üzerinden toplum aydınlatılmaya çalışılmaktadır. Ne var ki, özellikle taşrada esas problem, vatandaşın genel anlamda bir okuma kültürüne sahip olmamasıdır. Bu, Kur’an’a özgü bir durum değil; toplumsal okuma alışkanlığının zayıflığıyla ilgilidir. Bugün nüfusun büyük çoğunluğunun evinde küçük ölçekli bir kütüphane dahi bulunmaması, bu sosyolojik vakıayı gözler önüne sermektedir.</p>
+
+                    <p>Sorunun kökeninde yalnızca bireysel ilgisizlik yoktur. Türkiye özelinde, devlet eliyle âlimlerin itibarsızlaştırılması, sahih dini bilginin müzmin muhalefet söylemleriyle yıpratılması ve din adına konuşan ehliyetsiz kişilerin çoğalması, meselenin en kritik boyutudur. Dini ve ahlaki açıdan bilgi ve rol modellik konusunda otoritenin kaybı ve sahte otoritelerin yükselmesi, toplumsal düzeni doğrudan zedeleyen bir sorundur. Psikolojik açıdan bu durum halkın zihinsel dünyasında bir güven krizine yol açmakta, doğru bilgiye ulaşma imkânını gölgelemektedir. Sosyolojik açıdan ise bu durum, toplumun dinî ve ahlâkî bütünlüğünü aşındırmakta, bireyleri savrulmalara açık hale getirmektedir.</p>
+
+                    <p>Bütün bunlara ek olarak yönetimsel problemler, adaletsizlikler ve ekonomik sorunlar, halkın hem dinî hem de dünyevî hayatını olumsuz etkilemiştir. Sosyal ve ekonomik sorunlarla dinî otoritenin zayıflaması birleştiğinde, ortaya dağınık, yorgun, güven duygusunu kaybetmiş bir toplum tablosu çıkmaktadır. Bu tablo, yalnızca tefsir meselesiyle değil, bütün bir din-toplum-devlet ilişkisiyle yakından ilgilidir.</p>
+                </div>
+                
+                <div style="border-top: 1px solid #eee; margin-top: 2rem; padding-top: 1rem;">
+                    <p style="text-align: center; font-size: 0.9rem; margin-bottom: 10px;">Yazıyı Paylaş</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="social-btn"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+            </article>
+
+        </main>
+
+        <aside class="sidebar">
+            
+            <div class="widget">
+                <h4 class="widget-title">Duyurular</h4>
+                <div class="widget-content">
+                    <ul>
+                        <li><a href="#">Yeni tefsir dersleri serisi başlıyor.</a></li>
+                        <li><a href="#">Konferans: İslam ve Modernizm Tartışmaları</a></li>
+                        <li><a href="#">Haftalık soru-cevap etkinliği duyurusu.</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h4 class="widget-title">Haberler</h4>
+                <div class="widget-content">
+                    <ul>
+                        <li><a href="#">Diyanet İşleri Başkanlığı'ndan yeni açıklama.</a></li>
+                        <li><a href="#">Uluslararası Sempozyum Sonuç Bildirgesi yayınlandı.</a></li>
+                        <li><a href="#">Kudüs'te son durum raporu.</a></li>
+                        <li><a href="#">İslam dünyasından aktüel gelişmeler.</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="widget" style="text-align: center;">
+                <h4 class="widget-title">Bize Ulaşın</h4>
+                <div class="social-icons" style="justify-content: center;">
+                    <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-btn"><i class="fas fa-at"></i></a>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 İstikamet Yazıları. Tüm Hakları Saklıdır.</p>
+        <p style="font-size: 0.8rem; margin-top: 5px;">"Dosdoğru ol"</p>
+    </footer>
+
+    <script>
+        const menuToggle = document.getElementById('mobile-menu');
+        const navMenu = document.querySelector('.nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
