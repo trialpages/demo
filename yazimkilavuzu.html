@@ -31,6 +31,7 @@
             padding: 20px;
             box-sizing: border-box;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 100;
         }
 
         nav h2 {
@@ -163,6 +164,35 @@
             margin-bottom: 6pt;
         }
 
+        /* İÇİNDEKİLER STİLİ (YENİ) */
+        .toc-row {
+            display: flex;
+            align-items: flex-end; /* Noktaları aşağı hizalar */
+            margin-bottom: 5px;
+            width: 100%;
+        }
+        
+        .toc-title {
+            font-weight: normal;
+        }
+        .toc-title.bold {
+            font-weight: bold;
+        }
+        .toc-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted black; /* Word benzeri nokta */
+            margin: 0 5px 5px 5px; /* Noktaların konumu */
+        }
+        .toc-page {
+            min-width: 20px;
+            text-align: right;
+        }
+        
+        /* İçindekiler Girintileri */
+        .indent-1 { padding-left: 0; }
+        .indent-2 { padding-left: 1.5cm; }
+        .indent-3 { padding-left: 2.5cm; }
+
         /* Responsive */
         @media screen and (max-width: 900px) {
             nav { display: none; }
@@ -188,8 +218,9 @@
             <li><a href="#bicim">1. Biçimsel Özellikler</a></li>
             <li><a href="#isnad">2. İsnad Atıf Sistemi</a></li>
             <li><a href="#ek1">Ek-1: Örnek Kapak</a></li>
-            <li><a href="#ek2">Ek-2: Örnek Metin Sayfası</a></li>
-            <li><a href="#ek3">Ek-3: Örnek Kaynakça</a></li>
+            <li><a href="#ek-icindekiler">Ek-2: Örnek İçindekiler</a></li>
+            <li><a href="#ek2">Ek-3: Örnek Metin Sayfası</a></li>
+            <li><a href="#ek3">Ek-4: Örnek Kaynakça</a></li>
         </ul>
         <div style="margin-top: 30px; font-size: 0.8rem; color: #7f8c8d; border-top: 1px solid #34495e; padding-top: 10px;">
             Dokuz Eylül Üniversitesi<br>İlahiyat Fakültesi<br>Öğrencileri İçin Hazırlanmıştır.
@@ -262,7 +293,97 @@
             </div>
         </div>
 
-        <div class="page" id="ek2" data-label="EK-2: Örnek Metin Sayfası (Görünüm)">
+        <div class="page" id="ek-icindekiler" data-label="EK-2: Örnek İçindekiler Sayfası">
+            <h1>İÇİNDEKİLER</h1>
+            <br>
+            
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">ÖNSÖZ</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">iii</div>
+            </div>
+
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">KISALTMALAR</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">iv</div>
+            </div>
+
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">GİRİŞ</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">1</div>
+            </div>
+            <br>
+            
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">BİRİNCİ BÖLÜM</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page"></div>
+            </div>
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">BÖLÜM BAŞLIĞI BURAYA YAZILIR</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">5</div>
+            </div>
+
+            <div class="toc-row indent-2">
+                <div class="toc-title">1.1. Birinci Alt Başlık</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">7</div>
+            </div>
+
+            <div class="toc-row indent-3">
+                <div class="toc-title">1.1.1. Alt Başlığın Detayı</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">10</div>
+            </div>
+
+            <div class="toc-row indent-2">
+                <div class="toc-title">1.2. İkinci Alt Başlık</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">14</div>
+            </div>
+            <br>
+
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">İKİNCİ BÖLÜM</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page"></div>
+            </div>
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">BÖLÜM BAŞLIĞI BURAYA YAZILIR</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">20</div>
+            </div>
+
+            <div class="toc-row indent-2">
+                <div class="toc-title">2.1. Birinci Alt Başlık</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">25</div>
+            </div>
+            <br>
+
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">SONUÇ</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">40</div>
+            </div>
+
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">KAYNAKÇA</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">42</div>
+            </div>
+            
+            <div class="toc-row indent-1">
+                <div class="toc-title bold">EKLER</div>
+                <div class="toc-dots"></div>
+                <div class="toc-page">45</div>
+            </div>
+        </div>
+
+        <div class="page" id="ek2" data-label="EK-3: Örnek Metin Sayfası (Görünüm)">
             <h1>BİRİNCİ BÖLÜM</h1>
             <h1>İSLAM DÜŞÜNCESİNDE YÖNTEM ARAYIŞLARI</h1>
 
@@ -283,7 +404,7 @@
             </div>
         </div>
 
-        <div class="page" id="ek3" data-label="EK-3: Örnek Kaynakça Sayfası">
+        <div class="page" id="ek3" data-label="EK-4: Örnek Kaynakça Sayfası">
             <h1>KAYNAKÇA</h1>
             
             <div class="biblio-item">
