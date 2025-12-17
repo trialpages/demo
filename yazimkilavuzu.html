@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEÜ İlahiyat - Bitirme Ödevi Yazım Kılavuzu</title>
+    <style>
+        /* GENEL SAYFA VE ARAYÜZ TASARIMI (WEB KISMI) */
+        :root {
+            --bg-color: #eef2f5;
+            --sidebar-bg: #2c3e50;
+            --sidebar-text: #ecf0f1;
+            --accent-color: #2980b9;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+        }
+
+        /* SOL MENÜ (NAVİGASYON) */
+        nav {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        nav h2 {
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav li {
+            margin-bottom: 15px;
+        }
+
+        nav a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            display: block;
+        }
+
+        nav a:hover, nav a.active {
+            color: #fff;
+            padding-left: 5px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* İÇERİK ALANI */
+        main {
+            margin-left: 260px;
+            padding: 40px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* A4 KAĞIT SİMÜLASYONU */
+        .page {
+            background: white;
+            width: 21cm; /* A4 Genişlik */
+            min-height: 29.7cm; /* A4 Yükseklik */
+            padding: 2.5cm; /* Standart Kenar Boşlukları */
+            margin-bottom: 30px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+            
+            /* İSTENEN FORMAT ÖZELLİKLERİ */
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            text-align: justify;
+            color: #000;
+        }
+
+        /* BASKI ÖNİZLEME ETİKETİ */
+        .page::before {
+            content: attr(data-label);
+            position: absolute;
+            top: -25px;
+            left: 0;
+            font-family: sans-serif;
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* İÇERİK STİLLERİ (DOC İÇİ) */
+        h1, h2, h3, h4 {
+            font-weight: bold;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            color: black;
+        }
+
+        h1 { font-size: 14pt; text-align: center; text-transform: uppercase; }
+        h2 { font-size: 12pt; } /* 1. Seviye Başlık */
+        h3 { font-size: 12pt; } /* 2. Seviye Başlık */
+
+        p {
+            margin-bottom: 6pt; /* Paragraf sonrası boşluk */
+            text-indent: 1.25cm; /* Paragraf başı girintisi */
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 2cm;
+        }
+
+        /* DİPNOT STİLİ */
+        .footnote-area {
+            margin-top: 2cm;
+            border-top: 1px solid black;
+            padding-top: 5px;
+            font-size: 10pt;
+            line-height: 1;
+        }
+        
+        .footnote {
+            margin-bottom: 5px;
+            text-indent: 0;
+            display: block;
+        }
+
+        /* KAPAK SAYFASI ÖZEL STİLLERİ */
+        .cover-page {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 23cm; /* İçerik yüksekliği */
+        }
+        .cover-page p { text-indent: 0; margin: 0; }
+        .cover-header { font-size: 14pt; font-weight: bold; line-height: 1.5; }
+        .cover-title { font-size: 16pt; font-weight: bold; margin: 2cm 0; text-transform: uppercase; }
+        .cover-info { font-size: 12pt; }
+        .cover-bottom { font-size: 12pt; font-weight: bold; }
+
+        /* KAYNAKÇA STİLİ */
+        .biblio-item {
+            padding-left: 1.25cm;
+            text-indent: -1.25cm;
+            margin-bottom: 6pt;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 900px) {
+            nav { display: none; }
+            main { margin-left: 0; padding: 10px; }
+            .page { width: 100%; height: auto; padding: 2cm; }
+        }
+
+        @media print {
+            body { background: white; display: block; }
+            nav { display: none; }
+            main { margin: 0; padding: 0; }
+            .page { box-shadow: none; margin: 0; page-break-after: always; width: 100%; }
+            .page::before { content: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h2>DEÜ Kılavuz</h2>
+        <ul>
+            <li><a href="#giris">Giriş</a></li>
+            <li><a href="#bicim">1. Biçimsel Özellikler</a></li>
+            <li><a href="#isnad">2. İsnad Atıf Sistemi</a></li>
+            <li><a href="#ek1">Ek-1: Örnek Kapak</a></li>
+            <li><a href="#ek2">Ek-2: Örnek Metin Sayfası</a></li>
+            <li><a href="#ek3">Ek-3: Örnek Kaynakça</a></li>
+        </ul>
+        <div style="margin-top: 30px; font-size: 0.8rem; color: #7f8c8d; border-top: 1px solid #34495e; padding-top: 10px;">
+            Dokuz Eylül Üniversitesi<br>İlahiyat Fakültesi<br>Öğrencileri İçin Hazırlanmıştır.
+        </div>
+    </nav>
+
+    <main>
+        
+        <div class="page" id="giris" data-label="Sayfa 1: Kılavuz İçeriği">
+            <h1>BİTİRME ÖDEVİ YAZIM KILAVUZU</h1>
+            
+            <p style="text-indent: 0; font-weight: bold;">GİRİŞ</p>
+            <p>Bu kılavuz, Dokuz Eylül Üniversitesi İlahiyat Fakültesi lisans öğrencilerinin bitirme ödevlerini hazırlarken uymaları gereken temel biçimsel kuralları ve atıf esaslarını (İsnad Atıf Sistemi) ana hatlarıyla göstermek amacıyla hazırlanmıştır. Ödevler akademik dürüstlük ilkelerine uygun olarak hazırlanmalıdır.</p>
+
+            <h2 id="bicim">1. BİÇİMSEL ÖZELLİKLER</h2>
+            
+            <h3>1.1. Sayfa Düzeni</h3>
+            <p>Bitirme ödevleri A4 boyutundaki beyaz kağıda yazılmalıdır. Sayfa kenar boşlukları; üstten, alttan, sağdan ve soldan <strong>2,5 cm</strong> olacak şekilde ayarlanmalıdır. Metin <strong>iki yana yaslı</strong> (justified) olarak hizalanmalıdır.</p>
+
+            <h3>1.2. Yazı Tipi ve Boyutu</h3>
+            <p>Ödevin tamamında <strong>Times New Roman</strong> yazı tipi kullanılmalıdır. Ana metin boyutu <strong>12 punto</strong>, dipnotlar ise <strong>10 punto</strong> olmalıdır.</p>
+
+            <h3>1.3. Satır Aralığı ve Paragraf</h3>
+            <p>Ana metinde satır aralığı <strong>1.5 tam</strong>, dipnotlarda ise <strong>tek (1) satır</strong> aralığı kullanılmalıdır. Paragraf başlarında <strong>1.25 cm</strong> girinti bırakılmalıdır. Paragraflar arasında ve başlıklardan sonra ek boşluk bırakılmasına (Word'deki 6nk/12nk ayarı gibi) gerek yoktur; satır aralığı yeterlidir.</p>
+
+            <h2 id="isnad">2. İSNAD ATIF SİSTEMİ (ANA KURALLAR)</h2>
+            <p>Fakültemiz akademik çalışmalarında İsnad Atıf Sistemi kullanılmaktadır. Aşağıda en sık kullanılan kaynak türlerinin dipnot ve kaynakça gösterimleri verilmiştir.</p>
+
+            <h3>2.1. Kitap Atıfları</h3>
+            <p>Kitaplar dipnotta verilirken sırasıyla; Yazar Adı Soyadı, <em>Kitap Adı</em> (Basım Yeri: Yayınevi, Basım Yılı), Sayfa Numarası şeklinde yazılır.</p>
+            <p><strong>Dipnot Örneği:</strong> Ömer Türker, <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em> (İstanbul: Ketebe Yayınları, 2019), 45.</p>
+            <p><strong>Tekrar eden atıf:</strong> Türker, <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em>, 50.</p>
+
+            <h3>2.2. Makale Atıfları</h3>
+            <p>Makaleler dipnotta verilirken makale adı tırnak içinde, dergi adı italik yazılır.</p>
+            <p><strong>Dipnot Örneği:</strong> İsmail Kara, "Din ile Modernleşme Arasında Çağdaş Türk Düşüncesi", <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 125.</p>
+
+            <h3>2.3. Ayet ve Hadis Atıfları</h3>
+            <p>Ayetler sure adı ve ayet numarası ile; hadisler ise temel hadis kaynaklarındaki kitap adı ve bab/hadis numarası ile gösterilir.</p>
+            <p><strong>Ayet:</strong> el-Bakara 2/255.</p>
+            <p><strong>Hadis:</strong> Buhârî, "Îmân", 1.</p>
+        </div>
+
+        <div class="page" id="ek1" data-label="EK-1: Örnek Kapak Tasarımı">
+            <div class="cover-page">
+                <div class="cover-header">
+                    <p>T.C.</p>
+                    <p>DOKUZ EYLÜL ÜNİVERSİTESİ</p>
+                    <p>İLAHİYAT FAKÜLTESİ</p>
+                </div>
+
+                <div class="cover-title">
+                    <p>TEZİN / ÖDEVİN BAŞLIĞI BURAYA<br>BÜYÜK HARFLERLE YAZILACAKTIR</p>
+                    <br>
+                    <p style="font-size: 12pt; font-weight: normal;">(Bitirme Ödevi)</p>
+                </div>
+
+                <div class="cover-info">
+                    <p><strong>Hazırlayan</strong></p>
+                    <p>Adı SOYADI</p>
+                    <p>Öğrenci No: 202100000</p>
+                    <br><br>
+                    <p><strong>Danışman</strong></p>
+                    <p>Unvanı Adı SOYADI</p>
+                </div>
+
+                <div class="cover-bottom">
+                    <p>İZMİR - 2025</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="ek2" data-label="EK-2: Örnek Metin Sayfası (Görünüm)">
+            <h1>BİRİNCİ BÖLÜM</h1>
+            <h1>İSLAM DÜŞÜNCESİNDE YÖNTEM ARAYIŞLARI</h1>
+
+            <h2>1. KELAM İLMİNİN DOĞUŞU VE GELİŞİMİ</h2>
+            
+            <h3>1.1. Tarihsel Arka Plan</h3>
+            <p>İslam düşünce tarihinde kelam ilmi, inanç esaslarını aklı kullanarak temellendirme ve savunma amacı güden bir disiplin olarak ortaya çıkmıştır. Bu disiplin, hicri birinci asrın sonlarına doğru belirginleşmeye başlamış ve zamanla sistematik bir yapıya kavuşmuştur. Konuyla ilgili olarak çağdaş araştırmacılardan biri şöyle demektedir: "Kelam ilmi, İslam toplumunun iç ve dış meydan okumalarına karşı geliştirdiği en önemli entelektüel savunma mekanizmasıdır."<sup>1</sup></p>
+
+            <p>Kelamcılar, varlık, bilgi ve değer sorunlarını ele alırken, nasları (ayet ve hadisleri) merkeze almakla birlikte, mantıksal çıkarımlara da büyük önem vermişlerdir. Özellikle Mutezile ekolü, aklın vahiy karşısındaki konumu üzerine yoğun tartışmalar yürütmüştür.<sup>2</sup> Bu tartışmalar, sonraki dönemlerde Eş'arîlik ve Mâtürîdîlik gibi Sünni kelam ekollerinin de yöntemini etkilemiştir. Gazâlî'nin mantığı İslami ilimlere dahil etmesi ise bir dönüm noktası olarak kabul edilir.<sup>3</sup></p>
+
+            <p>Örneğin Kur'an-ı Kerim'de akletmeye ve düşünmeye yapılan vurgular, kelam ilminin meşruiyet zeminini oluşturur. Nitekim bir ayette şöyle buyurulmaktadır: "Hâlâ akıllanmayacak mısınız?"<sup>4</sup></p>
+
+            <div class="footnote-area">
+                <span class="footnote">1. M. Sait Özervarlı, <em>Kelamda Yenilik Arayışları</em> (İstanbul: İSAM Yayınları, 2008), 25.</span>
+                <span class="footnote">2. Şerafettin Gölcük, <em>Kelam Tarihi</em> (Konya: Esra Yayınları, 1992), 112.</span>
+                <span class="footnote">3. Özervarlı, <em>Kelamda Yenilik Arayışları</em>, 45.</span>
+                <span class="footnote">4. el-Bakara 2/44.</span>
+            </div>
+        </div>
+
+        <div class="page" id="ek3" data-label="EK-3: Örnek Kaynakça Sayfası">
+            <h1>KAYNAKÇA</h1>
+            
+            <div class="biblio-item">
+                Gölcük, Şerafettin. <em>Kelam Tarihi</em>. Konya: Esra Yayınları, 1992.
+            </div>
+
+            <div class="biblio-item">
+                Kara, İsmail. "Din ile Modernleşme Arasında Çağdaş Türk Düşüncesi". <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 121-165.
+            </div>
+
+            <div class="biblio-item">
+                Özervarlı, M. Sait. <em>Kelamda Yenilik Arayışları</em>. İstanbul: İSAM Yayınları, 2008.
+            </div>
+
+            <div class="biblio-item">
+                Türker, Ömer. <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em>. İstanbul: Ketebe Yayınları, 2019.
+            </div>
+
+            <div class="biblio-item">
+                Yazır, Elmalılı M. Hamdi. <em>Hak Dini Kur’an Dili</em>. 10 Cilt. İstanbul: Eser Neşriyat, 1979.
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
