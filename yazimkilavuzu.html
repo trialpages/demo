@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEÜ İlahiyat - Bitirme Ödevi Yazım Kılavuzu</title>
+    <title>DEÜ İlahiyat - Bitirme Ödevi Yazım Kuralları</title>
     <style>
         /* --- TEMEL DEĞİŞKENLER --- */
         :root {
@@ -31,7 +31,7 @@
             box-sizing: border-box;
             display: flex;
             justify-content: space-between;
-            pointer-events: none; /* Tıklamaları alta geçir, sadece butonlar tıklanabilir olsun */
+            pointer-events: none;
             z-index: 1000;
         }
 
@@ -57,10 +57,7 @@
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
 
-        /* Hamburger Menü Butonu (Sadece mobilde görünür olacak) */
-        #menu-toggle {
-            display: none; 
-        }
+        #menu-toggle { display: none; }
 
         /* --- SOL MENÜ (NAVİGASYON) --- */
         nav {
@@ -73,7 +70,7 @@
             left: 0;
             overflow-y: auto;
             padding: 20px;
-            padding-top: 80px; /* Üst butonlar için boşluk */
+            padding-top: 80px;
             box-sizing: border-box;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             z-index: 900;
@@ -81,25 +78,20 @@
         }
 
         nav h2 {
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Başlık biraz uzun olduğu için küçülttüm */
             border-bottom: 2px solid var(--accent-color);
             padding-bottom: 10px;
             margin-bottom: 20px;
+            line-height: 1.4;
         }
 
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        nav li {
-            margin-bottom: 15px;
-        }
-
+        nav ul { list-style: none; padding: 0; }
+        nav li { margin-bottom: 15px; }
+        
         nav a {
             color: #bdc3c7;
             text-decoration: none;
-            font-size: 0.95rem;
+            font-size: 0.90rem;
             transition: 0.3s;
             display: block;
         }
@@ -110,7 +102,6 @@
             border-left: 3px solid var(--accent-color);
         }
 
-        /* Overlay (Mobil menü açılınca arka planı karartma) */
         .overlay {
             display: none;
             position: fixed;
@@ -124,9 +115,9 @@
 
         /* --- İÇERİK ALANI --- */
         main {
-            margin-left: 260px; /* Menü genişliği kadar boşluk */
+            margin-left: 260px;
             padding: 40px;
-            padding-top: 80px; /* Üst butonlar için boşluk */
+            padding-top: 80px;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -165,7 +156,7 @@
             text-transform: uppercase;
         }
 
-        /* --- BELGE İÇİ TİPOGRAFİ --- */
+        /* --- TİPOGRAFİ --- */
         h1, h2, h3, h4 { font-weight: bold; margin-top: 1em; margin-bottom: 0.5em; color: black; }
         h1 { font-size: 14pt; text-align: center; text-transform: uppercase; }
         h2 { font-size: 12pt; } 
@@ -173,7 +164,6 @@
         p { margin-bottom: 6pt; text-indent: 1.25cm; }
         ul { margin: 0; padding-left: 2cm; }
 
-        /* Dipnot */
         .footnote-area { margin-top: 2cm; border-top: 1px solid black; padding-top: 5px; font-size: 10pt; line-height: 1; }
         .footnote { margin-bottom: 5px; text-indent: 0; display: block; }
 
@@ -188,76 +178,55 @@
         /* Kaynakça */
         .biblio-item { padding-left: 1.25cm; text-indent: -1.25cm; margin-bottom: 6pt; }
 
-        /* --- İÇİNDEKİLER DÜZENLEMESİ (DÜZELTİLDİ) --- */
-        .toc-row {
-            display: flex;
-            align-items: flex-end;
-            margin-bottom: 5px;
-            width: 100%; /* Satır her zaman tam genişlikte */
-        }
-        
-        .toc-title {
-            font-weight: normal;
-            flex-shrink: 0; /* Başlık sıkışmasın */
-        }
+        /* İçindekiler */
+        .toc-row { display: flex; align-items: flex-end; margin-bottom: 5px; width: 100%; }
+        .toc-title { font-weight: normal; flex-shrink: 0; }
         .toc-title.bold { font-weight: bold; }
-        
-        .toc-dots {
-            flex-grow: 1;
-            border-bottom: 1px dotted black;
-            margin: 0 5px 5px 5px;
-        }
-        
-        .toc-page {
-            min-width: 20px;
-            text-align: right;
-        }
-        
-        /* Girintiyi artık satıra değil, başlığın kendisine veriyoruz.
-           Böylece sağ taraf (sayfa no) her zaman en sağda kalıyor. */
+        .toc-dots { flex-grow: 1; border-bottom: 1px dotted black; margin: 0 5px 5px 5px; }
+        .toc-page { min-width: 20px; text-align: right; }
         .indent-1 .toc-title { padding-left: 0; }
         .indent-2 .toc-title { padding-left: 1.5cm; }
         .indent-3 .toc-title { padding-left: 2.5cm; }
 
+        /* MAKALE FORMATI İÇİN ÖZEL STİLLER */
+        .article-meta {
+            text-align: right;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            line-height: 1.3;
+        }
+        .article-abstract {
+            font-size: 11pt; /* Özet genelde bir tık küçük olur */
+            margin-left: 1cm;
+            margin-right: 1cm;
+            margin-bottom: 30px;
+        }
+        .article-abstract p {
+            text-indent: 0.5cm;
+        }
+        .article-keywords {
+            font-size: 11pt;
+            margin-left: 1cm;
+            margin-right: 1cm;
+            font-style: italic;
+        }
 
-        /* --- RESPONSIVE / MOBİL --- */
+        /* RESPONSIVE */
         @media screen and (max-width: 900px) {
-            #menu-toggle { display: flex; } /* Menü butonunu göster */
-            
-            nav {
-                transform: translateX(-100%); /* Varsayılan olarak gizle */
-                width: 280px;
-                padding-top: 20px;
-            }
-            
-            nav.open {
-                transform: translateX(0); /* Açılınca göster */
-            }
-
-            .overlay.open { display: block; } /* Arka plan karartmayı aç */
-
-            main {
-                margin-left: 0; /* İçeriği sola yasla */
-                padding: 10px;
-                padding-top: 80px;
-            }
-
+            #menu-toggle { display: flex; }
+            nav { transform: translateX(-100%); width: 280px; padding-top: 20px; }
+            nav.open { transform: translateX(0); }
+            .overlay.open { display: block; }
+            main { margin-left: 0; padding: 10px; padding-top: 80px; }
             .page { width: 100%; height: auto; padding: 2cm; }
         }
 
-        /* --- YAZDIRMA MODU (PRINT CSS) --- */
+        /* PRINT */
         @media print {
             body { background: white; display: block; }
-            .controls-container, nav, .page::before { display: none !important; } /* Arayüz elemanlarını gizle */
+            .controls-container, nav, .page::before { display: none !important; }
             main { margin: 0; padding: 0; width: 100%; }
-            .page { 
-                box-shadow: none; 
-                margin: 0; 
-                width: 100%; 
-                page-break-after: always; 
-                padding: 0; /* Tarayıcı kendi marjlarını kullanabilir veya css ile zorlanır */
-            }
-            /* Yazdırırken A4 kenar boşluklarını garantiye alalım */
+            .page { box-shadow: none; margin: 0; width: 100%; page-break-after: always; padding: 0; }
             @page { margin: 2.5cm; size: A4; }
         }
     </style>
@@ -268,7 +237,6 @@
         <button id="menu-toggle" class="btn" onclick="toggleMenu()">
             &#9776; Menü
         </button>
-
         <button class="btn" onclick="window.print()" style="margin-left: auto;">
             &#128424; Kılavuzu Yazdır
         </button>
@@ -277,15 +245,16 @@
     <div class="overlay" onclick="toggleMenu()"></div>
 
     <nav id="sidebar">
-        <h2>DEÜ Kılavuz</h2>
+        <h2>DEÜ İlahiyat<br>Yazım Kılavuzu</h2>
         <ul>
-            <li><a href="#giris" onclick="closeMenu()">Giriş</a></li>
+            <li><a href="#giris" onclick="closeMenu()">Genel Esaslar</a></li>
             <li><a href="#bicim" onclick="closeMenu()">1. Biçimsel Özellikler</a></li>
             <li><a href="#isnad" onclick="closeMenu()">2. İsnad Atıf Sistemi</a></li>
-            <li><a href="#ek1" onclick="closeMenu()">Ek-1: Örnek Kapak</a></li>
-            <li><a href="#ek-icindekiler" onclick="closeMenu()">Ek-2: Örnek İçindekiler</a></li>
-            <li><a href="#ek2" onclick="closeMenu()">Ek-3: Örnek Metin Sayfası</a></li>
-            <li><a href="#ek3" onclick="closeMenu()">Ek-4: Örnek Kaynakça</a></li>
+            <li><a href="#ek1" onclick="closeMenu()">Ek-1: Kapak (Ortak)</a></li>
+            <li><a href="#ek-icindekiler" onclick="closeMenu()">Ek-2: İçindekiler</a></li>
+            <li><a href="#ek2" onclick="closeMenu()">Ek-3: Örnek Metin (Tez)</a></li>
+            <li><a href="#ek3" onclick="closeMenu()">Ek-4: Kaynakça</a></li>
+            <li><a href="#ek-makale" onclick="closeMenu()">Ek-5: Makale Formatı</a></li>
         </ul>
         <div style="margin-top: 30px; font-size: 0.8rem; color: #7f8c8d; border-top: 1px solid #34495e; padding-top: 10px;">
             Dokuz Eylül Üniversitesi<br>İlahiyat Fakültesi<br>Öğrencileri İçin Hazırlanmıştır.
@@ -294,42 +263,38 @@
 
     <main>
         
-        <div class="page" id="giris" data-label="Sayfa 1: Kılavuz İçeriği">
-            <h1>BİTİRME ÖDEVİ YAZIM KILAVUZU</h1>
+        <div class="page" id="giris" data-label="Sayfa 1: Kurallar ve Format Seçenekleri">
+            <h1>DEÜ İLAHİYAT BİTİRME ÖDEVİ YAZIM KURALLARI</h1>
             
             <p style="text-indent: 0; font-weight: bold;">GİRİŞ</p>
-            <p>Bu kılavuz, Dokuz Eylül Üniversitesi İlahiyat Fakültesi lisans öğrencilerinin bitirme ödevlerini hazırlarken uymaları gereken temel biçimsel kuralları ve atıf esaslarını (İsnad Atıf Sistemi) ana hatlarıyla göstermek amacıyla hazırlanmıştır. Ödevler akademik dürüstlük ilkelerine uygun olarak hazırlanmalıdır.</p>
+            <p>Bu kılavuz, Dokuz Eylül Üniversitesi İlahiyat Fakültesi lisans öğrencilerinin bitirme ödevlerini hazırlarken uymaları gereken temel biçimsel kuralları ve atıf esaslarını (İsnad Atıf Sistemi) göstermektedir.</p>
+            
+            <h3>Ödev Hazırlama Formatları</h3>
+            <p>Bitirme ödevleri, öğrencinin tercihine ve danışmanın onayına bağlı olarak <strong>iki farklı formatta</strong> hazırlanabilir:</p>
+            <ul>
+                <li><strong>1. Tez Formatı:</strong> Bölümler (Giriş, 1. Bölüm, 2. Bölüm, Sonuç) halinde düzenlenen klasik yapı.</li>
+                <li><strong>2. Makale Formatı:</strong> Akademik dergi makalesi yapısında (Özet, Giriş, Alt Başlıklar, Sonuç) düzenlenen yapı.</li>
+            </ul>
+            <p>Her iki formatta da <strong>İsnad Atıf Sistemi</strong> ve aşağıdaki biçimsel kurallar esas alınır. Makale formatını seçen öğrenciler, <strong>Ek-5</strong>'te sunulan şablonu dikkate almalıdır.</p>
 
             <h2 id="bicim">1. BİÇİMSEL ÖZELLİKLER</h2>
             
             <h3>1.1. Sayfa Düzeni</h3>
-            <p>Bitirme ödevleri A4 boyutundaki beyaz kağıda yazılmalıdır. Sayfa kenar boşlukları; üstten, alttan, sağdan ve soldan <strong>2,5 cm</strong> olacak şekilde ayarlanmalıdır. Metin <strong>iki yana yaslı</strong> (justified) olarak hizalanmalıdır.</p>
+            <p>Bitirme ödevleri A4 boyutundaki beyaz kağıda yazılmalıdır. Kenar boşlukları; üstten, alttan, sağdan ve soldan <strong>2,5 cm</strong> olmalıdır. Metin <strong>iki yana yaslı</strong> hizalanmalıdır.</p>
 
             <h3>1.2. Yazı Tipi ve Boyutu</h3>
-            <p>Ödevin tamamında <strong>Times New Roman</strong> yazı tipi kullanılmalıdır. Ana metin boyutu <strong>12 punto</strong>, dipnotlar ise <strong>10 punto</strong> olmalıdır.</p>
+            <p>Ödevin tamamında <strong>Times New Roman</strong> yazı tipi kullanılmalıdır. Ana metin boyutu <strong>12 punto</strong>, dipnotlar <strong>10 punto</strong> olmalıdır.</p>
 
-            <h3>1.3. Satır Aralığı ve Paragraf</h3>
-            <p>Ana metinde satır aralığı <strong>1.5 tam</strong>, dipnotlarda ise <strong>tek (1) satır</strong> aralığı kullanılmalıdır. Paragraf başlarında <strong>1.25 cm</strong> girinti bırakılmalıdır. Paragraflar arasında ve başlıklardan sonra ek boşluk bırakılmasına (Word'deki 6nk/12nk ayarı gibi) gerek yoktur; satır aralığı yeterlidir.</p>
+            <h3>1.3. Satır Aralığı</h3>
+            <p>Ana metinde <strong>1.5 satır</strong> aralığı, dipnotlarda <strong>tek (1) satır</strong> aralığı kullanılmalıdır.</p>
 
-            <h2 id="isnad">2. İSNAD ATIF SİSTEMİ (ANA KURALLAR)</h2>
-            <p>Fakültemiz akademik çalışmalarında İsnad Atıf Sistemi kullanılmaktadır. Aşağıda en sık kullanılan kaynak türlerinin dipnot ve kaynakça gösterimleri verilmiştir.</p>
-
-            <h3>2.1. Kitap Atıfları</h3>
-            <p>Kitaplar dipnotta verilirken sırasıyla; Yazar Adı Soyadı, <em>Kitap Adı</em> (Basım Yeri: Yayınevi, Basım Yılı), Sayfa Numarası şeklinde yazılır.</p>
-            <p><strong>Dipnot Örneği:</strong> Ömer Türker, <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em> (İstanbul: Ketebe Yayınları, 2019), 45.</p>
-            <p><strong>Tekrar eden atıf:</strong> Türker, <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em>, 50.</p>
-
-            <h3>2.2. Makale Atıfları</h3>
-            <p>Makaleler dipnotta verilirken makale adı tırnak içinde, dergi adı italik yazılır.</p>
-            <p><strong>Dipnot Örneği:</strong> İsmail Kara, "Din ile Modernleşme Arasında Çağdaş Türk Düşüncesi", <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 125.</p>
-
-            <h3>2.3. Ayet ve Hadis Atıfları</h3>
-            <p>Ayetler sure adı ve ayet numarası ile; hadisler ise temel hadis kaynaklarındaki kitap adı ve bab/hadis numarası ile gösterilir.</p>
-            <p><strong>Ayet:</strong> el-Bakara 2/255.</p>
-            <p><strong>Hadis:</strong> Buhârî, "Îmân", 1.</p>
+            <h2 id="isnad">2. İSNAD ATIF SİSTEMİ (ÖZET)</h2>
+            <p><strong>Kitap:</strong> Ömer Türker, <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em> (İstanbul: Ketebe Yayınları, 2019), 45.</p>
+            <p><strong>Makale:</strong> İsmail Kara, "Din ile Modernleşme Arasında", <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 125.</p>
+            <p><strong>Ayet/Hadis:</strong> el-Bakara 2/255; Buhârî, "Îmân", 1.</p>
         </div>
 
-        <div class="page" id="ek1" data-label="EK-1: Örnek Kapak Tasarımı">
+        <div class="page" id="ek1" data-label="EK-1: Örnek Kapak (Her İki Format İçin)">
             <div class="cover-page">
                 <div class="cover-header">
                     <p>T.C.</p>
@@ -358,139 +323,118 @@
             </div>
         </div>
 
-        <div class="page" id="ek-icindekiler" data-label="EK-2: Örnek İçindekiler Sayfası">
+        <div class="page" id="ek-icindekiler" data-label="EK-2: Örnek İçindekiler (Tez Formatı İçin)">
             <h1>İÇİNDEKİLER</h1>
             <br>
-            
             <div class="toc-row indent-1">
                 <div class="toc-title bold">ÖNSÖZ</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">iii</div>
             </div>
-
-            <div class="toc-row indent-1">
-                <div class="toc-title bold">KISALTMALAR</div>
-                <div class="toc-dots"></div>
-                <div class="toc-page">iv</div>
-            </div>
-
             <div class="toc-row indent-1">
                 <div class="toc-title bold">GİRİŞ</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">1</div>
             </div>
             <br>
-            
             <div class="toc-row indent-1">
                 <div class="toc-title bold">BİRİNCİ BÖLÜM</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page"></div>
             </div>
             <div class="toc-row indent-1">
-                <div class="toc-title bold">BÖLÜM BAŞLIĞI BURAYA YAZILIR</div>
+                <div class="toc-title bold">BÖLÜM BAŞLIĞI</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">5</div>
             </div>
-
             <div class="toc-row indent-2">
                 <div class="toc-title">1.1. Birinci Alt Başlık</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">7</div>
             </div>
-
-            <div class="toc-row indent-3">
-                <div class="toc-title">1.1.1. Alt Başlığın Detayı</div>
-                <div class="toc-dots"></div>
-                <div class="toc-page">10</div>
-            </div>
-
-            <div class="toc-row indent-2">
-                <div class="toc-title">1.2. İkinci Alt Başlık</div>
-                <div class="toc-dots"></div>
-                <div class="toc-page">14</div>
-            </div>
             <br>
-
             <div class="toc-row indent-1">
                 <div class="toc-title bold">İKİNCİ BÖLÜM</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page"></div>
             </div>
             <div class="toc-row indent-1">
-                <div class="toc-title bold">BÖLÜM BAŞLIĞI BURAYA YAZILIR</div>
+                <div class="toc-title bold">BÖLÜM BAŞLIĞI</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">20</div>
             </div>
-
-            <div class="toc-row indent-2">
-                <div class="toc-title">2.1. Birinci Alt Başlık</div>
-                <div class="toc-dots"></div>
-                <div class="toc-page">25</div>
-            </div>
-            <br>
-
             <div class="toc-row indent-1">
                 <div class="toc-title bold">SONUÇ</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">40</div>
             </div>
-
             <div class="toc-row indent-1">
                 <div class="toc-title bold">KAYNAKÇA</div>
                 <div class="toc-dots"></div>
                 <div class="toc-page">42</div>
             </div>
-            
-            <div class="toc-row indent-1">
-                <div class="toc-title bold">EKLER</div>
-                <div class="toc-dots"></div>
-                <div class="toc-page">45</div>
-            </div>
         </div>
 
-        <div class="page" id="ek2" data-label="EK-3: Örnek Metin Sayfası (Görünüm)">
+        <div class="page" id="ek2" data-label="EK-3: Örnek Metin Sayfası (Tez Formatı)">
             <h1>BİRİNCİ BÖLÜM</h1>
-            <h1>İSLAM DÜŞÜNCESİNDE YÖNTEM ARAYIŞLARI</h1>
+            <h1>İSLAM DÜŞÜNCESİNDE YÖNTEM</h1>
 
-            <h2>1. KELAM İLMİNİN DOĞUŞU VE GELİŞİMİ</h2>
+            <h2>1. KELAM İLMİNİN GELİŞİMİ</h2>
             
             <h3>1.1. Tarihsel Arka Plan</h3>
-            <p>İslam düşünce tarihinde kelam ilmi, inanç esaslarını aklı kullanarak temellendirme ve savunma amacı güden bir disiplin olarak ortaya çıkmıştır. Bu disiplin, hicri birinci asrın sonlarına doğru belirginleşmeye başlamış ve zamanla sistematik bir yapıya kavuşmuştur. Konuyla ilgili olarak çağdaş araştırmacılardan biri şöyle demektedir: "Kelam ilmi, İslam toplumunun iç ve dış meydan okumalarına karşı geliştirdiği en önemli entelektüel savunma mekanizmasıdır."<sup>1</sup></p>
+            <p>İslam düşünce tarihinde kelam ilmi, inanç esaslarını aklı kullanarak temellendirme amacı güden bir disiplin olarak ortaya çıkmıştır. Konuyla ilgili olarak çağdaş araştırmacılardan biri şöyle demektedir: "Kelam ilmi, İslam toplumunun iç ve dış meydan okumalarına karşı geliştirdiği en önemli entelektüel savunma mekanizmasıdır."<sup>1</sup></p>
 
-            <p>Kelamcılar, varlık, bilgi ve değer sorunlarını ele alırken, nasları (ayet ve hadisleri) merkeze almakla birlikte, mantıksal çıkarımlara da büyük önem vermişlerdir. Özellikle Mutezile ekolü, aklın vahiy karşısındaki konumu üzerine yoğun tartışmalar yürütmüştür.<sup>2</sup> Bu tartışmalar, sonraki dönemlerde Eş'arîlik ve Mâtürîdîlik gibi Sünni kelam ekollerinin de yöntemini etkilemiştir. Gazâlî'nin mantığı İslami ilimlere dahil etmesi ise bir dönüm noktası olarak kabul edilir.<sup>3</sup></p>
-
-            <p>Örneğin Kur'an-ı Kerim'de akletmeye ve düşünmeye yapılan vurgular, kelam ilminin meşruiyet zeminini oluşturur. Nitekim bir ayette şöyle buyurulmaktadır: "Hâlâ akıllanmayacak mısınız?"<sup>4</sup></p>
+            <p>Kelamcılar, varlık, bilgi ve değer sorunlarını ele alırken, nasları merkeze almakla birlikte, mantıksal çıkarımlara da büyük önem vermişlerdir.<sup>2</sup></p>
 
             <div class="footnote-area">
                 <span class="footnote">1. M. Sait Özervarlı, <em>Kelamda Yenilik Arayışları</em> (İstanbul: İSAM Yayınları, 2008), 25.</span>
                 <span class="footnote">2. Şerafettin Gölcük, <em>Kelam Tarihi</em> (Konya: Esra Yayınları, 1992), 112.</span>
-                <span class="footnote">3. Özervarlı, <em>Kelamda Yenilik Arayışları</em>, 45.</span>
-                <span class="footnote">4. el-Bakara 2/44.</span>
             </div>
         </div>
 
-        <div class="page" id="ek3" data-label="EK-4: Örnek Kaynakça Sayfası">
+        <div class="page" id="ek3" data-label="EK-4: Örnek Kaynakça">
             <h1>KAYNAKÇA</h1>
+            <div class="biblio-item">Gölcük, Şerafettin. <em>Kelam Tarihi</em>. Konya: Esra Yayınları, 1992.</div>
+            <div class="biblio-item">Kara, İsmail. "Din ile Modernleşme Arasında Çağdaş Türk Düşüncesi". <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 121-165.</div>
+            <div class="biblio-item">Özervarlı, M. Sait. <em>Kelamda Yenilik Arayışları</em>. İstanbul: İSAM Yayınları, 2008.</div>
+            <div class="biblio-item">Türker, Ömer. <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em>. İstanbul: Ketebe Yayınları, 2019.</div>
+        </div>
+
+        <div class="page" id="ek-makale" data-label="EK-5: Makale Formatı Örneği (İlk Sayfa)">
             
-            <div class="biblio-item">
-                Gölcük, Şerafettin. <em>Kelam Tarihi</em>. Konya: Esra Yayınları, 1992.
+            <h1>İSLAM HUKUKUNDA MASLAHATI MÜRSELE KAVRAMI VE GÜNÜMÜZ MESELELERİNE ETKİSİ</h1>
+
+            <div class="article-meta">
+                <strong>Hazırlayan:</strong> Adı SOYADI<br>
+                202100000<br><br>
+                <strong>Danışman:</strong> Prof. Dr. Adı SOYADI
             </div>
 
-            <div class="biblio-item">
-                Kara, İsmail. "Din ile Modernleşme Arasında Çağdaş Türk Düşüncesi". <em>Dîvân İlmî Araştırmalar</em> 12/23 (2007): 121-165.
+            <div class="article-abstract">
+                <p><strong>Özet</strong></p>
+                <p>Bu çalışma, İslam hukuk metodolojisinde önemli bir yer tutan maslahat-ı mürsele ilkesini ele almaktadır. Nasslarda hakkında özel bir hüküm bulunmayan konularda, kamu yararını gözeterek hüküm verme yöntemi olan maslahat, fıkhın dinamizmini sağlayan unsurlardandır. Makalede öncelikle kavramsal çerçeve çizilmiş, ardından tarihsel süreçteki uygulamalara değinilmiştir. Sonuç olarak, güncel fıkhı problemlerin çözümünde maslahatın işlevselliği tartışılmıştır.</p>
+                <div class="article-keywords">
+                    <strong>Anahtar Kelimeler:</strong> İslam Hukuku, Fıkıh Usulü, Maslahat, Kamu Yararı, İçtihat.
+                </div>
             </div>
 
-            <div class="biblio-item">
-                Özervarlı, M. Sait. <em>Kelamda Yenilik Arayışları</em>. İstanbul: İSAM Yayınları, 2008.
+            <h2 style="text-align: left;">GİRİŞ</h2>
+            <p>İslam hukuku, vahiy kaynaklı olmakla birlikte, değişen zaman ve şartlara uyum sağlama kabiliyetine sahip bir hukuk sistemidir. Bu esnekliği sağlayan en önemli mekanizmalardan biri, hakkında nass (ayet veya hadis) bulunmayan konularda genel hukuk ilkeleri ve kamu yararı doğrultusunda hüküm bina etmektir. İşte bu noktada "maslahat" kavramı devreye girmektedir.</p>
+            
+            <h2 style="text-align: left;">1. MASLAHAT KAVRAMI VE TANIMI</h2>
+            <p>Sözlükte "yarar, fayda, iyi ve güzel olan" anlamlarına gelen maslahat, terim olarak insanların dini ve dünyevi yararlarını celbetmek ve zararları defetmek manasında kullanılır. Gazali, maslahatı "şeriatın maksatlarını korumak" olarak tanımlamıştır.<sup>1</sup></p>
+
+            <h3 style="text-align: left;">1.1. Maslahatın Türleri</h3>
+            <p>İslam hukukçuları maslahatı geçerliliği açısından üç kısma ayırmışlardır: Muteber (geçerli) maslahat, mülga (geçersiz) maslahat ve mürsel (hakkında delil bulunmayan) maslahat. Bu çalışmanın ana konusunu mürsel maslahatlar oluşturmaktadır.</p>
+            <p>Hakkında geçerli veya geçersiz olduğuna dair özel bir delil bulunmayan, ancak genel hukuk ilkeleriyle uyumlu olan yararlara maslahat-ı mürsele denir.<sup>2</sup></p>
+
+             <div class="footnote-area">
+                <span class="footnote">1. Ebû Hâmid el-Gazâlî, <em>el-Mustasfâ min ilmi’l-usûl</em> (Beyrut: Müessesetü’r-Risâle, 1997), 1/416.</span>
+                <span class="footnote">2. İbrahim Kâfi Dönmez, "Maslahat", <em>Türkiye Diyanet Vakfı İslâm Ansiklopedisi</em> (Ankara: TDV Yayınları, 2003), 28/76.</span>
             </div>
 
-            <div class="biblio-item">
-                Türker, Ömer. <em>İslam Dünyasında Felsefi ve Akli İlimler Tarihi</em>. İstanbul: Ketebe Yayınları, 2019.
-            </div>
-
-            <div class="biblio-item">
-                Yazır, Elmalılı M. Hamdi. <em>Hak Dini Kur’an Dili</em>. 10 Cilt. İstanbul: Eser Neşriyat, 1979.
-            </div>
+            <br>
+            <p style="text-indent: 0; font-size: 10pt; text-align: center; color: #555;">(Not: Makale formatında "KAYNAKÇA", çalışmanın en sonunda yeni bir başlık olarak yer alır.)</p>
 
         </div>
 
@@ -500,14 +444,11 @@
         function toggleMenu() {
             const nav = document.getElementById('sidebar');
             const overlay = document.querySelector('.overlay');
-            
-            // Eğer "open" sınıfı varsa çıkar, yoksa ekle
             nav.classList.toggle('open');
             overlay.classList.toggle('open');
         }
 
         function closeMenu() {
-            // Mobilde linke tıklayınca menüyü kapatmak için
             if (window.innerWidth <= 900) {
                 document.getElementById('sidebar').classList.remove('open');
                 document.querySelector('.overlay').classList.remove('open');
