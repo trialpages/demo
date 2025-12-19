@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tam Sayfa HTML Editörü</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        /* Üst Menü */
+        .toolbar {
+            background-color: #2c3e50;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border-bottom: 4px solid #e74c3c;
+        }
+
+        .toolbar button {
+            background-color: #ecf0f1;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .toolbar button:hover {
+            background-color: #bdc3c7;
+        }
+
+        .label { color: white; margin-right: auto; font-weight: bold; padding-left:10px;}
+
+        /* Ana Alan */
+        .workspace {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 60px); /* Toolbar payını düş */
+        }
+
+        /* Kutular */
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #ccc;
+        }
+
+        .pane-header {
+            background: #ddd;
+            padding: 8px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #bbb;
+            color: #333;
+        }
+
+        /* Görsel Editör */
+        #visual-editor {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: white;
+            outline: none;
+        }
+
+        /* Kod Editörü */
+        #code-editor {
+            flex: 1;
+            padding: 15px;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Courier New', monospace;
+            border: none;
+            resize: none;
+            font-size: 13px;
+            line-height: 1.5;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <span class="label">Web Tasarım Editörü</span>
+        <button onclick="cmd('bold')"><b>B</b></button>
+        <button onclick="cmd('italic')"><i>I</i></button>
+        <button onclick="cmd('underline')"><u>U</u></button>
+        <button onclick="cmd('formatBlock', 'h1')">H1</button>
+        <button onclick="cmd('formatBlock', 'h2')">H2</button>
+        <button onclick="cmd('justifyLeft')">Sola</button>
+        <button onclick="cmd('justifyCenter')">Ortala</button>
+        <button onclick="addLink()">Link</button>
+        <button onclick="addImage()">Resim</button>
+        <button onclick="clearAll()" style="color:red">Temizle</button>
+    </div>
+
+    <div class="workspace">
+        <div class="pane">
+            <div class="pane-header">Görsel Tasarım (Buraya Yaz)</div>
+            <div id="visual-editor" contenteditable="true">
+                <h1>Merhaba Dünya!</h1>
+                <p>Bu metni silip kendi tasarımını yapmaya başla.</p>
+                <p>Sağ tarafta <b>tam sayfa kodları</b> oluşacak.</p>
+            </div>
+        </div>
+
+        <div class="pane">
+            <div class="pane-header">Tam HTML Kodu (Kopyala/Yapıştır Yapılabilir)</div>
+            <textarea id="code-editor" spellcheck="false"></textarea>
+        </div>
+    </div>
+
+    <script>
+        const visualEditor = document.getElementById('visual-editor');
+        const codeEditor = document.getElementById('code-editor');
+
+        // HTML Şablonunun Sabit Kısımleri
+        const htmlTop = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benim Sayfam</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: auto; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+`;
+
+        const htmlBottom = `
+</body>
+</html>`;
+
+        // 1. Görselden Koda Aktarım (Full HTML oluşturur)
+        function updateCodeFromVisual() {
+            // Görsel kısımdaki içeriği al
+            let content = visualEditor.innerHTML;
+            
+            // Girintileri düzeltmek için basit bir işlem (opsiyonel)
+            content = content.replace(/<div>/g, '\n    <div>').replace(/<p>/g, '\n    <p>');
+
+            // Şablon ile birleştir
+            codeEditor.value = htmlTop + "    " + content + htmlBottom;
+        }
+
+        // 2. Koddan Görsele Aktarım (Sadece Body içeriğini çeker)
+        function updateVisualFromCode() {
+            const fullCode = codeEditor.value;
+            
+            // Basit bir yöntemle <body> ve </body> arasını buluyoruz
+            const bodyStart = fullCode.indexOf('<body>');
+            const bodyEnd = fullCode.indexOf('</body>');
+
+            if (bodyStart !== -1 && bodyEnd !== -1) {
+                // '<body>' kelimesinin uzunluğu 6 karakter, ondan sonrasını alıyoruz
+                let bodyContent = fullCode.substring(bodyStart + 6, bodyEnd);
+                visualEditor.innerHTML = bodyContent;
+            }
+        }
+
+        // Olay Dinleyicileri
+        visualEditor.addEventListener('input', updateCodeFromVisual);
+        codeEditor.addEventListener('input', updateVisualFromCode);
+
+        // Sayfa ilk açıldığında kodu oluştur
+        updateCodeFromVisual();
+
+        // Araç Çubuğu Komutları
+        function cmd(command, value = null) {
+            document.execCommand(command, false, value);
+            updateCodeFromVisual(); // Değişikliği anında koda yansıt
+            visualEditor.focus();
+        }
+
+        function addLink() {
+            const url = prompt("Link adresi:");
+            if(url) cmd('createLink', url);
+        }
+
+        function addImage() {
+            const url = prompt("Resim URL'si:");
+            if(url) cmd('insertImage', url);
+        }
+
+        function clearAll() {
+            if(confirm('Her şeyi silmek istiyor musun?')) {
+                visualEditor.innerHTML = '';
+                updateCodeFromVisual();
+            }
+        }
+    </script>
+</body>
+</html>
