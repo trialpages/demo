@@ -3,493 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademik Teşvik Hesaplama Aracı (2025)</title>
+    <title>Akademik Teşvik Hesaplama 2025 (Final Sürüm)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .slide-fade-enter-active, .slide-fade-leave-active { transition: all 0.3s ease; }
-        .slide-fade-enter-from, .slide-fade-leave-to { opacity: 0; transform: translateY(-10px); }
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-        .category-header { background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        /* Tab Menüsü Kaydırma Ayarı */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .input-group { margin-bottom: 0.5rem; }
+        .input-label { display: block; font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-bottom: 0.25rem; text-transform: uppercase; }
+        .input-field { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: #fff; }
+        .input-field:focus { outline: none; border-color: #2563eb; ring: 2px; }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen text-gray-800">
 
-<div id="app" class="min-h-screen flex flex-col">
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-graduation-cap text-blue-700 text-3xl"></i>
+    <header class="bg-white sticky top-0 z-40 shadow-sm border-b border-gray-200">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-lg shadow-blue-200 shadow-lg">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-800">Akademik Teşvik Hesaplama</h1>
-                    [cite_start]<p class="text-xs text-gray-500">2018/11834 Sayılı Yönetmelik ve Değişikliklerine Uygundur [cite: 1, 20]</p>
+                    <h1 class="font-bold text-gray-900 leading-tight">Akademik Teşvik</h1>
+                    <select id="userField" onchange="App.updateAll()" class="text-xs bg-gray-100 border-none rounded px-2 py-1 mt-1 font-medium cursor-pointer hover:bg-gray-200 transition">
+                        <option value="A1">A1: Fen, Müh, Sağlık</option>
+                        <option value="A2">A2: Sosyal, Beşeri</option>
+                        <option value="A3">A3: Mimarlık, Tasarım</option>
+                        <option value="A4">A4: Güzel Sanatlar</option>
+                    </select>
                 </div>
             </div>
-            <div class="text-right hidden md:block">
-                <div class="text-sm font-semibold text-gray-600">Toplam Teşvik Puanı</div>
-                <div class="text-3xl font-bold" :class="totalScore >= 30 ? 'text-green-600' : 'text-gray-400'">
-                    {{ totalScore }} / 100
-                </div>
+            <div class="text-right">
+                <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">TOPLAM</span>
+                <span id="displayTotalScore" class="text-3xl font-bold text-blue-600 leading-none">0.00</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 mt-4">
+    <main class="flex-grow max-w-3xl mx-auto w-full p-4">
         
-        <div class="lg:col-span-3 space-y-4">
-            <div class="bg-white p-5 rounded-xl card-shadow border-l-4 border-blue-600">
-                <h3 class="font-semibold text-gray-700 mb-3"><i class="fa-solid fa-layer-group mr-2"></i>Temel Alanınız</h3>
-                [cite_start]<p class="text-xs text-gray-500 mb-2">Puan katsayıları alanınıza göre değişir[cite: 166].</p>
-                <select v-model="userField" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 text-sm">
-                    <option value="A1">A1: Eğitim, Fen, Müh, Sağlık</option>
-                    <option value="A2">A2: Filoloji, Hukuk, İlahiyat, Sosyal</option>
-                    <option value="A3">A3: Mimarlık, Planlama, Tasarım</option>
-                    <option value="A4">A4: Güzel Sanatlar</option>
-                </select>
-            </div>
-
-            <nav class="bg-white rounded-xl card-shadow overflow-hidden">
-                <div v-for="(cat, index) in categories" :key="index">
-                    <button @click="activeTab = index" 
-                            class="w-full text-left px-5 py-3 flex justify-between items-center hover:bg-gray-50 transition-colors border-b border-gray-100"
-                            :class="activeTab === index ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-600'">
-                        <span class="text-sm"><i :class="cat.icon + ' w-6'"></i> {{ cat.title }}</span>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-xs font-mono bg-gray-200 px-2 py-0.5 rounded text-gray-700">{{ getCategoryScore(cat.id).toFixed(1) }}</span>
-                            <span v-if="getCategoryScore(cat.id) >= cat.maxScore" class="text-red-500 text-xs" title="Tavan Puana Ulaşıldı"><i class="fa-solid fa-circle-exclamation"></i></span>
-                        </div>
-                    </button>
+        <div class="mb-6 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0">
+            <div class="flex space-x-2" id="tabMenuContainer">
                 </div>
-            </nav>
-            
-             <div class="md:hidden bg-white p-4 rounded-xl card-shadow text-center">
-                <div class="text-sm text-gray-500">Toplam Puan</div>
-                <div class="text-3xl font-bold text-blue-700">{{ totalScore }}</div>
-            </div>
         </div>
 
-        <div class="lg:col-span-9 bg-white rounded-xl card-shadow min-h-[600px] flex flex-col">
-            <div class="category-header p-6 rounded-t-xl text-white flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden flex flex-col min-h-[400px]">
+            
+            <div class="p-5 border-b bg-gray-50 flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold">{{ categories[activeTab].title }}</h2>
-                    <p class="text-blue-100 text-sm mt-1 opacity-90">{{ categories[activeTab].desc }}</p>
+                    <h2 id="currentCatTitle" class="text-xl font-bold text-gray-800">Yükleniyor...</h2>
+                    <p id="currentCatDesc" class="text-xs text-gray-500 mt-1">...</p>
                 </div>
-                <div class="text-right bg-white/10 p-2 rounded-lg backdrop-blur-sm">
-                    <div class="text-xs text-blue-100">Kategori Puanı</div>
-                    <div class="text-xl font-bold">{{ getCategoryScore(categories[activeTab].id).toFixed(2) }} <span class="text-sm font-normal text-gray-300">/ {{ categories[activeTab].maxScore }} Max</span></div>
+                <div class="text-right bg-white px-3 py-1 rounded border">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase">KATEGORİ PUANI</div>
+                    <div class="font-mono font-bold text-lg">
+                        <span id="currentCatScore" class="text-gray-800">0.00</span>
+                        <span id="currentCatMax" class="text-xs text-gray-400">/ 30</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 flex-grow">
-                
-                <div v-if="categories[activeTab].warning" class="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fa-solid fa-triangle-exclamation text-yellow-400"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-yellow-700">{{ categories[activeTab].warning }}</p>
-                        </div>
-                    </div>
+            <div id="itemsContainer" class="p-5 flex-grow space-y-4 bg-white">
                 </div>
 
-                <div class="space-y-6">
-                    <div v-for="(item, idx) in inputData[categories[activeTab].id]" :key="idx" class="bg-gray-50 p-4 rounded-lg border border-gray-200 relative group transition hover:shadow-md">
-                        <button @click="removeItem(categories[activeTab].id, idx)" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pr-8">
-                            
-                            <div class="col-span-1 md:col-span-2">
-                                [cite_start]<label class="block text-xs font-semibold text-gray-600 mb-1">Faaliyet Türü [cite: 166]</label>
-                                <select v-model="item.subType" class="w-full p-2 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-blue-500">
-                                    <option v-for="opt in categories[activeTab].options" :value="opt.id">{{ opt.label }}</option>
-                                </select>
-                            </div>
-
-                            <div v-if="categories[activeTab].hasKFactor">
-                                [cite_start]<label class="block text-xs font-semibold text-gray-600 mb-1">Yazar/Kişi Sayısı [cite: 132]</label>
-                                <input type="number" v-model.number="item.personCount" min="1" class="w-full p-2 border border-gray-300 rounded text-sm">
-                                <span class="text-[10px] text-gray-500">Katsayı (k): {{ calculateK(item.personCount).toFixed(2) }}</span>
-                            </div>
-
-                            <div v-if="categories[activeTab].id === 'project'">
-                                [cite_start]<label class="block text-xs font-semibold text-gray-600 mb-1">Göreviniz [cite: 135]</label>
-                                <select v-model="item.role" class="w-full p-2 border border-gray-300 rounded text-sm">
-                                    <option value="1">Yürütücü (r=1.0)</option>
-                                    <option value="0.5">Araştırmacı/Bursiyer (r=0.5)</option>
-                                </select>
-                            </div>
-
-                            <div v-if="categories[activeTab].id === 'publication' && isQType(item.subType)">
-                                [cite_start]<label class="block text-xs font-semibold text-gray-600 mb-1">Dergi Çeyreklik (Q) [cite: 140]</label>
-                                <select v-model="item.quartile" class="w-full p-2 border border-gray-300 rounded text-sm">
-                                    <option value="1">Q1 (x1.0)</option>
-                                    <option value="0.8">Q2 (x0.8)</option>
-                                    <option value="0.5">Q3 (x0.5)</option>
-                                    <option value="0.25">Q4 (x0.25)</option>
-                                </select>
-                            </div>
-
-                            <div v-if="categories[activeTab].id === 'research'">
-                                [cite_start]<label class="block text-xs font-semibold text-gray-600 mb-1">Süre (Ay) [cite: 91]</label>
-                                <input type="number" v-model.number="item.months" class="w-full p-2 border border-gray-300 rounded text-sm" placeholder="Örn: 4">
-                            </div>
-
-                            <div v-if="categories[activeTab].id === 'citation'">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Atıf Sayısı</label>
-                                <input type="number" v-model.number="item.citationCount" class="w-full p-2 border border-gray-300 rounded text-sm">
-                                [cite_start]<p class="text-[10px] text-gray-500 mt-1">Kişi sayısına bakılmaksızın puanlanır[cite: 113].</p>
-                            </div>
-
-                        </div>
-                        
-                        <div class="mt-3 pt-3 border-t border-gray-200 flex justify-end items-center">
-                            <span class="text-xs text-gray-500 mr-2">Bu İşlem İçin Puan:</span>
-                            <span class="text-lg font-bold text-blue-600">{{ calculateItemScore(categories[activeTab].id, item).toFixed(2) }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button @click="addItem(categories[activeTab].id)" class="mt-6 w-full py-3 border-2 border-dashed border-gray-300 text-gray-500 rounded-lg hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition flex justify-center items-center">
-                    <i class="fa-solid fa-plus mr-2"></i> Yeni Faaliyet Ekle
+            <div class="p-4 border-t bg-gray-50">
+                <button onclick="App.addItem()" class="w-full py-3 bg-white border-2 border-dashed border-blue-400 text-blue-600 rounded-lg hover:bg-blue-50 hover:border-blue-500 font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-plus-circle text-lg"></i>
+                    <span>Yeni Faaliyet Ekle</span>
                 </button>
             </div>
         </div>
+
     </main>
 
-    <footer class="bg-gray-800 text-gray-400 py-6 mt-8 text-center text-sm">
-        <p>Bu hesaplama aracı bilgilendirme amaçlıdır. Kesin sonuçlar Üniversite Akademik Teşvik Komisyonu kararı ile belirlenir.</p>
-        [cite_start]<p class="mt-2 text-xs">Yönetmelik Kaynağı: 14/5/2018 tarihli ve 2018/11834 sayılı Bakanlar Kurulu Kararı[cite: 1].</p>
-    </footer>
-</div>
+    <script>
+        // Global Scope'a atıyoruz ki HTML onclick görebilsin.
+        window.App = {
+            state: {
+                activeTab: 'publication', // Başlangıç sekmesi Yayın olsun
+                field: 'A1',
+                data: {
+                    publication: [], citation: [], project: [], research: [], 
+                    design: [], exhibition: [], patent: [], paper: [], award: []
+                }
+            },
 
-<script>
-    const { createApp } = Vue;
+            // Kategori Tanımları (Yönetmelik Puan Sınırları)
+            categories: {
+                publication: { id: 'publication', title: 'Yayın', icon: 'fa-book-open', max: 30, desc: 'Makale, Kitap, Editörlük' },
+                citation: { id: 'citation', title: 'Atıf', icon: 'fa-quote-right', max: 30, desc: 'Eserlerinize yapılan atıflar' },
+                project: { id: 'project', title: 'Proje', icon: 'fa-diagram-project', max: 20, desc: 'Tamamlanmış Projeler (TÜBİTAK, BAP vb.)' },
+                research: { id: 'research', title: 'Araştırma', icon: 'fa-microscope', max: 15, desc: 'Görevlendirmeli Araştırmalar' },
+                paper: { id: 'paper', title: 'Tebliğ', icon: 'fa-microphone', max: 20, desc: 'Kongre/Sempozyum Sunumları' },
+                design: { id: 'design', title: 'Tasarım', icon: 'fa-pen-ruler', max: 15, desc: 'Tasarım Faaliyetleri' },
+                exhibition: { id: 'exhibition', title: 'Sergi', icon: 'fa-palette', max: 15, desc: 'Sanatsal Etkinlikler' },
+                patent: { id: 'patent', title: 'Patent', icon: 'fa-certificate', max: 30, desc: 'Tescilli Patentler' },
+                award: { id: 'award', title: 'Ödül', icon: 'fa-trophy', max: 20, desc: 'Akademik Ödüller' }
+            },
 
-    createApp({
-        data() {
-            return {
-                userField: 'A1', // Default Field
-                activeTab: 0,
-                // Veri saklama yapısı
-                inputData: {
-                    project: [],
-                    research: [],
-                    publication: [],
-                    design: [],
-                    exhibition: [],
-                    patent: [],
-                    citation: [],
-                    paper: [],
-                    award: []
-                },
-                categories: [
-                    { 
-                        id: 'project', title: 'Proje', icon: 'fa-solid fa-diagram-project', maxScore: 20, 
-                        desc: 'TÜBİTAK, AB vb. destekli tamamlanmış projeler.',
-                        hasKFactor: false, // r katsayısı kullanılır, k değil.
-                        options: [
-                            { id: 'h2020', label: 'AB Çerçeve Programı (H2020 vb.) - 100 Puan' },
-                            { id: 'tubitak_high', label: 'TÜBİTAK 1001, 1003, 1007, 3501, COST - 80 Puan' },
-                            { id: 'tubitak_mid', label: 'TÜBİTAK 1005, 3001 - 70 Puan' },
-                            { id: 'intl_other', label: 'Diğer Uluslararası (>9 Ay) - 40 Puan' },
-                            { id: 'national_other', label: 'Diğer Ulusal (>9 Ay) - 20 Puan' }
-                        ]
-                    },
-                    { 
-                        id: 'research', title: 'Araştırma', icon: 'fa-solid fa-microscope', maxScore: 15,
-                        desc: 'Görevlendirme ile yapılan yurt içi/dışı araştırmalar.',
-                        hasKFactor: false,
-                        [cite_start]warning: 'Yönetmelik gereği en az 4 ay süre şartı aranabilir (Md 3-r değişikliği) ancak hesaplama ayı baz alır[cite: 41, 166].',
-                        options: [
-                            { id: 'abroad', label: 'Yurt Dışı Araştırma (Ay x 15)' },
-                            { id: 'domestic', label: 'Yurt İçi Araştırma (Ay x 10)' }
-                        ]
-                    },
-                    { 
-                        id: 'publication', title: 'Yayın', icon: 'fa-solid fa-book-open', maxScore: 30,
-                        desc: 'Makale, Kitap, Editörlük.',
-                        hasKFactor: true,
-                        options: [
-                            { id: 'article_sci', label: 'SCI/SSCI/AHCI Özgün Makale (Q değerine göre)' },
-                            { id: 'review_sci', label: 'SCI/SSCI/AHCI Derleme/Editöre Mektup/Vaka (Q değerine göre)' },
-                            { id: 'field_index', label: 'Alan Endeksleri Makale' },
-                            { id: 'other_intl', label: 'Diğer Uluslararası Hakemli Makale' },
-                            { id: 'ulakbim', label: 'ULAKBİM TR Dizin Makale' },
-                            { id: 'book_intl', label: 'Tanınmış Uluslararası Yayınevi Kitap' },
-                            { id: 'book_editor', label: 'Tanınmış Uluslararası Yayınevi Editörlük' },
-                            { id: 'book_chapter', label: 'Tanınmış Uluslararası Yayınevi Kitap Bölümü' },
-                            { id: 'journal_editor_sci', label: 'Editörlük (SCI/SSCI/AHCI) - Sabit Puan' },
-                            { id: 'journal_editor_field', label: 'Editörlük (Alan Endeksi) - Sabit Puan' },
-                            { id: 'journal_editor_tr', label: 'Editörlük (TR Dizin) - Sabit Puan' }
-                        ]
-                    },
-                    { 
-                        id: 'design', title: 'Tasarım', icon: 'fa-solid fa-pen-ruler', maxScore: 15,
-                        desc: 'Tescilli tasarım, proje, uygulama (Genelde A3/A4).',
-                        hasKFactor: true,
-                        options: [
-                            { id: 'design_all', label: 'Endüstriyel, Çevresel, Grafiksel, Sahne, Moda Tasarımı' }
-                        ]
-                    },
-                    { 
-                        id: 'exhibition', title: 'Sergi', icon: 'fa-solid fa-palette', maxScore: 15,
-                        desc: 'Bireysel veya karma sanat etkinlikleri.',
-                        hasKFactor: true, // Karma etkinliklerde kişi sayısı dikkate alınmaz (k=1)
-                        options: [
-                            { id: 'exh_intl_ind', label: 'Özgün Yurt Dışı Bireysel' },
-                            { id: 'exh_nat_ind', label: 'Özgün Yurt İçi Bireysel' },
-                            { id: 'exh_intl_group', label: 'Özgün Yurt Dışı Grup/Karma' },
-                            { id: 'exh_nat_group', label: 'Özgün Yurt İçi Grup/Karma' }
-                        ]
-                    },
-                    { 
-                        id: 'patent', title: 'Patent', icon: 'fa-solid fa-certificate', maxScore: 30,
-                        desc: 'Tescil edilmiş ulusal/uluslararası patentler.',
-                        hasKFactor: true,
-                        options: [
-                            { id: 'patent_intl', label: 'Uluslararası Patent (100 Puan)' },
-                            { id: 'patent_nat', label: 'Ulusal Patent (60 Puan)' }
-                        ]
-                    },
-                    { 
-                        id: 'citation', title: 'Atıf', icon: 'fa-solid fa-quote-right', maxScore: 30,
-                        desc: 'Eserlerinize yapılan atıflar (Kendine atıf hariç).',
-                        hasKFactor: false, // Atıfta katsayı uygulanmaz.
-                        warning: 'Sadece YÖKSİS/WoS kayıtlı atıflar. [cite_start]Kendine atıf hariçtir[cite: 111].',
-                        options: [
-                            { id: 'cit_sci', label: 'SCI/SSCI/AHCI Dergilerde Atıf' },
-                            { id: 'cit_field', label: 'Alan Endeksli Dergilerde Atıf' },
-                            { id: 'cit_other', label: 'Diğer Uluslararası/TR Dizin Dergilerde Atıf' },
-                            { id: 'cit_book', label: 'Tanınmış Uluslararası Kitapta Atıf' }
-                        ]
-                    },
-                    { 
-                        id: 'paper', title: 'Tebliğ', icon: 'fa-solid fa-microphone', maxScore: 20,
-                        desc: 'Uluslararası kongrelerde sözlü sunum + tam metin.',
-                        hasKFactor: true,
-                        [cite_start]warning: 'Yarısından fazlası yabancı katılımcı olmalı ve tam metin basılmalıdır[cite: 116, 120].',
-                        options: [
-                            { id: 'conf_intl', label: 'Uluslararası Sözlü Tebliğ (Tam Metin)' }
-                        ]
-                    },
-                    { 
-                        id: 'award', title: 'Ödül', icon: 'fa-solid fa-trophy', maxScore: 20,
-                        desc: 'Akademik/Sanatsal Ödüller.',
-                        hasKFactor: false, // Tablo 4'te katsayı belirtilmemiş, sabit puan.
-                        options: [
-                            { id: 'award_tubitak', label: 'TÜBİTAK / TÜBA Ödülü (100 Puan)' },
-                            { id: 'award_intl', label: 'Yurt Dışı Bilim Ödülü (40 Puan)' },
-                            { id: 'award_nat', label: 'Yurt İçi Bilim Ödülü (20 Puan)' }
-                        ]
-                    }
+            // Seçenek Listeleri
+            options: {
+                publication: [
+                    { val: 'article_sci', text: 'SCI/SSCI/AHCI Makale (Q değerine göre)' },
+                    { val: 'review_sci', text: 'SCI/SSCI/AHCI Derleme/Editöre Mektup' },
+                    { val: 'field_index', text: 'Alan Endeksleri Makale' },
+                    { val: 'other_intl', text: 'Diğer Uluslararası Hakemli Makale' },
+                    { val: 'ulakbim', text: 'ULAKBİM TR Dizin Makale' },
+                    { val: 'book_intl', text: 'Uluslararası Kitap (x100)' },
+                    { val: 'book_editor', text: 'Uluslararası Kitap Editörlük (x60)' },
+                    { val: 'book_chapter', text: 'Uluslararası Kitap Bölümü (x25)' },
+                    { val: 'editor_sci', text: 'Editörlük (SCI/SSCI/AHCI)' },
+                    { val: 'editor_tr', text: 'Editörlük (TR Dizin)' }
+                ],
+                citation: [
+                    { val: 'sci', text: 'SCI/SSCI/AHCI Dergide Atıf' },
+                    { val: 'field', text: 'Alan Endeksli Dergide Atıf' },
+                    { val: 'other', text: 'Diğer Ulus./TR Dizin Dergide Atıf' },
+                    { val: 'book', text: 'Uluslararası Kitapta Atıf' }
+                ],
+                project: [
+                    { val: 'h2020', text: 'AB Çerçeve Programı (H2020 vb.)' },
+                    { val: 'tubitak_high', text: 'TÜBİTAK 1001, 1003, 3501 vb.' },
+                    { val: 'tubitak_mid', text: 'TÜBİTAK 1005, 3001' },
+                    { val: 'intl_other', text: 'Diğer Uluslararası (>9 Ay)' },
+                    { val: 'national_other', text: 'Diğer Ulusal (>9 Ay)' }
+                ],
+                research: [
+                    { val: 'abroad', text: 'Yurt Dışı Araştırma (Ay x 15)' },
+                    { val: 'domestic', text: 'Yurt İçi Araştırma (Ay x 10)' }
+                ],
+                paper: [{ val: 'intl', text: 'Uluslararası Sözlü Tebliğ (Tam Metin)' }],
+                design: [{ val: 'all', text: 'Tasarım (Endüstriyel, Grafiksel vb.)' }],
+                exhibition: [
+                    { val: 'intl_ind', text: 'Yurt Dışı Bireysel Sergi' },
+                    { val: 'nat_ind', text: 'Yurt İçi Bireysel Sergi' },
+                    { val: 'intl_grp', text: 'Yurt Dışı Karma Sergi' },
+                    { val: 'nat_grp', text: 'Yurt İçi Karma Sergi' }
+                ],
+                patent: [
+                    { val: 'intl', text: 'Uluslararası Patent' },
+                    { val: 'nat', text: 'Ulusal Patent' }
+                ],
+                award: [
+                    { val: 'tubitak', text: 'TÜBİTAK / TÜBA Ödülü' },
+                    { val: 'intl', text: 'Yurt Dışı Bilim Ödülü' },
+                    { val: 'nat', text: 'Yurt İçi Bilim Ödülü' }
                 ]
-            }
-        },
-        computed: {
-            totalScore() {
-                let total = 0;
-                this.categories.forEach(cat => {
-                    total += this.getCategoryScore(cat.id);
-                });
-                return Math.min(total, 100).toFixed(2); [cite_start]// Toplam 100 tavanı [cite: 131]
-            }
-        },
-        methods: {
-            isQType(subType) {
-                return ['article_sci', 'review_sci'].includes(subType);
             },
-            addItem(catId) {
-                // Yeni satır için varsayılan obje
-                const defaults = { 
-                    subType: this.categories.find(c => c.id === catId).options[0].id, 
+
+            // --- Başlatıcı ---
+            init: function() {
+                this.renderTabs();
+                this.renderContent();
+            },
+
+            // --- İşlemler ---
+            switchTab: function(tabId) {
+                this.state.activeTab = tabId;
+                this.renderTabs();
+                this.renderContent();
+            },
+
+            updateAll: function() {
+                this.state.field = document.getElementById('userField').value;
+                this.renderTabs(); // Puanları güncellemek için
+                this.renderContent();
+            },
+
+            addItem: function() {
+                // Varsayılan yeni öğe yapısı
+                const newItem = { 
+                    type: this.options[this.state.activeTab][0].val, 
                     personCount: 1, 
-                    role: '1', 
-                    quartile: '1', 
-                    months: 0, 
-                    citationCount: 0 
+                    q: 1, 
+                    role: 1, 
+                    count: 0, 
+                    months: 0 
                 };
-                this.inputData[catId].push({...defaults});
+                this.state.data[this.state.activeTab].push(newItem);
+                this.updateAll();
             },
-            removeItem(catId, index) {
-                this.inputData[catId].splice(index, 1);
+
+            removeItem: function(index) {
+                this.state.data[this.state.activeTab].splice(index, 1);
+                this.updateAll();
             },
-            calculateK(count) {
-                [cite_start]// Tablo 1: Kişi Sayısı Katsayısı [cite: 133]
-                if (!count || count <= 1) return 1.0;
-                if (count == 2) return 0.8;
-                if (count == 3) return 0.6;
-                if (count == 4) return 0.45;
-                if (count == 5) return 0.20;
-                if (count == 6) return 0.1666; // 1/6
-                return 1.0 / count;
+
+            updateValue: function(index, key, value) {
+                this.state.data[this.state.activeTab][index][key] = value;
+                this.updateAll();
             },
-            calculateItemScore(catId, item) {
-                // ANA HESAPLAMA MOTORU
-                let rawScore = 0;
-                const field = this.userField; // A1, A2, A3, A4
+
+            // --- Hesaplama Mantığı (Yönetmelik Tablo 4 ve Ekleri) ---
+            calculateItemScore: function(catId, item) {
+                let score = 0;
+                const field = this.state.field;
                 
-                // 1. PROJECT
-                if (catId === 'project') {
-                    let base = 0;
-                    switch(item.subType) {
-                        case 'h2020': base = 100; break;
-                        case 'tubitak_high': base = 80; break;
-                        case 'tubitak_mid': base = 70; break;
-                        case 'intl_other': base = 40; break;
-                        case 'national_other': base = 20; break;
-                    }
-                    [cite_start]// Formül: r x Base [cite: 166]
-                    rawScore = parseFloat(item.role) * base;
+                // KATSAYI (k) HESABI [Tablo 1]
+                let k = 1.0;
+                const pCount = parseFloat(item.personCount) || 1;
+                if(pCount > 1) {
+                    if(pCount == 2) k = 0.8;
+                    else if(pCount == 3) k = 0.6;
+                    else if(pCount == 4) k = 0.45;
+                    else if(pCount == 5) k = 0.20;
+                    else if(pCount == 6) k = 1/6;
+                    else k = 1/pCount;
                 }
 
-                // 2. RESEARCH
-                else if (catId === 'research') {
-                    [cite_start]// Formül: 15 veya 10 x Ay [cite: 166]
-                    [cite_start]// 2 aydan az ise 0 [cite: 93]
-                    if (item.months < 2) return 0;
-                    if (item.subType === 'abroad') rawScore = 15 * item.months;
-                    else rawScore = 10 * item.months;
-                }
-
-                // 3. PUBLICATION
-                else if (catId === 'publication') {
-                    let k = this.calculateK(item.personCount);
-                    // Editörlüklerde katsayı uygulanmaz (Tablo 4'te sabit puanlar var, k ile çarpılmıyor satır başları hariç)
-                    // Ancak Tablo 4 Editörlük satırlarında "25", "20" yazıyor, k yok. Kitap editörlüğünde var.
-                    
-                    if (item.subType === 'article_sci') {
-                        let p = parseFloat(item.quartile);
-                        // AHCI için p her zaman 0.5'tir ama kullanıcı Q seçtiyse override edilebilir, 
-                        // fakat yönetmelik AHCI = 0.5 der. Basitlik için Q seçimine bırakıyoruz ya da kural uyguluyoruz.
-                        // Tablo 4 Satır 3: A1/A3 için 60, A2/A4 için 80
+                // 1. YAYIN
+                if(catId === 'publication') {
+                    if(item.type === 'article_sci') {
+                        // A1, A3 -> 60 | A2, A4 -> 80
                         let base = (field === 'A1' || field === 'A3') ? 60 : 80;
-                        rawScore = k * p * base;
-                    }
-                    else if (item.subType === 'review_sci') {
-                        let p = parseFloat(item.quartile);
-                        // Tablo 4: A1/A3 için 30, A2/A4 için 40
+                        score = k * base * parseFloat(item.q);
+                    } else if(item.type === 'review_sci') {
+                         // A1, A3 -> 30 | A2, A4 -> 40
                         let base = (field === 'A1' || field === 'A3') ? 30 : 40;
-                        rawScore = k * p * base;
-                    }
-                    else if (item.subType === 'field_index') {
-                        // A1/A3 -> 20, A2/A4 -> 25
+                        score = k * base * parseFloat(item.q);
+                    } else if(item.type === 'field_index') {
                         let base = (field === 'A1' || field === 'A3') ? 20 : 25;
-                        rawScore = k * base;
-                    }
-                    else if (item.subType === 'other_intl') {
-                        // A1/A3 -> 15, A2/A4 -> 20
+                        score = k * base;
+                    } else if(item.type === 'other_intl' || item.type === 'ulakbim') {
                         let base = (field === 'A1' || field === 'A3') ? 15 : 20;
-                        rawScore = k * base;
-                    }
-                    else if (item.subType === 'ulakbim') {
-                        // A1/A3 -> 15, A2/A4 -> 20
-                        let base = (field === 'A1' || field === 'A3') ? 15 : 20;
-                        rawScore = k * base;
-                    }
-                    else if (item.subType === 'book_intl') {
-                        rawScore = k * 100; // Hepsi 100
-                    }
-                    else if (item.subType === 'book_editor') {
-                        rawScore = k * 60; // Hepsi 60
-                    }
-                    else if (item.subType === 'book_chapter') {
-                        rawScore = k * 25; // Hepsi 25
-                    }
-                    else if (item.subType.startsWith('journal_editor')) {
-                        // Sabit puanlar, k yok.
-                        if (item.subType === 'journal_editor_sci') rawScore = 25;
-                        if (item.subType === 'journal_editor_field') rawScore = 15; // Tabloya göre alt sınır 10 olabilir, en üstü alıyoruz.
-                        if (item.subType === 'journal_editor_tr') rawScore = 10;
-                    }
+                        score = k * base;
+                    } else if(item.type === 'book_intl') score = k * 100;
+                    else if(item.type === 'book_editor') score = k * 60;
+                    else if(item.type === 'book_chapter') score = k * 25;
+                    else if(item.type === 'editor_sci') score = 25; // Sabit
+                    else if(item.type === 'editor_tr') score = 10; // Sabit
                 }
 
-                // 4. DESIGN
-                else if (catId === 'design') {
-                    // Tablo 4: Genelde A3, A4 için k * 50
-                    // A1, A2 sütunları boş veya merged. Yönetmelik "kendi alanı" der.
-                    let k = this.calculateK(item.personCount);
-                    rawScore = k * 50;
+                // 2. PROJE
+                else if(catId === 'project') {
+                    let base = 0;
+                    if(item.type === 'h2020') base = 100;
+                    else if(item.type === 'tubitak_high') base = 80;
+                    else if(item.type === 'tubitak_mid') base = 70;
+                    else if(item.type === 'intl_other') base = 40;
+                    else if(item.type === 'national_other') base = 20;
+                    score = base * (parseFloat(item.role));
                 }
 
-                // 5. EXHIBITION
-                else if (catId === 'exhibition') {
-                    [cite_start]// Karma (Grup) ise k = 1 kabul edilir (Tam puan) [cite: 142]
-                    // Bireysel ise k hesaplanır mı? Tablo 4'te sergide k var mı?
-                    // Tablo 4 satır 5: "Özgün yurt dışı bireysel... 30". Yanında k yok. Sabit puan.
-                    // ANCAK Tablo 1 "Faaliyetteki kişi sayısı" diyor.
-                    // Md 8(7): "Sergi faaliyet türündeki karma etkinlikler... kişi sayısına bakılmaksızın tam puanla değerlendirilir."
-                    // Yani Grup/Karma ise k=1. Bireysel ise zaten kişi sayısı 1, yani k=1.
-                    // Sonuç: Sergide katsayı düşümü YOK.
-                    
-                    if (item.subType === 'exh_intl_ind') rawScore = 30;
-                    else if (item.subType === 'exh_nat_ind') rawScore = 15;
-                    else if (item.subType === 'exh_intl_group') rawScore = 15;
-                    else if (item.subType === 'exh_nat_group') rawScore = 8;
-                }
-
-                // 6. PATENT
-                else if (catId === 'patent') {
-                    let k = this.calculateK(item.personCount);
-                    if (item.subType === 'patent_intl') rawScore = k * 100;
-                    else rawScore = k * 60;
-                }
-
-                // 7. CITATION
-                else if (catId === 'citation') {
-                    // Puan = Atıf Sayısı * (Tablo Değeri)
-                    // A1/A3 ve A2/A4 farklılıkları var.
+                // 3. ATIF
+                else if(catId === 'citation') {
                     let val = 0;
-                    if (item.subType === 'cit_sci') {
-                        val = (field === 'A1' || field === 'A3') ? 4 : 6;
-                    } else if (item.subType === 'cit_field') {
-                        val = (field === 'A1' || field === 'A3') ? 1.5 : 3;
-                    } else { // other_intl or ulakbim
-                        val = (field === 'A1' || field === 'A3') ? 1 : 2;
-                    }
-                    
-                    if (item.subType === 'cit_book') {
-                        // Kitap atıfı için Tablo 4 biraz karışıktır, genellikle:
-                        val = (field === 'A1' || field === 'A3') ? 4 : 8; // Basitleştirilmiş, tablodaki en yaygın değer.
-                    }
-
-                    rawScore = item.citationCount * val;
+                    // A1, A3 ile A2, A4 puanları farklıdır
+                    if(item.type === 'sci') val = (field === 'A1' || field === 'A3') ? 4 : 6;
+                    else if(item.type === 'field') val = (field === 'A1' || field === 'A3') ? 1.5 : 3;
+                    else if(item.type === 'other') val = (field === 'A1' || field === 'A3') ? 1 : 2;
+                    else if(item.type === 'book') val = (field === 'A1' || field === 'A3') ? 4 : 8;
+                    score = (parseFloat(item.count) || 0) * val;
                 }
 
-                // 8. PAPER (TEBLİĞ)
-                else if (catId === 'paper') {
-                    let k = this.calculateK(item.personCount);
-                    rawScore = k * 15; // Tablo 4: k * 15
+                // 4. ARAŞTIRMA
+                else if(catId === 'research') {
+                    if((item.months || 0) < 2) score = 0;
+                    else score = (item.months) * (item.type === 'abroad' ? 15 : 10);
                 }
 
-                // 9. AWARD
-                else if (catId === 'award') {
-                    if (item.subType === 'award_tubitak') rawScore = 100;
-                    else if (item.subType === 'award_intl') rawScore = 40;
-                    else if (item.subType === 'award_nat') rawScore = 20;
+                // 5. TEBLİĞ
+                else if(catId === 'paper') score = k * 15;
+
+                // 6. DİĞERLERİ
+                else if(catId === 'design') score = k * 50;
+                else if(catId === 'patent') score = k * (item.type === 'intl' ? 100 : 60);
+                else if(catId === 'award') {
+                    if(item.type === 'tubitak') score = 100;
+                    else if(item.type === 'intl') score = 40;
+                    else score = 20;
+                }
+                else if(catId === 'exhibition') {
+                    if(item.type === 'intl_ind') score = 30;
+                    else if(item.type === 'nat_ind') score = 15;
+                    else if(item.type === 'intl_grp') score = 15; // Karma etkinlikte kişi sayısına bakılmaz, k=1
+                    else if(item.type === 'nat_grp') score = 8;
                 }
 
-                return rawScore;
+                return score;
             },
-            getCategoryScore(catId) {
-                let total = 0;
-                this.inputData[catId].forEach(item => {
-                    total += this.calculateItemScore(catId, item);
-                });
-                
-                [cite_start]// Kategori Tavan Puan Kontrolü [cite: 131]
-                const category = this.categories.find(c => c.id === catId);
-                return Math.min(total, category.maxScore);
-            }
-        }
-    }).mount('#app');
-</script>
 
+            // --- Arayüz Çizimi (Render) ---
+            renderTabs: function() {
+                const container = document.getElementById('tabMenuContainer');
+                let html = '';
+                let grandTotal = 0;
+
+                // Kategorileri dön
+                for (const key in this.categories) {
+                    const cat = this.categories[key];
+                    
+                    // Kategori Toplam Puanını Hesapla
+                    let catTotalRaw = this.state.data[key].reduce((sum, item) => sum + this.calculateItemScore(key, item), 0);
+                    // Tavan puanı uygula
+                    let catTotal = Math.min(catTotalRaw, cat.max);
+                    grandTotal += catTotal;
+
+                    // Aktif/Pasif Stil
+                    const isActive = this.state.activeTab === key;
+                    const btnClass = isActive 
+                        ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300 ring-offset-2' 
+                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200';
+
+                    html += `
+                    <button onclick="App.switchTab('${key}')" class="${btnClass} flex-shrink-0 px-4 py-2 rounded-lg transition-all duration-200 flex flex-col items-start min-w-[100px]">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid ${cat.icon} text-sm"></i>
+                            <span class="text-sm font-bold">${cat.title}</span>
+                        </div>
+                        <div class="text-[10px] opacity-80 font-mono w-full text-left">
+                            ${catTotal.toFixed(1)} <span class="opacity-60">/ ${cat.max}</span>
+                        </div>
+                    </button>
+                    `;
+                }
+
+                container.innerHTML = html;
+
+                // Genel Toplamı Yaz (Max 100)
+                document.getElementById('displayTotalScore').innerText = Math.min(grandTotal, 100).toFixed(2);
+            },
+
+            renderContent: function() {
+                const cat = this.categories[this.state.activeTab];
+                const items = this.state.data[this.state.activeTab];
+
+                // Başlıkları Güncelle
+                document.getElementById('currentCatTitle').innerText = cat.title;
+                document.getElementById('currentCatDesc').innerText = cat.desc;
+                document.getElementById('currentCatMax').innerText = `/ ${cat.max} Max`;
+                
+                // Puan Güncelle
+                let catTotalRaw = items.reduce((sum, item) => sum + this.calculateItemScore(this.state.activeTab, item), 0);
+                let displayScore = Math.min(catTotalRaw, cat.max);
+                const scoreEl = document.getElementById('currentCatScore');
+                scoreEl.innerText = displayScore.toFixed(2);
+                
+                // Tavan puan aşıldıysa renk değiştir
+                if(catTotalRaw > cat.max) {
+                    scoreEl.classList.add('text-red-500');
+                    scoreEl.innerHTML += ' <span class="text-[10px] text-red-400">(Limit Aşıldı)</span>';
+                } else {
+                    scoreEl.classList.remove('text-red-500');
+                }
+
+                // Listeyi Çiz
+                const listContainer = document.getElementById('itemsContainer');
+                
+                if (items.length === 0) {
+                    listContainer.innerHTML = `
+                        <div class="text-center py-12 text-gray-400 border-2 border-dashed border-gray-100 rounded-lg">
+                            <i class="fa-solid fa-inbox text-3xl mb-3 opacity-20"></i>
+                            <p class="text-sm">Henüz bu kategoride kayıt yok.</p>
+                            <p class="text-xs opacity-60">Aşağıdaki butona tıklayarak ekleyebilirsiniz.</p>
+                        </div>`;
+                    return;
+                }
+
+                let html = '';
+                items.forEach((item, index) => {
+                    const score = this.calculateItemScore(this.state.activeTab, item);
+                    const optionHtml = this.options[this.state.activeTab].map(o => 
+                        `<option value="${o.val}" ${item.type === o.val ? 'selected' : ''}>${o.text}</option>`
+                    ).join('');
+
+                    // Dinamik Inputlar
+                    let dynamicInputs = '';
+
+                    // 1. Kişi Sayısı (Atıf ve bazı Editörlükler hariç)
+                    if (this.state.activeTab !== 'citation' && !['editor_sci', 'editor_tr'].includes(item.type)) {
+                        dynamicInputs += `
+                        <div class="col-span-1">
+                            <label class="input-label">Yazar Sayısı</label>
+                            <input type="number" min="1" value="${item.personCount}" onchange="App.updateValue(${index}, 'personCount', this.value)" class="input-field">
+                        </div>`;
+                    }
+
+                    // 2. Q Değeri (Makale için)
+                    if (this.state.activeTab === 'publication' && item.type.includes('sci')) {
+                        dynamicInputs += `
+                        <div class="col-span-1">
+                            <label class="input-label">Q Değeri</label>
+                            <select onchange="App.updateValue(${index}, 'q', this.value)" class="input-field">
+                                <option value="1" ${item.q == 1 ? 'selected' : ''}>Q1 (x1.0)</option>
+                                <option value="0.8" ${item.q == 0.8 ? 'selected' : ''}>Q2 (x0.8)</option>
+                                <option value="0.5" ${item.q == 0.5 ? 'selected' : ''}>Q3 (x0.5)</option>
+                                <option value="0.25" ${item.q == 0.25 ? 'selected' : ''}>Q4 (x0.25)</option>
+                            </select>
+                        </div>`;
+                    }
+
+                    // 3. Proje Rolü
+                    if (this.state.activeTab === 'project') {
+                        dynamicInputs += `
+                        <div class="col-span-1">
+                            <label class="input-label">Göreviniz</label>
+                            <select onchange="App.updateValue(${index}, 'role', this.value)" class="input-field">
+                                <option value="1" ${item.role == 1 ? 'selected' : ''}>Yürütücü (x1.0)</option>
+                                <option value="0.5" ${item.role == 0.5 ? 'selected' : ''}>Araştırmacı (x0.5)</option>
+                            </select>
+                        </div>`;
+                    }
+
+                    // 4. Atıf Sayısı
+                    if (this.state.activeTab === 'citation') {
+                        dynamicInputs += `
+                        <div class="col-span-1">
+                            <label class="input-label">Atıf Adedi</label>
+                            <input type="number" min="1" value="${item.count}" onchange="App.updateValue(${index}, 'count', this.value)" class="input-field">
+                        </div>`;
+                    }
+
+                    // 5. Araştırma Süresi
+                    if (this.state.activeTab === 'research') {
+                        dynamicInputs += `
+                        <div class="col-span-1">
+                            <label class="input-label">Süre (Ay)</label>
+                            <input type="number" min="0" value="${item.months}" onchange="App.updateValue(${index}, 'months', this.value)" class="input-field" placeholder="Ay">
+                        </div>`;
+                    }
+
+                    html += `
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 relative hover:shadow-md transition-shadow group">
+                        <button onclick="App.removeItem(${index})" class="absolute top-2 right-2 text-gray-300 hover:text-red-500 p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                            <div class="md:col-span-6">
+                                <label class="input-label">Faaliyet Türü</label>
+                                <select onchange="App.updateValue(${index}, 'type', this.value)" class="input-field font-medium text-gray-700">
+                                    ${optionHtml}
+                                </select>
+                            </div>
+
+                            <div class="md:col-span-4 grid grid-cols-2 gap-2">
+                                ${dynamicInputs}
+                            </div>
+
+                            <div class="md:col-span-2 text-right">
+                                <div class="text-[10px] text-gray-400 uppercase font-bold">PUAN</div>
+                                <div class="text-xl font-bold text-blue-600">${score.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+
+                listContainer.innerHTML = html;
+            }
+        };
+
+        // Uygulamayı Başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            App.init();
+        });
+
+    </script>
 </body>
 </html>
