@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Serverless P2P Chat</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #222; color: #0f0; }
+        .box { border: 1px solid #444; padding: 15px; margin-bottom: 20px; background: #000; }
+        textarea { width: 100%; height: 60px; background: #111; color: #ddd; border: 1px solid #555; }
+        input { width: 70%; padding: 5px; background: #111; color: #fff; border: 1px solid #555; }
+        button { padding: 5px 15px; cursor: pointer; background: #004400; color: #fff; border: none; font-weight: bold; }
+        button:hover { background: #006600; }
+        #logs { height: 200px; overflow-y: scroll; border: 1px dashed #333; padding: 5px; color: #aaa; font-size: 12px;}
+        .msg { color: #fff; margin: 5px 0; border-bottom: 1px solid #333; padding: 2px; }
+        .me { color: #0ff; } .peer { color: #f0f; }
+        h3 { margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>🕵️‍♂️ Sunucusuz P2P Chat (WebRTC)</h2>
+    <div style="color:#aaa; font-size:12px; margin-bottom:15px;">
+        Mantık: 1. Taraf 'Teklif Oluştur' der. Çıkan kodu 2. Tarafa atar. <br>
+        2. Taraf kodu yapıştırıp 'Cevap Oluştur' der. Çıkan kodu 1. Tarafa atar. Bağlantı kurulur.
+    </div>
+
+    <div class="box" id="setupPanel">
+        <h3>1. Bağlantı Ayarları (El Sıkışma)</h3>
+        
+        <p>Sen başlatıyorsan tıkla (Teklif Oluştur):</p>
+        <button onclick="createOffer()">Teklif Oluştur (Ben Başlatıyorum)</button>
+        
+        <p>Veya karşıdan gelen kodu buraya yapıştır:</p>
+        <textarea id="remoteSdp" placeholder="Karşı tarafın kodunu buraya yapıştır..."></textarea>
+        <br><br>
+        <button onclick="acceptRemote()">Kodu Kabul Et & Cevap Üret</button>
+        
+        <p>Senin Kodun (Bunu arkadaşına gönder):</p>
+        <textarea id="localSdp" readonly placeholder="Burada senin kodun oluşacak..."></textarea>
+    </div>
+
+    <div class="box" id="chatPanel" style="opacity: 0.5; pointer-events: none;">
+        <h3>2. Sohbet Kanalı (Güvenli & Direkt)</h3>
+        <div id="logs"></div>
+        <div style="margin-top:10px;">
+            <input type="text" id="msgInput" placeholder="Mesajın..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button onclick="sendMsg()">GÖNDER</button>
+        </div>
+    </div>
+
+<script>
+    const config = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }; // Google'ın ücretsiz STUN sunucusu (Sadece IP bulmak için)
+    const pc = new RTCPeerConnection(config);
+    let dataChannel;
+
+    // Loglama fonksiyonu
+    function log(msg, type = 'sys') {
+        const logs = document.getElementById('logs');
+        const color = type === 'me' ? 'me' : (type === 'peer' ? 'peer' : '');
+        logs.innerHTML += `<div class="msg ${color}">${type === 'sys' ? '> ' : ''}${msg}</div>`;
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    // 1. Veri Kanalı Oluşturma (Başlatan taraf için)
+    function createOffer() {
+        dataChannel = pc.createDataChannel("chat");
+        setupChannel(dataChannel);
+        
+        pc.createOffer()
+            .then(offer => pc.setLocalDescription(offer))
+            .then(() => log("Teklif oluşturuldu! Aşağıdaki kodu kopyalayıp arkadaşına gönder."));
+    }
+
+    // 2. Gelen Kodu İşleme (Her iki taraf için)
+    async function acceptRemote() {
+        const remoteDesc = document.getElementById('remoteSdp').value;
+        if (!remoteDesc) return alert("Lütfen karşı tarafın kodunu yapıştırın!");
+        
+        const desc = new RTCSessionDescription(JSON.parse(remoteDesc));
+        await pc.setRemoteDescription(desc);
+        
+        if (pc.remoteDescription.type === "offer") {
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            log("Cevap oluşturuldu! 'Senin Kodun' kısmındaki kodu kopyalayıp başlatan kişiye geri gönder.");
+        }
+    }
+
+    // ICE Candidate (Bağlantı adayları) oluştuğunda tetiklenir
+    pc.onicecandidate = e => {
+        if (e.candidate === null) {
+            // Tüm adaylar toplandı, SDP hazır.
+            document.getElementById('localSdp').value = JSON.stringify(pc.localDescription);
+            document.getElementById('localSdp').select();
+        }
+    };
+
+    // Bağlantı durumu değiştiğinde
+    pc.onconnectionstatechange = () => {
+        log(`Bağlantı durumu: ${pc.connectionState}`);
+        if (pc.connectionState === 'connected') {
+            document.getElementById('setupPanel').style.display = 'none';
+            document.getElementById('chatPanel').style.opacity = '1';
+            document.getElementById('chatPanel').style.pointerEvents = 'all';
+            log("✅ BAĞLANTI BAŞARILI! Güvenle konuşabilirsiniz.");
+        }
+    };
+
+    // Karşı taraf veri kanalı açtığında (Cevap veren taraf için)
+    pc.ondatachannel = e => {
+        dataChannel = e.channel;
+        setupChannel(dataChannel);
+    };
+
+    // Kanal ayarları ve olayları
+    function setupChannel(channel) {
+        channel.onopen = () => log("Kanal Açıldı!");
+        channel.onmessage = e => log(e.data, 'peer');
+    }
+
+    // Mesaj Gönderme
+    function sendMsg() {
+        const input = document.getElementById('msgInput');
+        const msg = input.value;
+        if (!msg || !dataChannel) return;
+        
+        dataChannel.send(msg);
+        log(msg, 'me');
+        input.value = '';
+    }
+</script>
+</body>
+</html>
