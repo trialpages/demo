@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>ms4bfcw</title>
+    <title>ms4bfcw | P2P</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -26,7 +26,6 @@
             margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg); color: var(--text);
-            /* Mobil tarayıcılar için dinamik yükseklik */
             height: 100dvh; 
             display: flex; flex-direction: column; overflow: hidden;
         }
@@ -59,6 +58,13 @@
             margin-bottom: 15px; transition: 0.2s;
         }
         .btn-main:active { transform: scale(0.98); }
+        .btn-main:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .spinner {
+            width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+            border-top-color: white; animation: spin 1s ease-in-out infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         #share-box { background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin: 15px 0; font-family: monospace; color: var(--text-muted); word-break: break-all; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.1); display: none; }
 
@@ -154,11 +160,14 @@
     <div id="progress-bar"></div>
 
     <div id="login-screen">
-        <div class="brand-title">Void</div>
+        <div class="brand-title">ms4bfcw</div>
         <div class="action-card">
-            <button class="btn-main" onclick="createRoom()">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                Bağlantı Oluştur
+            <button id="create-btn" class="btn-main" onclick="createRoom()">
+                <div class="spinner"></div>
+                <span class="btn-text">
+                    <svg class="icon" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:5px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    Bağlantı Oluştur
+                </span>
             </button>
             <div id="share-box">
                 <span id="link-text"></span>
@@ -231,12 +240,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const joinId = urlParams.get('join');
         if (joinId) {
-            document.querySelector('.btn-main').style.display = 'none';
+            document.querySelector('.action-card').style.display = 'none'; // Login kartını gizle
             document.getElementById('status-msg').innerText = "Odaya bağlanılıyor...";
+            // Misafir doğrudan bağlanmaya çalışır
             initPeer(null, joinId);
         }
 
-        // Enter Key Listener (Masaüstü/Klavye için)
+        // Enter Key Listener
         document.getElementById('msg-input').addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -245,9 +255,28 @@
         });
     };
 
+    function createRoom() {
+        const btn = document.getElementById('create-btn');
+        const spinner = btn.querySelector('.spinner');
+        const text = btn.querySelector('.btn-text');
+
+        // Buton durumu: Yükleniyor
+        btn.disabled = true;
+        spinner.style.display = 'inline-block';
+        text.style.display = 'none';
+        
+        initPeer();
+    }
+
     function initPeer(id = null, destId = null) {
-        // Eğer kendi sunucun varsa burayı güncelle: new Peer({host:'...', port:..., secure:true})
-        peer = new Peer(); 
+        // Eğer kendi sunucun varsa: new Peer({host:'...', port:..., secure:true})
+        try {
+            peer = new Peer(); 
+        } catch (e) {
+            alert("PeerJS başlatılamadı. İnternet bağlantınızı kontrol edin.");
+            resetButton();
+            return;
+        }
 
         peer.on('open', (myId) => {
             if (destId) {
@@ -260,7 +289,7 @@
                 document.getElementById('share-box').style.display = 'block';
                 document.getElementById('link-text').innerText = link;
                 document.getElementById('status-msg').innerText = "Arkadaşın bekleniyor...";
-                document.querySelector('.btn-main').style.display = 'none';
+                document.getElementById('create-btn').style.display = 'none';
             }
         });
 
@@ -270,19 +299,38 @@
         });
 
         peer.on('call', (incomingCall) => {
-            // Gelen arama (Otomatik kabul et veya UI göster - burada basitlik için kabul edelim)
             if(confirm("Görüntülü arama geliyor. Kabul et?")) {
                 navigator.mediaDevices.getUserMedia({video: true, audio: true}).then(stream => {
                     localStream = stream;
                     incomingCall.answer(stream);
                     handleCallStream(incomingCall);
+                }).catch(err => {
+                    alert("Kamera izni verilmedi.");
+                    incomingCall.close();
                 });
             } else {
                 incomingCall.close();
             }
         });
 
-        peer.on('error', err => alert("Hata: " + err));
+        peer.on('error', err => {
+            console.error(err);
+            if(err.type === 'peer-unavailable') {
+                alert("Bağlanmaya çalıştığınız kişi çevrimdışı.");
+            } else {
+                alert("Bağlantı hatası: " + err.type);
+            }
+            resetButton();
+        });
+    }
+
+    function resetButton() {
+        const btn = document.getElementById('create-btn');
+        if(btn) {
+            btn.disabled = false;
+            btn.querySelector('.spinner').style.display = 'none';
+            btn.querySelector('.btn-text').style.display = 'inline';
+        }
     }
 
     function setupConnection() {
@@ -343,21 +391,23 @@
             } catch (err) { alert("Mikrofon izni gerek: " + err); }
         } else {
             // KAYDI DURDUR VE GÖNDER
-            mediaRecorder.stop();
-            isRecording = false;
-            
-            // UI Güncelle
-            btn.classList.remove('recording');
-            document.getElementById('msg-input').placeholder = "Mesaj...";
-            document.getElementById('msg-input').disabled = false;
-            
-            // Stream'i kapat (Mikrofon ışığını söndür)
-            mediaRecorder.stream.getTracks().forEach(t => t.stop());
+            if(mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // UI Güncelle
+                btn.classList.remove('recording');
+                document.getElementById('msg-input').placeholder = "Mesaj...";
+                document.getElementById('msg-input').disabled = false;
+                
+                // Stream'i kapat (Mikrofon ışığını söndür)
+                mediaRecorder.stream.getTracks().forEach(t => t.stop());
+            }
         }
     }
 
     function sendAudio() {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); // veya audio/mp4
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
         
         // Kendi ekranına ekle
         const audioUrl = URL.createObjectURL(audioBlob);
