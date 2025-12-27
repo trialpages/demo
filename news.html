@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الأخبار للمستويات المختلفة - YDS Arapça</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
     :root {
         --primary-color: #004b79;
@@ -13,6 +13,8 @@
         --text-color: #333;
         --white: #ffffff;
     }
+    * { box-sizing: border-box; } /* Mobil taşmaları engeller */
+    
     body {
         font-family: 'Cairo', sans-serif;
         background-color: var(--bg-color);
@@ -35,64 +37,101 @@
     .news-card {
         background: var(--white);
         border-radius: 8px;
-        overflow: hidden;
+        overflow: hidden; /* Taşmaları gizler */
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         margin-bottom: 20px;
         transition: transform 0.2s;
     }
-    .news-card:hover { transform: translateY(-3px); }
     .news-image {
         width: 100%;
         height: 250px;
-        object-fit: cover; /* Görseli bozmadan kutuya sığdırır */
+        object-fit: cover;
         display: block;
     }
     .news-content { padding: 20px; }
-    .news-date { color:#666;font-size:0.9rem;margin-bottom:10px;display:block; text-align: left; direction: ltr; }
-    .news-title { font-size:1.8rem;color:var(--primary-color);margin:0 0 15px 0; }
-    .level-tabs { display:flex;gap:10px;margin-bottom:20px;justify-content:center; }
+    
+    .news-date { 
+        color:#666; font-size:0.9rem; margin-bottom:10px; display:block; 
+        text-align: left; direction: ltr; font-family: 'Cairo', sans-serif; 
+    }
+    
+    /* --- FONT AYARLARI (İSTEĞİN ÜZERİNE) --- */
+    .news-title { 
+        font-family: 'Traditional Arabic', 'Amiri', serif;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0 0 15px 0;
+        line-height: 1.3;
+    }
+    
+    .level-tabs { display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap: wrap; }
     .level-btn {
         background-color: var(--white);
         border: 2px solid var(--accent-color);
         color: var(--accent-color);
-        padding: 8px 20px;
+        padding: 8px 15px;
         border-radius: 5px;
         cursor: pointer;
         font-family: 'Cairo', sans-serif;
         font-weight: bold;
         transition: all 0.3s ease;
+        flex: 1; /* Mobilde butonları eşit yayar */
+        min-width: 80px;
+        text-align: center;
     }
     .level-btn:hover, .level-btn.active {
         background-color: var(--accent-color);
         color: var(--white);
     }
-    
-    /* Metin Alanı ve Devamını Oku Stilleri */
-    .text-content { 
-        font-size:1.2rem; 
-        margin-bottom:10px; 
-        text-align:justify;
+
+    /* --- AKORDEON METİN YAPISI (MOBİL DÜZELTME) --- */
+    .text-wrapper {
         position: relative;
-    }
-    .text-content.truncated p {
-        display: -webkit-box;
-        -webkit-line-clamp: 4; /* Kaç satır gösterileceği */
-        -webkit-box-orient: vertical;
         overflow: hidden;
+        transition: max-height 0.5s ease-in-out;
     }
+    
+    /* Kapalıyken uygulanacak stil */
+    .text-wrapper.collapsed {
+        max-height: 180px; /* Yaklaşık 4-5 satır gösterir */
+    }
+    
+    /* Metin aşağı doğru soluklaşsın (Fade Effect) */
+    .text-wrapper.collapsed::after {
+        content: "";
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 80px;
+        background: linear-gradient(to bottom, transparent, var(--white));
+        pointer-events: none;
+    }
+
+    .text-content p { 
+        font-family: 'Traditional Arabic', 'Amiri', serif;
+        font-size: 1.6rem; 
+        line-height: 1.8;
+        margin: 0 0 15px 0; 
+        text-align: justify;
+    }
+
     .read-more-btn {
-        display: none;
+        display: block;
+        width: 100%;
+        padding: 10px;
         color: var(--accent-color);
-        background: none;
+        background: #f9f9f9;
         border: none;
         font-family: 'Cairo', sans-serif;
         font-weight: bold;
         cursor: pointer;
-        padding: 0;
+        margin-top: 5px;
         margin-bottom: 20px;
-        font-size: 1rem;
+        border-radius: 4px;
+        transition: background 0.2s;
     }
-    .read-more-btn:hover { text-decoration: underline; }
+    .read-more-btn:hover { background: #e0e0e0; }
+    .read-more-btn.hidden-btn { display: none; }
 
     .hidden { display:none !important; }
     
@@ -103,16 +142,23 @@
         margin-top:20px;
         border-radius:4px;
     }
-    .vocab-title { font-weight:bold;color:var(--primary-color);margin-bottom:10px;display:block;font-size:1.1rem; }
-    .vocab-list { list-style-type:none;padding:0;margin:0; }
-    .vocab-list li { margin-bottom:8px;border-bottom:1px solid #ddd;padding-bottom:5px; }
-    .vocab-list li strong { color:#d9534f; }
-    footer { text-align:center;padding:20px;color:#777;font-size:0.9rem; margin-top: 40px; border-top: 1px solid #eee; }
+    .vocab-title { 
+        font-weight:bold; color:var(--primary-color); 
+        margin-bottom:10px; display:block; font-size:1.1rem; 
+    }
+    .vocab-list { list-style-type:none; padding:0; margin:0; }
+    .vocab-list li { margin-bottom:8px; border-bottom:1px solid #ddd; padding-bottom:5px; }
     
-    /* Yükleniyor animasyonu */
+    .vocab-list li strong { 
+        color:#d9534f; 
+        font-family: 'Traditional Arabic', 'Amiri', serif;
+        font-size: 1.4rem;
+        margin-left: 5px;
+    }
+    
+    footer { text-align:center; padding:20px; color:#777; font-size:0.9rem; margin-top: 40px; border-top: 1px solid #eee; }
     .loading { text-align: center; padding: 40px; color: var(--accent-color); }
 </style>
-
 </head>
 <body>
 <header><h1>الأخبار للمستويات المختلفة</h1></header>
@@ -127,16 +173,15 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // --- BURAYA AYNI FIREBASE CONFIG BİLGİLERİNİ GİR ---
+    // --- FIREBASE CONFIG BURAYA ---
     const firebaseConfig = {
-  apiKey: "AIzaSyAr5FUC9uAmPkRWz1nqtllBodHYqpBB9ac",
-  authDomain: "arabicinlevels.firebaseapp.com",
-  projectId: "arabicinlevels",
-  storageBucket: "arabicinlevels.firebasestorage.app",
-  messagingSenderId: "240587696722",
-  appId: "1:240587696722:web:6ad23e4fb519a1e5db8d8b",
-  measurementId: "G-10RV9BVZWS"
-};
+        apiKey: "SENIN_API_KEY",
+        authDomain: "SENIN_PROJECT_ID.firebaseapp.com",
+        projectId: "SENIN_PROJECT_ID",
+        storageBucket: "...",
+        messagingSenderId: "...",
+        appId: "..."
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -144,62 +189,82 @@
     const container = document.getElementById('news-container');
 
     async function loadNews() {
-        const q = query(collection(db, "news"), orderBy("date", "desc")); // Tarihe göre sıralı
-        const querySnapshot = await getDocs(q);
-        
-        container.innerHTML = ''; // Loading yazısını temizle
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const cardId = doc.id;
+        try {
+            const q = query(collection(db, "news"), orderBy("date", "desc"));
+            const querySnapshot = await getDocs(q);
             
-            // Kart HTML Yapısı
-            const cardHTML = `
-            <div class="news-card" id="card-${cardId}">
-                <img src="${data.imageUrl}" class="news-image" alt="News Image">
-                <div class="news-content">
-                    <span class="news-date">${formatDate(data.date)}</span>
-                    <h2 class="news-title">${data.title}</h2>
-                    
-                    <div class="level-tabs">
-                        <button class="level-btn active" onclick="window.changeLevel('${cardId}', 1)">مستوى ١</button>
-                        <button class="level-btn" onclick="window.changeLevel('${cardId}', 2)">مستوى ٢</button>
-                        <button class="level-btn" onclick="window.changeLevel('${cardId}', 3)">مستوى ٣</button>
+            container.innerHTML = ''; 
+
+            if (querySnapshot.empty) {
+                container.innerHTML = '<div class="loading">Henüz haber eklenmemiş.</div>';
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const cardId = doc.id;
+                
+                const cardHTML = `
+                <div class="news-card" id="card-${cardId}">
+                    <img src="${data.imageUrl}" class="news-image" alt="Haber Görseli" onerror="this.src='https://via.placeholder.com/800x400?text=Resim+Yok'">
+                    <div class="news-content">
+                        <span class="news-date">${formatDate(data.date)}</span>
+                        <h2 class="news-title">${data.title}</h2>
+                        
+                        <div class="level-tabs">
+                            <button class="level-btn active" onclick="window.changeLevel('${cardId}', 1)">مستوى ١</button>
+                            <button class="level-btn" onclick="window.changeLevel('${cardId}', 2)">مستوى ٢</button>
+                            <button class="level-btn" onclick="window.changeLevel('${cardId}', 3)">مستوى ٣</button>
+                        </div>
+
+                        ${renderLevelContent(cardId, 1, data.levels[1], true)}
+                        ${renderLevelContent(cardId, 2, data.levels[2], false)}
+                        ${renderLevelContent(cardId, 3, data.levels[3], false)}
                     </div>
-
-                    ${renderLevelContent(cardId, 1, data.levels[1], true)}
-                    ${renderLevelContent(cardId, 2, data.levels[2], false)}
-                    ${renderLevelContent(cardId, 3, data.levels[3], false)}
                 </div>
-            </div>
-            `;
-            container.innerHTML += cardHTML;
-        });
-
-        checkTruncate();
+                `;
+                container.innerHTML += cardHTML;
+            });
+        } catch (error) {
+            console.error("Veri çekme hatası:", error);
+            container.innerHTML = '<div class="loading">Veriler yüklenirken hata oluştu.</div>';
+        }
     }
 
     function formatDate(dateStr) {
-        // İstersen burada tarihi Türkçeye çeviren bir fonksiyon yazabilirsin
+        if (!dateStr) return '';
         return dateStr.split('-').reverse().join('.');
     }
 
     function renderLevelContent(cardId, levelNum, contentData, isActive) {
         if(!contentData) return '';
         
-        const vocabListHTML = contentData.vocab.map(v => 
-            `<li><strong>${v.word}:</strong> ${v.mean}</li>`
-        ).join('');
+        // Kelime listesi
+        let vocabListHTML = '';
+        if(contentData.vocab && contentData.vocab.length > 0) {
+            vocabListHTML = contentData.vocab.map(v => 
+                `<li><strong>${v.word}:</strong> ${v.mean}</li>`
+            ).join('');
+        }
 
-        // Metin uzunsa 'truncated' classı eklemek için mantık (CSS hallediyor ama kontrol edilebilir)
-        const isLong = contentData.text.length > 200; 
+        // Metin uzunluğunu kontrol et (Karakter sayısı 150'den fazlaysa butonu göster)
+        const isLong = contentData.text.length > 150; 
+        // Eğer uzunsa başlangıçta 'collapsed' sınıfı ekle
+        const wrapperClass = isLong ? 'collapsed' : '';
+        const btnClass = isLong ? '' : 'hidden-btn';
 
         return `
         <div id="level-${cardId}-${levelNum}" class="text-group ${isActive ? '' : 'hidden'}">
-            <div class="text-content ${isLong ? 'truncated' : ''}">
-                <p>${contentData.text}</p>
+            
+            <div id="wrapper-${cardId}-${levelNum}" class="text-wrapper ${wrapperClass}">
+                <div class="text-content">
+                    <p>${contentData.text.replace(/\n/g, '<br>')}</p>
+                </div>
             </div>
-            ${isLong ? `<button class="read-more-btn" onclick="window.toggleReadMore(this)">Devamını Oku...</button>` : ''}
+
+            <button id="btn-${cardId}-${levelNum}" class="read-more-btn ${btnClass}" onclick="window.toggleReadMore('${cardId}', ${levelNum})">
+                Devamını Oku (اقرأ المزيد)
+            </button>
             
             <div class="vocab-box">
                 <span class="vocab-title">الكلمات الصعبة:</span>
@@ -209,31 +274,32 @@
         `;
     }
 
-    // Global Fonksiyonlar (Modül dışından erişim için)
+    // Seviye Değiştirme
     window.changeLevel = (cardId, level) => {
-        // Tüm seviyeleri gizle
         document.querySelectorAll(`#card-${cardId} .text-group`).forEach(el => el.classList.add('hidden'));
-        // Seçileni göster
         document.getElementById(`level-${cardId}-${level}`).classList.remove('hidden');
 
-        // Buton aktiflik durumu
         const buttons = document.querySelectorAll(`#card-${cardId} .level-btn`);
         buttons.forEach(btn => btn.classList.remove('active'));
         buttons[level-1].classList.add('active');
     };
 
-    window.toggleReadMore = (btn) => {
-        const textContent = btn.previousElementSibling; // text-content div'i
-        if (textContent.classList.contains('truncated')) {
-            textContent.classList.remove('truncated');
-            btn.textContent = 'Küçült';
+    // Devamını Oku / Küçült Fonksiyonu
+    window.toggleReadMore = (cardId, levelNum) => {
+        const wrapper = document.getElementById(`wrapper-${cardId}-${levelNum}`);
+        const btn = document.getElementById(`btn-${cardId}-${levelNum}`);
+        
+        if (wrapper.classList.contains('collapsed')) {
+            wrapper.classList.remove('collapsed');
+            btn.textContent = 'Küçült (أغلق النص)';
         } else {
-            textContent.classList.add('truncated');
-            btn.textContent = 'Devamını Oku...';
+            wrapper.classList.add('collapsed');
+            btn.textContent = 'Devamını Oku (اقرأ المزيد)';
+            // Kapatınca sayfayı hafifçe yukarı kaydırabiliriz (Opsiyonel)
+            // wrapper.scrollIntoView({behavior: "smooth", block: "center"}); 
         }
     };
 
-    // Fonksiyonları çalıştır
     loadNews();
 </script>
 </body>
