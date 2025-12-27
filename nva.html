@@ -3,392 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nicel Veri Analiz Teknikleri Projeleri</title>
+    <title>Din Bilimlerinde Nicel Analiz Teknikleri</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* --- GENEL AYARLAR & RESET --- */
+        /* --- TEMEL AYARLAR --- */
         :root {
-            --primary-blue: #0f2b57; /* DEU Kurumsal Mavisini andıran ton */
-            --accent-red: #d32f2f;   /* Tübitak kırmızısı referansı (hover için) */
-            --gold-accent: #c5a059;  /* Görseldeki dergi kapağından esinlenen altın tonu */
-            --bg-light: #f4f6f9;
-            --text-dark: #333333;
-            --white: #ffffff;
-            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --primary-blue: #0f2b57; /* DEU Laciverti */
+            --tubitak-red: #d32f2f;  /* Tübitak Kırmızısı */
+            --gold: #c5a059;         /* Altın Detay */
+            --light-bg: #f8f9fa;
+            --text-color: #333;
+            --white: #fff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: var(--font-main);
-            background-color: var(--bg-light);
-            color: var(--text-dark);
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-color);
             line-height: 1.6;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
 
-        /* --- HEADER BÖLÜMÜ --- */
+        h1, h2, h3, h4, h5 { font-family: 'Montserrat', sans-serif; }
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- HEADER --- */
         header {
-            background-color: var(--white);
-            border-bottom: 4px solid var(--primary-blue);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 1rem 0;
+            background: var(--white);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 100;
         }
 
-        .header-container {
+        .header-top {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Mobilde taşmayı önler */
         }
 
-        /* Logolar */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .logo {
-            height: 80px;
+            height: 65px;
             width: auto;
             object-fit: contain;
-            transition: transform 0.3s ease;
         }
 
-        .logo:hover {
-            transform: scale(1.05);
+        .brand-title {
+            text-align: right;
         }
 
-        /* Orta Kısım - Başlıklar */
-        .brand-text {
-            text-align: center;
-            flex: 1;
-            padding: 0 20px;
-        }
-
-        .main-title {
-            font-size: 1.8rem;
+        .brand-title h1 {
+            font-size: 1.6rem;
             color: var(--primary-blue);
             font-weight: 700;
-            margin-bottom: 5px;
-            letter-spacing: -0.5px;
+            line-height: 1.2;
         }
 
-        .sub-title-wrapper {
-            display: inline-block;
-            border-top: 1px solid #e0e0e0;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 4px 0;
-            margin-top: 5px;
-        }
-
-        .sub-title {
-            font-size: 0.95rem;
+        .brand-title span {
+            font-size: 0.85rem;
+            color: var(--tubitak-red);
             font-weight: 600;
-            color: #555;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            letter-spacing: 1.5px; /* Efektli görünüm için harf aralığı */
-            background: linear-gradient(90deg, var(--primary-blue), var(--text-dark));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent; /* Gradient metin efekti */
-            transition: letter-spacing 0.3s ease;
-        }
-        
-        /* Hover efekti: Harfler biraz açılır */
-        .header-container:hover .sub-title {
-            letter-spacing: 2px;
         }
 
         /* --- NAVİGASYON --- */
         .navbar {
             background-color: var(--primary-blue);
             color: var(--white);
-            position: sticky; /* Sayfa kaydırılsa bile üstte kalsın */
-            top: 0;
-            z-index: 1000;
         }
 
         .nav-container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 20px;
             display: flex;
-            justify-content: center; /* Menüyü ortalar */
+            justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .nav-links {
             display: flex;
-            list-style: none;
-            width: 100%;
-            justify-content: center;
+            gap: 5px;
         }
 
-        .nav-links li {
-            position: relative;
-        }
+        .nav-links li { position: relative; }
 
         .nav-links a {
             display: block;
-            color: var(--white);
-            text-decoration: none;
-            padding: 15px 20px;
-            font-size: 1rem;
+            padding: 15px 18px;
+            font-size: 0.95rem;
             font-weight: 500;
-            transition: all 0.3s ease;
+            color: rgba(255,255,255,0.9);
             border-bottom: 3px solid transparent;
         }
 
         .nav-links a:hover {
-            background-color: rgba(255,255,255,0.1);
-            border-bottom-color: var(--gold-accent); /* Altın rengi vurgu */
+            background: rgba(255,255,255,0.1);
+            color: var(--gold);
         }
 
-        /* Mobil Menü Butonu (Varsayılan olarak gizli) */
-        .menu-toggle {
+        /* Dropdown Menü */
+        .dropdown-content {
             display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 10px 20px;
-            color: white;
-            background: none;
-            border: none;
+            position: absolute;
+            background-color: var(--white);
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            border-top: 3px solid var(--gold);
         }
 
-        /* --- İÇERİK ALANI (GRID YAPISI) --- */
-        .main-content {
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: var(--primary-blue);
+        }
+
+        .dropdown:hover .dropdown-content { display: block; }
+
+        .menu-toggle { display: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 10px; background: none; border: none;}
+
+        /* --- HERO SLIDER --- */
+        .hero-slider {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 43, 87, 0.6); /* Koyu mavi filtre */
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: var(--white);
+            padding: 0 20px;
+            max-width: 800px;
+        }
+
+        .hero-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .btn-main {
+            padding: 12px 30px;
+            background-color: var(--tubitak-red);
+            color: white;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .btn-main:hover { background-color: #b71c1c; transform: translateY(-2px); }
+
+        /* --- ANA İÇERİK GRID --- */
+        .main-container {
             max-width: 1200px;
             margin: 40px auto;
             padding: 0 20px;
-            flex: 1;
             display: grid;
-            grid-template-columns: repeat(12, 1fr); /* 12 sütunlu grid */
-            gap: 20px;
+            grid-template-columns: 300px 1fr; /* Sol Sidebar ve Ana İçerik */
+            gap: 30px;
         }
 
-        /* Hero / Banner Alanı (Resimdeki Dergi Kapağı Alanı Gibi) */
-        .hero-section {
-            grid-column: span 12;
-            background-color: var(--primary-blue);
-            background-image: linear-gradient(135deg, var(--primary-blue) 0%, #1a427a 100%);
-            color: var(--white);
-            padding: 60px 40px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .hero-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            font-weight: 300;
-        }
-        
-        .hero-section h2 strong {
-            font-weight: 700;
-            color: var(--gold-accent);
-        }
-
-        .hero-section p {
-            max-width: 700px;
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* Örnek İçerik Kartları */
-        .card {
+        /* Sidebar Widgetları */
+        .sidebar .widget {
             background: var(--white);
-            border-radius: 8px;
             padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            border-top: 3px solid transparent;
+            border-left: 4px solid var(--primary-blue);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            border-top-color: var(--primary-blue);
-        }
-
-        .col-4 { grid-column: span 4; } /* Masaüstünde 3 yan yana */
-        .col-8 { grid-column: span 8; }
-        
-        .card h3 {
+        .widget h3 {
+            font-size: 1.1rem;
             color: var(--primary-blue);
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
         }
+
+        .widget-content p { font-size: 0.9rem; margin-bottom: 10px; }
+        .widget-content a { color: var(--tubitak-red); font-weight: 600; font-size: 0.9rem; }
+        .widget-content a:hover { text-decoration: underline; }
+
+        /* Ana İçerik Alanı */
+        .content-area {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0; bottom: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+        }
+
+        .about-text { margin-bottom: 30px; text-align: justify; }
+        .about-text p { margin-bottom: 15px; }
+
+        .program-box {
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pdf-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pdf-btn:hover { background-color: #0a1f42; }
 
         /* --- FOOTER --- */
         footer {
-            background-color: #222;
-            color: #aaa;
-            text-align: center;
-            padding: 20px;
             margin-top: auto;
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        footer p { font-size: 0.9rem; }
+
+        /* --- KVKK MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: flex; /* Başlangıçta görünür olması için flex, kapatılınca none */
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .modal-header h3 { color: var(--primary-blue); margin-bottom: 15px; }
+        
+        .modal-body {
+            max-height: 300px;
+            overflow-y: auto;
             font-size: 0.9rem;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            padding: 10px;
+            background: #fafafa;
         }
 
-        footer strong {
-            color: var(--white);
+        .modal-footer { text-align: right; }
+        .btn-accept {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
         }
+        .btn-accept:hover { background: #0a1f42; }
 
-        /* --- RESPONSIVE TASARIM (MOBİL) --- */
+        /* --- RESPONSIVE / MOBİL DÜZENLEMELER --- */
         @media (max-width: 768px) {
-            /* Header Düzeni: Alt alta */
-            .header-container {
-                flex-direction: column;
-                padding: 15px;
-            }
-
-            .logo {
-                height: 60px;
-                margin-bottom: 10px;
-            }
-
-            .main-title {
-                font-size: 1.4rem;
-            }
-
-            .sub-title {
-                font-size: 0.8rem;
-                letter-spacing: 1px;
-            }
-
-            /* Navigasyon: Hamburger Menü */
-            .navbar {
-                position: relative;
-            }
-            
-            .nav-container {
+            .header-top {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 15px;
             }
 
-            .menu-toggle {
-                display: block; /* Butonu göster */
+            .logo-container {
                 width: 100%;
-                text-align: right;
+                justify-content: flex-start;
             }
 
+            .logo { height: 50px; } /* Mobilde logo küçüldü */
+
+            .brand-title {
+                text-align: left;
+                width: 100%;
+                border-top: 1px solid #eee;
+                padding-top: 10px;
+            }
+
+            .brand-title h1 { font-size: 1.3rem; }
+            
+            /* Mobil Menü */
+            .menu-toggle { display: block; }
             .nav-links {
-                display: none; /* Varsayılan gizli */
+                display: none;
                 flex-direction: column;
                 width: 100%;
-                background-color: #0b2144; /* Biraz daha koyu ton */
+                background: var(--primary-blue);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                gap: 0;
             }
-
-            .nav-links.active {
-                display: flex; /* JS ile tetiklendiğinde göster */
-            }
-
-            .nav-links a {
-                border-bottom: 1px solid rgba(255,255,255,0.05);
-                padding: 15px;
-            }
-
-            /* Grid Mobil Ayarı */
-            .col-4, .col-8 {
-                grid-column: span 12; /* Mobilde her şey tam genişlik */
-            }
-
-            .hero-section {
-                padding: 30px 20px;
-            }
+            .nav-links.active { display: flex; }
+            .nav-links a { border-bottom: 1px solid rgba(255,255,255,0.1); padding: 15px; }
             
-            .hero-section h2 {
-                font-size: 1.8rem;
+            .dropdown-content {
+                position: static;
+                background: rgba(0,0,0,0.1);
+                border: none;
+                box-shadow: none;
+                padding-left: 20px;
             }
+            .dropdown-content a { color: rgba(255,255,255,0.8); border: none;}
+
+            /* Grid Mobil */
+            .main-container { grid-template-columns: 1fr; }
+            
+            .hero-content h2 { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="header-container">
-            <img src="deulogo.png" alt="DEU Logo" class="logo">
-            
-            <div class="brand-text">
-                <h1 class="main-title">Nicel Veri Analiz Teknikleri Projeleri</h1>
-                <div class="sub-title-wrapper">
-                    <span class="sub-title">Dokuz Eylül Üniversitesi &nbsp;|&nbsp; Tübitak</span>
-                </div>
+    <div class="modal-overlay" id="kvkkModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Kişisel Verilerin Korunması (KVKK)</h3>
             </div>
+            <div class="modal-body">
+                <p><strong>Aydınlatma Metni:</strong></p>
+                <p>Bu web sitesi üzerinden yapacağınız başvuru ve kayıt işlemleri sırasında, 6698 sayılı Kişisel Verilerin Korunması Kanunu (“KVKK”) uyarınca kişisel verileriniz (Ad, Soyad, İletişim Bilgileri, Eğitim Durumu vb.) toplanmaktadır.</p>
+                <p>Toplanan verileriniz, "Din Bilimlerinde Nicel Analiz Teknikleri" projesi kapsamında başvurunuzun değerlendirilmesi, iletişim kurulması ve yasal yükümlülüklerin yerine getirilmesi amacıyla işlenecektir. Verileriniz, kanunen yetkili kamu kurumları dışında üçüncü kişilerle paylaşılmayacaktır.</p>
+                <p>Devam ederek, kişisel verilerinizin işlenmesine rıza göstermiş olursunuz.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-accept" onclick="closeModal()">Okudum, Onaylıyorum</button>
+            </div>
+        </div>
+    </div>
 
-            <img src="tubitaklogo.png" alt="Tübitak Logo" class="logo">
+    <header>
+        <div class="header-top">
+            <div class="logo-container">
+                <img src="https://trialpages.github.io/demo/deulogo.png" alt="DEU Logo" class="logo">
+                <img src="https://trialpages.github.io/demo/tubitaklogo.png" alt="Tübitak Logo" class="logo">
+            </div>
+            <div class="brand-title">
+                <h1>Din Bilimlerinde <br>Nicel Analiz Teknikleri</h1>
+                <span>Dokuz Eylül Üniversitesi & TÜBİTAK 2237-A</span>
+            </div>
         </div>
     </header>
 
     <nav class="navbar">
         <div class="nav-container">
-            <button class="menu-toggle" onclick="toggleMenu()">☰ Menü</button>
+            <button class="menu-toggle" onclick="toggleMenu()">☰ MENÜ</button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#">Anasayfa</a></li>
-                <li><a href="#">Projelerimiz</a></li>
-                <li><a href="#">Program</a></li>
-                <li><a href="#">Duyurular</a></li>
-                <li><a href="#">Haberler</a></li>
-                <li><a href="#">Kayıt</a></li>
-                <li><a href="#">İletişim</a></li>
+                <li><a href="index.html">ANASAYFA</a></li>
+                <li class="dropdown">
+                    <a href="#">KURULLAR ▾</a>
+                    <div class="dropdown-content">
+                        <a href="#">Düzenleme Kurulu</a>
+                        <a href="#">Bilim Kurulu</a>
+                    </div>
+                </li>
+                <li><a href="#">PROGRAM</a></li>
+                <li><a href="#">DUYURULAR</a></li>
+                <li><a href="#">HABERLER</a></li>
+                <li><a href="#">KAYIT</a></li>
+                <li><a href="#">İLETİŞİM</a></li>
             </ul>
         </div>
     </nav>
 
-    <main class="main-content">
+    <section class="hero-slider">
+        <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+            <div class="hero-content">
+                <h2>Akademik Araştırmalarda Güçlü Analiz</h2>
+                <p>Sosyal bilimler ve İlahiyat alanında nicel veri analiz teknikleriyle çalışmalarınıza değer katın.</p>
+                <a href="#" class="btn-main">Kayıt Ol</a>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+            <div class="hero-content">
+                <h2>SPSS ve İstatistik Atölyeleri</h2>
+                <p>Doğru veri, doğru yöntem ve güvenilir sonuçlar için uygulamalı eğitimler.</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
         
-        <section class="hero-section">
-            <h2>Akademik Başarıya <strong>Yenilikçi Bakış</strong></h2>
-            <p>Bilimsel araştırmalarınızı modern analiz teknikleri ile destekleyen, kurumsal ve güvenilir veri analiz platformu.</p>
+        <aside class="sidebar">
+            <div class="widget">
+                <h3>Duyurular</h3>
+                <div class="widget-content">
+                    <p><strong>Eğitim Kayıtları Açıldı!</strong></p>
+                    <p>40 saatlik yoğunlaştırılmış programa başvurular başlamıştır.</p>
+                    <a href="#">Detaylı bilgi için tıklayınız »</a>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3>Haberler</h3>
+                <div class="widget-content">
+                    <p>TÜBİTAK 2237A Din Bilimlerinde Nicel Analiz Teknikleri web sayfamız yayına girmiştir.</p>
+                    <a href="#">Haberin devamı »</a>
+                </div>
+            </div>
+
+            <div class="widget">
+                <h3>Hızlı Erişim</h3>
+                <div class="widget-content">
+                    <a href="#" class="btn-main" style="width:100%; text-align:center; text-decoration:none;">BAŞVURU FORMU</a>
+                </div>
+            </div>
+        </aside>
+
+        <section class="content-area">
+            <h2 class="section-title">Hakkımızda</h2>
+            <div class="about-text">
+                [span_3](start_span)<p>Nicel araştırma, verilerin sayısal olarak toplanması, analiz edilmesi ve bulguların istatistiksel göstergeler aracılığıyla ifade edilmesini esas alan bir araştırma yaklaşımıdır. Bu yöntem, sosyal bilimlerde insan davranışlarını, toplumsal eğilimleri ve değişkenler arasındaki ilişkileri nesnel ve genellenebilir biçimde inceleme imkânı sunmaktadır.[span_3](end_span)</p>
+                
+                [span_4](start_span)<p>Sosyoloji, psikoloji, eğitim bilimleri, ekonomi ve siyaset bilimi başta olmak üzere sosyal bilimlerin pek çok alanında yaygın biçimde kullanılan nicel araştırma yöntemleri, hipotezlerin test edilmesi, kuramsal yaklaşımların doğrulanması veya sınanması ve ampirik temelli yeni çıkarımların üretilmesi açısından kritik bir işleve sahiptir.[span_4](end_span)</p>
+
+                <p>Bu bağlamda tasarlanan <strong>40 saatlik yoğunlaştırılmış eğitim programı</strong>, İlahiyat ve Din Bilimleri alanında lisansüstü düzeyde öğrenim gören öğrencilere, nicel araştırma yöntemlerine ilişkin temel kuramsal bilgi ile birlikte uygulamaya dönük beceriler kazandırmayı amaçlamaktadır. [span_5](start_span)Program kapsamında anket tasarımı, Google Forms aracılığıyla veri toplama, SPSS yazılımı kullanılarak veri çözümleme ve bulguların istatistiksel olarak yorumlanması konularına odaklanılmaktadır.[span_5](end_span)</p>
+                
+                [span_6](start_span)<p>Bu programın, lisansüstü öğrencilerin nicel araştırma desenlerine yönelik yöntemsel yeterliliklerini artırarak daha sistematik, geçerli ve güvenilir çalışmalar ortaya koymalarına katkı sağlayacağı; böylece alan literatürüne nitelikli bilimsel üretimler kazandırılmasına zemin hazırlayacağı düşünülmektedir.[span_6](end_span)</p>
+            </div>
+
+            <h2 class="section-title">Eğitim Programı</h2>
+            <div class="program-box">
+                <div>
+                    <p>Programımız toplam 5 gün ve 40 saatten oluşmaktadır. İçerikte SPSS uygulamaları, ölçek geliştirme ve regresyon analizleri yer almaktadır.</p>
+                </div>
+                <a href="Program1.PDF" target="_blank" class="pdf-btn">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Program PDF İndir
+                </a>
+            </div>
         </section>
-
-        <div class="card col-4">
-            <h3>Son Duyurular</h3>
-            <p>Proje başvuru tarihleri güncellendi. Detaylı bilgi için duyurular sayfasını ziyaret edebilirsiniz.</p>
-        </div>
-
-        <div class="card col-4">
-            <h3>Eğitim Programı</h3>
-            <p>Bu dönem için planlanan nicel veri analiz seminerleri takvimi yayınlandı.</p>
-        </div>
-
-        <div class="card col-4">
-            <h3>İstatistikler</h3>
-            <p>Şu ana kadar tamamlanan proje sayısı ve akademik yayın istatistikleri.</p>
-        </div>
-        
-        <div class="card col-8">
-            <h3>Proje Hakkında</h3>
-            <p>Bu platform, Dokuz Eylül Üniversitesi bünyesinde yürütülen ve Tübitak tarafından desteklenen nicel veri analizi projelerinin merkezi yönetim sistemidir. Araştırmacılar için şeffaf, hızlı ve güvenilir veri işleme süreçleri sunar.</p>
-        </div>
-        
-        <div class="card col-4">
-            <h3>Hızlı Erişim</h3>
-            <ul style="padding-left: 20px; color: #555;">
-                <li><a href="#" style="color:#0f2b57;">Başvuru Formu</a></li>
-                <li><a href="#" style="color:#0f2b57;">Sıkça Sorulan Sorular</a></li>
-                <li><a href="#" style="color:#0f2b57;">Destek Hattı</a></li>
-            </ul>
-        </div>
 
     </main>
 
     <footer>
-        <p>&copy; 2026 <strong>Dokuz Eylül Üniversitesi</strong> - Nicel Veri Analiz Teknikleri Projeleri. Tüm Hakları Saklıdır.</p>
+        <p>&copy; 2025 - Din Bilimlerinde Nicel Analiz Teknikleri Projesi | Dokuz Eylül Üniversitesi</p>
     </footer>
 
     <script>
-        // Mobil menü aç/kapa fonksiyonu
+        // Mobil Menü Mantığı
         function toggleMenu() {
             const nav = document.getElementById('navLinks');
             nav.classList.toggle('active');
+        }
+
+        // Slider Mantığı (Otomatik Geçiş)
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        
+        function showSlides() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slideIndex++;
+            if (slideIndex > slides.length) { slideIndex = 1 }
+            slides[slideIndex - 1].classList.add('active');
+            setTimeout(showSlides, 5000); // 5 saniyede bir değiştir
+        }
+        
+        // Slider'ı başlat
+        if(slides.length > 0) {
+            showSlides();
+        }
+
+        // KVKK Modal Kapatma
+        function closeModal() {
+            document.getElementById('kvkkModal').style.display = 'none';
         }
     </script>
 </body>
