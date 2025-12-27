@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الأخبار للمستويات المختلفة - YDS Arapça</title>
+    <title>الأخبار العربية للمستويات المختلفة - YDS Arapça</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
     :root {
@@ -161,7 +161,7 @@
 </style>
 </head>
 <body>
-<header><h1>الأخبار للمستويات المختلفة</h1></header>
+<header><h1>الأخبار العربية للمستويات المختلفة</h1></header>
 
 <div class="container" id="news-container">
     <div class="loading">Haberler Yükleniyor...</div>
@@ -175,13 +175,14 @@
 
     // --- FIREBASE CONFIG BURAYA ---
     const firebaseConfig = {
-        apiKey: "SENIN_API_KEY",
-        authDomain: "SENIN_PROJECT_ID.firebaseapp.com",
-        projectId: "SENIN_PROJECT_ID",
-        storageBucket: "...",
-        messagingSenderId: "...",
-        appId: "..."
-    };
+  apiKey: "AIzaSyAr5FUC9uAmPkRWz1nqtllBodHYqpBB9ac",
+  authDomain: "arabicinlevels.firebaseapp.com",
+  projectId: "arabicinlevels",
+  storageBucket: "arabicinlevels.firebasestorage.app",
+  messagingSenderId: "240587696722",
+  appId: "1:240587696722:web:6ad23e4fb519a1e5db8d8b",
+  measurementId: "G-10RV9BVZWS"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
