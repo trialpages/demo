@@ -14,19 +14,17 @@
             --bg-light: #f8f9fa;
             --text-main: #333;
             --white: #ffffff;
-            --header-height-mobile: 110px; /* Kaydırma payı için */
+            --header-height-mobile: 110px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* ÖNEMLİ: Scroll yapıldığında başlığın header altında kalmaması için ayar */
-        html { 
-            scroll-behavior: smooth; 
-        }
+        /* Kaydırma ayarı */
+        html { scroll-behavior: smooth; }
 
-        /* Hedeflenen ID'ye gidildiğinde yukarıdan boşluk bırakır */
+        /* Başlığın header altında kalmaması için pay */
         section, .content-box, .sidebar-item, footer {
-            scroll-margin-top: 130px; /* Header yüksekliğine göre pay */
+            scroll-margin-top: 130px;
         }
         
         body {
@@ -70,7 +68,6 @@
         .logo {
             height: 70px;
             width: auto;
-            /* Beyaz arka planlı JPG'i zemine yedirmek için */
             mix-blend-mode: multiply; 
         }
 
@@ -112,12 +109,12 @@
             padding: 0 20px;
             display: flex;
             align-items: center;
-            justify-content: center; /* Masaüstünde ortala */
+            justify-content: center;
             height: 55px;
         }
 
         .menu-toggle {
-            display: none; /* Masaüstünde gizli */
+            display: none;
             background: none; border: none;
             color: white; font-size: 1.8rem;
             cursor: pointer; padding: 10px;
@@ -157,10 +154,14 @@
         }
 
         .dropdown-content a {
-            color: #333; padding: 12px 16px; border-bottom: 1px solid #eee;
+            color: #333; /* Masaüstünde koyu renk (beyaz zemin üstüne) */
+            padding: 12px 16px; 
+            border-bottom: 1px solid #eee;
         }
         .dropdown-content a:hover {
-            background-color: #f8f9fa; color: var(--primary-blue); border-bottom: none;
+            background-color: #f8f9fa; 
+            color: var(--primary-blue); 
+            border-bottom: none;
         }
         .dropdown:hover .dropdown-content { display: block; }
 
@@ -177,7 +178,7 @@
         .hero h2 { font-size: 2rem; margin-bottom: 15px; }
         .hero p { font-size: 1.1rem; max-width: 800px; margin: 0 auto; opacity: 0.9; }
 
-        /* --- SAYFA DÜZENİ (GRID) --- */
+        /* --- SAYFA DÜZENİ --- */
         .main-grid {
             max-width: 1200px;
             margin: 40px auto;
@@ -197,7 +198,7 @@
             border-bottom: 1px solid #eee; font-size: 1.5rem;
         }
 
-        /* PDF İndirme Butonu (Modern & Minimal) */
+        /* PDF İndirme Butonu */
         .pdf-row {
             display: flex; align-items: center; justify-content: space-between;
             background: #f0f4f8; padding: 15px 20px; border-radius: 6px;
@@ -263,7 +264,7 @@
             .menu-toggle { display: block; }
 
             .nav-menu {
-                display: none; /* Başlangıçta gizli */
+                display: none;
                 flex-direction: column;
                 position: absolute; top: 100%; left: 0; width: 100%;
                 background-color: var(--primary-blue); gap: 0;
@@ -275,17 +276,23 @@
                 padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); width: 100%;
             }
 
-            /* Mobilde Dropdown (Sürekli açık veya tıklanabilir) */
+            /* Mobilde Dropdown Konteyner */
             .dropdown-content {
                 position: static; box-shadow: none; border: none;
-                background: rgba(0,0,0,0.2); width: 100%; display: none; /* Tıklayınca açılsın */
+                background: rgba(0,0,0,0.2); /* Mavi üzerine hafif koyu ton */
+                width: 100%; display: none;
             }
-            /* Mobilde "active" sınıfı gelince alt menü görünsün */
             .dropdown.active .dropdown-content { display: block; }
+            
+            /* DÜZELTME: MOBİLDE DROPDOWN LİNKLERİ BEYAZ */
+            .dropdown-content a {
+                color: #ffffff !important; /* Artık bembeyaz */
+                padding-left: 40px;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
 
             .main-grid { grid-template-columns: 1fr; }
             
-            /* Mobilde PDF alanı daha kompakt */
             .pdf-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-pdf { width: 100%; justify-content: center; }
         }
@@ -419,27 +426,22 @@
             navMenu.classList.toggle('active');
         }
 
-        // 2. Mobilde Alt Menüyü Aç/Kapa (Linke gidilmez, menü açılır)
+        // 2. Mobilde Alt Menüyü Aç/Kapa
         function toggleDropdownMobile() {
-            // Sadece mobilde bu işlev çalışsın (768px altı)
             if (window.innerWidth <= 768) {
                 dropdownLi.classList.toggle('active');
             }
         }
 
-        // 3. Linklere Tıklayınca Menüyü Kapat (AMA Dropdown başlığı hariç)
+        // 3. Linklere Tıklayınca Menüyü Kapat
         const allLinks = document.querySelectorAll('.nav-menu a');
         allLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // Eğer tıklanan link "Kurullar" (dropdown başlığı) ise menüyü kapatma!
                 if (link.parentElement.classList.contains('dropdown')) {
                     return; 
                 }
-                
-                // Diğer tüm linklerde menüyü kapat
                 if (navMenu.classList.contains('active')) {
                     navMenu.classList.remove('active');
-                    // Dropdown açıksa onu da kapat
                     dropdownLi.classList.remove('active');
                 }
             });
@@ -451,12 +453,10 @@
             modal.style.display = state ? 'flex' : 'none';
         }
 
-        // Sayfa Yüklendiğinde Modal Aç (Demo Amaçlı)
         window.onload = function() {
             toggleModal(true);
         }
         
-        // Modal dışına tıklayınca kapat
         window.onclick = function(event) {
             const modal = document.getElementById('kvkkModal');
             if (event.target == modal) {
