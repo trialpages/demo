@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicel Veri Analiz Teknikleri Projeleri</title>
+    <style>
+        /* --- GENEL AYARLAR & RESET --- */
+        :root {
+            --primary-blue: #0f2b57; /* DEU Kurumsal Mavisini andıran ton */
+            --accent-red: #d32f2f;   /* Tübitak kırmızısı referansı (hover için) */
+            --gold-accent: #c5a059;  /* Görseldeki dergi kapağından esinlenen altın tonu */
+            --bg-light: #f4f6f9;
+            --text-dark: #333333;
+            --white: #ffffff;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER BÖLÜMÜ --- */
+        header {
+            background-color: var(--white);
+            border-bottom: 4px solid var(--primary-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 1rem 0;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Mobilde taşmayı önler */
+        }
+
+        /* Logolar */
+        .logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Orta Kısım - Başlıklar */
+        .brand-text {
+            text-align: center;
+            flex: 1;
+            padding: 0 20px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .sub-title-wrapper {
+            display: inline-block;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 4px 0;
+            margin-top: 5px;
+        }
+
+        .sub-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1.5px; /* Efektli görünüm için harf aralığı */
+            background: linear-gradient(90deg, var(--primary-blue), var(--text-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Gradient metin efekti */
+            transition: letter-spacing 0.3s ease;
+        }
+        
+        /* Hover efekti: Harfler biraz açılır */
+        .header-container:hover .sub-title {
+            letter-spacing: 2px;
+        }
+
+        /* --- NAVİGASYON --- */
+        .navbar {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            position: sticky; /* Sayfa kaydırılsa bile üstte kalsın */
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center; /* Menüyü ortalar */
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            display: block;
+            color: var(--white);
+            text-decoration: none;
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-bottom-color: var(--gold-accent); /* Altın rengi vurgu */
+        }
+
+        /* Mobil Menü Butonu (Varsayılan olarak gizli) */
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px 20px;
+            color: white;
+            background: none;
+            border: none;
+        }
+
+        /* --- İÇERİK ALANI (GRID YAPISI) --- */
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr); /* 12 sütunlu grid */
+            gap: 20px;
+        }
+
+        /* Hero / Banner Alanı (Resimdeki Dergi Kapağı Alanı Gibi) */
+        .hero-section {
+            grid-column: span 12;
+            background-color: var(--primary-blue);
+            background-image: linear-gradient(135deg, var(--primary-blue) 0%, #1a427a 100%);
+            color: var(--white);
+            padding: 60px 40px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .hero-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .hero-section h2 strong {
+            font-weight: 700;
+            color: var(--gold-accent);
+        }
+
+        .hero-section p {
+            max-width: 700px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Örnek İçerik Kartları */
+        .card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border-top: 3px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-top-color: var(--primary-blue);
+        }
+
+        .col-4 { grid-column: span 4; } /* Masaüstünde 3 yan yana */
+        .col-8 { grid-column: span 8; }
+        
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #222;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+
+        footer strong {
+            color: var(--white);
+        }
+
+        /* --- RESPONSIVE TASARIM (MOBİL) --- */
+        @media (max-width: 768px) {
+            /* Header Düzeni: Alt alta */
+            .header-container {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .logo {
+                height: 60px;
+                margin-bottom: 10px;
+            }
+
+            .main-title {
+                font-size: 1.4rem;
+            }
+
+            .sub-title {
+                font-size: 0.8rem;
+                letter-spacing: 1px;
+            }
+
+            /* Navigasyon: Hamburger Menü */
+            .navbar {
+                position: relative;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .menu-toggle {
+                display: block; /* Butonu göster */
+                width: 100%;
+                text-align: right;
+            }
+
+            .nav-links {
+                display: none; /* Varsayılan gizli */
+                flex-direction: column;
+                width: 100%;
+                background-color: #0b2144; /* Biraz daha koyu ton */
+            }
+
+            .nav-links.active {
+                display: flex; /* JS ile tetiklendiğinde göster */
+            }
+
+            .nav-links a {
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                padding: 15px;
+            }
+
+            /* Grid Mobil Ayarı */
+            .col-4, .col-8 {
+                grid-column: span 12; /* Mobilde her şey tam genişlik */
+            }
+
+            .hero-section {
+                padding: 30px 20px;
+            }
+            
+            .hero-section h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <img src="deulogo.png" alt="DEU Logo" class="logo">
+            
+            <div class="brand-text">
+                <h1 class="main-title">Nicel Veri Analiz Teknikleri Projeleri</h1>
+                <div class="sub-title-wrapper">
+                    <span class="sub-title">Dokuz Eylül Üniversitesi &nbsp;|&nbsp; Tübitak</span>
+                </div>
+            </div>
+
+            <img src="tubitaklogo.png" alt="Tübitak Logo" class="logo">
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <button class="menu-toggle" onclick="toggleMenu()">☰ Menü</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#">Anasayfa</a></li>
+                <li><a href="#">Projelerimiz</a></li>
+                <li><a href="#">Program</a></li>
+                <li><a href="#">Duyurular</a></li>
+                <li><a href="#">Haberler</a></li>
+                <li><a href="#">Kayıt</a></li>
+                <li><a href="#">İletişim</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        
+        <section class="hero-section">
+            <h2>Akademik Başarıya <strong>Yenilikçi Bakış</strong></h2>
+            <p>Bilimsel araştırmalarınızı modern analiz teknikleri ile destekleyen, kurumsal ve güvenilir veri analiz platformu.</p>
+        </section>
+
+        <div class="card col-4">
+            <h3>Son Duyurular</h3>
+            <p>Proje başvuru tarihleri güncellendi. Detaylı bilgi için duyurular sayfasını ziyaret edebilirsiniz.</p>
+        </div>
+
+        <div class="card col-4">
+            <h3>Eğitim Programı</h3>
+            <p>Bu dönem için planlanan nicel veri analiz seminerleri takvimi yayınlandı.</p>
+        </div>
+
+        <div class="card col-4">
+            <h3>İstatistikler</h3>
+            <p>Şu ana kadar tamamlanan proje sayısı ve akademik yayın istatistikleri.</p>
+        </div>
+        
+        <div class="card col-8">
+            <h3>Proje Hakkında</h3>
+            <p>Bu platform, Dokuz Eylül Üniversitesi bünyesinde yürütülen ve Tübitak tarafından desteklenen nicel veri analizi projelerinin merkezi yönetim sistemidir. Araştırmacılar için şeffaf, hızlı ve güvenilir veri işleme süreçleri sunar.</p>
+        </div>
+        
+        <div class="card col-4">
+            <h3>Hızlı Erişim</h3>
+            <ul style="padding-left: 20px; color: #555;">
+                <li><a href="#" style="color:#0f2b57;">Başvuru Formu</a></li>
+                <li><a href="#" style="color:#0f2b57;">Sıkça Sorulan Sorular</a></li>
+                <li><a href="#" style="color:#0f2b57;">Destek Hattı</a></li>
+            </ul>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 <strong>Dokuz Eylül Üniversitesi</strong> - Nicel Veri Analiz Teknikleri Projeleri. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <script>
+        // Mobil menü aç/kapa fonksiyonu
+        function toggleMenu() {
+            const nav = document.getElementById('navLinks');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
