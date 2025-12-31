@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İhtisas - İlmi, Fikri, Siyasi Dergi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,400&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- GENEL AYARLAR (CSS VARIABLES) --- */
+        :root {
+            --primary-color: #1a2a3a; /* Koyu Lacivert - Ciddiyet */
+            --accent-color: #c0392b;  /* Kiremit Kırmızısı - Vurgu */
+            --text-color: #333;
+            --light-bg: #f4f4f4;
+            --white: #ffffff;
+            --gray: #7f8c8d;
+            --border-radius: 4px;
+            --font-heading: 'Merriweather', serif; /* Dergi Başlıkları için */
+            --font-body: 'Roboto', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.6;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* --- HEADER & NAVIGATION --- */
+        header {
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .top-bar {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 5px 0;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo h1 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--primary-color);
+            line-height: 1;
+        }
+
+        .logo span {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Masaüstü Menü */
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+            font-weight: 500;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .nav-item:hover { color: var(--accent-color); }
+
+        /* Dropdown Masaüstü */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--white);
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            border-top: 3px solid var(--accent-color);
+        }
+
+        .nav-item:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu li a {
+            display: block;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-menu li a:hover {
+            background: #f9f9f9;
+            color: var(--accent-color);
+        }
+
+        /* Hamburger Menü İkonu */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary-color);
+            transition: 0.3s;
+        }
+
+        /* --- SLIDER (MANŞET) --- */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6); /* Metin okunsun diye karartma */
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 50px;
+            left: 10%;
+            right: 10%;
+            color: var(--white);
+            max-width: 800px;
+        }
+
+        .slide-badge {
+            background: var(--accent-color);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            border-radius: 2px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .slide-content h2 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Slider Kontrolleri */
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dot.active { background: var(--white); }
+
+        /* --- MAIN CONTENT LAYOUT --- */
+        .main-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 2 birim içerik, 1 birim sidebar */
+            gap: 40px;
+        }
+
+        /* --- MAKALE LİSTESİ --- */
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title span {
+            background: var(--light-bg);
+            padding-right: 15px;
+            margin-bottom: -12px; /* Çizginin üstüne çıkarmak için */
+        }
+
+        .article-card {
+            background: var(--white);
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+
+        .article-image {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .article-body { padding: 25px; }
+
+        .article-meta {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .article-meta i { color: var(--accent-color); margin-right: 5px; }
+        .author-name { font-weight: 700; color: var(--primary-color); }
+
+        .article-title {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .article-excerpt {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .read-more-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            border-radius: 2px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .read-more-btn:hover {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar-widget {
+            background: var(--white);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .widget-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        .popular-list li {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .popular-list li:last-child { border-bottom: none; }
+
+        .popular-list h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .popular-list span { font-size: 0.8rem; color: var(--gray); }
+
+        /* --- FOOTER --- */
+        footer {
+            background: var(--primary-color);
+            color: #bdc3c7;
+            padding: 50px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-col h3 {
+            color: var(--white);
+            font-family: var(--font-heading);
+            margin-bottom: 20px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        /* --- RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+                display: none; /* Varsayılan gizli */
+                box-shadow: 0 10px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active { display: flex; }
+
+            .nav-item { width: 100%; padding: 10px 0; border-bottom: 1px solid #eee; }
+            
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                visibility: visible;
+                opacity: 1;
+                transform: none;
+                display: none; /* Mobil için JS ile açılacak */
+                background: #f9f9f9;
+                padding-left: 20px;
+            }
+
+            .nav-item.dropdown-active .dropdown-menu { display: block; }
+
+            .hamburger { display: flex; }
+
+            .main-container { grid-template-columns: 1fr; } /* Mobilde tek sütun */
+
+            .slide-content h2 { font-size: 1.5rem; }
+            .slider-container { height: 350px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        İlmi, Fikri, Siyasi Dergi - Sayı: 145 Yayında
+    </div>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#">
+                    <h1>İHTİSAS</h1>
+                    <span>İlmi, Fikri, Siyasi</span>
+                </a>
+            </div>
+
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item"><a href="#">Anasayfa</a></li>
+                    <li class="nav-item"><a href="#">Hakkımızda</a></li>
+                    
+                    <li class="nav-item dropdown-trigger">
+                        <a href="#">Yazarlar ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Başyazı</a></li>
+                            <li><a href="#">Mehmet Demir</a></li>
+                            <li><a href="#">Ayşe Yılmaz</a></li>
+                            <li><a href="#">Konuk Yazarlar</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown-trigger">
+                        <a href="#">Kategoriler ▾</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Fıkıh & Kelam</a></li>
+                            <li><a href="#">Siyaset Bilimi</a></li>
+                            <li><a href="#">Tarih</a></li>
+                            <li><a href="#">Edebiyat</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item"><a href="#">İletişim</a></li>
+                    <li class="nav-item search-icon">🔍</li>
+                </ul>
+            </nav>
+
+            <div class="hamburger" id="hamburger">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </header>
+
+    <section id="hero">
+        <div class="slider-container">
+            <div class="slide active">
+                <img src="https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Kütüphane">
+                <div class="slide-content">
+                    <span class="slide-badge">Kapak Konusu</span>
+                    <h2>Gelenekten Geleceğe: İhtisas'ın Yeni Vizyonu</h2>
+                    <p>Modern dünyanın krizlerine kadim gelenekten cevaplar arıyoruz.</p>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Kitaplar">
+                <div class="slide-content">
+                    <span class="slide-badge">Fikir</span>
+                    <h2>Bilginin Gücü ve Entelektüel Sorumluluk</h2>
+                    <p>Âlimin topluma karşı sorumluluğu nerede başlar?</p>
+                </div>
+            </div>
+            <div class="slide">
+                <img src="https://images.unsplash.com/photo-1555449372-555519106207?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Mimari">
+                <div class="slide-content">
+                    <span class="slide-badge">Sanat & Mimari</span>
+                    <h2>Şehir ve Medeniyet: İstanbul'u Okumak</h2>
+                    <p>Taşların diliyle konuşan bir tarih.</p>
+                </div>
+            </div>
+            
+            <div class="slider-dots">
+                <div class="dot active" onclick="currentSlide(0)"></div>
+                <div class="dot" onclick="currentSlide(1)"></div>
+                <div class="dot" onclick="currentSlide(2)"></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
+        
+        <div class="content-column">
+            <div class="section-title">
+                <span>Son Makaleler</span>
+            </div>
+
+            <article class="article-card">
+                <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Makale Resim" class="article-image">
+                <div class="article-body">
+                    <div class="article-meta">
+                        <span><i class="author-icon">✒️</i> <span class="author-name">Prof. Dr. Ahmet Kemal</span></span>
+                        <span>📅 24 Ekim 2023</span>
+                    </div>
+                    <h3 class="article-title"><a href="#">Post-Truth Çağında Hakikati Aramak</a></h3>
+                    <p class="article-excerpt">
+                        Hakikatin önemsizleştiği, algıların olguların önüne geçtiği bir çağda yaşıyoruz. Peki, kadim geleneğimiz bize bu bilgi kirliliği karşısında nasıl bir filtreleme yöntemi sunuyor? Bu yazıda epistemolojik bir yolculuğa çıkacağız...
+                    </p>
+                    <a href="#" class="read-more-btn">Devamını Oku &rarr;</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Makale Resim" class="article-image">
+                <div class="article-body">
+                    <div class="article-meta">
+                        <span><i class="author-icon">✒️</i> <span class="author-name">Zeynep Erdem</span></span>
+                        <span>📅 22 Ekim 2023</span>
+                    </div>
+                    <h3 class="article-title"><a href="#">Sosyolojik Bir Analiz: Kentleşme ve Yabancılaşma</a></h3>
+                    <p class="article-excerpt">
+                        Büyükşehirlerin kalabalığı içinde yalnızlaşan birey, komşuluk ilişkilerini yitirirken aslında neyi kaybediyor? Modern kentleşme pratiklerinin sosyal dokuda açtığı yaralar ve çözüm önerileri üzerine bir deneme.
+                    </p>
+                    <a href="#" class="read-more-btn">Devamını Oku &rarr;</a>
+                </div>
+            </article>
+
+            <article class="article-card">
+                <img src="https://images.unsplash.com/photo-1519682577862-22b62b24e491?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Makale Resim" class="article-image">
+                <div class="article-body">
+                    <div class="article-meta">
+                        <span><i class="author-icon">✒️</i> <span class="author-name">Mustafa Yılmaz</span></span>
+                        <span>📅 20 Ekim 2023</span>
+                    </div>
+                    <h3 class="article-title"><a href="#">İktisadi Düşünce Tarihinde Adalet Kavramı</a></h3>
+                    <p class="article-excerpt">
+                        Klasik iktisattan günümüz neoliberal politikalarına kadar adalet kavramı nasıl dönüştü? Gelir dağılımı adaletsizliği sadece ekonomik bir sorun mu yoksa ahlaki bir krizin yansıması mı?
+                    </p>
+                    <a href="#" class="read-more-btn">Devamını Oku &rarr;</a>
+                </div>
+            </article>
+
+        </div>
+
+        <aside class="sidebar-column">
+            
+            <div class="sidebar-widget">
+                <h4 class="widget-title">İhtisas Hakkında</h4>
+                <p style="font-size: 0.9rem; margin-top:10px;">
+                    İhtisas; ilmi derinliği, fikri hürriyeti ve siyasi basireti merkeze alan, aylık yayınlanan süreli bir yayındır.
+                </p>
+            </div>
+
+            <div class="sidebar-widget">
+                <h4 class="widget-title">Çok Okunanlar</h4>
+                <ul class="popular-list">
+                    <li>
+                        <a href="#">
+                            <h4>Modernizm ve Din</h4>
+                            <span>Ali Kaya • 1.2b Okunma</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <h4>Eğitimde Yeni Modeller</h4>
+                            <span>Sema Yurt • 980 Okunma</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <h4>Ortadoğu'da Güç Dengeleri</h4>
+                            <span>Kemal Can • 850 Okunma</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-widget">
+                <h4 class="widget-title">Bültene Abone Ol</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 10px;">En yeni makaleler e-posta kutunuza gelsin.</p>
+                <input type="email" placeholder="E-posta adresiniz" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <button style="width: 100%; padding: 10px; background: var(--accent-color); color: white; border: none; cursor: pointer; border-radius: 4px;">Abone Ol</button>
+            </div>
+
+        </aside>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>İHTİSAS</h3>
+                <p>İlmi, Fikri, Siyasi Dergi. Hakikatin izinde, sözün gücüyle.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Hızlı Erişim</h3>
+                <ul>
+                    <li><a href="#">Arşiv</a></li>
+                    <li><a href="#">Yazarlık Başvurusu</a></li>
+                    <li><a href="#">Reklam & Sponsorluk</a></li>
+                    <li><a href="#">Künye</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>İletişim</h3>
+                <p>PK. 34 Üsküdar / İstanbul</p>
+                <p>iletisim@ihtisasdergi.com</p>
+                <div style="margin-top: 15px; font-size: 1.2rem;">
+                    <span>🐦</span> <span>📸</span> <span>▶️</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2023 İhtisas Dergisi. Tüm hakları saklıdır.
+        </div>
+    </li>
+
+    <script>
+        // --- MOBİL MENÜ İŞLEMLERİ ---
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
+
+        // Hamburger Tıklama
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // Mobilde Dropdown Açma/Kapama
+        dropdownTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                // Sadece mobildeyken tıklama ile açılsın
+                if (window.innerWidth <= 768) {
+                    // Linke gitmeyi engelle (sadece menüyü aç)
+                    // Eğer ana linke gitmesi gerekiyorsa bu kısmı düzenleyebilirsin
+                    // e.preventDefault(); 
+                    trigger.classList.toggle('dropdown-active');
+                }
+            });
+        });
+
+        // --- SLIDER (MANŞET) İŞLEMLERİ ---
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const slideInterval = 5000; // 5 saniyede bir değiş
+
+        function showSlide(index) {
+            // Tüm slaytları ve noktaları pasif yap
+            slides.forEach(slide => slide.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+
+            // İstenen slaytı aktif yap
+            currentSlideIndex = index;
+            if (currentSlideIndex >= slides.length) currentSlideIndex = 0;
+            if (currentSlideIndex < 0) currentSlideIndex = slides.length - 1;
+
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlideIndex + 1);
+        }
+
+        // Otomatik Döngü
+        let slideTimer = setInterval(nextSlide, slideInterval);
+
+        // Noktalara tıklayınca değişim
+        function currentSlide(n) {
+            clearInterval(slideTimer); // Otomatik geçişi sıfırla
+            showSlide(n);
+            slideTimer = setInterval(nextSlide, slideInterval); // Tekrar başlat
+        }
+    </script>
+</body>
+</html>
