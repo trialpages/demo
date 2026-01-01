@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efkâr-ı Manzume | Mesail-i Muhtelifeye Dair</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f4f1ea; /* Eski kağıt rengi */
+            --text-color: #2c2c2c;
+            --accent-color: #8e44ad; /* Mistik mor veya bordo seçilebilir */
+            --secondary-text: #666;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Header Tasarımı */
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin: 0;
+            letter-spacing: -1px;
+            color: #1a1a1a;
+        }
+
+        .tagline {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--secondary-text);
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        /* Grid Yapısı */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Şiir Kartı */
+        .poem-card {
+            background: var(--card-bg);
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-radius: 4px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poem-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            opacity: 0.5;
+        }
+
+        .poem-date {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .poem-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .poem-content {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            white-space: pre-wrap; /* Şiir formatını korur */
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        /* Arapça Alanı */
+        .arabic-section {
+            background-color: #fdfdfd;
+            border-right: 3px solid var(--accent-color);
+            padding: 20px;
+            margin: 30px 0;
+            text-align: right;
+            direction: rtl;
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: #444;
+            display: none; /* JS ile açılacak */
+        }
+
+        /* Hikaye Alanı */
+        .story-toggle {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: none;
+            border: 1px dashed #ddd;
+            color: #777;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .story-toggle:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .story-content {
+            display: none;
+            padding: 20px;
+            background: #f9f9f9;
+            font-size: 0.95rem;
+            color: #555;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        /* Sosyal Medya Butonları */
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            background: #fff;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .share-btn:hover {
+            background: var(--text-color);
+            color: #fff;
+            border-color: var(--text-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Efkâr-ı Manzume</h1>
+    <div class="tagline">mesail-i muhtelifeye dair efkar-ı manzumemdir</div>
+</header>
+
+<div class="container" id="poems-container">
+    <p style="text-align: center; color: #999;">Yükleniyor...</p>
+</div>
+
+<footer>
+    &copy; 2024 Efkâr-ı Manzume. Tüm hakları saklıdır.
+</footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // BURAYA KENDİ FIREBASE AYARLARINI YAPIŞTIRACAKSIN
+    const firebaseConfig = {
+        apiKey: "SENIN_API_KEYIN",
+        authDomain: "SENIN_PROJE_ID.firebaseapp.com",
+        projectId: "SENIN_PROJE_ID",
+        storageBucket: "SENIN_PROJE_ID.appspot.com",
+        messagingSenderId: "...",
+        appId: "..."
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadPoems() {
+        const container = document.getElementById('poems-container');
+        const q = query(collection(db, "poems"), orderBy("date", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        container.innerHTML = '';
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const date = new Date(data.date).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Arapça kontrolü
+            const arabicHtml = data.arabicText ? `<div class="arabic-section">${data.arabicText.replace(/\n/g, '<br>')}</div>` : '';
+            
+            // Hikaye kontrolü
+            const storyHtml = data.story ? `
+                <button class="story-toggle" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                    <i class="fa-solid fa-feather"></i> Şiirin Hikayesini Oku
+                </button>
+                <div class="story-content">${data.story}</div>
+            ` : '';
+
+            const currentUrl = encodeURIComponent(window.location.href);
+            const shareText = encodeURIComponent(`${data.title} - Efkâr-ı Manzume'den bir şiir.`);
+
+            const html = `
+                <div class="poem-card">
+                    <div class="poem-date">${date}</div>
+                    <h2 class="poem-title">${data.title}</h2>
+                    ${arabicHtml}
+                    <div class="poem-content">${data.text}</div>
+                    ${storyHtml}
+                    
+                    <div class="share-buttons">
+                        <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${currentUrl}" target="_blank" class="share-btn" title="X'te Paylaş"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=${currentUrl}" target="_blank" class="share-btn" title="Facebook'ta Paylaş"><i class="fa-brands fa-facebook-f"></i></a>
+                        <button onclick="shareLink('${data.title}')" class="share-btn" title="Paylaş"><i class="fa-solid fa-share-nodes"></i></button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
+
+    // Global scope'a fonksiyonu atayalım (module dışına)
+    window.shareLink = async (title) => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Efkâr-ı Manzume',
+                    text: title,
+                    url: window.location.href,
+                });
+            } catch (err) {
+                console.log('Paylaşım iptal edildi');
+            }
+        } else {
+            alert('Link kopyalandı! Dilediğiniz platformda yapıştırabilirsiniz.');
+        }
+    };
+
+    loadPoems();
+</script>
+
+</body>
+</html>
