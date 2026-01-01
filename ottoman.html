@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Türkçe -> Osmanlıca Çevirici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #dcb368; /* Altın Sarısı */
+            --secondary-color: #2c3e50; /* Koyu Lacivert */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#dcb368 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        header {
+            background: var(--secondary-color);
+            color: white;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        @media (max-width: 768px) {
+            .converter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-area, .output-area {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-area {
+            border-right: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .input-area {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            resize: none;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .output-box {
+            width: 100%;
+            height: 250px;
+            background-color: #fafafa;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'Noto Naskh Arabic', serif;
+            font-size: 1.8rem; /* Osmanlıca daha büyük görünsün */
+            line-height: 1.6;
+            direction: rtl;
+            overflow-y: auto;
+            color: var(--secondary-color);
+            position: relative;
+        }
+
+        .controls {
+            padding: 16px 24px;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .note {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #1a252f;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Türkçe ⇌ Osmanlıca</h1>
+            <p>Latin harfli metni anında Osmanlı imlasına çevirin</p>
+        </header>
+
+        <div class="converter-grid">
+            <div class="input-area">
+                <label for="inputText">Latin Harfleriyle Türkçe</label>
+                <textarea id="inputText" placeholder="Buraya yazmaya başlayın...&#10;Örn: Kalem, Kitap, Geliyorum"></textarea>
+            </div>
+
+            <div class="output-area">
+                <label>Osmanlı Türkçesi (Matbu)</label>
+                <div id="outputText" class="output-box"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <span class="note">* Otomatik ünlü uyumu (Kaf/Kef) uygular.</span>
+            <button onclick="copyToClipboard()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Kopyala
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const inputMap = {
+            'a': 'ا', 'b': 'ب', 'c': 'ج', 'ç': 'چ', 'd': 'د', 
+            'e': 'ه', 'f': 'ف', 'g': 'گ', 'ğ': 'غ', 'h': 'ح', 
+            'ı': 'ی', 'i': 'ی', 'j': 'ژ', 'k': 'ك', 'l': 'ل', 
+            'm': 'م', 'n': 'ن', 'o': 'و', 'ö': 'و', 'p': 'پ', 
+            'r': 'ر', 's': 'س', 'ş': 'ش', 't': 'ت', 'u': 'و', 
+            'ü': 'و', 'v': 'و', 'y': 'ی', 'z': 'ز',
+            ' ': ' ', '.': '.', ',': '،', '?': '؟', '!': '!', 
+            ':': ':', ';': '؛', '\'': '', '"': '',
+            '0': '٠', '1': '١', '2': '٢', '3': '٣', '4': '٤',
+            '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩'
+        };
+
+        const backVowels = ['a', 'ı', 'o', 'u'];
+        const frontVowels = ['e', 'i', 'ö', 'ü'];
+
+        document.getElementById('inputText').addEventListener('input', function() {
+            const text = this.value.toLowerCase();
+            const words = text.split(/(\s+|[.,!?;:])/); // Kelime ve noktalama işaretlerine göre ayır
+            
+            let output = words.map(word => convertWord(word)).join('');
+            document.getElementById('outputText').innerText = output;
+        });
+
+        function convertWord(word) {
+            // Eğer kelime boşluk veya noktalama ise direkt döndür (Haritadan varsa al)
+            if (!word.match(/[a-zçğıöşü]/i)) {
+                return word.split('').map(c => inputMap[c] || c).join('');
+            }
+
+            // Kelimenin kalın mı ince mi olduğunu analiz et
+            let isBack = false;
+            for (let char of word) {
+                if (backVowels.includes(char)) {
+                    isBack = true;
+                    break;
+                }
+            }
+            
+            // Eğer hiç ünlü yoksa (nadir durum), varsayılan olarak ince kabul edelim veya karışık
+            // Ancak "k" harfi için mantık kuralım.
+            
+            let result = '';
+            let len = word.length;
+
+            for (let i = 0; i < len; i++) {
+                let char = word[i];
+                let nextChar = word[i+1];
+                let prevChar = word[i-1];
+
+                // --- ÖZEL KURALLAR ---
+
+                // 1. Kural: "K" Harfi (Kaf vs Kef)
+                if (char === 'k') {
+                    if (isBack) {
+                        result += 'ق'; // Kalın ünlülü kelimede Kaf
+                    } else {
+                        result += 'ك'; // İnce ünlülü kelimede Kef
+                    }
+                    continue;
+                }
+
+                // 2. Kural: "G" Harfi (Gayın vs Gef)
+                // Genelde Türkçede G sesi "Gef" ile, Ğ sesi "Gayın" (bazen Kef) ile gösterilir.
+                // Basitlik adına G -> Gef (گ), Ğ -> Gayın (غ) haritasını kullanıyoruz.
+                // Ancak eski imlada 'g' bazen 'kaf' ile de yazılır. Biz modern matbu transkripsiyon yapıyoruz.
+                
+                // 3. Kural: Kelime başı "A" ve "E"
+                if (i === 0) {
+                    if (char === 'a') {
+                        result += 'آ'; // Kelime başı A -> Elif Med
+                        continue;
+                    }
+                    if (char === 'e') {
+                        result += 'ا'; // Kelime başı E -> Elif
+                        continue;
+                    }
+                }
+
+                // 4. Kural: Kelime sonu "A" ve "E"
+                if (i === len - 1) {
+                    if (char === 'a') {
+                        result += 'ا'; // Kelime sonu A -> Elif
+                        continue;
+                    }
+                    if (char === 'e') {
+                        result += 'ه'; // Kelime sonu E -> He (Okutucu)
+                        continue;
+                    }
+                }
+
+                // Standart haritalama
+                if (inputMap[char]) {
+                    result += inputMap[char];
+                } else {
+                    result += char; // Tanımsız karakteri aynen bırak
+                }
+            }
+
+            return result;
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText').innerText;
+            if (!outputText) return;
+
+            navigator.clipboard.writeText(outputText).then(() => {
+                const btn = document.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'Kopyalandı!';
+                btn.style.backgroundColor = '#27ae60';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = 'var(--secondary-color)';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
