@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İhtisas - Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="max-w-4xl mx-auto p-6">
+        <header class="mb-10 flex justify-between items-center border-b pb-4">
+            <h1 class="text-3xl font-bold text-slate-900">İhtisas <span class="text-sm font-sans font-normal text-slate-500">| Admin Paneli</span></h1>
+            <a href="index.html" class="text-blue-600 hover:underline">Dergiye Git &rarr;</a>
+        </header>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+            <h2 class="text-2xl mb-6 font-semibold">Yeni Makale Ekle</h2>
+            
+            <form id="articleForm" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Makale Başlığı</label>
+                        <input type="text" id="title" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none" placeholder="Örn: Dijital Toplumun Çöküşü">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Yazar Adı</label>
+                        <input type="text" id="author" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none" placeholder="Örn: Yapay Zeka">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                        <select id="category" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none">
+                            <option>Sosyoloji</option>
+                            <option>Teknoloji & Toplum</option>
+                            <option>Ekonomi</option>
+                            <option>Felsefe</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Tarih</label>
+                        <input type="date" id="date" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Unsplash Görsel Linki (Direct Link)</label>
+                    <input type="url" id="image" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none" placeholder="https://images.unsplash.com/photo-...">
+                    <p class="text-xs text-gray-500 mt-1">Unsplash'ten bir fotoğrafa sağ tıklayıp 'Resim adresini kopyala' diyerek buraya yapıştırın.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Makale İçeriği</label>
+                    <textarea id="content" rows="10" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-slate-400 outline-none" placeholder="Makale metnini buraya giriniz..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-slate-900 text-white py-3 rounded-lg font-semibold hover:bg-slate-700 transition duration-300">Makaleyi Yayınla</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // BURAYA KENDİ FIREBASE BİLGİLERİNİ GİR
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEYIN",
+            authDomain: "SENIN_PROJECT_ID.firebaseapp.com",
+            projectId: "SENIN_PROJECT_ID",
+            storageBucket: "SENIN_PROJECT_ID.appspot.com",
+            messagingSenderId: "SENIN_SENDER_ID",
+            appId: "SENIN_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('articleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Yükleniyor...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "articles"), {
+                    title: document.getElementById('title').value,
+                    author: document.getElementById('author').value,
+                    category: document.getElementById('category').value,
+                    date: document.getElementById('date').value,
+                    image: document.getElementById('image').value,
+                    content: document.getElementById('content').value,
+                    createdAt: serverTimestamp()
+                });
+                alert("Makale başarıyla eklendi!");
+                e.target.reset();
+            } catch (error) {
+                console.error("Hata: ", error);
+                alert("Bir hata oluştu: " + error.message);
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
