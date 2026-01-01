@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İhtisas - Sosyal Bilimler ve Yapay Zeka Dergisi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, .serif { font-family: 'Playfair Display', serif; }
+        
+        /* Slider Animasyonları */
+        .fade-enter { opacity: 0; }
+        .fade-enter-active { opacity: 1; transition: opacity 1s ease-in-out; }
+        .slide-overlay { background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%); }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-stone-200 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="serif text-3xl font-bold tracking-tighter text-stone-900">İHTİSAS.</a>
+                </div>
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#" class="text-stone-600 hover:text-black font-medium transition">Anasayfa</a>
+                    <a href="#" class="text-stone-600 hover:text-black font-medium transition">Hakkımızda</a>
+                    <a href="#" class="text-stone-600 hover:text-black font-medium transition">Yazarlar</a>
+                    <a href="#" class="text-stone-600 hover:text-black font-medium transition">İletişim</a>
+                </div>
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-stone-600 hover:text-black focus:outline-none">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
+            <a href="#" class="block px-4 py-3 text-stone-700 border-b">Anasayfa</a>
+            <a href="#" class="block px-4 py-3 text-stone-700 border-b">Hakkımızda</a>
+            <a href="#" class="block px-4 py-3 text-stone-700 border-b">Yazarlar</a>
+            <a href="#" class="block px-4 py-3 text-stone-700">İletişim</a>
+        </div>
+    </nav>
+
+    <div class="relative h-[600px] w-full bg-stone-900 overflow-hidden pt-20">
+        <div id="slider-container" class="relative h-full w-full">
+            <div class="absolute inset-0 flex items-center justify-center text-white">
+                <p>Yükleniyor...</p>
+            </div>
+        </div>
+        
+        <button id="prevSlide" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur text-white p-3 rounded-full transition z-10">❮</button>
+        <button id="nextSlide" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/30 backdrop-blur text-white p-3 rounded-full transition z-10">❯</button>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="flex flex-col lg:flex-row gap-12">
+            
+            <div class="lg:w-3/4" id="articles-container">
+                <h2 class="serif text-4xl font-bold mb-10 text-stone-900 border-b-2 border-stone-200 pb-4">Son Yazılar</h2>
+                
+                <div class="text-center text-stone-500 py-10">Makaleler getiriliyor...</div>
+
+            </div>
+
+            <aside class="lg:w-1/4 space-y-8">
+                <div class="bg-white p-6 border border-stone-200 rounded-lg shadow-sm">
+                    <h3 class="serif text-xl font-bold mb-4">İhtisas Hakkında</h3>
+                    <p class="text-stone-600 text-sm leading-relaxed">
+                        Toplumsal olayları yapay zeka perspektifiyle yorumlayan, modern ve entelektüel dijital dergi.
+                    </p>
+                </div>
+                <div class="bg-white p-6 border border-stone-200 rounded-lg shadow-sm">
+                    <h3 class="serif text-xl font-bold mb-4">Kategoriler</h3>
+                    <ul class="space-y-2 text-sm text-stone-600">
+                        <li><a href="#" class="hover:text-black hover:underline">Sosyoloji</a></li>
+                        <li><a href="#" class="hover:text-black hover:underline">Teknoloji & Toplum</a></li>
+                        <li><a href="#" class="hover:text-black hover:underline">Felsefe</a></li>
+                        <li><a href="#" class="hover:text-black hover:underline">Ekonomi</a></li>
+                    </ul>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="serif text-2xl text-white mb-4">İHTİSAS.</h2>
+            <p class="mb-8 text-sm">Sosyal olaylara yapay zeka dokunuşu.</p>
+            <div class="text-xs text-stone-600">
+                &copy; 2024 İhtisas Dergisi. Tüm hakları saklıdır.
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // BURAYA KENDİ FIREBASE BİLGİLERİNİ GİR (Admin ile aynı)
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEYIN",
+            authDomain: "SENIN_PROJECT_ID.firebaseapp.com",
+            projectId: "SENIN_PROJECT_ID",
+            storageBucket: "SENIN_PROJECT_ID.appspot.com",
+            messagingSenderId: "SENIN_SENDER_ID",
+            appId: "SENIN_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Değişkenler
+        const articlesContainer = document.getElementById('articles-container');
+        const sliderContainer = document.getElementById('slider-container');
+        let articles = [];
+
+        // Verileri Çek
+        async function fetchArticles() {
+            const q = query(collection(db, "articles"), orderBy("createdAt", "desc")); // Hepsini çek, frontend'de böleriz
+            const querySnapshot = await getDocs(q);
+            
+            articlesContainer.innerHTML = '<h2 class="serif text-4xl font-bold mb-10 text-stone-900 border-b-2 border-stone-200 pb-4">Son Yazılar</h2>';
+            sliderContainer.innerHTML = '';
+            articles = [];
+
+            querySnapshot.forEach((doc) => {
+                articles.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Slayt için son 5'i al
+            const sliderArticles = articles.slice(0, 5);
+            renderSlider(sliderArticles);
+
+            // Liste için hepsi
+            renderArticleList(articles);
+        }
+
+        // Listeyi Render Et
+        function renderArticleList(data) {
+            data.forEach(article => {
+                const excerpt = article.content.split('\n')[0] || article.content.substring(0, 200); // İlk paragraf veya 200 karakter
+                
+                const html = `
+                    <article id="article-${article.id}" class="mb-16 group">
+                        <div class="relative overflow-hidden rounded-lg mb-6 h-80 shadow-md">
+                            <img src="${article.image}" alt="${article.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            <div class="absolute top-4 left-4 bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wider text-stone-900 rounded-sm">
+                                ${article.category}
+                            </div>
+                        </div>
+                        <div class="flex items-center text-xs text-stone-500 mb-3 space-x-4">
+                            <span>${article.date}</span>
+                            <span class="w-1 h-1 bg-stone-300 rounded-full"></span>
+                            <span class="font-medium text-stone-800">${article.author}</span>
+                        </div>
+                        <h3 class="serif text-3xl font-bold text-stone-900 mb-4 group-hover:text-stone-600 transition">${article.title}</h3>
+                        <div class="prose prose-stone text-stone-600 mb-6 leading-relaxed">
+                            <p>${excerpt}...</p>
+                            <div id="full-content-${article.id}" class="hidden mt-4 pt-4 border-t border-stone-100">
+                                ${article.content.replace(/\n/g, '<br><br>')}
+                            </div>
+                        </div>
+                        <button onclick="toggleReadMore('${article.id}')" id="btn-${article.id}" class="inline-block px-6 py-3 border border-stone-900 text-stone-900 text-sm font-semibold uppercase tracking-wide hover:bg-stone-900 hover:text-white transition duration-300">
+                            Devamını Oku
+                        </button>
+                    </article>
+                `;
+                articlesContainer.innerHTML += html;
+            });
+        }
+
+        // Slaytı Render Et
+        function renderSlider(data) {
+            if(data.length === 0) return;
+            
+            data.forEach((article, index) => {
+                const hiddenClass = index === 0 ? '' : 'opacity-0 pointer-events-none';
+                const zIndex = index === 0 ? 'z-10' : 'z-0';
+                
+                const slide = `
+                    <div class="slide absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${hiddenClass} ${zIndex}" data-index="${index}">
+                        <img src="${article.image}" class="absolute inset-0 w-full h-full object-cover">
+                        <div class="slide-overlay absolute inset-0"></div>
+                        <div class="absolute inset-0 flex flex-col justify-end pb-20 px-4 sm:px-16 max-w-5xl mx-auto">
+                            <span class="text-white/80 text-sm font-bold uppercase tracking-widest mb-2">${article.author} | ${article.category}</span>
+                            <h2 class="serif text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">${article.title}</h2>
+                            <a href="#article-${article.id}" class="inline-block bg-white text-stone-900 px-8 py-3 font-bold text-sm uppercase tracking-wider hover:bg-stone-200 transition self-start">
+                                Makaleye Git
+                            </a>
+                        </div>
+                    </div>
+                `;
+                sliderContainer.innerHTML += slide;
+            });
+            startSliderAutoPlay();
+        }
+
+        // Slider Mantığı
+        let currentSlide = 0;
+        const slides = () => document.querySelectorAll('.slide');
+        
+        function showSlide(index) {
+            const allSlides = slides();
+            if (index >= allSlides.length) currentSlide = 0;
+            if (index < 0) currentSlide = allSlides.length - 1;
+            
+            allSlides.forEach((slide, i) => {
+                if(i === currentSlide) {
+                    slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+                    slide.classList.add('z-10');
+                } else {
+                    slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+                    slide.classList.remove('z-10');
+                }
+            });
+        }
+
+        document.getElementById('nextSlide').addEventListener('click', () => { currentSlide++; showSlide(currentSlide); });
+        document.getElementById('prevSlide').addEventListener('click', () => { currentSlide--; showSlide(currentSlide); });
+
+        function startSliderAutoPlay() {
+            setInterval(() => { currentSlide++; showSlide(currentSlide); }, 5000);
+        }
+
+        // Read More Fonksiyonu (Global Scope'a ekleme)
+        window.toggleReadMore = (id) => {
+            const contentDiv = document.getElementById(`full-content-${id}`);
+            const btn = document.getElementById(`btn-${id}`);
+            
+            if (contentDiv.classList.contains('hidden')) {
+                contentDiv.classList.remove('hidden');
+                btn.innerText = "Kapat";
+            } else {
+                contentDiv.classList.add('hidden');
+                btn.innerText = "Devamını Oku";
+                // Kapatınca başlığa geri kaydır
+                document.getElementById(`article-${id}`).scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+
+        // Mobil Menü
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Başlat
+        fetchArticles();
+    </script>
+</body>
+</html>
