@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Sender</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+        }
+
+        p.instruction {
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #status-message {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            min-height: 20px;
+        }
+
+        .success { color: #28a745; font-weight: 600; }
+        .error { color: #dc3545; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <p class="instruction">To send an instant notification, please click the button.</p>
+
+        <button id="sendBtn" onclick="sendNotification()">Send Notification</button>
+
+        <div id="status-message"></div>
+    </div>
+
+    <script>
+       
+        const PUSHOVER_USER_KEY = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
+        const PUSHOVER_API_TOKEN = "adr5irsbtq86kuv6frvwuu29yfn4e4";
+        const COOLDOWN_SECONDS = 30; // Bekleme süresi
+
+        checkCooldown();
+
+        function checkCooldown() {
+            const lastSent = localStorage.getItem('lastNotificationTime');
+            if (lastSent) {
+                const now = new Date().getTime();
+                const diff = (now - parseInt(lastSent)) / 1000;
+                
+                if (diff < COOLDOWN_SECONDS) {
+                    const remaining = Math.ceil(COOLDOWN_SECONDS - diff);
+                    disableButton(remaining);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function disableButton(seconds) {
+            const btn = document.getElementById('sendBtn');
+            const msg = document.getElementById('status-message');
+            
+            btn.disabled = true;
+            btn.innerText = `To send new one ${seconds}s`;
+            
+            let counter = seconds;
+            const interval = setInterval(() => {
+                counter--;
+                if (counter <= 0) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    btn.innerText = "Send Notification";
+                    msg.innerText = ""; // Mesajı temizle
+                } else {
+                    btn.innerText = `To send new one ${counter}s`;
+                }
+            }, 1000);
+        }
+
+        async function sendNotification() {
+            const statusDiv = document.getElementById('status-message');
+
+            // Süre kontrolü
+            if (!checkCooldown()) return;
+
+            statusDiv.innerText = "Sending...";
+            statusDiv.className = "";
+
+            const formData = new FormData();
+            formData.append("token", PUSHOVER_API_TOKEN);
+            formData.append("user", PUSHOVER_USER_KEY);
+            formData.append("message", "Your phone memory is almost full. Please check it."); 
+
+            try {
+                const response = await fetch("https://api.pushover.net/1/messages.json", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 1) {
+                    // Başarılı
+                    statusDiv.innerText = "Notification sent successfully.";
+                    statusDiv.className = "success";
+                    
+                    // Zamanlayıcıyı başlat ve kaydet
+                    localStorage.setItem('lastNotificationTime', new Date().getTime());
+                    disableButton(COOLDOWN_SECONDS);
+                } else {
+                    throw new Error(result.errors ? result.errors[0] : "Unknown API Error");
+                }
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerText = "Failed to send. Check console.";
+                statusDiv.className = "error";
+            }
+        }
+    </script>
+
+</body>
+</html>
