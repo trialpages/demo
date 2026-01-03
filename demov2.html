@@ -5,259 +5,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
     
-    <title>Kişisel Asistanım</title>
+    <title>VINotes</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #2563eb;       /* Ana Renk: Profesyonel Mavi */
-            --primary-dark: #1d4ed8;
-            --secondary: #1e293b;     /* İkincil: Koyu Slate */
-            --bg: #f1f5f9;            /* Arkaplan: Çok açık gri */
-            --surface: #ffffff;       /* Kart Rengi: Beyaz */
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --success: #10b981;       /* Gelir Rengi */
-            --danger: #ef4444;        /* Gider Rengi */
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #334155;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
             --radius: 16px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --nav-height: 70px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { background-color: var(--bg); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* --- Login Screen --- */
+        /* --- LOGIN SCREEN (Revize) --- */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--surface); z-index: 2000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; /* Dikey ortalama */
             padding: 30px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .auth-card { width: 100%; max-width: 380px; text-align: center; }
-        .auth-card h1 { font-size: 1.8rem; margin: 15px 0 5px; color: var(--secondary); font-weight: 700; }
+        .auth-container {
+            width: 100%; max-width: 360px;
+            margin-bottom: 20vh; /* Sayfanın hafif üstünde durması için */
+            text-align: center;
+        }
+        .brand-logo { 
+            font-size: 64px; color: var(--primary); margin-bottom: 10px; 
+            background: #eff6ff; padding: 15px; border-radius: 24px;
+        }
+        .brand-title { font-size: 2rem; font-weight: 800; color: var(--secondary); letter-spacing: -1px; margin-bottom: 30px; }
+        
         .btn-login {
             background: var(--primary); color: white; border: none; padding: 16px;
             border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer;
-            width: 100%; margin-top: 20px; box-shadow: var(--shadow);
-            transition: background 0.2s;
+            width: 100%; margin-top: 15px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: transform 0.1s;
         }
-        .btn-login:active { background: var(--primary-dark); transform: scale(0.98); }
+        .btn-login:active { transform: scale(0.98); }
 
-        /* --- Main Layout --- */
+        /* --- APP LAYOUT --- */
         #app-screen { display: none; height: 100%; flex-direction: column; }
         
         header {
-            padding: 15px 20px; background: var(--surface);
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;
+            padding: 15px 20px; background: var(--surface); z-index: 10;
+            display: flex; flex-direction: column; gap: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        header h2 { font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
-        .logout-btn { background: #fee2e2; border: none; color: var(--danger); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;}
-
-        /* --- Content Areas --- */
-        main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
-
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Financial Cards --- */
-        .balance-card {
-            background: linear-gradient(145deg, var(--primary), var(--secondary));
-            color: white; padding: 25px; border-radius: var(--radius);
-            margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); text-align: center;
-        }
-        .balance-label { font-size: 0.9rem; opacity: 0.9; }
-        .balance-amount { font-size: 2.2rem; font-weight: 700; margin: 5px 0 15px; letter-spacing: -0.5px; }
-        .stats-row { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.15); }
-        .stat-item { flex: 1; }
-        .stat-item:first-child { border-right: 1px solid rgba(255,255,255,0.15); }
-        .stat-item span { display: block; font-size: 0.8rem; opacity: 0.8; }
-        .stat-item strong { font-size: 1.1rem; }
-
-        .section-title { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        .transaction-list { list-style: none; }
-        .transaction-item {
-            background: var(--surface); padding: 16px; border-radius: var(--radius);
-            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); position: relative; overflow: hidden;
-        }
-        .t-info h4 { font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
-        .t-info p { font-size: 0.75rem; color: var(--text-muted); }
-        .t-amount { font-weight: 700; font-size: 1rem; }
-        .income { color: var(--success); }
-        .expense { color: var(--danger); }
-        .btn-delete-mini { padding: 5px; color: var(--text-muted); cursor: pointer; opacity: 0.5; margin-left: 10px; }
-
-        /* --- Passwords & Notes --- */
-        .card-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        @media(min-width: 600px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-top h2 { font-size: 1.25rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; }
         
-        .data-card {
-            background: var(--surface); padding: 18px; border-radius: var(--radius);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03); position: relative; border: 1px solid #e2e8f0;
+        /* Arama Çubuğu */
+        .search-container { position: relative; width: 100%; }
+        .search-input {
+            width: 100%; background: var(--bg); border: none; padding: 10px 10px 10px 40px;
+            border-radius: 10px; font-size: 0.9rem; outline: none; color: var(--text-main);
         }
-        .data-card h3 { font-size: 1rem; margin-bottom: 5px; color: var(--secondary); font-weight: 600; }
-        .data-card .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
-        .password-field {
-            background: var(--bg); padding: 10px 12px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .copy-btn { border: none; background: none; color: var(--primary); cursor: pointer; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
-        .delete-card { position: absolute; top: 15px; right: 15px; color: var(--danger); cursor: pointer; opacity: 0.4; font-size: 18px; }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px; }
 
-        /* --- Navigation Bar (Bottom) --- */
+        .logout-btn { color: var(--danger); background: #fee2e2; border: none; padding: 8px; border-radius: 10px; cursor: pointer; display: flex; }
+
+        /* --- CONTENT --- */
+        main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CARDS & LISTS --- */
+        .balance-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white; padding: 20px; border-radius: var(--radius);
+            margin-bottom: 20px; text-align: center; box-shadow: 0 8px 20px -5px rgba(30, 41, 59, 0.3);
+        }
+        .balance-amount { font-size: 2rem; font-weight: 700; margin: 10px 0; }
+        .stats-row { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px; }
+        
+        /* Aylık Başlıklar */
+        .month-header {
+            font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin: 20px 0 10px;
+            text-transform: uppercase; letter-spacing: 0.5px; padding-left: 5px; border-left: 3px solid var(--primary);
+        }
+
+        .data-card {
+            background: var(--surface); padding: 16px; border-radius: var(--radius);
+            margin-bottom: 12px; position: relative; border: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .card-title { font-weight: 600; font-size: 1rem; color: var(--secondary); }
+        .card-sub { font-size: 0.8rem; color: var(--text-muted); }
+        .card-badge { 
+            font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; font-weight: 600; 
+            display: inline-block; width: fit-content;
+        }
+        .bg-green { background: #dcfce7; color: #15803d; }
+        .bg-red { background: #fee2e2; color: #b91c1c; }
+        .bg-blue { background: #dbeafe; color: #1d4ed8; }
+        .bg-orange { background: #ffedd5; color: #c2410c; }
+
+        .value-text { font-weight: 700; font-size: 0.95rem; }
+        .detail-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 5px; padding-top: 5px; border-top: 1px solid #f1f5f9; }
+        
+        .delete-btn { position: absolute; bottom: 15px; right: 15px; color: var(--text-muted); cursor: pointer; opacity: 0.6; }
+        
+        /* --- NAVIGATION --- */
         .nav-bar {
             position: fixed; bottom: 0; width: 100%; background: var(--surface);
-            display: flex; justify-content: space-around; padding: 10px 0 20px; /* iPhone safe area support */
-            border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
-            z-index: 100;
+            display: flex; justify-content: space-around; padding: 10px 5px 25px;
+            border-top: 1px solid #e2e8f0; z-index: 100;
         }
         .nav-item {
-            border: none; background: none; display: flex; flex-direction: column; align-items: center;
-            color: #94a3b8; font-size: 0.7rem; cursor: pointer; width: 70px; transition: color 0.2s;
+            background: none; border: none; display: flex; flex-direction: column; align-items: center;
+            color: var(--text-muted); font-size: 0.7rem; cursor: pointer; width: 20%;
         }
         .nav-item span { margin-top: 4px; font-weight: 500; }
         .nav-item.active { color: var(--primary); }
-        .nav-item .material-icons-round { font-size: 26px; }
+        .nav-item .material-icons-round { font-size: 24px; }
 
-        /* --- FAB & Modal --- */
+        /* --- FAB & MODAL --- */
         .fab {
-            position: fixed; bottom: 90px; right: 20px;
-            background: var(--primary); color: white; width: 56px; height: 56px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer; z-index: 90;
-            border: none; transition: transform 0.2s;
+            position: fixed; bottom: 90px; right: 20px; background: var(--secondary);
+            color: white; width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 90;
         }
-        .fab:active { transform: scale(0.90); }
-
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 3000; display: none;
-            justify-content: center; align-items: flex-end;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 3000;
+            display: none; justify-content: center; align-items: flex-end;
         }
         .modal-overlay.open { display: flex; }
         .modal-content {
             background: var(--surface); width: 100%; max-width: 600px;
-            border-radius: 24px 24px 0 0; padding: 30px 25px 40px;
+            border-radius: 24px 24px 0 0; padding: 25px; max-height: 85vh; overflow-y: auto;
             animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @media(min-width: 600px) {
-            .modal-overlay { align-items: center; }
-            .modal-content { border-radius: 24px; width: 450px; padding: 30px; }
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); font-weight: 500; }
+        /* Form Elements */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-muted); font-weight: 600; }
         .form-control, select {
-            width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px;
-            font-size: 1rem; background: var(--bg); outline: none; color: var(--text-main);
-            transition: border-color 0.2s;
+            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px;
+            font-size: 1rem; background: var(--bg); outline: none;
         }
-        .form-control:focus { border-color: var(--primary); background: #fff; }
-        
-        .type-selector { display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg); padding: 5px; border-radius: 14px; }
+        .type-selector { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding: 2px; }
         .type-chip {
-            flex: 1; text-align: center; padding: 10px; border-radius: 10px;
-            cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-muted);
-            transition: all 0.2s;
+            padding: 8px 16px; border-radius: 8px; background: #e2e8f0; color: var(--text-muted);
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; border: 1px solid transparent;
         }
-        .type-chip.selected { background: var(--surface); color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 600; }
+        .type-chip.selected { background: var(--secondary); color: white; }
+        
+        .copy-btn { color: var(--primary); font-weight: 700; cursor: pointer; border: none; background: none; font-size: 0.8rem;}
 
-        .tag-container { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
-        .tag-pill {
-            font-size: 0.75rem; padding: 6px 12px; background: #e0f2fe; color: #0369a1; 
-            border-radius: 20px; cursor: pointer; border: 1px solid transparent;
-        }
-        .tag-pill:active { background: #bae6fd; }
-
-        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; }
-        .close-modal { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
-        <div class="auth-card">
-            <span class="material-icons-round" style="font-size: 72px; color: var(--primary);">admin_panel_settings</span>
-            <h1>Kişisel Kasa</h1>
-            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">Hoşgeldiniz.<br>Lütfen güvenli giriş yapınız.</p>
+        <div class="auth-container">
+            <span class="material-icons-round brand-logo">verified_user</span>
+            <div class="brand-title">VINotes</div>
             
-            <form id="loginForm" style="margin-top:25px; text-align:left;">
+            <form id="loginForm">
                 <div class="form-group">
-                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta Adresiniz" required>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Parolanız" required>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Parola" required>
                 </div>
-                <button type="submit" class="btn-login">Kasayı Aç</button>
+                <button type="submit" class="btn-login">Login</button>
             </form>
-             <p id="authError" style="color: var(--danger); margin-top: 15px; font-size: 0.85rem; min-height: 20px;"></p>
+            <p id="authError" style="color: var(--danger); margin-top: 15px; font-size: 0.85rem;"></p>
         </div>
     </div>
 
     <div id="app-screen">
         <header>
-            <h2 id="page-title">Cüzdan</h2>
-            <button class="logout-btn" id="btnLogout">
-                <span class="material-icons-round">power_settings_new</span>
-            </button>
+            <div class="header-top">
+                <h2 id="page-title">Cüzdan</h2>
+                <button class="logout-btn" id="btnLogout"><span class="material-icons-round">power_settings_new</span></button>
+            </div>
+            <div class="search-container">
+                <span class="material-icons-round search-icon">search</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Kayıtlar içinde ara...">
+            </div>
         </header>
 
         <main>
             <section id="view-finance" class="section active">
                 <div class="balance-card">
-                    <p class="balance-label">Net Bakiye</p>
+                    <p style="font-size:0.85rem; opacity:0.8;">Net Varlık</p>
                     <div class="balance-amount" id="totalBalance">₺0,00</div>
                     <div class="stats-row">
-                        <div class="stat-item">
-                            <span>Toplam Gelir</span>
-                            <strong id="totalIncome" style="color: #6ee7b7;">₺0,00</strong>
-                        </div>
-                        <div class="stat-item">
-                            <span>Toplam Gider</span>
-                            <strong id="totalExpense" style="color: #fca5a5;">₺0,00</strong>
-                        </div>
+                        <div style="flex:1;">Gelir <br><strong style="color:#4ade80;" id="totalIncome">₺0</strong></div>
+                        <div style="width:1px; background:rgba(255,255,255,0.2);"></div>
+                        <div style="flex:1;">Gider <br><strong style="color:#f87171;" id="totalExpense">₺0</strong></div>
                     </div>
                 </div>
-                
-                <h3 class="section-title">Hesap Hareketleri</h3>
-                <ul class="transaction-list" id="transactionList">
-                    <li style="text-align:center; padding:20px; color:#cbd5e1; font-size:0.9rem;">Yükleniyor...</li>
-                </ul>
+                <div id="financeListContainer"></div>
             </section>
 
-            <section id="view-passwords" class="section">
-                <h3 class="section-title">Kayıtlı Parolalar</h3>
-                <div class="card-grid" id="passwordList">
-                    </div>
+            <section id="view-debts" class="section">
+                <div id="debtsListContainer"></div>
+            </section>
+
+            <section id="view-vault" class="section">
+                <div class="type-selector" style="margin-bottom:10px;">
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Banka Hesapları & Parolalar</span>
+                </div>
+                <div id="vaultListContainer"></div>
+            </section>
+
+            <section id="view-assets" class="section">
+                 <div id="assetsListContainer"></div>
             </section>
 
             <section id="view-notes" class="section">
-                <h3 class="section-title">Not Defteri</h3>
-                <div class="card-grid" id="noteList">
-                    </div>
+                <div id="notesListContainer"></div>
             </section>
         </main>
 
-        <button class="fab" id="fabBtn">
-            <span class="material-icons-round">add</span>
-        </button>
+        <button class="fab" id="fabBtn"><span class="material-icons-round">add</span></button>
 
         <nav class="nav-bar">
             <button class="nav-item active" onclick="switchTab('finance')">
                 <span class="material-icons-round">account_balance_wallet</span>
                 <span>Cüzdan</span>
             </button>
-            <button class="nav-item" onclick="switchTab('passwords')">
+            <button class="nav-item" onclick="switchTab('debts')">
+                <span class="material-icons-round">handshake</span>
+                <span>Borçlar</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('vault')">
                 <span class="material-icons-round">lock</span>
                 <span>Kasa</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('assets')">
+                <span class="material-icons-round">directions_car</span>
+                <span>Varlık</span>
             </button>
             <button class="nav-item" onclick="switchTab('notes')">
                 <span class="material-icons-round">edit_note</span>
@@ -268,63 +267,78 @@
 
     <div class="modal-overlay" id="addModal">
         <div class="modal-content">
-            <button class="close-modal" id="closeModal"><span class="material-icons-round" style="font-size:20px;">close</span></button>
-            <h3 style="margin-bottom: 20px; font-size:1.2rem;">Yeni Kayıt</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3>Yeni Kayıt</h3>
+                <span class="material-icons-round" id="closeModal" style="cursor:pointer; color:var(--text-muted);">close</span>
+            </div>
 
             <div class="form-group">
-                <label>Ne eklemek istersiniz?</label>
+                <label class="form-label">Kategori</label>
                 <select id="entryType" class="form-control" onchange="updateFormFields()">
                     <option value="finance">Gelir / Gider</option>
-                    <option value="password">Parola / Hesap</option>
+                    <option value="debt">Borç / Alacak</option>
+                    <option value="bank">Banka / IBAN</option>
+                    <option value="password">Parola</option>
+                    <option value="tax">Yıllık Vergi</option>
+                    <option value="vehicle">Araç Bilgisi</option>
                     <option value="note">Not</option>
                 </select>
             </div>
 
             <form id="dataForm">
-                <div id="financeFields">
+                <div id="fields-finance">
                     <div class="type-selector">
-                        <div class="type-chip selected" onclick="setFinanceType('income', this)">Gelir</div>
-                        <div class="type-chip" onclick="setFinanceType('expense', this)">Gider</div>
+                        <div class="type-chip selected" onclick="setType('income', this)">Gelir</div>
+                        <div class="type-chip" onclick="setType('expense', this)">Gider</div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Hızlı Seçim</label>
-                        <div class="tag-container">
-                            <span class="tag-pill" onclick="fillDesc('Maaş')">Maaş</span>
-                            <span class="tag-pill" onclick="fillDesc('Ek Ders')">Ek Ders</span>
-                            <span class="tag-pill" onclick="fillDesc('Sınav Görevi')">Sınav Görevi</span>
-                            <span class="tag-pill" onclick="fillDesc('Market')">Market</span>
-                            <span class="tag-pill" onclick="fillDesc('Fatura')">Fatura</span>
-                        </div>
-                        <input type="text" id="finDesc" class="form-control" placeholder="Açıklama giriniz" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="number" id="finAmount" class="form-control" placeholder="Tutar (₺)" step="0.01" required>
-                    </div>
+                    <div class="form-group"><input type="date" id="finDate" class="form-control" required></div>
+                    <div class="form-group"><input type="text" id="finDesc" class="form-control" placeholder="Açıklama (Maaş, Ek Ders vb.)"></div>
+                    <div class="form-group"><input type="number" id="finAmount" class="form-control" placeholder="Tutar (₺)" step="0.01"></div>
                 </div>
 
-                <div id="passwordFields" style="display:none;">
-                    <div class="form-group">
-                        <input type="text" id="passSite" class="form-control" placeholder="Uygulama / Site Adı (Örn: E-Devlet)">
+                <div id="fields-debt" style="display:none;">
+                    <div class="type-selector">
+                        <div class="type-chip selected" onclick="setType('receivable', this)">Alacak (Ben Verdim)</div>
+                        <div class="type-chip" onclick="setType('debt', this)">Borç (Ben Aldım)</div>
                     </div>
-                    <div class="form-group">
-                        <input type="text" id="passUser" class="form-control" placeholder="Kullanıcı Adı / E-posta">
+                    <div class="form-group"><input type="text" id="debtPerson" class="form-control" placeholder="Kişi Adı Soyadı"></div>
+                    <div class="form-group"><label class="form-label">İşlem Tarihi</label><input type="date" id="debtDate" class="form-control"></div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1;"><input type="number" id="debtGoldGram" class="form-control" placeholder="Altın (Gr)" step="0.01"></div>
+                        <div class="form-group" style="flex:1;"><input type="number" id="debtGoldPrice" class="form-control" placeholder="Kur (₺)" step="0.01"></div>
                     </div>
-                    <div class="form-group">
-                        <input type="text" id="passSecret" class="form-control" placeholder="Parola">
-                    </div>
+                     <div class="form-group"><label class="form-label">Tahsil / Ödeme Tarihi</label><input type="date" id="debtDueDate" class="form-control"></div>
                 </div>
 
-                <div id="noteFields" style="display:none;">
-                    <div class="form-group">
-                        <input type="text" id="noteTitle" class="form-control" placeholder="Not Başlığı">
-                    </div>
-                    <div class="form-group">
-                        <textarea id="noteContent" class="form-control" rows="5" placeholder="Notunuzu buraya yazın..."></textarea>
-                    </div>
+                <div id="fields-bank" style="display:none;">
+                    <div class="form-group"><input type="text" id="bankName" class="form-control" placeholder="Banka Adı (Ziraat, Enpara...)"></div>
+                    <div class="form-group"><input type="text" id="bankAccount" class="form-control" placeholder="Hesap Sahibi"></div>
+                    <div class="form-group"><input type="text" id="bankIban" class="form-control" placeholder="TRxx ...."></div>
                 </div>
 
-                <button type="submit" class="btn-submit">Kaydet</button>
+                <div id="fields-password" style="display:none;">
+                    <div class="form-group"><input type="text" id="passSite" class="form-control" placeholder="Site / Uygulama"></div>
+                    <div class="form-group"><input type="text" id="passUser" class="form-control" placeholder="Kullanıcı Adı"></div>
+                    <div class="form-group"><input type="text" id="passSecret" class="form-control" placeholder="Parola"></div>
+                </div>
+
+                <div id="fields-tax" style="display:none;">
+                    <div class="form-group"><input type="text" id="taxName" class="form-control" placeholder="Vergi Adı (MTV, Emlak)"></div>
+                    <div class="form-group"><label class="form-label">Son Ödeme Tarihi</label><input type="date" id="taxDate" class="form-control"></div>
+                </div>
+
+                <div id="fields-vehicle" style="display:none;">
+                    <div class="form-group"><input type="text" id="vehPlate" class="form-control" placeholder="Plaka (34 AB 123)"></div>
+                    <div class="form-group"><label class="form-label">Son Bakım</label><input type="date" id="vehLastDate" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Gelecek Bakım</label><input type="date" id="vehNextDate" class="form-control"></div>
+                </div>
+
+                <div id="fields-note" style="display:none;">
+                    <div class="form-group"><input type="text" id="noteTitle" class="form-control" placeholder="Başlık"></div>
+                    <div class="form-group"><textarea id="noteContent" class="form-control" rows="4" placeholder="İçerik..."></textarea></div>
+                </div>
+
+                <button type="submit" class="btn-login" style="margin-top:10px;">Kaydet</button>
             </form>
         </div>
     </div>
@@ -332,9 +346,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- DİKKAT: BURAYA KENDİ FIREBASE BİLGİLERİNİZİ YAPIŞTIRIN ---
+        // --- FIREBASE AYARLARI ---
         const firebaseConfig = {
   apiKey: "AIzaSyDm5yzzoIqzsqF7TMvT7eInZXBZINSwN-w",
   authDomain: "pa-hmd-s7v1.firebaseapp.com",
@@ -345,279 +359,368 @@
   measurementId: "G-XK9835JN19"
 };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // State Variables
+        // Global State
         let currentUser = null;
-        let currentFinanceType = 'income';
+        let subType = 'income'; // Varsayılan alt tip
 
-        // --- AUTH LOGIC ---
-        const authScreen = document.getElementById('auth-screen');
-        const appScreen = document.getElementById('app-screen');
-        const loginForm = document.getElementById('loginForm');
-        const authError = document.getElementById('authError');
-
+        // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                authScreen.style.transform = "translateY(-100%)"; // Slide up animation
-                appScreen.style.display = "flex";
-                loadData();
+                document.getElementById('auth-screen').style.transform = "translateY(-100%)";
+                document.getElementById('app-screen').style.display = "flex";
+                loadAllData();
             } else {
                 currentUser = null;
-                authScreen.style.transform = "translateY(0)";
-                appScreen.style.display = "none";
+                document.getElementById('auth-screen').style.transform = "translateY(0)";
+                document.getElementById('app-screen').style.display = "none";
             }
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            authError.textContent = "Giriş yapılıyor...";
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    authError.textContent = "";
-                    loginForm.reset();
-                })
-                .catch((error) => {
-                    let msg = "Giriş başarısız.";
-                    if(error.code === 'auth/invalid-credential') msg = "E-posta veya parola hatalı.";
-                    if(error.code === 'auth/too-many-requests') msg = "Çok fazla deneme yaptınız. Biraz bekleyin.";
-                    authError.textContent = msg;
-                });
+            signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value)
+                .catch(err => document.getElementById('authError').textContent = "Giriş başarısız.");
         });
 
-        document.getElementById('btnLogout').addEventListener('click', () => {
-            if(confirm("Güvenli çıkış yapılsın mı?")) signOut(auth);
-        });
+        document.getElementById('btnLogout').addEventListener('click', () => { if(confirm("Çıkış?")) signOut(auth); });
 
-        // --- UI NAVIGATION ---
+        // --- UI & TABS ---
         window.switchTab = (tabId) => {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabId).classList.add('active');
-            
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active'); // Tıklanan butonu aktif yap
-
-            const titles = {'finance': 'Cüzdan', 'passwords': 'Kasa', 'notes': 'Notlar'};
+            event.currentTarget.classList.add('active');
+            
+            const titles = {finance:'Cüzdan', debts:'Borçlar', vault:'Kasa', assets:'Varlıklar', notes:'Notlar'};
             document.getElementById('page-title').textContent = titles[tabId];
+            window.scrollTo(0,0);
         };
 
-        // --- MODAL & FORM LOGIC ---
+        // --- MODAL & FORM ---
         const modal = document.getElementById('addModal');
-        const fabBtn = document.getElementById('fabBtn');
-        const closeModal = document.getElementById('closeModal');
-        const dataForm = document.getElementById('dataForm');
-
-        fabBtn.addEventListener('click', () => { 
-            modal.classList.add('open'); 
-            // Varsayılan olarak finans sekmesi açıksa finans seçili gelsin
-            const activeSection = document.querySelector('.section.active').id;
-            if(activeSection === 'view-passwords') document.getElementById('entryType').value = 'password';
-            else if(activeSection === 'view-notes') document.getElementById('entryType').value = 'note';
-            else document.getElementById('entryType').value = 'finance';
+        document.getElementById('fabBtn').onclick = () => {
+            modal.classList.add('open');
+            // Bugünün tarihini varsayılan yap
+            document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
             updateFormFields();
-        });
+        };
+        document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
 
-        closeModal.addEventListener('click', () => { modal.classList.remove('open'); });
-        
         window.updateFormFields = () => {
             const type = document.getElementById('entryType').value;
-            document.getElementById('financeFields').style.display = type === 'finance' ? 'block' : 'none';
-            document.getElementById('passwordFields').style.display = type === 'password' ? 'block' : 'none';
-            document.getElementById('noteFields').style.display = type === 'note' ? 'block' : 'none';
+            // Tüm alanları gizle
+            document.querySelectorAll('[id^="fields-"]').forEach(el => el.style.display = 'none');
+            // Seçiliyi göster
+            document.getElementById('fields-' + type).style.display = 'block';
             
-            // Required alan yönetimi
-            document.getElementById('finDesc').required = (type === 'finance');
-            document.getElementById('finAmount').required = (type === 'finance');
-            document.getElementById('passSite').required = (type === 'password');
-            document.getElementById('noteTitle').required = (type === 'note');
+            // Varsayılan subType ayarla (chip resetleme)
+            if(type === 'finance') setType('income', document.querySelector('#fields-finance .type-chip:first-child'));
+            if(type === 'debt') setType('receivable', document.querySelector('#fields-debt .type-chip:first-child'));
         };
 
-        window.setFinanceType = (type, el) => {
-            currentFinanceType = type;
-            document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('selected'));
+        window.setType = (val, el) => {
+            subType = val;
+            el.parentElement.querySelectorAll('.type-chip').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
         };
 
-        window.fillDesc = (text) => {
-            document.getElementById('finDesc').value = text;
-        };
-
-        // --- FIREBASE CRUD OPERATIONS ---
-        dataForm.addEventListener('submit', async (e) => {
+        // --- CRUD OPERATIONS ---
+        document.getElementById('dataForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
-
-            const entryType = document.getElementById('entryType').value;
             const uid = currentUser.uid;
-            const submitBtn = document.querySelector('.btn-submit');
-            const originalBtnText = submitBtn.textContent;
-            
-            submitBtn.textContent = "Kaydediliyor...";
-            submitBtn.disabled = true;
+            const type = document.getElementById('entryType').value;
+            const btn = e.target.querySelector('button');
+            btn.textContent = "Kaydediliyor...";
+            btn.disabled = true;
 
             try {
-                if (entryType === 'finance') {
-                    const desc = document.getElementById('finDesc').value;
-                    const amount = parseFloat(document.getElementById('finAmount').value);
-                    await addDoc(collection(db, `users/${uid}/transactions`), {
-                        type: currentFinanceType,
-                        description: desc,
-                        amount: amount,
-                        createdAt: serverTimestamp()
-                    });
-                } else if (entryType === 'password') {
-                    await addDoc(collection(db, `users/${uid}/passwords`), {
+                let colName = '';
+                let data = { createdAt: serverTimestamp() };
+
+                if(type === 'finance') {
+                    colName = 'transactions';
+                    data = { ...data, 
+                        type: subType, 
+                        date: document.getElementById('finDate').value,
+                        desc: document.getElementById('finDesc').value,
+                        amount: parseFloat(document.getElementById('finAmount').value) 
+                    };
+                } else if(type === 'debt') {
+                    colName = 'debts';
+                    data = { ...data,
+                        type: subType, // receivable (alacak) or debt (borç)
+                        person: document.getElementById('debtPerson').value,
+                        date: document.getElementById('debtDate').value,
+                        goldGram: parseFloat(document.getElementById('debtGoldGram').value) || 0,
+                        goldPrice: parseFloat(document.getElementById('debtGoldPrice').value) || 0,
+                        dueDate: document.getElementById('debtDueDate').value
+                    };
+                } else if(type === 'bank') {
+                    colName = 'banks';
+                    data = { ...data,
+                        bankName: document.getElementById('bankName').value,
+                        accountName: document.getElementById('bankAccount').value,
+                        iban: document.getElementById('bankIban').value
+                    };
+                } else if(type === 'password') {
+                    colName = 'passwords';
+                    data = { ...data,
                         site: document.getElementById('passSite').value,
-                        username: document.getElementById('passUser').value,
-                        password: document.getElementById('passSecret').value,
-                        createdAt: serverTimestamp()
-                    });
-                } else if (entryType === 'note') {
-                    await addDoc(collection(db, `users/${uid}/notes`), {
-                        title: document.getElementById('noteTitle').value,
-                        content: document.getElementById('noteContent').value,
-                        createdAt: serverTimestamp()
-                    });
+                        user: document.getElementById('passUser').value,
+                        pass: document.getElementById('passSecret').value
+                    };
+                } else if(type === 'tax') {
+                    colName = 'taxes';
+                    data = { ...data, name: document.getElementById('taxName').value, date: document.getElementById('taxDate').value };
+                } else if(type === 'vehicle') {
+                    colName = 'vehicles';
+                    data = { ...data, 
+                        plate: document.getElementById('vehPlate').value,
+                        lastDate: document.getElementById('vehLastDate').value,
+                        nextDate: document.getElementById('vehNextDate').value
+                    };
+                } else if(type === 'note') {
+                    colName = 'notes';
+                    data = { ...data, title: document.getElementById('noteTitle').value, content: document.getElementById('noteContent').value };
                 }
-                
+
+                await addDoc(collection(db, `users/${uid}/${colName}`), data);
                 modal.classList.remove('open');
-                dataForm.reset();
+                document.getElementById('dataForm').reset();
             } catch (err) {
-                console.error(err);
-                alert("Hata oluştu: " + err.message);
+                alert("Hata: " + err.message);
             } finally {
-                submitBtn.textContent = originalBtnText;
-                submitBtn.disabled = false;
+                btn.textContent = "Kaydet";
+                btn.disabled = false;
             }
         });
 
-        // --- DATA LISTENING (REALTIME) ---
-        function loadData() {
+        // --- DATA LOADING & RENDERING ---
+        function loadAllData() {
             const uid = currentUser.uid;
-
-            // 1. Transactions Listener
-            const qTrans = query(collection(db, `users/${uid}/transactions`), orderBy('createdAt', 'desc'));
-            onSnapshot(qTrans, (snapshot) => {
-                const list = document.getElementById('transactionList');
+            
+            // 1. FINANS (AYLIK GRUPLAMA)
+            onSnapshot(query(collection(db, `users/${uid}/transactions`), orderBy('date', 'desc')), (snap) => {
+                const list = document.getElementById('financeListContainer');
                 list.innerHTML = '';
-                let income = 0, expense = 0;
+                let totalInc = 0, totalExp = 0;
+                let lastMonthKey = '';
 
-                if (snapshot.empty) {
-                    list.innerHTML = '<li style="text-align:center; padding:20px; color:#94a3b8;">Henüz kayıt yok.</li>';
-                }
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    // Toplam Hesaplama
+                    if(d.type === 'income') totalInc += (d.amount || 0);
+                    else totalExp += (d.amount || 0);
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const item = document.createElement('li');
-                    item.className = 'transaction-item';
-                    const isInc = data.type === 'income';
-                    if(isInc) income += data.amount; else expense += data.amount;
-
-                    // Tarih formatlama
-                    let dateStr = "";
-                    if(data.createdAt) {
-                        const date = data.createdAt.toDate();
-                        dateStr = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+                    // Tarih Formatlama & Başlık
+                    const dateObj = new Date(d.date);
+                    const monthKey = dateObj.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
+                    
+                    if(monthKey !== lastMonthKey) {
+                        list.innerHTML += `<div class="month-header">${monthKey}</div>`;
+                        lastMonthKey = monthKey;
                     }
 
-                    item.innerHTML = `
-                        <div class="t-info">
-                            <h4>${data.description}</h4>
-                            <p>${dateStr}</p>
-                        </div>
-                        <div style="display:flex; align-items:center;">
-                            <div class="t-amount ${isInc ? 'income' : 'expense'}">
-                                ${isInc ? '+' : '-'}₺${data.amount.toLocaleString('tr-TR', {minimumFractionDigits: 2})}
+                    const card = document.createElement('div');
+                    card.className = 'data-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title searchable">${d.desc}</div>
+                                <div class="card-sub searchable">${dateObj.toLocaleDateString('tr-TR')}</div>
                             </div>
-                            <span class="material-icons-round btn-delete-mini" onclick="deleteItem('transactions', '${doc.id}')">delete</span>
+                            <div class="value-text ${d.type === 'income' ? 'bg-green' : 'bg-red'} card-badge">
+                                ${d.type === 'income' ? '+' : '-'}₺${d.amount.toLocaleString('tr-TR')}
+                            </div>
                         </div>
+                        <span class="material-icons-round delete-btn" onclick="del('transactions','${doc.id}')">delete</span>
                     `;
-                    list.appendChild(item);
+                    list.appendChild(card);
                 });
-
-                document.getElementById('totalIncome').textContent = `₺${income.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-                document.getElementById('totalExpense').textContent = `₺${expense.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-                document.getElementById('totalBalance').textContent = `₺${(income - expense).toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                document.getElementById('totalIncome').textContent = `₺${totalInc.toLocaleString('tr-TR')}`;
+                document.getElementById('totalExpense').textContent = `₺${totalExp.toLocaleString('tr-TR')}`;
+                document.getElementById('totalBalance').textContent = `₺${(totalInc - totalExp).toLocaleString('tr-TR')}`;
             });
 
-            // 2. Passwords Listener
-            const qPass = query(collection(db, `users/${uid}/passwords`), orderBy('createdAt', 'desc'));
-            onSnapshot(qPass, (snapshot) => {
-                const grid = document.getElementById('passwordList');
-                grid.innerHTML = '';
-                
-                if (snapshot.empty) grid.innerHTML = '<p style="text-align:center; color:#94a3b8; grid-column:span 2;">Kasa boş.</p>';
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
+            // 2. BORÇLAR
+            onSnapshot(query(collection(db, `users/${uid}/debts`), orderBy('date', 'desc')), (snap) => {
+                const list = document.getElementById('debtsListContainer');
+                list.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const isReceivable = d.type === 'receivable';
+                    const goldTotal = (d.goldGram || 0) * (d.goldPrice || 0);
+                    
                     const card = document.createElement('div');
                     card.className = 'data-card';
                     card.innerHTML = `
-                        <span class="material-icons-round delete-card" onclick="deleteItem('passwords', '${doc.id}')">delete</span>
-                        <h3>${data.site}</h3>
-                        <div class="meta">${data.username}</div>
-                        <div class="password-field">
-                            <span>••••••</span>
-                            <button class="copy-btn" onclick="revealAndCopy(this, '${data.password}')">GÖSTER</button>
+                        <div class="card-header">
+                            <div>
+                                <span class="card-badge ${isReceivable ? 'bg-green' : 'bg-orange'}">${isReceivable ? 'ALACAK' : 'BORÇ'}</span>
+                                <div class="card-title searchable" style="margin-top:5px;">${d.person}</div>
+                            </div>
+                            <div class="value-text" style="color:${isReceivable?'#15803d':'#c2410c'};">
+                                ${goldTotal > 0 ? '₺' + goldTotal.toLocaleString('tr-TR') : '-'}
+                            </div>
                         </div>
+                        <div class="detail-row searchable">
+                            <span>Verilme: ${new Date(d.date).toLocaleDateString('tr-TR')}</span>
+                            <span>Vade: ${d.dueDate ? new Date(d.dueDate).toLocaleDateString('tr-TR') : '-'}</span>
+                        </div>
+                        <div class="detail-row searchable" style="color:var(--text-muted);">
+                            <span>${d.goldGram} gr Altın (@ ₺${d.goldPrice})</span>
+                        </div>
+                        <span class="material-icons-round delete-btn" onclick="del('debts','${doc.id}')">delete</span>
                     `;
-                    grid.appendChild(card);
+                    list.appendChild(card);
                 });
             });
 
-            // 3. Notes Listener
-            const qNotes = query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc'));
-            onSnapshot(qNotes, (snapshot) => {
-                const grid = document.getElementById('noteList');
-                grid.innerHTML = '';
-                
-                if (snapshot.empty) grid.innerHTML = '<p style="text-align:center; color:#94a3b8; grid-column:span 2;">Not yok.</p>';
+            // 3. KASA (BANKA + PAROLA)
+            // Bankalar
+            onSnapshot(collection(db, `users/${uid}/banks`), (snap) => {
+                const list = document.getElementById('vaultListContainer');
+                // Önce bankaları temizlemiyoruz, append edeceğiz ama sıralama karışmasın diye id ile container yapsak iyi olurdu. 
+                // Basitlik adına her güncellemede burayı sıfırlayıp yeniden çizdirelim ama parola ile çakışır.
+                // Çözüm: İki ayrı fonksiyon veya tek container. Şimdilik manuel filtreleme.
+                renderVault(uid);
+            });
+            // Parolalar
+            onSnapshot(collection(db, `users/${uid}/passwords`), (snap) => { renderVault(uid); });
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const card = document.createElement('div');
-                    card.className = 'data-card';
-                    card.innerHTML = `
-                        <span class="material-icons-round delete-card" onclick="deleteItem('notes', '${doc.id}')">delete</span>
-                        <h3>${data.title}</h3>
-                        <p style="font-size:0.9rem; color:var(--text-main); white-space: pre-wrap; line-height:1.4;">${data.content}</p>
-                    `;
-                    grid.appendChild(card);
+            // 4. VARLIK (VERGİ + ARAÇ)
+            onSnapshot(collection(db, `users/${uid}/taxes`), (snap) => { renderAssets(uid); });
+            onSnapshot(collection(db, `users/${uid}/vehicles`), (snap) => { renderAssets(uid); });
+
+            // 5. NOTLAR
+            onSnapshot(query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc')), (snap) => {
+                const list = document.getElementById('notesListContainer');
+                list.innerHTML = '';
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    list.innerHTML += `
+                        <div class="data-card">
+                            <div class="card-title searchable">${d.title}</div>
+                            <p style="font-size:0.9rem; margin-top:5px; white-space:pre-wrap;" class="searchable">${d.content}</p>
+                            <span class="material-icons-round delete-btn" onclick="del('notes','${doc.id}')">delete</span>
+                        </div>`;
                 });
             });
         }
 
-        // Global Fonksiyonlar (HTML onclick için window'a atandı)
-        window.deleteItem = async (col, id) => {
-            if(confirm("Silmek istediğinize emin misiniz?")) {
-                await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id));
-            }
+        // Helper renderers for mixed lists
+        async function renderVault(uid) {
+            // Basit birleşim için her çağrıda listeyi sıfırlayıp tekrar çekiyoruz (Snapshot real-time tetiklediği için)
+            // Daha optimize yöntem vardır ama bu ölçekte sorun olmaz.
+            const list = document.getElementById('vaultListContainer');
+            list.innerHTML = '';
+
+            // Bankalar
+            const banks = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/banks`)));
+            banks.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="data-card" style="border-left:4px solid var(--primary);">
+                        <div class="card-title searchable">${d.bankName}</div>
+                        <div class="card-sub searchable">${d.accountName}</div>
+                        <div style="margin-top:5px; font-family:monospace; background:#f1f5f9; padding:8px; border-radius:6px; display:flex; justify-content:space-between;">
+                            <span class="searchable">${d.iban}</span>
+                            <button class="copy-btn" onclick="copyTxt('${d.iban}')">KOPYALA</button>
+                        </div>
+                        <span class="material-icons-round delete-btn" onclick="del('banks','${doc.id}')">delete</span>
+                    </div>`;
+            });
+
+            // Parolalar
+            const passes = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/passwords`)));
+            passes.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="data-card">
+                        <div class="card-title searchable">${d.site}</div>
+                        <div class="card-sub searchable">${d.user}</div>
+                        <div style="margin-top:5px; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+                            <span>••••••</span>
+                            <button class="copy-btn" onclick="reveal(this, '${d.pass}')">GÖSTER</button>
+                        </div>
+                        <span class="material-icons-round delete-btn" onclick="del('passwords','${doc.id}')">delete</span>
+                    </div>`;
+            });
+        }
+
+        async function renderAssets(uid) {
+            const list = document.getElementById('assetsListContainer');
+            list.innerHTML = '';
+
+            // Araçlar
+            const vehicles = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/vehicles`)));
+            vehicles.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="data-card">
+                        <div class="card-header"><div class="card-title searchable">${d.plate}</div><span class="card-badge bg-blue">ARAÇ</span></div>
+                        <div class="detail-row searchable"><span>Son Bakım:</span><strong>${d.lastDate ? new Date(d.lastDate).toLocaleDateString('tr-TR') : '-'}</strong></div>
+                        <div class="detail-row searchable"><span>Gelecek Bakım:</span><strong>${d.nextDate ? new Date(d.nextDate).toLocaleDateString('tr-TR') : '-'}</strong></div>
+                        <span class="material-icons-round delete-btn" onclick="del('vehicles','${doc.id}')">delete</span>
+                    </div>`;
+            });
+
+            // Vergiler
+            const taxes = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/taxes`)));
+            taxes.forEach(doc => {
+                const d = doc.data();
+                // Tarih kontrolü (geçti mi?)
+                const isPast = new Date(d.date) < new Date();
+                list.innerHTML += `
+                    <div class="data-card">
+                        <div class="card-header"><div class="card-title searchable">${d.name}</div><span class="card-badge bg-orange">VERGİ</span></div>
+                        <div class="detail-row searchable">
+                            <span>Son Ödeme:</span>
+                            <strong style="color:${isPast?'#ef4444':'#334155'}">${new Date(d.date).toLocaleDateString('tr-TR')}</strong>
+                        </div>
+                        <span class="material-icons-round delete-btn" onclick="del('taxes','${doc.id}')">delete</span>
+                    </div>`;
+            });
+        }
+
+        // --- UTILS ---
+        window.del = async (col, id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id)); };
+        
+        window.reveal = (btn, pass) => {
+            navigator.clipboard.writeText(pass);
+            const span = btn.previousElementSibling;
+            span.textContent = pass;
+            btn.textContent = "KOPYALANDI";
+            setTimeout(() => { span.textContent = "••••••"; btn.textContent = "GÖSTER"; }, 3000);
         };
 
-        window.revealAndCopy = (btn, pass) => {
-            // Kopyala
-            navigator.clipboard.writeText(pass).then(() => {
-                const span = btn.previousElementSibling;
-                span.textContent = pass;
-                btn.textContent = "KOPYALANDI";
-                btn.style.color = "#10b981";
-                
-                setTimeout(() => {
-                    span.textContent = "••••••";
-                    btn.textContent = "GÖSTER";
-                    btn.style.color = "";
-                }, 4000);
-            }).catch(err => {
-                alert("Kopyalanamadı, manuel seçin.");
-            });
+        window.copyTxt = (txt) => {
+            navigator.clipboard.writeText(txt);
+            alert("Kopyalandı: " + txt);
         };
+
+        // --- SEARCH FUNCTION ---
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            const term = e.target.value.toLowerCase();
+            const activeSection = document.querySelector('.section.active');
+            const items = activeSection.querySelectorAll('.data-card'); // Her kart 'data-card' classına sahip
+            const headers = activeSection.querySelectorAll('.month-header');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                item.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+            
+            // Başlıkları da gizle eğer altındaki her şey gizlendiyse (Finans için)
+            // Bu biraz kompleks olabilir, şimdilik sadece kartları filtreleyelim.
+        });
+
     </script>
 </body>
 </html>
