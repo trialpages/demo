@@ -13,39 +13,30 @@
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1e40af;
             --secondary: #0f172a;
             --bg: #f8fafc;
             --surface: #ffffff;
             --text-main: #334155;
             --text-muted: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
             --radius: 16px;
-            --nav-height: 70px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
         body { background-color: var(--bg); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* --- LOGIN SCREEN (Revize) --- */
+        /* --- LOGIN SCREEN --- */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--surface); z-index: 2000;
             display: flex; flex-direction: column; align-items: center; 
-            justify-content: center; /* Dikey ortalama */
+            justify-content: center;
             padding: 30px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .auth-container {
-            width: 100%; max-width: 360px;
-            margin-bottom: 20vh; /* Sayfanın hafif üstünde durması için */
-            text-align: center;
-        }
+        .auth-container { width: 100%; max-width: 360px; margin-bottom: 15vh; text-align: center; }
         .brand-logo { 
-            font-size: 64px; color: var(--primary); margin-bottom: 10px; 
-            background: #eff6ff; padding: 15px; border-radius: 24px;
+            font-size: 64px; color: var(--primary); margin-bottom: 15px; 
+            background: #eff6ff; padding: 15px; border-radius: 24px; display:inline-block;
         }
         .brand-title { font-size: 2rem; font-weight: 800; color: var(--secondary); letter-spacing: -1px; margin-bottom: 30px; }
         
@@ -57,70 +48,84 @@
         }
         .btn-login:active { transform: scale(0.98); }
 
-        /* --- APP LAYOUT --- */
+        /* --- APP STRUCTURE --- */
         #app-screen { display: none; height: 100%; flex-direction: column; }
         
         header {
             padding: 15px 20px; background: var(--surface); z-index: 10;
-            display: flex; flex-direction: column; gap: 10px;
+            display: flex; flex-direction: column; gap: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .header-top h2 { font-size: 1.25rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; }
+        .header-top h2 { font-size: 1.4rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px; }
         
-        /* Arama Çubuğu */
         .search-container { position: relative; width: 100%; }
         .search-input {
-            width: 100%; background: var(--bg); border: none; padding: 10px 10px 10px 40px;
-            border-radius: 10px; font-size: 0.9rem; outline: none; color: var(--text-main);
+            width: 100%; background: var(--bg); border: none; padding: 12px 12px 12px 42px;
+            border-radius: 12px; font-size: 0.95rem; outline: none; color: var(--text-main);
         }
-        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 
-        .logout-btn { color: var(--danger); background: #fee2e2; border: none; padding: 8px; border-radius: 10px; cursor: pointer; display: flex; }
+        .logout-btn { color: #ef4444; background: #fee2e2; border: none; padding: 8px; border-radius: 8px; cursor: pointer; display: flex; }
 
-        /* --- CONTENT --- */
         main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- CARDS & LISTS --- */
+        /* --- CARDS & LISTS (GÜNCELLENDİ) --- */
         .balance-card {
             background: linear-gradient(135deg, #1e293b, #334155);
-            color: white; padding: 20px; border-radius: var(--radius);
-            margin-bottom: 20px; text-align: center; box-shadow: 0 8px 20px -5px rgba(30, 41, 59, 0.3);
+            color: white; padding: 24px; border-radius: 20px;
+            margin-bottom: 25px; text-align: center; box-shadow: 0 10px 25px -5px rgba(30, 41, 59, 0.25);
         }
-        .balance-amount { font-size: 2rem; font-weight: 700; margin: 10px 0; }
-        .stats-row { display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 10px; }
+        .balance-amount { font-size: 2.2rem; font-weight: 800; margin: 10px 0; letter-spacing: -1px; }
         
-        /* Aylık Başlıklar */
         .month-header {
-            font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin: 20px 0 10px;
-            text-transform: uppercase; letter-spacing: 0.5px; padding-left: 5px; border-left: 3px solid var(--primary);
+            font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin: 25px 0 10px;
+            text-transform: uppercase; letter-spacing: 1px; padding-left: 5px; 
         }
 
         .data-card {
-            background: var(--surface); padding: 16px; border-radius: var(--radius);
-            margin-bottom: 12px; position: relative; border: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; gap: 5px;
+            background: var(--surface); padding: 16px; border-radius: 16px;
+            margin-bottom: 12px; border: 1px solid #f1f5f9;
+            display: flex; flex-direction: column; gap: 8px; /* İçerik arası boşluk */
         }
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-title { font-weight: 600; font-size: 1rem; color: var(--secondary); }
-        .card-sub { font-size: 0.8rem; color: var(--text-muted); }
+        
+        /* Kartın Üst Kısmı: Başlık ve Değer */
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .card-title { font-weight: 600; font-size: 1rem; color: var(--secondary); line-height: 1.4; }
         .card-badge { 
-            font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; font-weight: 600; 
-            display: inline-block; width: fit-content;
+            font-size: 0.85rem; padding: 4px 10px; border-radius: 8px; font-weight: 700; 
+            white-space: nowrap; flex-shrink: 0;
         }
-        .bg-green { background: #dcfce7; color: #15803d; }
-        .bg-red { background: #fee2e2; color: #b91c1c; }
-        .bg-blue { background: #dbeafe; color: #1d4ed8; }
-        .bg-orange { background: #ffedd5; color: #c2410c; }
+        
+        /* Kartın Alt Kısmı: Tarih/Detay ve Sil Butonu */
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 5px; padding-top: 8px; border-top: 1px dashed #f1f5f9;
+        }
+        .card-sub { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+        
+        .delete-btn { 
+            color: var(--text-muted); cursor: pointer; padding: 5px; 
+            border-radius: 6px; transition: all 0.2s; 
+            /* Artık absolute değil, akışın içinde */
+        }
+        .delete-btn:hover { background: #fee2e2; color: #ef4444; }
 
-        .value-text { font-weight: 700; font-size: 0.95rem; }
-        .detail-row { display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 5px; padding-top: 5px; border-top: 1px solid #f1f5f9; }
-        
-        .delete-btn { position: absolute; bottom: 15px; right: 15px; color: var(--text-muted); cursor: pointer; opacity: 0.6; }
-        
+        /* Renkler */
+        .bg-green { background: #dcfce7; color: #166534; }
+        .bg-red { background: #fee2e2; color: #991b1b; }
+        .bg-blue { background: #dbeafe; color: #1e40af; }
+        .bg-orange { background: #ffedd5; color: #9a3412; }
+
+        .copy-box {
+            background: #f8fafc; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;
+            display: flex; justify-content: space-between; align-items: center; margin-top: 5px; border: 1px solid #e2e8f0;
+        }
+        .copy-link { color: var(--primary); font-weight: 700; font-size: 0.75rem; cursor: pointer; border: none; background: none; }
+
         /* --- NAVIGATION --- */
         .nav-bar {
             position: fixed; bottom: 0; width: 100%; background: var(--surface);
@@ -131,20 +136,19 @@
             background: none; border: none; display: flex; flex-direction: column; align-items: center;
             color: var(--text-muted); font-size: 0.7rem; cursor: pointer; width: 20%;
         }
-        .nav-item span { margin-top: 4px; font-weight: 500; }
         .nav-item.active { color: var(--primary); }
-        .nav-item .material-icons-round { font-size: 24px; }
+        .nav-item .material-icons-round { font-size: 26px; margin-bottom: 2px; }
 
-        /* --- FAB & MODAL --- */
+        /* --- MODAL --- */
         .fab {
-            position: fixed; bottom: 90px; right: 20px; background: var(--secondary);
+            position: fixed; bottom: 95px; right: 20px; background: var(--secondary);
             color: white; width: 56px; height: 56px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 90;
         }
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 3000;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 3000;
             display: none; justify-content: center; align-items: flex-end;
         }
         .modal-overlay.open { display: flex; }
@@ -155,22 +159,20 @@
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Form Elements */
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.8rem; margin-bottom: 5px; color: var(--text-muted); font-weight: 600; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.8rem; margin-bottom: 6px; color: var(--text-muted); font-weight: 600; }
         .form-control, select {
-            width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px;
-            font-size: 1rem; background: var(--bg); outline: none;
+            width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px;
+            font-size: 1rem; background: #fff; outline: none; transition: border 0.2s;
         }
-        .type-selector { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding: 2px; }
+        .form-control:focus { border-color: var(--primary); }
+
+        .type-selector { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .type-chip {
-            padding: 8px 16px; border-radius: 8px; background: #e2e8f0; color: var(--text-muted);
-            font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; border: 1px solid transparent;
+            padding: 10px 20px; border-radius: 10px; background: #f1f5f9; color: var(--text-muted);
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s;
         }
         .type-chip.selected { background: var(--secondary); color: white; }
-        
-        .copy-btn { color: var(--primary); font-weight: 700; cursor: pointer; border: none; background: none; font-size: 0.8rem;}
-
     </style>
 </head>
 <body>
@@ -187,9 +189,9 @@
                 <div class="form-group">
                     <input type="password" id="loginPassword" class="form-control" placeholder="Parola" required>
                 </div>
-                <button type="submit" class="btn-login">Login</button>
+                <button type="submit" class="btn-login">Giriş Yap</button>
             </form>
-            <p id="authError" style="color: var(--danger); margin-top: 15px; font-size: 0.85rem;"></p>
+            <p id="authError" style="color: #ef4444; margin-top: 15px; font-size: 0.9rem; min-height: 20px;"></p>
         </div>
     </div>
 
@@ -201,19 +203,18 @@
             </div>
             <div class="search-container">
                 <span class="material-icons-round search-icon">search</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="Kayıtlar içinde ara...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Tüm kayıtlarda ara...">
             </div>
         </header>
 
         <main>
             <section id="view-finance" class="section active">
                 <div class="balance-card">
-                    <p style="font-size:0.85rem; opacity:0.8;">Net Varlık</p>
+                    <p style="font-size:0.9rem; opacity:0.8; margin-bottom:5px;">Net Varlık</p>
                     <div class="balance-amount" id="totalBalance">₺0,00</div>
-                    <div class="stats-row">
-                        <div style="flex:1;">Gelir <br><strong style="color:#4ade80;" id="totalIncome">₺0</strong></div>
-                        <div style="width:1px; background:rgba(255,255,255,0.2);"></div>
-                        <div style="flex:1;">Gider <br><strong style="color:#f87171;" id="totalExpense">₺0</strong></div>
+                    <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px; margin-top:15px;">
+                        <div>Gelir <br><strong style="color:#4ade80;" id="totalIncome">₺0</strong></div>
+                        <div>Gider <br><strong style="color:#f87171;" id="totalExpense">₺0</strong></div>
                     </div>
                 </div>
                 <div id="financeListContainer"></div>
@@ -224,9 +225,7 @@
             </section>
 
             <section id="view-vault" class="section">
-                <div class="type-selector" style="margin-bottom:10px;">
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Banka Hesapları & Parolalar</span>
-                </div>
+                <div style="margin-bottom:15px; font-size:0.85rem; font-weight:600; color:var(--text-muted);">HESAPLAR & PAROLALAR</div>
                 <div id="vaultListContainer"></div>
             </section>
 
@@ -269,7 +268,7 @@
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h3>Yeni Kayıt</h3>
-                <span class="material-icons-round" id="closeModal" style="cursor:pointer; color:var(--text-muted);">close</span>
+                <span class="material-icons-round" id="closeModal" style="cursor:pointer; color:var(--text-muted); background:#f1f5f9; padding:5px; border-radius:50%;">close</span>
             </div>
 
             <div class="form-group">
@@ -291,51 +290,51 @@
                         <div class="type-chip selected" onclick="setType('income', this)">Gelir</div>
                         <div class="type-chip" onclick="setType('expense', this)">Gider</div>
                     </div>
-                    <div class="form-group"><input type="date" id="finDate" class="form-control" required></div>
-                    <div class="form-group"><input type="text" id="finDesc" class="form-control" placeholder="Açıklama (Maaş, Ek Ders vb.)"></div>
-                    <div class="form-group"><input type="number" id="finAmount" class="form-control" placeholder="Tutar (₺)" step="0.01"></div>
+                    <div class="form-group"><label class="form-label">Tarih</label><input type="date" id="finDate" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Açıklama</label><input type="text" id="finDesc" class="form-control" placeholder="Örn: Maaş, Market"></div>
+                    <div class="form-group"><label class="form-label">Tutar</label><input type="number" id="finAmount" class="form-control" placeholder="₺" step="0.01"></div>
                 </div>
 
                 <div id="fields-debt" style="display:none;">
                     <div class="type-selector">
-                        <div class="type-chip selected" onclick="setType('receivable', this)">Alacak (Ben Verdim)</div>
-                        <div class="type-chip" onclick="setType('debt', this)">Borç (Ben Aldım)</div>
+                        <div class="type-chip selected" onclick="setType('receivable', this)">Alacak</div>
+                        <div class="type-chip" onclick="setType('debt', this)">Borç</div>
                     </div>
-                    <div class="form-group"><input type="text" id="debtPerson" class="form-control" placeholder="Kişi Adı Soyadı"></div>
+                    <div class="form-group"><label class="form-label">Kişi</label><input type="text" id="debtPerson" class="form-control" placeholder="Ad Soyad"></div>
                     <div class="form-group"><label class="form-label">İşlem Tarihi</label><input type="date" id="debtDate" class="form-control"></div>
                     <div style="display:flex; gap:10px;">
-                        <div class="form-group" style="flex:1;"><input type="number" id="debtGoldGram" class="form-control" placeholder="Altın (Gr)" step="0.01"></div>
-                        <div class="form-group" style="flex:1;"><input type="number" id="debtGoldPrice" class="form-control" placeholder="Kur (₺)" step="0.01"></div>
+                        <div class="form-group" style="flex:1;"><label class="form-label">Altın (Gr)</label><input type="number" id="debtGoldGram" class="form-control" step="0.01"></div>
+                        <div class="form-group" style="flex:1;"><label class="form-label">Kur (₺)</label><input type="number" id="debtGoldPrice" class="form-control" step="0.01"></div>
                     </div>
-                     <div class="form-group"><label class="form-label">Tahsil / Ödeme Tarihi</label><input type="date" id="debtDueDate" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Vade Tarihi</label><input type="date" id="debtDueDate" class="form-control"></div>
                 </div>
 
                 <div id="fields-bank" style="display:none;">
-                    <div class="form-group"><input type="text" id="bankName" class="form-control" placeholder="Banka Adı (Ziraat, Enpara...)"></div>
-                    <div class="form-group"><input type="text" id="bankAccount" class="form-control" placeholder="Hesap Sahibi"></div>
-                    <div class="form-group"><input type="text" id="bankIban" class="form-control" placeholder="TRxx ...."></div>
+                    <div class="form-group"><label class="form-label">Banka</label><input type="text" id="bankName" class="form-control" placeholder="Banka Adı"></div>
+                    <div class="form-group"><label class="form-label">Hesap Sahibi</label><input type="text" id="bankAccount" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">IBAN</label><input type="text" id="bankIban" class="form-control" placeholder="TR..."></div>
                 </div>
 
                 <div id="fields-password" style="display:none;">
-                    <div class="form-group"><input type="text" id="passSite" class="form-control" placeholder="Site / Uygulama"></div>
-                    <div class="form-group"><input type="text" id="passUser" class="form-control" placeholder="Kullanıcı Adı"></div>
-                    <div class="form-group"><input type="text" id="passSecret" class="form-control" placeholder="Parola"></div>
+                    <div class="form-group"><label class="form-label">Site / Uygulama</label><input type="text" id="passSite" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Kullanıcı Adı</label><input type="text" id="passUser" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Parola</label><input type="text" id="passSecret" class="form-control"></div>
                 </div>
 
                 <div id="fields-tax" style="display:none;">
-                    <div class="form-group"><input type="text" id="taxName" class="form-control" placeholder="Vergi Adı (MTV, Emlak)"></div>
-                    <div class="form-group"><label class="form-label">Son Ödeme Tarihi</label><input type="date" id="taxDate" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">Vergi Adı</label><input type="text" id="taxName" class="form-control" placeholder="MTV, Emlak vb."></div>
+                    <div class="form-group"><label class="form-label">Son Ödeme</label><input type="date" id="taxDate" class="form-control"></div>
                 </div>
 
                 <div id="fields-vehicle" style="display:none;">
-                    <div class="form-group"><input type="text" id="vehPlate" class="form-control" placeholder="Plaka (34 AB 123)"></div>
+                    <div class="form-group"><label class="form-label">Plaka</label><input type="text" id="vehPlate" class="form-control"></div>
                     <div class="form-group"><label class="form-label">Son Bakım</label><input type="date" id="vehLastDate" class="form-control"></div>
                     <div class="form-group"><label class="form-label">Gelecek Bakım</label><input type="date" id="vehNextDate" class="form-control"></div>
                 </div>
 
                 <div id="fields-note" style="display:none;">
-                    <div class="form-group"><input type="text" id="noteTitle" class="form-control" placeholder="Başlık"></div>
-                    <div class="form-group"><textarea id="noteContent" class="form-control" rows="4" placeholder="İçerik..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Başlık</label><input type="text" id="noteTitle" class="form-control"></div>
+                    <div class="form-group"><label class="form-label">İçerik</label><textarea id="noteContent" class="form-control" rows="4"></textarea></div>
                 </div>
 
                 <button type="submit" class="btn-login" style="margin-top:10px;">Kaydet</button>
@@ -348,26 +347,24 @@
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- FIREBASE AYARLARI ---
+        // --- BURAYA KENDİ BİLGİLERİNİ GİR ---
         const firebaseConfig = {
-  apiKey: "AIzaSyDm5yzzoIqzsqF7TMvT7eInZXBZINSwN-w",
-  authDomain: "pa-hmd-s7v1.firebaseapp.com",
-  projectId: "pa-hmd-s7v1",
-  storageBucket: "pa-hmd-s7v1.firebasestorage.app",
-  messagingSenderId: "1057040915282",
-  appId: "1:1057040915282:web:d80d4818610a55e1fb788b",
-  measurementId: "G-XK9835JN19"
-};
+            apiKey: "BURAYA_API_KEY",
+            authDomain: "BURAYA_AUTH_DOMAIN",
+            projectId: "BURAYA_PROJECT_ID",
+            storageBucket: "BURAYA_STORAGE_BUCKET",
+            messagingSenderId: "BURAYA_SENDER_ID",
+            appId: "BURAYA_APP_ID"
+        };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Global State
         let currentUser = null;
-        let subType = 'income'; // Varsayılan alt tip
+        let subType = 'income';
 
-        // --- AUTH ---
+        // --- AUTH & LOGIN LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -376,6 +373,8 @@
                 loadAllData();
             } else {
                 currentUser = null;
+                // FORM TEMİZLEME (Güvenlik Fix)
+                document.getElementById('loginForm').reset();
                 document.getElementById('auth-screen').style.transform = "translateY(0)";
                 document.getElementById('app-screen').style.display = "none";
             }
@@ -383,13 +382,22 @@
 
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = "Giriş Yapılıyor...";
+            
             signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value)
-                .catch(err => document.getElementById('authError').textContent = "Giriş başarısız.");
+                .catch(err => {
+                    document.getElementById('authError').textContent = "Hatalı e-posta veya parola.";
+                })
+                .finally(() => { btn.textContent = originalText; });
         });
 
-        document.getElementById('btnLogout').addEventListener('click', () => { if(confirm("Çıkış?")) signOut(auth); });
+        document.getElementById('btnLogout').addEventListener('click', () => { 
+            if(confirm("Güvenli çıkış yapılsın mı?")) signOut(auth); 
+        });
 
-        // --- UI & TABS ---
+        // --- TABS ---
         window.switchTab = (tabId) => {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-' + tabId).classList.add('active');
@@ -401,24 +409,23 @@
             window.scrollTo(0,0);
         };
 
-        // --- MODAL & FORM ---
+        // --- MODAL ---
         const modal = document.getElementById('addModal');
         document.getElementById('fabBtn').onclick = () => {
             modal.classList.add('open');
-            // Bugünün tarihini varsayılan yap
-            document.querySelectorAll('input[type="date"]').forEach(i => i.valueAsDate = new Date());
+            // Tarih alanlarına bugünü ata
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(i => i.value = today);
             updateFormFields();
         };
         document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
 
         window.updateFormFields = () => {
             const type = document.getElementById('entryType').value;
-            // Tüm alanları gizle
             document.querySelectorAll('[id^="fields-"]').forEach(el => el.style.display = 'none');
-            // Seçiliyi göster
             document.getElementById('fields-' + type).style.display = 'block';
             
-            // Varsayılan subType ayarla (chip resetleme)
+            // Subtype reset
             if(type === 'finance') setType('income', document.querySelector('#fields-finance .type-chip:first-child'));
             if(type === 'debt') setType('receivable', document.querySelector('#fields-debt .type-chip:first-child'));
         };
@@ -429,7 +436,7 @@
             el.classList.add('selected');
         };
 
-        // --- CRUD OPERATIONS ---
+        // --- ADD DATA ---
         document.getElementById('dataForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) return;
@@ -443,48 +450,25 @@
                 let colName = '';
                 let data = { createdAt: serverTimestamp() };
 
+                // Hangi koleksiyon?
                 if(type === 'finance') {
                     colName = 'transactions';
-                    data = { ...data, 
-                        type: subType, 
-                        date: document.getElementById('finDate').value,
-                        desc: document.getElementById('finDesc').value,
-                        amount: parseFloat(document.getElementById('finAmount').value) 
-                    };
+                    data = { ...data, type: subType, date: document.getElementById('finDate').value, desc: document.getElementById('finDesc').value, amount: parseFloat(document.getElementById('finAmount').value) };
                 } else if(type === 'debt') {
                     colName = 'debts';
-                    data = { ...data,
-                        type: subType, // receivable (alacak) or debt (borç)
-                        person: document.getElementById('debtPerson').value,
-                        date: document.getElementById('debtDate').value,
-                        goldGram: parseFloat(document.getElementById('debtGoldGram').value) || 0,
-                        goldPrice: parseFloat(document.getElementById('debtGoldPrice').value) || 0,
-                        dueDate: document.getElementById('debtDueDate').value
-                    };
+                    data = { ...data, type: subType, person: document.getElementById('debtPerson').value, date: document.getElementById('debtDate').value, goldGram: parseFloat(document.getElementById('debtGoldGram').value) || 0, goldPrice: parseFloat(document.getElementById('debtGoldPrice').value) || 0, dueDate: document.getElementById('debtDueDate').value };
                 } else if(type === 'bank') {
                     colName = 'banks';
-                    data = { ...data,
-                        bankName: document.getElementById('bankName').value,
-                        accountName: document.getElementById('bankAccount').value,
-                        iban: document.getElementById('bankIban').value
-                    };
+                    data = { ...data, bankName: document.getElementById('bankName').value, accountName: document.getElementById('bankAccount').value, iban: document.getElementById('bankIban').value };
                 } else if(type === 'password') {
                     colName = 'passwords';
-                    data = { ...data,
-                        site: document.getElementById('passSite').value,
-                        user: document.getElementById('passUser').value,
-                        pass: document.getElementById('passSecret').value
-                    };
+                    data = { ...data, site: document.getElementById('passSite').value, user: document.getElementById('passUser').value, pass: document.getElementById('passSecret').value };
                 } else if(type === 'tax') {
                     colName = 'taxes';
                     data = { ...data, name: document.getElementById('taxName').value, date: document.getElementById('taxDate').value };
                 } else if(type === 'vehicle') {
                     colName = 'vehicles';
-                    data = { ...data, 
-                        plate: document.getElementById('vehPlate').value,
-                        lastDate: document.getElementById('vehLastDate').value,
-                        nextDate: document.getElementById('vehNextDate').value
-                    };
+                    data = { ...data, plate: document.getElementById('vehPlate').value, lastDate: document.getElementById('vehLastDate').value, nextDate: document.getElementById('vehNextDate').value };
                 } else if(type === 'note') {
                     colName = 'notes';
                     data = { ...data, title: document.getElementById('noteTitle').value, content: document.getElementById('noteContent').value };
@@ -501,51 +485,46 @@
             }
         });
 
-        // --- DATA LOADING & RENDERING ---
+        // --- RENDER FUNCTIONS ---
         function loadAllData() {
             const uid = currentUser.uid;
             
-            // 1. FINANS (AYLIK GRUPLAMA)
+            // 1. FINANS
             onSnapshot(query(collection(db, `users/${uid}/transactions`), orderBy('date', 'desc')), (snap) => {
                 const list = document.getElementById('financeListContainer');
                 list.innerHTML = '';
-                let totalInc = 0, totalExp = 0;
-                let lastMonthKey = '';
+                let tInc = 0, tExp = 0, lastMonth = '';
 
                 snap.forEach(doc => {
                     const d = doc.data();
-                    // Toplam Hesaplama
-                    if(d.type === 'income') totalInc += (d.amount || 0);
-                    else totalExp += (d.amount || 0);
-
-                    // Tarih Formatlama & Başlık
+                    if(d.type === 'income') tInc += (d.amount || 0); else tExp += (d.amount || 0);
+                    
                     const dateObj = new Date(d.date);
                     const monthKey = dateObj.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
                     
-                    if(monthKey !== lastMonthKey) {
+                    if(monthKey !== lastMonth) {
                         list.innerHTML += `<div class="month-header">${monthKey}</div>`;
-                        lastMonthKey = monthKey;
+                        lastMonth = monthKey;
                     }
 
-                    const card = document.createElement('div');
-                    card.className = 'data-card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <div>
-                                <div class="card-title searchable">${d.desc}</div>
-                                <div class="card-sub searchable">${dateObj.toLocaleDateString('tr-TR')}</div>
+                    // KART TASARIMI - FLEX İLE DÜZELTİLDİ
+                    list.innerHTML += `
+                        <div class="data-card searchable-item">
+                            <div class="card-top">
+                                <div class="card-title">${d.desc}</div>
+                                <span class="card-badge ${d.type === 'income' ? 'bg-green' : 'bg-red'}">
+                                    ${d.type === 'income' ? '+' : '-'}₺${d.amount.toLocaleString('tr-TR')}
+                                </span>
                             </div>
-                            <div class="value-text ${d.type === 'income' ? 'bg-green' : 'bg-red'} card-badge">
-                                ${d.type === 'income' ? '+' : '-'}₺${d.amount.toLocaleString('tr-TR')}
+                            <div class="card-footer">
+                                <div class="card-sub">${dateObj.toLocaleDateString('tr-TR')}</div>
+                                <span class="material-icons-round delete-btn" onclick="del('transactions','${doc.id}')">delete_outline</span>
                             </div>
-                        </div>
-                        <span class="material-icons-round delete-btn" onclick="del('transactions','${doc.id}')">delete</span>
-                    `;
-                    list.appendChild(card);
+                        </div>`;
                 });
-                document.getElementById('totalIncome').textContent = `₺${totalInc.toLocaleString('tr-TR')}`;
-                document.getElementById('totalExpense').textContent = `₺${totalExp.toLocaleString('tr-TR')}`;
-                document.getElementById('totalBalance').textContent = `₺${(totalInc - totalExp).toLocaleString('tr-TR')}`;
+                document.getElementById('totalIncome').textContent = `₺${tInc.toLocaleString('tr-TR')}`;
+                document.getElementById('totalExpense').textContent = `₺${tExp.toLocaleString('tr-TR')}`;
+                document.getElementById('totalBalance').textContent = `₺${(tInc - tExp).toLocaleString('tr-TR')}`;
             });
 
             // 2. BORÇLAR
@@ -554,171 +533,164 @@
                 list.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const isReceivable = d.type === 'receivable';
-                    const goldTotal = (d.goldGram || 0) * (d.goldPrice || 0);
+                    const isRec = d.type === 'receivable';
+                    const goldVal = (d.goldGram||0) * (d.goldPrice||0);
                     
-                    const card = document.createElement('div');
-                    card.className = 'data-card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <div>
-                                <span class="card-badge ${isReceivable ? 'bg-green' : 'bg-orange'}">${isReceivable ? 'ALACAK' : 'BORÇ'}</span>
-                                <div class="card-title searchable" style="margin-top:5px;">${d.person}</div>
-                            </div>
-                            <div class="value-text" style="color:${isReceivable?'#15803d':'#c2410c'};">
-                                ${goldTotal > 0 ? '₺' + goldTotal.toLocaleString('tr-TR') : '-'}
-                            </div>
-                        </div>
-                        <div class="detail-row searchable">
-                            <span>Verilme: ${new Date(d.date).toLocaleDateString('tr-TR')}</span>
-                            <span>Vade: ${d.dueDate ? new Date(d.dueDate).toLocaleDateString('tr-TR') : '-'}</span>
-                        </div>
-                        <div class="detail-row searchable" style="color:var(--text-muted);">
-                            <span>${d.goldGram} gr Altın (@ ₺${d.goldPrice})</span>
-                        </div>
-                        <span class="material-icons-round delete-btn" onclick="del('debts','${doc.id}')">delete</span>
-                    `;
-                    list.appendChild(card);
-                });
-            });
-
-            // 3. KASA (BANKA + PAROLA)
-            // Bankalar
-            onSnapshot(collection(db, `users/${uid}/banks`), (snap) => {
-                const list = document.getElementById('vaultListContainer');
-                // Önce bankaları temizlemiyoruz, append edeceğiz ama sıralama karışmasın diye id ile container yapsak iyi olurdu. 
-                // Basitlik adına her güncellemede burayı sıfırlayıp yeniden çizdirelim ama parola ile çakışır.
-                // Çözüm: İki ayrı fonksiyon veya tek container. Şimdilik manuel filtreleme.
-                renderVault(uid);
-            });
-            // Parolalar
-            onSnapshot(collection(db, `users/${uid}/passwords`), (snap) => { renderVault(uid); });
-
-            // 4. VARLIK (VERGİ + ARAÇ)
-            onSnapshot(collection(db, `users/${uid}/taxes`), (snap) => { renderAssets(uid); });
-            onSnapshot(collection(db, `users/${uid}/vehicles`), (snap) => { renderAssets(uid); });
-
-            // 5. NOTLAR
-            onSnapshot(query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc')), (snap) => {
-                const list = document.getElementById('notesListContainer');
-                list.innerHTML = '';
-                snap.forEach(doc => {
-                    const d = doc.data();
                     list.innerHTML += `
-                        <div class="data-card">
-                            <div class="card-title searchable">${d.title}</div>
-                            <p style="font-size:0.9rem; margin-top:5px; white-space:pre-wrap;" class="searchable">${d.content}</p>
-                            <span class="material-icons-round delete-btn" onclick="del('notes','${doc.id}')">delete</span>
+                        <div class="data-card searchable-item">
+                            <div class="card-top">
+                                <div>
+                                    <span class="card-badge ${isRec ? 'bg-green' : 'bg-orange'}">${isRec ? 'ALACAK' : 'BORÇ'}</span>
+                                    <div class="card-title" style="margin-top:5px;">${d.person}</div>
+                                </div>
+                                <div style="font-weight:700; color:${isRec?'#166534':'#9a3412'}">
+                                    ${goldVal>0 ? '₺'+goldVal.toLocaleString('tr-TR') : ''}
+                                </div>
+                            </div>
+                            ${goldVal>0 ? `<div style="font-size:0.8rem; color:var(--text-muted);">${d.goldGram}g Altın (Kur: ₺${d.goldPrice})</div>` : ''}
+                            <div class="card-footer">
+                                <div class="card-sub">Vade: ${d.dueDate ? new Date(d.dueDate).toLocaleDateString('tr-TR') : 'Belirsiz'}</div>
+                                <span class="material-icons-round delete-btn" onclick="del('debts','${doc.id}')">delete_outline</span>
+                            </div>
                         </div>`;
                 });
             });
+
+            // 3. KASA & DİĞERLERİ
+            renderMixedList(uid);
+            onSnapshot(collection(db, `users/${uid}/notes`), (s) => renderNotes(s));
         }
 
-        // Helper renderers for mixed lists
-        async function renderVault(uid) {
-            // Basit birleşim için her çağrıda listeyi sıfırlayıp tekrar çekiyoruz (Snapshot real-time tetiklediği için)
-            // Daha optimize yöntem vardır ama bu ölçekte sorun olmaz.
+        async function renderMixedList(uid) {
+            // Realtime listeners for mixed items
+            onSnapshot(collection(db, `users/${uid}/banks`), (snap) => updateVaultUI());
+            onSnapshot(collection(db, `users/${uid}/passwords`), (snap) => updateVaultUI());
+            onSnapshot(collection(db, `users/${uid}/taxes`), (snap) => updateAssetsUI());
+            onSnapshot(collection(db, `users/${uid}/vehicles`), (snap) => updateAssetsUI());
+        }
+
+        // Vault UI Updater (Banks + Passwords)
+        async function updateVaultUI() {
+            if(!currentUser) return;
+            const uid = currentUser.uid;
             const list = document.getElementById('vaultListContainer');
             list.innerHTML = '';
 
-            // Bankalar
             const banks = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/banks`)));
             banks.forEach(doc => {
                 const d = doc.data();
                 list.innerHTML += `
-                    <div class="data-card" style="border-left:4px solid var(--primary);">
-                        <div class="card-title searchable">${d.bankName}</div>
-                        <div class="card-sub searchable">${d.accountName}</div>
-                        <div style="margin-top:5px; font-family:monospace; background:#f1f5f9; padding:8px; border-radius:6px; display:flex; justify-content:space-between;">
-                            <span class="searchable">${d.iban}</span>
-                            <button class="copy-btn" onclick="copyTxt('${d.iban}')">KOPYALA</button>
+                    <div class="data-card searchable-item" style="border-left:4px solid var(--primary);">
+                        <div class="card-title">${d.bankName}</div>
+                        <div class="card-sub">${d.accountName}</div>
+                        <div class="copy-box">
+                            <span>${d.iban}</span>
+                            <button class="copy-link" onclick="copyTxt('${d.iban}')">KOPYALA</button>
                         </div>
-                        <span class="material-icons-round delete-btn" onclick="del('banks','${doc.id}')">delete</span>
+                        <div class="card-footer" style="margin-top:0; border:none; padding-top:5px;">
+                            <div></div>
+                            <span class="material-icons-round delete-btn" onclick="del('banks','${doc.id}')">delete_outline</span>
+                        </div>
                     </div>`;
             });
 
-            // Parolalar
             const passes = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/passwords`)));
             passes.forEach(doc => {
                 const d = doc.data();
                 list.innerHTML += `
-                    <div class="data-card">
-                        <div class="card-title searchable">${d.site}</div>
-                        <div class="card-sub searchable">${d.user}</div>
-                        <div style="margin-top:5px; font-family:monospace; display:flex; justify-content:space-between; align-items:center;">
+                    <div class="data-card searchable-item">
+                        <div class="card-title">${d.site}</div>
+                        <div class="card-sub">${d.user}</div>
+                        <div class="copy-box">
                             <span>••••••</span>
-                            <button class="copy-btn" onclick="reveal(this, '${d.pass}')">GÖSTER</button>
+                            <button class="copy-link" onclick="reveal(this, '${d.pass}')">GÖSTER</button>
                         </div>
-                        <span class="material-icons-round delete-btn" onclick="del('passwords','${doc.id}')">delete</span>
+                        <div class="card-footer" style="margin-top:0; border:none; padding-top:5px;">
+                            <div></div>
+                            <span class="material-icons-round delete-btn" onclick="del('passwords','${doc.id}')">delete_outline</span>
+                        </div>
                     </div>`;
             });
         }
 
-        async function renderAssets(uid) {
+        // Assets UI Updater (Taxes + Vehicles)
+        async function updateAssetsUI() {
+            if(!currentUser) return;
+            const uid = currentUser.uid;
             const list = document.getElementById('assetsListContainer');
             list.innerHTML = '';
 
-            // Araçlar
+            const taxes = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/taxes`)));
+            taxes.forEach(doc => {
+                const d = doc.data();
+                const isLate = new Date(d.date) < new Date();
+                list.innerHTML += `
+                    <div class="data-card searchable-item">
+                        <div class="card-top">
+                            <div class="card-title">${d.name}</div>
+                            <span class="card-badge bg-orange">VERGİ</span>
+                        </div>
+                        <div class="card-footer">
+                            <div class="card-sub" style="color:${isLate?'#ef4444':''}">Son Ödeme: ${new Date(d.date).toLocaleDateString('tr-TR')}</div>
+                            <span class="material-icons-round delete-btn" onclick="del('taxes','${doc.id}')">delete_outline</span>
+                        </div>
+                    </div>`;
+            });
+
             const vehicles = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/vehicles`)));
             vehicles.forEach(doc => {
                 const d = doc.data();
                 list.innerHTML += `
-                    <div class="data-card">
-                        <div class="card-header"><div class="card-title searchable">${d.plate}</div><span class="card-badge bg-blue">ARAÇ</span></div>
-                        <div class="detail-row searchable"><span>Son Bakım:</span><strong>${d.lastDate ? new Date(d.lastDate).toLocaleDateString('tr-TR') : '-'}</strong></div>
-                        <div class="detail-row searchable"><span>Gelecek Bakım:</span><strong>${d.nextDate ? new Date(d.nextDate).toLocaleDateString('tr-TR') : '-'}</strong></div>
-                        <span class="material-icons-round delete-btn" onclick="del('vehicles','${doc.id}')">delete</span>
-                    </div>`;
-            });
-
-            // Vergiler
-            const taxes = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(m=>m.getDocs(collection(db, `users/${uid}/taxes`)));
-            taxes.forEach(doc => {
-                const d = doc.data();
-                // Tarih kontrolü (geçti mi?)
-                const isPast = new Date(d.date) < new Date();
-                list.innerHTML += `
-                    <div class="data-card">
-                        <div class="card-header"><div class="card-title searchable">${d.name}</div><span class="card-badge bg-orange">VERGİ</span></div>
-                        <div class="detail-row searchable">
-                            <span>Son Ödeme:</span>
-                            <strong style="color:${isPast?'#ef4444':'#334155'}">${new Date(d.date).toLocaleDateString('tr-TR')}</strong>
+                    <div class="data-card searchable-item">
+                        <div class="card-top">
+                            <div class="card-title">${d.plate}</div>
+                            <span class="card-badge bg-blue">ARAÇ</span>
                         </div>
-                        <span class="material-icons-round delete-btn" onclick="del('taxes','${doc.id}')">delete</span>
+                        <div style="font-size:0.8rem; margin-top:5px;">
+                            <div>Son Bakım: <strong>${d.lastDate?new Date(d.lastDate).toLocaleDateString('tr-TR'):'-'}</strong></div>
+                            <div>Gelecek: <strong>${d.nextDate?new Date(d.nextDate).toLocaleDateString('tr-TR'):'-'}</strong></div>
+                        </div>
+                        <div class="card-footer">
+                            <div></div>
+                            <span class="material-icons-round delete-btn" onclick="del('vehicles','${doc.id}')">delete_outline</span>
+                        </div>
                     </div>`;
             });
         }
 
-        // --- UTILS ---
-        window.del = async (col, id) => { if(confirm("Silinsin mi?")) await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id)); };
-        
+        function renderNotes(snap) {
+            const list = document.getElementById('notesListContainer');
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div class="data-card searchable-item">
+                        <div class="card-title">${d.title}</div>
+                        <p style="font-size:0.9rem; white-space:pre-wrap; line-height:1.4; color:var(--text-main); margin-top:5px;">${d.content}</p>
+                        <div class="card-footer">
+                            <div></div>
+                            <span class="material-icons-round delete-btn" onclick="del('notes','${doc.id}')">delete_outline</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // --- GLOBAL ACTIONS ---
+        window.del = async (col, id) => { if(confirm("Kayıt silinsin mi?")) await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id)); };
+        window.copyTxt = (t) => { navigator.clipboard.writeText(t); alert("Kopyalandı!"); };
         window.reveal = (btn, pass) => {
             navigator.clipboard.writeText(pass);
-            const span = btn.previousElementSibling;
-            span.textContent = pass;
-            btn.textContent = "KOPYALANDI";
-            setTimeout(() => { span.textContent = "••••••"; btn.textContent = "GÖSTER"; }, 3000);
+            btn.previousElementSibling.textContent = pass;
+            setTimeout(() => { btn.previousElementSibling.textContent = "••••••"; }, 3000);
         };
 
-        window.copyTxt = (txt) => {
-            navigator.clipboard.writeText(txt);
-            alert("Kopyalandı: " + txt);
-        };
-
-        // --- SEARCH FUNCTION ---
-        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        // --- SEARCH ---
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
             const term = e.target.value.toLowerCase();
-            const activeSection = document.querySelector('.section.active');
-            const items = activeSection.querySelectorAll('.data-card'); // Her kart 'data-card' classına sahip
-            const headers = activeSection.querySelectorAll('.month-header');
-
-            items.forEach(item => {
-                const text = item.innerText.toLowerCase();
-                item.style.display = text.includes(term) ? 'flex' : 'none';
+            const activeSec = document.querySelector('.section.active');
+            activeSec.querySelectorAll('.searchable-item').forEach(item => {
+                item.style.display = item.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
             });
-            
-            // Başlıkları da gizle eğer altındaki her şey gizlendiyse (Finans için)
-            // Bu biraz kompleks olabilir, şimdilik sadece kartları filtreleyelim.
         });
 
     </script>
