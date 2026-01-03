@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kütüphane Yönetim Sistemi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        #reader { width: 100%; max-width: 500px; margin: 0 auto; display: none; }
+        .btn { transition: all 0.3s; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-emerald-700 mb-2 border-b pb-4">
+            <i class="fa-solid fa-book-quran mr-2"></i> Kütüphane Veri Girişi
+        </h1>
+        
+        <div class="flex flex-wrap gap-4 mb-6 mt-4">
+            <button onclick="startScanner()" class="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow flex items-center">
+                <i class="fa-solid fa-barcode mr-2"></i> Barkod Tara
+            </button>
+            <div class="flex-grow">
+                <input type="text" id="manualISBN" placeholder="veya ISBN Elle Girin (978...)" class="border p-2 rounded-l-lg w-64">
+                <button onclick="manualAdd()" class="bg-gray-700 text-white px-4 py-2 rounded-r-lg hover:bg-gray-800">Ekle</button>
+            </div>
+            <button onclick="exportToPDF()" class="btn bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg shadow">
+                <i class="fa-solid fa-file-pdf mr-2"></i> PDF İndir
+            </button>
+            <button onclick="exportToExcel()" class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow">
+                <i class="fa-solid fa-file-excel mr-2"></i> Excel/Word İndir
+            </button>
+        </div>
+
+        <div id="reader" class="mb-6 border-4 border-blue-200 rounded-lg"></div>
+
+        <div id="status" class="hidden p-4 mb-4 rounded-lg"></div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="bookTable">
+                <thead>
+                    <tr class="bg-emerald-100 text-emerald-800">
+                        <th class="p-3 border-b">ISBN</th>
+                        <th class="p-3 border-b">Kitap Adı</th>
+                        <th class="p-3 border-b">Yazar</th>
+                        <th class="p-3 border-b">Yayınevi</th>
+                        <th class="p-3 border-b">Tarih</th>
+                        <th class="p-3 border-b">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 text-sm text-gray-500 text-right">
+            Toplam Kitap: <span id="totalCount" class="font-bold text-black">0</span>
+        </div>
+    </div>
+
+    <script>
+        // --- DEĞİŞKENLER ---
+        let books = JSON.parse(localStorage.getItem('myLibrary')) || [];
+        let html5QrcodeScanner = null;
+
+        // --- SAYFA YÜKLENDİĞİNDE ---
+        window.onload = function() {
+            renderTable();
+        };
+
+        // --- BARKOD TARAYICI ---
+        function startScanner() {
+            const readerDiv = document.getElementById('reader');
+            readerDiv.style.display = 'block';
+
+            html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", { fps: 10, qrbox: 250 }
+            );
+            
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Tarama başarılı olduğunda
+            console.log(`Barkod okundu: ${decodedText}`);
+            html5QrcodeScanner.clear();
+            document.getElementById('reader').style.display = 'none';
+            fetchBookDetails(decodedText);
+        }
+
+        function onScanFailure(error) {
+            // Hata durumunda konsola yaz (kullanıcıyı rahatsız etme)
+            // console.warn(`Kod okunamadı: ${error}`);
+        }
+
+        // --- KİTAP BİLGİLERİNİ ÇEKME (GOOGLE BOOKS API) ---
+        async function fetchBookDetails(isbn) {
+            showStatus('Kitap bilgileri aranıyor...', 'blue');
+            
+            try {
+                // ISBN temizle (Sadece rakamlar)
+                isbn = isbn.replace(/-/g, "");
+
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+                const data = await response.json();
+
+                if (data.totalItems > 0) {
+                    const info = data.items[0].volumeInfo;
+                    
+                    const newBook = {
+                        id: Date.now(),
+                        isbn: isbn,
+                        title: info.title || "Bilinmiyor",
+                        authors: info.authors ? info.authors.join(", ") : "Bilinmiyor",
+                        publisher: info.publisher || "Bilinmiyor",
+                        publishedDate: info.publishedDate || "-"
+                    };
+
+                    addBookToLibrary(newBook);
+                    showStatus(`${newBook.title} başarıyla eklendi!`, 'green');
+                } else {
+                    // Google'da yoksa manuel ekleme penceresi gibi davranabiliriz, şimdilik uyarı verelim
+                    const manualTitle = prompt("Bu ISBN Google Veritabanında bulunamadı. Kitap Adını manuel giriniz:", "");
+                    if(manualTitle) {
+                         const newBook = {
+                            id: Date.now(),
+                            isbn: isbn,
+                            title: manualTitle,
+                            authors: "Manuel Giriş",
+                            publisher: "-",
+                            publishedDate: new Date().toISOString().split('T')[0]
+                        };
+                        addBookToLibrary(newBook);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                showStatus('Bir hata oluştu.', 'red');
+            }
+        }
+
+        function manualAdd() {
+            const isbnInput = document.getElementById('manualISBN');
+            if(isbnInput.value) {
+                fetchBookDetails(isbnInput.value);
+                isbnInput.value = '';
+            }
+        }
+
+        // --- VERİ YÖNETİMİ ---
+        function addBookToLibrary(book) {
+            books.push(book);
+            saveData();
+            renderTable();
+        }
+
+        function deleteBook(id) {
+            if(confirm('Bu kitabı silmek istediğinize emin misiniz?')) {
+                books = books.filter(b => b.id !== id);
+                saveData();
+                renderTable();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('myLibrary', JSON.stringify(books));
+            // NOT: Buraya Firebase veya Sunucu kodu eklenebilir.
+        }
+
+        // --- TABLO GÖRÜNÜMÜ ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            books.forEach((book, index) => {
+                const row = `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 font-mono text-sm">${book.isbn}</td>
+                        <td class="p-3 font-bold">${book.title}</td>
+                        <td class="p-3">${book.authors}</td>
+                        <td class="p-3">${book.publisher}</td>
+                        <td class="p-3 text-sm text-gray-600">${book.publishedDate}</td>
+                        <td class="p-3">
+                            <button onclick="deleteBook(${book.id})" class="text-red-500 hover:text-red-700">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+            document.getElementById('totalCount').innerText = books.length;
+        }
+
+        function showStatus(msg, color) {
+            const el = document.getElementById('status');
+            el.innerHTML = msg;
+            el.className = `p-4 mb-4 rounded-lg bg-${color}-100 text-${color}-800 block`;
+            setTimeout(() => { el.className = 'hidden'; }, 3000);
+        }
+
+        // --- PDF ÇIKTISI ---
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Türkçe karakter desteği için font ayarı gerekebilir, şimdilik standart font
+            doc.text("Kutuphane Listesi", 14, 15);
+            
+            doc.autoTable({
+                head: [['ISBN', 'Kitap Adi', 'Yazar', 'Yayinevi']],
+                body: books.map(b => [b.isbn, b.title, b.authors, b.publisher]),
+                startY: 20,
+            });
+            
+            doc.save('kutuphane-listesi.pdf');
+        }
+
+        // --- EXCEL/WORD ÇIKTISI ---
+        function exportToExcel() {
+            // Basitçe Excel (XLSX) olarak indirir, Word tablosu olarak kopyalanabilir
+            const ws = XLSX.utils.json_to_sheet(books);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Kitaplar");
+            XLSX.writeFile(wb, "kutuphane-arsivi.xlsx");
+        }
+    </script>
+</body>
+</html>
