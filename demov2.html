@@ -18,7 +18,8 @@
             --text-main: #334155;
             --text-muted: #94a3b8;
             --danger: #ef4444;
-            --radius: 12px; /* Daha kompakt görünüm için radius küçüldü */
+            --success: #15803d;
+            --radius: 12px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -32,152 +33,141 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             transition: transform 0.3s ease;
         }
-        .auth-container { width: 100%; max-width: 320px; text-align: center; margin-bottom: 10vh; }
-        .brand-logo { font-size: 56px; color: var(--primary); margin-bottom: 10px; background: #eff6ff; padding: 12px; border-radius: 20px; }
-        .brand-title { font-size: 1.8rem; font-weight: 800; color: var(--secondary); margin-bottom: 25px; }
+        .auth-container { width: 100%; max-width: 320px; text-align: center; margin-bottom: 15vh; }
+        /* İSTEK 5: Login İkonu Geri Geldi */
+        .brand-logo { font-size: 64px; color: var(--primary); margin-bottom: 15px; background: #eff6ff; padding: 15px; border-radius: 24px; }
+        .brand-title { font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 30px; letter-spacing: -1px;}
         .btn-login {
-            background: var(--primary); color: white; border: none; padding: 14px;
-            border-radius: var(--radius); font-weight: 600; width: 100%; cursor: pointer;
+            background: var(--primary); color: white; border: none; padding: 15px;
+            border-radius: var(--radius); font-weight: 600; width: 100%; cursor: pointer; font-size: 1rem;
             box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
 
-        /* --- APP HEADER --- */
+        /* --- HEADER --- */
         #app-screen { display: none; height: 100%; flex-direction: column; }
         
         header {
             padding: 15px 20px; background: var(--surface); z-index: 10;
-            display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid #e2e8f0;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .header-top h2 { font-size: 1.3rem; font-weight: 800; color: var(--secondary); }
+        .header-top h2 { font-size: 1.4rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px;}
         
+        /* İSTEK 4: Yuvarlak Kırmızı Logout Butonu */
+        .logout-btn { 
+            width: 36px; height: 36px; border-radius: 50%; background: #fee2e2; 
+            color: #ef4444; border: none; cursor: pointer; display: flex; 
+            align-items: center; justify-content: center; 
+        }
+
         .search-container { position: relative; width: 100%; }
         .search-input {
-            width: 100%; background: var(--bg); border: none; padding: 10px 10px 10px 38px;
-            border-radius: 8px; font-size: 0.9rem; outline: none; color: var(--text-main);
+            width: 100%; background: var(--bg); border: none; padding: 12px 12px 12px 42px;
+            border-radius: 10px; font-size: 0.95rem; outline: none; color: var(--text-main);
         }
-        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 18px;}
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px;}
 
-        /* --- MAIN LISTS --- */
+        /* --- LISTS --- */
         main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Özet Kartı */
         .balance-card {
             background: linear-gradient(135deg, #1e293b, #334155); color: white;
-            padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center;
-            box-shadow: 0 8px 15px -3px rgba(30, 41, 59, 0.2);
+            padding: 24px; border-radius: 20px; margin-bottom: 25px; text-align: center;
+            box-shadow: 0 10px 20px -5px rgba(30, 41, 59, 0.3);
         }
-        .balance-amount { font-size: 2rem; font-weight: 800; margin: 5px 0 10px; }
+        .balance-amount { font-size: 2.2rem; font-weight: 800; margin: 5px 0 15px; letter-spacing: -1px;}
 
-        /* YENİ TASARIM: TEK SATIR (Compact Row) */
+        /* --- COMPACT ROW (GELİŞTİRİLMİŞ) --- */
         .compact-item {
-            background: var(--surface); padding: 12px 15px; border-radius: 10px;
-            margin-bottom: 8px; border: 1px solid #f1f5f9;
+            background: var(--surface); padding: 14px; border-radius: 12px;
+            margin-bottom: 10px; border: 1px solid #f1f5f9;
             display: flex; align-items: center; justify-content: space-between;
-            gap: 15px; /* Metin ile buton arası boşluk */
+            gap: 12px;
         }
-        
-        /* Sol taraf: Metin alanı */
-        .item-content {
-            flex: 1; /* Mevcut alanı kapla */
-            min-width: 0; /* Flex içinde text-overflow çalışması için şart */
-        }
-        
-        .item-title {
-            font-weight: 600; font-size: 0.95rem; color: var(--secondary);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Uzunsa ... koy */
-        }
-        .item-sub {
-            font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .item-amount { font-weight: 700; font-size: 0.9rem; margin-top: 2px; }
+        .item-content { flex: 1; min-width: 0; }
+        .item-title { font-weight: 600; font-size: 0.95rem; color: var(--secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-amount { font-weight: 700; font-size: 0.9rem; margin-top: 3px; }
 
-        /* Sağ taraf: Buton */
+        /* Buton Grubu */
+        .btn-group { display: flex; gap: 5px; flex-shrink: 0; }
         .action-btn {
-            flex-shrink: 0; /* Asla küçülme */
-            background: #f0fdf4; color: #15803d; /* Hafif Yeşil Ton */
-            border: none; width: 32px; height: 32px; border-radius: 8px;
+            background: #f1f5f9; color: var(--text-muted); border: none; 
+            width: 34px; height: 34px; border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: background 0.2s;
+            cursor: pointer; transition: all 0.2s;
         }
-        .action-btn.delete { background: #fef2f2; color: #ef4444; } /* Silme Kırmızı */
-        .action-btn:active { transform: scale(0.95); }
+        .action-btn:active { transform: scale(0.9); }
+        .action-btn.delete { background: #fef2f2; color: #ef4444; }
+        .action-btn.copy { background: #f0f9ff; color: #0284c7; }
+        .action-btn.edit { background: #f0fdf4; color: #16a34a; }
+        .action-btn.view { background: #fff7ed; color: #ea580c; }
 
-        /* Month Header */
-        .month-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin: 20px 0 8px; padding-left: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .month-header { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin: 25px 0 10px; padding-left: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* NOTLAR İÇİN GRID & EXPAND */
-        .notes-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .note-card {
-            background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;
-            display: flex; flex-direction: column;
-        }
-        .note-title { font-weight: 700; color: var(--secondary); margin-bottom: 5px; }
-        .note-body {
-            font-size: 0.9rem; color: var(--text-main); line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; /* 2 satırda kes */
-        }
+        /* Notlar */
+        .notes-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .note-card { background: var(--surface); padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .note-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .note-title { font-weight: 700; color: var(--secondary); font-size: 1rem; }
+        .note-body { font-size: 0.9rem; color: var(--text-main); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .note-body.expanded { -webkit-line-clamp: unset; }
-        .read-more {
-            font-size: 0.75rem; color: var(--primary); font-weight: 600; cursor: pointer;
-            margin-top: 8px; align-self: flex-start;
-        }
+        .read-more { font-size: 0.75rem; color: var(--primary); font-weight: 600; cursor: pointer; margin-top: 10px; display: inline-block;}
 
-        /* Renkler */
         .inc { color: #16a34a; }
         .exp { color: #dc2626; }
 
         /* Navbar */
         .nav-bar {
             position: fixed; bottom: 0; width: 100%; background: var(--surface);
-            display: flex; justify-content: space-around; padding: 10px 0 20px;
+            display: flex; justify-content: space-around; padding: 10px 0 25px;
             border-top: 1px solid #e2e8f0; z-index: 100;
         }
         .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 0.7rem; width: 20%; }
         .nav-item.active { color: var(--primary); }
-        .nav-item .material-icons-round { font-size: 24px; }
+        .nav-item .material-icons-round { font-size: 26px; margin-bottom: 2px;}
 
         /* FAB & Modal */
         .fab {
-            position: fixed; bottom: 85px; right: 20px; background: var(--secondary); color: white;
-            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 90; cursor: pointer;
+            position: fixed; bottom: 95px; right: 20px; background: var(--secondary); color: white;
+            width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 90; cursor: pointer;
         }
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-            display: none; justify-content: center; align-items: flex-end; z-index: 3000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            display: none; justify-content: center; align-items: flex-end; z-index: 3000; backdrop-filter: blur(2px);
         }
         .modal-overlay.open { display: flex; }
         .modal-content {
             background: var(--surface); width: 100%; max-width: 500px;
-            border-radius: 20px 20px 0 0; padding: 25px; animation: slideUp 0.3s;
+            border-radius: 24px 24px 0 0; padding: 25px; animation: slideUp 0.3s;
+            max-height: 90vh; overflow-y: auto;
         }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Form */
-        .form-group { margin-bottom: 15px; }
-        .form-control, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; background: #fff; }
-        .type-selector { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; }
-        .type-chip { padding: 8px 16px; border-radius: 8px; background: #f1f5f9; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
-        .type-chip.selected { background: var(--secondary); color: white; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px; }
+        .form-control, select { width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 1rem; outline: none; background: #fff; }
+        .type-selector { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .type-chip { padding: 10px 20px; border-radius: 10px; background: #f1f5f9; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; white-space: nowrap; cursor: pointer; border: 1px solid transparent;}
+        .type-chip.selected { background: var(--secondary); color: white; border-color: var(--secondary); }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-container">
-            <span class="material-icons-round brand-logo">lock</span>
+            <span class="material-icons-round brand-logo">verified_user</span>
             <div class="brand-title">VINotes</div>
             <form id="loginForm">
                 <div class="form-group"><input type="email" id="loginEmail" class="form-control" placeholder="e-Mail" required></div>
                 <div class="form-group"><input type="password" id="loginPassword" class="form-control" placeholder="Password" required></div>
                 <button type="submit" class="btn-login">Login</button>
             </form>
-            <p id="authMsg" style="color:var(--danger); margin-top:10px; font-size:0.8rem;"></p>
+            <p id="authMsg" style="color:var(--danger); margin-top:15px; font-size:0.9rem;"></p>
         </div>
     </div>
 
@@ -185,24 +175,24 @@
         <header>
             <div class="header-top">
                 <h2>Cüzdan</h2>
-                <button onclick="logout()" style="background:#fee2e2; border:none; padding:8px; border-radius:8px; color:#ef4444; cursor:pointer; display:flex;">
-                    <span class="material-icons-round">logout</span>
+                <button class="logout-btn" onclick="logout()">
+                    <span class="material-icons-round">power_settings_new</span>
                 </button>
             </div>
             <div class="search-container">
                 <span class="material-icons-round search-icon">search</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="Ara...">
+                <input type="text" id="searchInput" class="search-input" placeholder="Tüm kayıtlarda ara...">
             </div>
         </header>
 
         <main>
             <section id="view-finance" class="section active">
                 <div class="balance-card">
-                    <p style="opacity:0.8; font-size:0.85rem;">Net Durum</p>
+                    <p style="opacity:0.8; font-size:0.9rem; margin-bottom:5px;">Net Varlık</p>
                     <div class="balance-amount" id="totalBalance">₺0,00</div>
-                    <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
-                        <div><span style="font-size:0.75rem;">Gelir</span><br><strong class="inc" id="totalIncome">₺0</strong></div>
-                        <div><span style="font-size:0.75rem;">Gider</span><br><strong class="exp" id="totalExpense">₺0</strong></div>
+                    <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+                        <div><span style="font-size:0.8rem;">Gelir</span><br><strong class="inc" id="totalIncome">₺0</strong></div>
+                        <div><span style="font-size:0.8rem;">Gider</span><br><strong class="exp" id="totalExpense">₺0</strong></div>
                     </div>
                 </div>
                 <div id="financeContainer"></div>
@@ -213,18 +203,18 @@
             </section>
 
             <section id="view-vault" class="section">
-                <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:10px 0;">BANKA HESAPLARI</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:15px 0 10px;">BANKA HESAPLARI</div>
                 <div id="bankContainer"></div>
                 
-                <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:20px 0 10px;">PAROLALAR</div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:30px 0 10px;">PAROLALAR</div>
                 <div id="passContainer"></div>
             </section>
 
             <section id="view-assets" class="section">
-                 <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:10px 0;">ARAÇLAR</div>
+                 <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:15px 0 10px;">ARAÇLAR</div>
                  <div id="vehicleContainer"></div>
 
-                 <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:20px 0 10px;">VERGİLER</div>
+                 <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted); margin:30px 0 10px;">VERGİLER</div>
                  <div id="taxContainer"></div>
             </section>
 
@@ -246,24 +236,27 @@
 
     <div class="modal-overlay" id="addModal">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h3>Yeni Kayıt</h3>
-                <span class="material-icons-round" id="closeModal" style="cursor:pointer;">close</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 id="modalTitle">Yeni Kayıt</h3>
+                <span class="material-icons-round" id="closeModal" style="cursor:pointer; background:#f1f5f9; padding:5px; border-radius:50%;">close</span>
             </div>
-            <div class="form-group">
-                <select id="entryType" class="form-control" onchange="updateFormFields()">
-                    <option value="finance">Gelir / Gider</option>
-                    <option value="debt">Borç / Alacak</option>
-                    <option value="bank">Banka / IBAN</option>
-                    <option value="password">Parola</option>
-                    <option value="vehicle">Araç</option>
-                    <option value="tax">Vergi</option>
-                    <option value="note">Not</option>
-                </select>
-            </div>
+            
             <form id="dataForm">
+                <input type="hidden" id="editId"> <div class="form-group" id="typeGroup">
+                    <label class="form-label">Kategori</label>
+                    <select id="entryType" class="form-control" onchange="updateFormFields()">
+                        <option value="finance">Gelir / Gider</option>
+                        <option value="debt">Borç / Alacak</option>
+                        <option value="bank">Banka / IBAN</option>
+                        <option value="password">Parola</option>
+                        <option value="vehicle">Araç Bilgisi</option>
+                        <option value="tax">Yıllık Vergi</option>
+                        <option value="note">Not</option>
+                    </select>
+                </div>
+
                 <div id="dynamicFields"></div>
-                <button type="submit" class="btn-login" style="margin-top:15px;">Kaydet</button>
+                <button type="submit" id="saveBtn" class="btn-login" style="margin-top:20px;">Kaydet</button>
             </form>
         </div>
     </div>
@@ -271,8 +264,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, query, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // --- FIREBASE AYARLARI ---
         const firebaseConfig = {
   apiKey: "AIzaSyDm5yzzoIqzsqF7TMvT7eInZXBZINSwN-w",
   authDomain: "pa-hmd-s7v1.firebaseapp.com",
@@ -287,39 +281,19 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // OTOMATİK ÇIKIŞ (REFRESH & INACTIVITY)
-        // 1. Refresh yapılınca çıkış olsun diye Persistence'ı Session yapıyoruz (Tab kapanınca gider).
-        // Eğer kesinlikle refresh'te de gitsin isteniyorsa window.onload'da signout yapılabilir ama 
-        // session persistence en doğrusudur.
+        // GÜVENLİK
         setPersistence(auth, browserSessionPersistence);
-
-        // 2. Hareketsizlik Kontrolü (5 Dakika)
-        let idleTime = 0;
-        const resetIdle = () => idleTime = 0;
-        window.onload = resetIdle;
-        window.onmousemove = resetIdle;
-        window.onkeypress = resetIdle;
-        window.ontouchstart = resetIdle;
         
-        setInterval(() => {
-            idleTime++;
-            if (idleTime >= 5) { // 5 Dakika
-                if(auth.currentUser) {
-                    alert("Hareketsizlik nedeniyle güvenlik çıkışı yapıldı.");
-                    signOut(auth);
-                }
-            }
-        }, 60000); // Her 1 dakikada kontrol
+        // Hareketsizlik Kontrolü (5 Dk)
+        let idleTimer;
+        const resetTimer = () => { clearTimeout(idleTimer); idleTimer = setTimeout(() => { if(auth.currentUser) { alert("Güvenlik zaman aşımı."); signOut(auth); } }, 300000); };
+        window.onload = resetTimer; window.onmousemove = resetTimer; window.ontouchstart = resetTimer;
 
-        // Ayrıca sayfa yüklendiğinde zorla çıkış (İsteğin üzerine)
-        window.addEventListener('load', () => {
-           // Sayfa yenilendiğinde oturumu kapatmak istersen bu satırı aç:
-           signOut(auth); 
-        });
-
+        // Sayfa Yenilenince Çıkış
+        window.addEventListener('load', () => { signOut(auth); });
 
         let currentUser = null;
-        let subType = 'income';
+        let globalSubType = 'income'; // Gider hatası için global değişken
 
         // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
@@ -327,10 +301,10 @@
                 currentUser = user;
                 document.getElementById('auth-screen').style.transform = "translateY(-100%)";
                 document.getElementById('app-screen').style.display = "flex";
-                loadData(); // Verileri dinlemeye başla
+                loadData();
             } else {
                 currentUser = null;
-                document.getElementById('loginForm').reset(); // Formu temizle
+                document.getElementById('loginForm').reset();
                 document.getElementById('auth-screen').style.transform = "translateY(0)";
                 document.getElementById('app-screen').style.display = "none";
             }
@@ -339,35 +313,29 @@
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value)
-            .catch(err => document.getElementById('authMsg').textContent = "Hatalı giriş.");
+            .catch(err => document.getElementById('authMsg').textContent = "Hatalı giriş bilgileri.");
         });
 
-        window.logout = () => signOut(auth);
+        window.logout = () => { if(confirm("Çıkış yapılsın mı?")) signOut(auth); };
 
-        // --- DATA YÖNETİMİ ---
-        
-        // Not: loadData sadece bir kere çağrılmalı. Çifte kaydı önlemek için innerHTML'i temizliyoruz.
+        // --- DATA ---
         function loadData() {
             const uid = currentUser.uid;
 
             // 1. FINANS
             onSnapshot(query(collection(db, `users/${uid}/transactions`), orderBy('date', 'desc')), (snap) => {
                 const con = document.getElementById('financeContainer');
-                con.innerHTML = ''; // Temizle
-                let tInc = 0, tExp = 0, lastM = '';
+                con.innerHTML = '';
+                let tInc=0, tExp=0, lastM='';
                 
                 snap.forEach(doc => {
                     const d = doc.data();
-                    if(d.type==='income') tInc+=d.amount; else tExp+=d.amount;
+                    if(d.type==='income') tInc+=d.amount; else tExp+=d.amount; // Burada sadece matematiksel toplama
                     
                     const date = new Date(d.date);
                     const mKey = date.toLocaleString('tr-TR', {month:'long', year:'numeric'});
-                    if(mKey !== lastM) {
-                        con.innerHTML += `<div class="month-header">${mKey}</div>`;
-                        lastM = mKey;
-                    }
+                    if(mKey !== lastM) { con.innerHTML += `<div class="month-header">${mKey}</div>`; lastM = mKey; }
                     
-                    // TEK SATIR DİZAYN (Text Overflow Ellipsis)
                     con.innerHTML += `
                     <div class="compact-item searchable-item">
                         <div class="item-content">
@@ -377,9 +345,7 @@
                                 ${d.type==='income'?'+':'-'}₺${d.amount.toLocaleString('tr-TR')}
                             </div>
                         </div>
-                        <button class="action-btn delete" onclick="del('transactions','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <button class="action-btn delete" onclick="del('transactions','${doc.id}')"><span class="material-icons-round">delete</span></button>
                     </div>`;
                 });
                 document.getElementById('totalBalance').textContent = `₺${(tInc-tExp).toLocaleString('tr-TR')}`;
@@ -387,31 +353,34 @@
                 document.getElementById('totalExpense').textContent = `₺${tExp.toLocaleString('tr-TR')}`;
             });
 
-            // 2. BORÇLAR
+            // 2. BORÇLAR (İSTEK 2: Manuel Giriş Gösterimi)
             onSnapshot(query(collection(db, `users/${uid}/debts`), orderBy('date', 'desc')), (snap) => {
                 const con = document.getElementById('debtsContainer');
                 con.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const isRec = d.type === 'receivable';
-                    const goldVal = (d.goldGram||0)*(d.goldPrice||0);
+                    
+                    let valStr = [];
+                    if(d.amountTL > 0) valStr.push(`₺${d.amountTL.toLocaleString('tr-TR')}`);
+                    if(d.goldGram > 0) valStr.push(`${d.goldGram}g Altın`);
+                    
                     con.innerHTML += `
                     <div class="compact-item searchable-item">
                         <div class="item-content">
                             <div class="item-title" style="color:${isRec?'#15803d':'#c2410c'}">
                                 ${isRec?'ALACAK':'BORÇ'}: ${d.person}
                             </div>
-                            <div class="item-sub">Vade: ${d.dueDate?new Date(d.dueDate).toLocaleDateString('tr-TR'):'Yok'}</div>
-                            ${goldVal>0 ? `<div style="font-size:0.8rem; font-weight:600;">₺${goldVal.toLocaleString('tr-TR')} (${d.goldGram}g)</div>` : ''}
+                            <div class="item-sub">Verilme: ${d.date ? new Date(d.date).toLocaleDateString('tr-TR') : '-'}</div>
+                            <div class="item-sub">Vade: <strong>${d.dueDate ? new Date(d.dueDate).toLocaleDateString('tr-TR') : 'Belirsiz'}</strong></div>
+                            <div class="item-amount">${valStr.join(' + ')}</div>
                         </div>
-                        <button class="action-btn delete" onclick="del('debts','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <button class="action-btn delete" onclick="del('debts','${doc.id}')"><span class="material-icons-round">delete</span></button>
                     </div>`;
                 });
             });
 
-            // 3. BANKALAR (AYRI CONTAINER - Çakışmayı önler)
+            // 3. BANKA
             onSnapshot(collection(db, `users/${uid}/banks`), (snap) => {
                 const con = document.getElementById('bankContainer');
                 con.innerHTML = '';
@@ -423,17 +392,15 @@
                             <div class="item-title">${d.bankName}</div>
                             <div class="item-sub">${d.iban}</div>
                         </div>
-                        <button class="action-btn" onclick="copy('${d.iban}')" style="margin-right:5px;">
-                            <span class="material-icons-round" style="font-size:18px;">content_copy</span>
-                        </button>
-                        <button class="action-btn delete" onclick="del('banks','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <div class="btn-group">
+                            <button class="action-btn copy" onclick="copy('${d.iban}')"><span class="material-icons-round">content_copy</span></button>
+                            <button class="action-btn delete" onclick="del('banks','${doc.id}')"><span class="material-icons-round">delete</span></button>
+                        </div>
                     </div>`;
                 });
             });
 
-            // 4. PAROLALAR (AYRI CONTAINER)
+            // 4. PAROLA (İSTEK 3: Kopyala Butonu Eklendi)
             onSnapshot(collection(db, `users/${uid}/passwords`), (snap) => {
                 const con = document.getElementById('passContainer');
                 con.innerHTML = '';
@@ -445,17 +412,16 @@
                             <div class="item-title">${d.site}</div>
                             <div class="item-sub">${d.user}</div>
                         </div>
-                        <button class="action-btn" onclick="alert('${d.pass}')" style="margin-right:5px;">
-                            <span class="material-icons-round" style="font-size:18px;">visibility</span>
-                        </button>
-                        <button class="action-btn delete" onclick="del('passwords','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <div class="btn-group">
+                            <button class="action-btn copy" onclick="copy('${d.user} | ${d.pass}')"><span class="material-icons-round">content_copy</span></button>
+                            <button class="action-btn view" onclick="alert('Parola: ${d.pass}')"><span class="material-icons-round">visibility</span></button>
+                            <button class="action-btn delete" onclick="del('passwords','${doc.id}')"><span class="material-icons-round">delete</span></button>
+                        </div>
                     </div>`;
                 });
             });
 
-            // 5. ARAÇLAR (AYRI CONTAINER)
+            // 5. ARAÇ (İSTEK 6: İki Tarih)
             onSnapshot(collection(db, `users/${uid}/vehicles`), (snap) => {
                 const con = document.getElementById('vehicleContainer');
                 con.innerHTML = '';
@@ -465,16 +431,15 @@
                     <div class="compact-item searchable-item">
                         <div class="item-content">
                             <div class="item-title">${d.plate}</div>
-                            <div class="item-sub">Bakım: ${d.nextDate?new Date(d.nextDate).toLocaleDateString('tr-TR'):'-'}</div>
+                            <div class="item-sub">Önceki: ${d.lastDate?new Date(d.lastDate).toLocaleDateString('tr-TR'):'-'}</div>
+                            <div class="item-sub"><strong>Sonraki: ${d.nextDate?new Date(d.nextDate).toLocaleDateString('tr-TR'):'-'}</strong></div>
                         </div>
-                        <button class="action-btn delete" onclick="del('vehicles','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <button class="action-btn delete" onclick="del('vehicles','${doc.id}')"><span class="material-icons-round">delete</span></button>
                     </div>`;
                 });
             });
-            
-            // 6. VERGİLER (AYRI CONTAINER)
+
+            // 6. VERGİ (İSTEK 7: Miktar Eklendi)
             onSnapshot(collection(db, `users/${uid}/taxes`), (snap) => {
                 const con = document.getElementById('taxContainer');
                 con.innerHTML = '';
@@ -485,148 +450,200 @@
                         <div class="item-content">
                             <div class="item-title">${d.name}</div>
                             <div class="item-sub">Son Ödeme: ${d.date?new Date(d.date).toLocaleDateString('tr-TR'):'-'}</div>
+                            <div class="item-amount">₺${d.amount ? d.amount.toLocaleString('tr-TR') : '0'}</div>
                         </div>
-                        <button class="action-btn delete" onclick="del('taxes','${doc.id}')">
-                            <span class="material-icons-round" style="font-size:18px;">delete</span>
-                        </button>
+                        <button class="action-btn delete" onclick="del('taxes','${doc.id}')"><span class="material-icons-round">delete</span></button>
                     </div>`;
                 });
             });
 
-            // 7. NOTLAR (CLAMP & READ MORE)
+            // 7. NOTLAR (İSTEK 8: Düzenle ve Kopyala)
             onSnapshot(query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc')), (snap) => {
                 const con = document.getElementById('notesContainer');
                 con.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
-                    const noteId = doc.id;
+                    const nid = doc.id;
+                    // Escape single quotes for JS calls
+                    const safeTitle = d.title.replace(/'/g, "\\'"); 
+                    const safeContent = d.content.replace(/'/g, "\\'").replace(/\n/g, "\\n");
+
                     con.innerHTML += `
                     <div class="note-card searchable-item">
-                        <div style="display:flex; justify-content:space-between;">
+                        <div class="note-header">
                             <div class="note-title">${d.title}</div>
-                            <span class="material-icons-round" style="color:#ef4444; font-size:18px; cursor:pointer;" onclick="del('notes','${doc.id}')">delete</span>
+                            <div class="btn-group">
+                                <button class="action-btn copy" onclick="copy('${safeContent}')"><span class="material-icons-round" style="font-size:16px;">content_copy</span></button>
+                                <button class="action-btn edit" onclick="openEditNote('${nid}', '${safeTitle}', '${safeContent}')"><span class="material-icons-round" style="font-size:16px;">edit</span></button>
+                                <button class="action-btn delete" onclick="del('notes','${nid}')"><span class="material-icons-round" style="font-size:16px;">delete</span></button>
+                            </div>
                         </div>
-                        <div class="note-body" id="note-${noteId}">${d.content}</div>
-                        <div class="read-more" onclick="toggleNote('${noteId}', this)">Devamını Oku</div>
+                        <div class="note-body" id="nb-${nid}">${d.content}</div>
+                        <div class="read-more" onclick="toggleNote('${nid}', this)">Devamını Oku</div>
                     </div>`;
                 });
             });
         }
 
-        // --- GLOBAL ACTIONS ---
-        window.del = async (col, id) => { if(confirm("Silmek istediğine emin misin?")) await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id)); };
+        // --- ACTIONS ---
+        window.del = async (col, id) => { if(confirm("Silinecek?")) await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id)); };
         window.copy = (t) => { navigator.clipboard.writeText(t); alert("Kopyalandı"); };
-        
         window.toggleNote = (id, btn) => {
-            const body = document.getElementById(`note-${id}`);
-            if(body.classList.contains('expanded')) {
-                body.classList.remove('expanded');
-                btn.textContent = "Devamını Oku";
-            } else {
-                body.classList.add('expanded');
-                btn.textContent = "Kapat";
-            }
+            const el = document.getElementById(`nb-${id}`);
+            if(el.classList.contains('expanded')){ el.classList.remove('expanded'); btn.textContent="Devamını Oku"; }
+            else { el.classList.add('expanded'); btn.textContent="Kapat"; }
         };
 
         window.switchTab = (tab) => {
-            document.querySelectorAll('.section').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(e=>e.classList.remove('active'));
             document.getElementById(`view-${tab}`).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active'));
             event.currentTarget.classList.add('active');
             window.scrollTo(0,0);
-        };
+        }
 
-        // --- FORM LOGIC ---
+        // --- FORM & EDIT LOGIC ---
         const modal = document.getElementById('addModal');
-        document.getElementById('fabBtn').onclick = () => { 
-            modal.classList.add('open'); 
-            // Bugünün tarihi
+        const closeModal = document.getElementById('closeModal');
+        
+        // Yeni Ekleme
+        document.getElementById('fabBtn').onclick = () => {
+            document.getElementById('editId').value = ''; // ID temizle (Yeni kayıt)
+            document.getElementById('modalTitle').textContent = "Yeni Kayıt";
+            document.getElementById('saveBtn').textContent = "Kaydet";
+            document.getElementById('typeGroup').style.display = "block"; // Tip seçiciyi göster
+            
+            modal.classList.add('open');
             const today = new Date().toISOString().split('T')[0];
             updateFormFields(today);
         };
-        document.getElementById('closeModal').onclick = () => modal.classList.remove('open');
 
-        window.updateFormFields = (defaultDate = '') => {
-            const type = document.getElementById('entryType').value;
-            const container = document.getElementById('dynamicFields');
-            let html = '';
+        closeModal.onclick = () => modal.classList.remove('open');
+
+        // Not Düzenleme Fonksiyonu
+        window.openEditNote = (id, title, content) => {
+            document.getElementById('editId').value = id;
+            document.getElementById('modalTitle').textContent = "Notu Düzenle";
+            document.getElementById('saveBtn').textContent = "Güncelle";
+            document.getElementById('typeGroup').style.display = "none"; // Tip seçiciyi gizle
             
-            if(type==='finance') {
-                html = `
-                <div class="type-selector">
-                    <div class="type-chip selected" onclick="subType='income'; hl(this)">Gelir</div>
-                    <div class="type-chip" onclick="subType='expense'; hl(this)">Gider</div>
-                </div>
-                <div class="form-group"><input type="date" id="fDate" class="form-control" value="${defaultDate}"></div>
-                <div class="form-group"><input type="text" id="fDesc" class="form-control" placeholder="Açıklama"></div>
-                <div class="form-group"><input type="number" id="fAmount" class="form-control" placeholder="Tutar ₺" step="0.01"></div>`;
-                subType = 'income';
-            } else if(type==='debt') {
-                html = `
-                <div class="type-selector">
-                    <div class="type-chip selected" onclick="subType='receivable'; hl(this)">Alacak</div>
-                    <div class="type-chip" onclick="subType='debt'; hl(this)">Borç</div>
-                </div>
-                <div class="form-group"><input type="text" id="dPerson" class="form-control" placeholder="Kişi"></div>
-                <div class="form-group"><input type="date" id="dDate" class="form-control" value="${defaultDate}"></div>
-                <div style="display:flex; gap:10px;">
-                   <input type="number" id="dGold" class="form-control" placeholder="Gr Altın" step="0.01">
-                   <input type="number" id="dPrice" class="form-control" placeholder="Kur" step="0.01">
-                </div>
-                <div class="form-group" style="margin-top:10px;"><label style="font-size:0.8rem;">Vade</label><input type="date" id="dDue" class="form-control"></div>`;
-                subType = 'receivable';
-            } else if(type==='bank') {
-                html = `<input type="text" id="bName" class="form-control" placeholder="Banka" style="margin-bottom:10px">
-                        <input type="text" id="bIban" class="form-control" placeholder="IBAN">`;
-            } else if(type==='password') {
-                html = `<input type="text" id="pSite" class="form-control" placeholder="Site" style="margin-bottom:10px">
-                        <input type="text" id="pUser" class="form-control" placeholder="Kullanıcı" style="margin-bottom:10px">
-                        <input type="text" id="pPass" class="form-control" placeholder="Parola">`;
-            } else if(type==='vehicle') {
-                html = `<input type="text" id="vPlate" class="form-control" placeholder="Plaka" style="margin-bottom:10px">
-                        <label style="font-size:0.8rem">Gelecek Bakım</label><input type="date" id="vNext" class="form-control">`;
-            } else if(type==='tax') {
-                html = `<input type="text" id="tName" class="form-control" placeholder="Vergi Adı" style="margin-bottom:10px">
-                        <label style="font-size:0.8rem">Son Ödeme</label><input type="date" id="tDate" class="form-control">`;
-            } else if(type==='note') {
-                html = `<input type="text" id="nTitle" class="form-control" placeholder="Başlık" style="margin-bottom:10px">
-                        <textarea id="nContent" class="form-control" rows="4" placeholder="Not"></textarea>`;
-            }
-            container.innerHTML = html;
+            // Not formunu manuel yükle
+            document.getElementById('entryType').value = 'note';
+            updateFormFields(); // Formu oluştur
+            
+            // Değerleri doldur
+            setTimeout(() => {
+                document.getElementById('nTitle').value = title;
+                document.getElementById('nContent').value = content;
+            }, 50);
+
+            modal.classList.add('open');
         };
 
-        window.hl = (el) => {
-            document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('selected'));
+        window.updateFormFields = (defDate='') => {
+            const type = document.getElementById('entryType').value;
+            const con = document.getElementById('dynamicFields');
+            let h = '';
+
+            if(type==='finance') {
+                globalSubType = 'income'; // Reset
+                h=`<div class="type-selector">
+                    <div class="type-chip selected" onclick="setGType('income', this)">Gelir</div>
+                    <div class="type-chip" onclick="setGType('expense', this)">Gider</div>
+                   </div>
+                   <div class="form-group"><label class="form-label">Tarih</label><input type="date" id="fDate" class="form-control" value="${defDate}"></div>
+                   <div class="form-group"><label class="form-label">Açıklama</label><input type="text" id="fDesc" class="form-control" placeholder="Maaş, Market..."></div>
+                   <div class="form-group"><label class="form-label">Tutar</label><input type="number" id="fAmount" class="form-control" step="0.01"></div>`;
+            } else if(type==='debt') {
+                globalSubType = 'receivable';
+                h=`<div class="type-selector">
+                    <div class="type-chip selected" onclick="setGType('receivable', this)">Alacak (Ben Verdim)</div>
+                    <div class="type-chip" onclick="setGType('debt', this)">Borç (Ben Aldım)</div>
+                   </div>
+                   <div class="form-group"><label class="form-label">Kişi</label><input type="text" id="dPerson" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Verilme Tarihi</label><input type="date" id="dDate" class="form-control" value="${defDate}"></div>
+                   <div style="display:flex; gap:10px;">
+                        <div style="flex:1"><label class="form-label">Tutar (TL)</label><input type="number" id="dAmountTL" class="form-control" placeholder="₺"></div>
+                        <div style="flex:1"><label class="form-label">Altın (Gr)</label><input type="number" id="dGoldGram" class="form-control" placeholder="Gr"></div>
+                   </div>
+                   <div class="form-group" style="margin-top:15px;"><label class="form-label">Tahsil / Ödeme Tarihi</label><input type="date" id="dDueDate" class="form-control"></div>`;
+            } else if(type==='bank') {
+                h=`<div class="form-group"><label class="form-label">Banka Adı</label><input type="text" id="bName" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">IBAN / Hesap No</label><input type="text" id="bIban" class="form-control"></div>`;
+            } else if(type==='password') {
+                h=`<div class="form-group"><label class="form-label">Site / Uygulama</label><input type="text" id="pSite" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Kullanıcı Adı</label><input type="text" id="pUser" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Parola</label><input type="text" id="pPass" class="form-control"></div>`;
+            } else if(type==='vehicle') {
+                h=`<div class="form-group"><label class="form-label">Plaka</label><input type="text" id="vPlate" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Önceki Bakım</label><input type="date" id="vLast" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Sonraki Bakım</label><input type="date" id="vNext" class="form-control"></div>`;
+            } else if(type==='tax') {
+                h=`<div class="form-group"><label class="form-label">Vergi Adı</label><input type="text" id="tName" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Tutar</label><input type="number" id="tAmount" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Son Ödeme</label><input type="date" id="tDate" class="form-control"></div>`;
+            } else if(type==='note') {
+                h=`<div class="form-group"><label class="form-label">Başlık</label><input type="text" id="nTitle" class="form-control"></div>
+                   <div class="form-group"><label class="form-label">Not</label><textarea id="nContent" class="form-control" rows="6"></textarea></div>`;
+            }
+            con.innerHTML = h;
+        };
+
+        window.setGType = (val, el) => {
+            globalSubType = val;
+            el.parentElement.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('selected'));
             el.classList.add('selected');
-        }
+        };
 
         document.getElementById('dataForm').addEventListener('submit', async(e)=>{
             e.preventDefault();
             if(!currentUser) return;
             const uid = currentUser.uid;
             const type = document.getElementById('entryType').value;
-            let col='', data={createdAt: serverTimestamp()};
+            const editId = document.getElementById('editId').value; // Düzenleme Modu Kontrolü
+            const btn = document.getElementById('saveBtn');
+            
+            btn.textContent = "İşleniyor...";
+            btn.disabled = true;
 
-            if(type==='finance') {
-                col='transactions'; 
-                data={...data, type:subType, date:document.getElementById('fDate').value, desc:document.getElementById('fDesc').value, amount:parseFloat(document.getElementById('fAmount').value)||0};
-            } else if(type==='debt') {
-                col='debts';
-                data={...data, type:subType, person:document.getElementById('dPerson').value, date:document.getElementById('dDate').value, goldGram:parseFloat(document.getElementById('dGold').value)||0, goldPrice:parseFloat(document.getElementById('dPrice').value)||0, dueDate:document.getElementById('dDue').value};
-            } else if(type==='bank') {
-                col='banks'; data={...data, bankName:document.getElementById('bName').value, iban:document.getElementById('bIban').value};
-            } else if(type==='password') {
-                col='passwords'; data={...data, site:document.getElementById('pSite').value, user:document.getElementById('pUser').value, pass:document.getElementById('pPass').value};
-            } else if(type==='vehicle') {
-                col='vehicles'; data={...data, plate:document.getElementById('vPlate').value, nextDate:document.getElementById('vNext').value};
-            } else if(type==='tax') {
-                col='taxes'; data={...data, name:document.getElementById('tName').value, date:document.getElementById('tDate').value};
-            } else if(type==='note') {
-                col='notes'; data={...data, title:document.getElementById('nTitle').value, content:document.getElementById('nContent').value};
+            try {
+                let col='', data={};
+                
+                // Veri Hazırlama
+                if(type==='finance') {
+                    col='transactions'; 
+                    data={ type:globalSubType, date:document.getElementById('fDate').value, desc:document.getElementById('fDesc').value, amount:parseFloat(document.getElementById('fAmount').value)||0 };
+                } else if(type==='debt') {
+                    col='debts';
+                    data={ type:globalSubType, person:document.getElementById('dPerson').value, date:document.getElementById('dDate').value, amountTL:parseFloat(document.getElementById('dAmountTL').value)||0, goldGram:parseFloat(document.getElementById('dGoldGram').value)||0, dueDate:document.getElementById('dDueDate').value };
+                } else if(type==='bank') {
+                    col='banks'; data={ bankName:document.getElementById('bName').value, iban:document.getElementById('bIban').value };
+                } else if(type==='password') {
+                    col='passwords'; data={ site:document.getElementById('pSite').value, user:document.getElementById('pUser').value, pass:document.getElementById('pPass').value };
+                } else if(type==='vehicle') {
+                    col='vehicles'; data={ plate:document.getElementById('vPlate').value, lastDate:document.getElementById('vLast').value, nextDate:document.getElementById('vNext').value };
+                } else if(type==='tax') {
+                    col='taxes'; data={ name:document.getElementById('tName').value, amount:parseFloat(document.getElementById('tAmount').value)||0, date:document.getElementById('tDate').value };
+                } else if(type==='note') {
+                    col='notes'; data={ title:document.getElementById('nTitle').value, content:document.getElementById('nContent').value };
+                }
+
+                // DÜZENLEME Mİ YENİ KAYIT MI?
+                if(editId) {
+                    // Sadece Notlar için düzenleme aktif edildi ancak yapı diğerleri için de hazır.
+                    await updateDoc(doc(db, `users/${uid}/${col}`, editId), data);
+                } else {
+                    data.createdAt = serverTimestamp(); // Yeni kayıtta tarih ekle
+                    await addDoc(collection(db, `users/${uid}/${col}`), data);
+                }
+                
+                modal.classList.remove('open');
+            } catch (err) {
+                alert("Hata: " + err.message);
+            } finally {
+                btn.textContent = "Kaydet";
+                btn.disabled = false;
             }
-
-            await addDoc(collection(db, `users/${uid}/${col}`), data);
-            modal.classList.remove('open');
         });
 
         // ARAMA
