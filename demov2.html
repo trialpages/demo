@@ -24,7 +24,17 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        body { background-color: var(--bg); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        /* SCROLL FIX: html ve body yüksekliği %100 ve overscroll engellendi */
+        html, body { 
+            height: 100%; 
+            width: 100%;
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; /* Sayfa bütün olarak kaymasın, sadece main kaysın */
+            overscroll-behavior: none;
+        }
 
         /* --- LOGIN --- */
         #auth-screen {
@@ -34,7 +44,6 @@
             transition: transform 0.3s ease;
         }
         .auth-container { width: 100%; max-width: 320px; text-align: center; margin-bottom: 15vh; }
-        /* İSTEK 5: Login İkonu Geri Geldi */
         .brand-logo { font-size: 64px; color: var(--primary); margin-bottom: 15px; background: #eff6ff; padding: 15px; border-radius: 24px; }
         .brand-title { font-size: 2rem; font-weight: 800; color: var(--secondary); margin-bottom: 30px; letter-spacing: -1px;}
         .btn-login {
@@ -49,11 +58,11 @@
         header {
             padding: 15px 20px; background: var(--surface); z-index: 10;
             display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid #e2e8f0;
+            flex-shrink: 0; /* Header asla büzüşmesin */
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; }
         .header-top h2 { font-size: 1.4rem; font-weight: 800; color: var(--secondary); letter-spacing: -0.5px;}
         
-        /* İSTEK 4: Yuvarlak Kırmızı Logout Butonu */
         .logout-btn { 
             width: 36px; height: 36px; border-radius: 50%; background: #fee2e2; 
             color: #ef4444; border: none; cursor: pointer; display: flex; 
@@ -67,8 +76,16 @@
         }
         .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 20px;}
 
-        /* --- LISTS --- */
-        main { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 90px; }
+        /* --- MAIN LISTS (SCROLL FIX HERE) --- */
+        main { 
+            flex: 1; /* Kalan tüm boşluğu doldur */
+            overflow-y: auto; /* Sadece burası scroll olsun */
+            -webkit-overflow-scrolling: touch; /* iOS için akıcı kaydırma */
+            padding: 15px; 
+            padding-bottom: 110px; /* FAB ve Navbar altında kalmaması için ekstra boşluk */
+            min-height: 0; /* Flexbox scroll bug fix */
+        }
+        
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -80,7 +97,7 @@
         }
         .balance-amount { font-size: 2.2rem; font-weight: 800; margin: 5px 0 15px; letter-spacing: -1px;}
 
-        /* --- COMPACT ROW (GELİŞTİRİLMİŞ) --- */
+        /* --- COMPACT ROW --- */
         .compact-item {
             background: var(--surface); padding: 14px; border-radius: 12px;
             margin-bottom: 10px; border: 1px solid #f1f5f9;
@@ -92,7 +109,6 @@
         .item-sub { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .item-amount { font-weight: 700; font-size: 0.9rem; margin-top: 3px; }
 
-        /* Buton Grubu */
         .btn-group { display: flex; gap: 5px; flex-shrink: 0; }
         .action-btn {
             background: #f1f5f9; color: var(--text-muted); border: none; 
@@ -242,7 +258,9 @@
             </div>
             
             <form id="dataForm">
-                <input type="hidden" id="editId"> <div class="form-group" id="typeGroup">
+                <input type="hidden" id="editId">
+                
+                <div class="form-group" id="typeGroup">
                     <label class="form-label">Kategori</label>
                     <select id="entryType" class="form-control" onchange="updateFormFields()">
                         <option value="finance">Gelir / Gider</option>
@@ -281,10 +299,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // GÜVENLİK
         setPersistence(auth, browserSessionPersistence);
         
-        // Hareketsizlik Kontrolü (5 Dk)
+        // Hareketsizlik Kontrolü
         let idleTimer;
         const resetTimer = () => { clearTimeout(idleTimer); idleTimer = setTimeout(() => { if(auth.currentUser) { alert("Güvenlik zaman aşımı."); signOut(auth); } }, 300000); };
         window.onload = resetTimer; window.onmousemove = resetTimer; window.ontouchstart = resetTimer;
@@ -293,7 +310,7 @@
         window.addEventListener('load', () => { signOut(auth); });
 
         let currentUser = null;
-        let globalSubType = 'income'; // Gider hatası için global değişken
+        let globalSubType = 'income';
 
         // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
@@ -330,7 +347,7 @@
                 
                 snap.forEach(doc => {
                     const d = doc.data();
-                    if(d.type==='income') tInc+=d.amount; else tExp+=d.amount; // Burada sadece matematiksel toplama
+                    if(d.type==='income') tInc+=d.amount; else tExp+=d.amount;
                     
                     const date = new Date(d.date);
                     const mKey = date.toLocaleString('tr-TR', {month:'long', year:'numeric'});
@@ -353,7 +370,7 @@
                 document.getElementById('totalExpense').textContent = `₺${tExp.toLocaleString('tr-TR')}`;
             });
 
-            // 2. BORÇLAR (İSTEK 2: Manuel Giriş Gösterimi)
+            // 2. BORÇLAR (FORMAT FIX: + yerine parantez/eşittir)
             onSnapshot(query(collection(db, `users/${uid}/debts`), orderBy('date', 'desc')), (snap) => {
                 const con = document.getElementById('debtsContainer');
                 con.innerHTML = '';
@@ -361,9 +378,16 @@
                     const d = doc.data();
                     const isRec = d.type === 'receivable';
                     
-                    let valStr = [];
-                    if(d.amountTL > 0) valStr.push(`₺${d.amountTL.toLocaleString('tr-TR')}`);
-                    if(d.goldGram > 0) valStr.push(`${d.goldGram}g Altın`);
+                    // Gösterim Mantığı
+                    let moneyPart = d.amountTL > 0 ? `₺${d.amountTL.toLocaleString('tr-TR')}` : '';
+                    let goldPart = d.goldGram > 0 ? `${d.goldGram}g Altın` : '';
+                    let finalStr = '';
+
+                    if(moneyPart && goldPart) {
+                        finalStr = `${moneyPart} (Karşılığı: ${goldPart})`;
+                    } else {
+                        finalStr = moneyPart || goldPart;
+                    }
                     
                     con.innerHTML += `
                     <div class="compact-item searchable-item">
@@ -373,7 +397,7 @@
                             </div>
                             <div class="item-sub">Verilme: ${d.date ? new Date(d.date).toLocaleDateString('tr-TR') : '-'}</div>
                             <div class="item-sub">Vade: <strong>${d.dueDate ? new Date(d.dueDate).toLocaleDateString('tr-TR') : 'Belirsiz'}</strong></div>
-                            <div class="item-amount">${valStr.join(' + ')}</div>
+                            <div class="item-amount">${finalStr}</div>
                         </div>
                         <button class="action-btn delete" onclick="del('debts','${doc.id}')"><span class="material-icons-round">delete</span></button>
                     </div>`;
@@ -400,7 +424,7 @@
                 });
             });
 
-            // 4. PAROLA (İSTEK 3: Kopyala Butonu Eklendi)
+            // 4. PAROLA
             onSnapshot(collection(db, `users/${uid}/passwords`), (snap) => {
                 const con = document.getElementById('passContainer');
                 con.innerHTML = '';
@@ -421,7 +445,7 @@
                 });
             });
 
-            // 5. ARAÇ (İSTEK 6: İki Tarih)
+            // 5. ARAÇ
             onSnapshot(collection(db, `users/${uid}/vehicles`), (snap) => {
                 const con = document.getElementById('vehicleContainer');
                 con.innerHTML = '';
@@ -439,7 +463,7 @@
                 });
             });
 
-            // 6. VERGİ (İSTEK 7: Miktar Eklendi)
+            // 6. VERGİ
             onSnapshot(collection(db, `users/${uid}/taxes`), (snap) => {
                 const con = document.getElementById('taxContainer');
                 con.innerHTML = '';
@@ -457,14 +481,13 @@
                 });
             });
 
-            // 7. NOTLAR (İSTEK 8: Düzenle ve Kopyala)
+            // 7. NOTLAR
             onSnapshot(query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc')), (snap) => {
                 const con = document.getElementById('notesContainer');
                 con.innerHTML = '';
                 snap.forEach(doc => {
                     const d = doc.data();
                     const nid = doc.id;
-                    // Escape single quotes for JS calls
                     const safeTitle = d.title.replace(/'/g, "\\'"); 
                     const safeContent = d.content.replace(/'/g, "\\'").replace(/\n/g, "\\n");
 
@@ -502,17 +525,15 @@
             window.scrollTo(0,0);
         }
 
-        // --- FORM & EDIT LOGIC ---
+        // --- FORM ---
         const modal = document.getElementById('addModal');
         const closeModal = document.getElementById('closeModal');
         
-        // Yeni Ekleme
         document.getElementById('fabBtn').onclick = () => {
-            document.getElementById('editId').value = ''; // ID temizle (Yeni kayıt)
+            document.getElementById('editId').value = '';
             document.getElementById('modalTitle').textContent = "Yeni Kayıt";
             document.getElementById('saveBtn').textContent = "Kaydet";
-            document.getElementById('typeGroup').style.display = "block"; // Tip seçiciyi göster
-            
+            document.getElementById('typeGroup').style.display = "block";
             modal.classList.add('open');
             const today = new Date().toISOString().split('T')[0];
             updateFormFields(today);
@@ -520,23 +541,17 @@
 
         closeModal.onclick = () => modal.classList.remove('open');
 
-        // Not Düzenleme Fonksiyonu
         window.openEditNote = (id, title, content) => {
             document.getElementById('editId').value = id;
             document.getElementById('modalTitle').textContent = "Notu Düzenle";
             document.getElementById('saveBtn').textContent = "Güncelle";
-            document.getElementById('typeGroup').style.display = "none"; // Tip seçiciyi gizle
-            
-            // Not formunu manuel yükle
+            document.getElementById('typeGroup').style.display = "none";
             document.getElementById('entryType').value = 'note';
-            updateFormFields(); // Formu oluştur
-            
-            // Değerleri doldur
+            updateFormFields();
             setTimeout(() => {
                 document.getElementById('nTitle').value = title;
                 document.getElementById('nContent').value = content;
             }, 50);
-
             modal.classList.add('open');
         };
 
@@ -546,7 +561,7 @@
             let h = '';
 
             if(type==='finance') {
-                globalSubType = 'income'; // Reset
+                globalSubType = 'income';
                 h=`<div class="type-selector">
                     <div class="type-chip selected" onclick="setGType('income', this)">Gelir</div>
                     <div class="type-chip" onclick="setGType('expense', this)">Gider</div>
@@ -600,7 +615,7 @@
             if(!currentUser) return;
             const uid = currentUser.uid;
             const type = document.getElementById('entryType').value;
-            const editId = document.getElementById('editId').value; // Düzenleme Modu Kontrolü
+            const editId = document.getElementById('editId').value;
             const btn = document.getElementById('saveBtn');
             
             btn.textContent = "İşleniyor...";
@@ -609,7 +624,6 @@
             try {
                 let col='', data={};
                 
-                // Veri Hazırlama
                 if(type==='finance') {
                     col='transactions'; 
                     data={ type:globalSubType, date:document.getElementById('fDate').value, desc:document.getElementById('fDesc').value, amount:parseFloat(document.getElementById('fAmount').value)||0 };
@@ -628,12 +642,10 @@
                     col='notes'; data={ title:document.getElementById('nTitle').value, content:document.getElementById('nContent').value };
                 }
 
-                // DÜZENLEME Mİ YENİ KAYIT MI?
                 if(editId) {
-                    // Sadece Notlar için düzenleme aktif edildi ancak yapı diğerleri için de hazır.
                     await updateDoc(doc(db, `users/${uid}/${col}`, editId), data);
                 } else {
-                    data.createdAt = serverTimestamp(); // Yeni kayıtta tarih ekle
+                    data.createdAt = serverTimestamp();
                     await addDoc(collection(db, `users/${uid}/${col}`), data);
                 }
                 
@@ -646,13 +658,12 @@
             }
         });
 
-        // ARAMA
         document.getElementById('searchInput').addEventListener('keyup', (e)=>{
             const term = e.target.value.toLowerCase();
             const section = document.querySelector('.section.active');
             section.querySelectorAll('.searchable-item').forEach(item => {
                 const txt = item.innerText.toLowerCase();
-                item.style.display = txt.includes(term) ? 'flex' : 'none'; // Flex yapısı bozulmasın
+                item.style.display = txt.includes(term) ? 'flex' : 'none';
             });
         });
 
