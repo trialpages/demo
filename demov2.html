@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <title>Kişisel Asistanım</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563eb;       /* Ana Renk: Profesyonel Mavi */
+            --primary-dark: #1d4ed8;
+            --secondary: #1e293b;     /* İkincil: Koyu Slate */
+            --bg: #f1f5f9;            /* Arkaplan: Çok açık gri */
+            --surface: #ffffff;       /* Kart Rengi: Beyaz */
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --success: #10b981;       /* Gelir Rengi */
+            --danger: #ef4444;        /* Gider Rengi */
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background-color: var(--bg); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* --- Login Screen --- */
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--surface); z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .auth-card { width: 100%; max-width: 380px; text-align: center; }
+        .auth-card h1 { font-size: 1.8rem; margin: 15px 0 5px; color: var(--secondary); font-weight: 700; }
+        .btn-login {
+            background: var(--primary); color: white; border: none; padding: 16px;
+            border-radius: var(--radius); font-size: 1rem; font-weight: 600; cursor: pointer;
+            width: 100%; margin-top: 20px; box-shadow: var(--shadow);
+            transition: background 0.2s;
+        }
+        .btn-login:active { background: var(--primary-dark); transform: scale(0.98); }
+
+        /* --- Main Layout --- */
+        #app-screen { display: none; height: 100%; flex-direction: column; }
+        
+        header {
+            padding: 15px 20px; background: var(--surface);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); z-index: 10;
+        }
+        header h2 { font-size: 1.1rem; font-weight: 700; color: var(--secondary); }
+        .logout-btn { background: #fee2e2; border: none; color: var(--danger); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;}
+
+        /* --- Content Areas --- */
+        main { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
+
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Financial Cards --- */
+        .balance-card {
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            color: white; padding: 25px; border-radius: var(--radius);
+            margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); text-align: center;
+        }
+        .balance-label { font-size: 0.9rem; opacity: 0.9; }
+        .balance-amount { font-size: 2.2rem; font-weight: 700; margin: 5px 0 15px; letter-spacing: -0.5px; }
+        .stats-row { display: flex; justify-content: space-between; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.15); }
+        .stat-item { flex: 1; }
+        .stat-item:first-child { border-right: 1px solid rgba(255,255,255,0.15); }
+        .stat-item span { display: block; font-size: 0.8rem; opacity: 0.8; }
+        .stat-item strong { font-size: 1.1rem; }
+
+        .section-title { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .transaction-list { list-style: none; }
+        .transaction-item {
+            background: var(--surface); padding: 16px; border-radius: var(--radius);
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); position: relative; overflow: hidden;
+        }
+        .t-info h4 { font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        .t-info p { font-size: 0.75rem; color: var(--text-muted); }
+        .t-amount { font-weight: 700; font-size: 1rem; }
+        .income { color: var(--success); }
+        .expense { color: var(--danger); }
+        .btn-delete-mini { padding: 5px; color: var(--text-muted); cursor: pointer; opacity: 0.5; margin-left: 10px; }
+
+        /* --- Passwords & Notes --- */
+        .card-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media(min-width: 600px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .data-card {
+            background: var(--surface); padding: 18px; border-radius: var(--radius);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03); position: relative; border: 1px solid #e2e8f0;
+        }
+        .data-card h3 { font-size: 1rem; margin-bottom: 5px; color: var(--secondary); font-weight: 600; }
+        .data-card .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; }
+        .password-field {
+            background: var(--bg); padding: 10px 12px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .copy-btn { border: none; background: none; color: var(--primary); cursor: pointer; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+        .delete-card { position: absolute; top: 15px; right: 15px; color: var(--danger); cursor: pointer; opacity: 0.4; font-size: 18px; }
+
+        /* --- Navigation Bar (Bottom) --- */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; background: var(--surface);
+            display: flex; justify-content: space-around; padding: 10px 0 20px; /* iPhone safe area support */
+            border-top: 1px solid #e2e8f0; box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+            z-index: 100;
+        }
+        .nav-item {
+            border: none; background: none; display: flex; flex-direction: column; align-items: center;
+            color: #94a3b8; font-size: 0.7rem; cursor: pointer; width: 70px; transition: color 0.2s;
+        }
+        .nav-item span { margin-top: 4px; font-weight: 500; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item .material-icons-round { font-size: 26px; }
+
+        /* --- FAB & Modal --- */
+        .fab {
+            position: fixed; bottom: 90px; right: 20px;
+            background: var(--primary); color: white; width: 56px; height: 56px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); cursor: pointer; z-index: 90;
+            border: none; transition: transform 0.2s;
+        }
+        .fab:active { transform: scale(0.90); }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 3000; display: none;
+            justify-content: center; align-items: flex-end;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-content {
+            background: var(--surface); width: 100%; max-width: 600px;
+            border-radius: 24px 24px 0 0; padding: 30px 25px 40px;
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media(min-width: 600px) {
+            .modal-overlay { align-items: center; }
+            .modal-content { border-radius: 24px; width: 450px; padding: 30px; }
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.85rem; margin-bottom: 6px; color: var(--text-muted); font-weight: 500; }
+        .form-control, select {
+            width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px;
+            font-size: 1rem; background: var(--bg); outline: none; color: var(--text-main);
+            transition: border-color 0.2s;
+        }
+        .form-control:focus { border-color: var(--primary); background: #fff; }
+        
+        .type-selector { display: flex; gap: 10px; margin-bottom: 20px; background: var(--bg); padding: 5px; border-radius: 14px; }
+        .type-chip {
+            flex: 1; text-align: center; padding: 10px; border-radius: 10px;
+            cursor: pointer; font-size: 0.9rem; font-weight: 500; color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .type-chip.selected { background: var(--surface); color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: 600; }
+
+        .tag-container { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+        .tag-pill {
+            font-size: 0.75rem; padding: 6px 12px; background: #e0f2fe; color: #0369a1; 
+            border-radius: 20px; cursor: pointer; border: 1px solid transparent;
+        }
+        .tag-pill:active { background: #bae6fd; }
+
+        .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; }
+        .close-modal { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <span class="material-icons-round" style="font-size: 72px; color: var(--primary);">admin_panel_settings</span>
+            <h1>Kişisel Kasa</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.5;">Hoşgeldiniz.<br>Lütfen güvenli giriş yapınız.</p>
+            
+            <form id="loginForm" style="margin-top:25px; text-align:left;">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta Adresiniz" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Parolanız" required>
+                </div>
+                <button type="submit" class="btn-login">Kasayı Aç</button>
+            </form>
+             <p id="authError" style="color: var(--danger); margin-top: 15px; font-size: 0.85rem; min-height: 20px;"></p>
+        </div>
+    </div>
+
+    <div id="app-screen">
+        <header>
+            <h2 id="page-title">Cüzdan</h2>
+            <button class="logout-btn" id="btnLogout">
+                <span class="material-icons-round">power_settings_new</span>
+            </button>
+        </header>
+
+        <main>
+            <section id="view-finance" class="section active">
+                <div class="balance-card">
+                    <p class="balance-label">Net Bakiye</p>
+                    <div class="balance-amount" id="totalBalance">₺0,00</div>
+                    <div class="stats-row">
+                        <div class="stat-item">
+                            <span>Toplam Gelir</span>
+                            <strong id="totalIncome" style="color: #6ee7b7;">₺0,00</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Toplam Gider</span>
+                            <strong id="totalExpense" style="color: #fca5a5;">₺0,00</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Hesap Hareketleri</h3>
+                <ul class="transaction-list" id="transactionList">
+                    <li style="text-align:center; padding:20px; color:#cbd5e1; font-size:0.9rem;">Yükleniyor...</li>
+                </ul>
+            </section>
+
+            <section id="view-passwords" class="section">
+                <h3 class="section-title">Kayıtlı Parolalar</h3>
+                <div class="card-grid" id="passwordList">
+                    </div>
+            </section>
+
+            <section id="view-notes" class="section">
+                <h3 class="section-title">Not Defteri</h3>
+                <div class="card-grid" id="noteList">
+                    </div>
+            </section>
+        </main>
+
+        <button class="fab" id="fabBtn">
+            <span class="material-icons-round">add</span>
+        </button>
+
+        <nav class="nav-bar">
+            <button class="nav-item active" onclick="switchTab('finance')">
+                <span class="material-icons-round">account_balance_wallet</span>
+                <span>Cüzdan</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('passwords')">
+                <span class="material-icons-round">lock</span>
+                <span>Kasa</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('notes')">
+                <span class="material-icons-round">edit_note</span>
+                <span>Notlar</span>
+            </button>
+        </nav>
+    </div>
+
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal"><span class="material-icons-round" style="font-size:20px;">close</span></button>
+            <h3 style="margin-bottom: 20px; font-size:1.2rem;">Yeni Kayıt</h3>
+
+            <div class="form-group">
+                <label>Ne eklemek istersiniz?</label>
+                <select id="entryType" class="form-control" onchange="updateFormFields()">
+                    <option value="finance">Gelir / Gider</option>
+                    <option value="password">Parola / Hesap</option>
+                    <option value="note">Not</option>
+                </select>
+            </div>
+
+            <form id="dataForm">
+                <div id="financeFields">
+                    <div class="type-selector">
+                        <div class="type-chip selected" onclick="setFinanceType('income', this)">Gelir</div>
+                        <div class="type-chip" onclick="setFinanceType('expense', this)">Gider</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Hızlı Seçim</label>
+                        <div class="tag-container">
+                            <span class="tag-pill" onclick="fillDesc('Maaş')">Maaş</span>
+                            <span class="tag-pill" onclick="fillDesc('Ek Ders')">Ek Ders</span>
+                            <span class="tag-pill" onclick="fillDesc('Sınav Görevi')">Sınav Görevi</span>
+                            <span class="tag-pill" onclick="fillDesc('Market')">Market</span>
+                            <span class="tag-pill" onclick="fillDesc('Fatura')">Fatura</span>
+                        </div>
+                        <input type="text" id="finDesc" class="form-control" placeholder="Açıklama giriniz" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="finAmount" class="form-control" placeholder="Tutar (₺)" step="0.01" required>
+                    </div>
+                </div>
+
+                <div id="passwordFields" style="display:none;">
+                    <div class="form-group">
+                        <input type="text" id="passSite" class="form-control" placeholder="Uygulama / Site Adı (Örn: E-Devlet)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="passUser" class="form-control" placeholder="Kullanıcı Adı / E-posta">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="passSecret" class="form-control" placeholder="Parola">
+                    </div>
+                </div>
+
+                <div id="noteFields" style="display:none;">
+                    <div class="form-group">
+                        <input type="text" id="noteTitle" class="form-control" placeholder="Not Başlığı">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="noteContent" class="form-control" rows="5" placeholder="Notunuzu buraya yazın..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- DİKKAT: BURAYA KENDİ FIREBASE BİLGİLERİNİZİ YAPIŞTIRIN ---
+        const firebaseConfig = {
+  apiKey: "AIzaSyDm5yzzoIqzsqF7TMvT7eInZXBZINSwN-w",
+  authDomain: "pa-hmd-s7v1.firebaseapp.com",
+  projectId: "pa-hmd-s7v1",
+  storageBucket: "pa-hmd-s7v1.firebasestorage.app",
+  messagingSenderId: "1057040915282",
+  appId: "1:1057040915282:web:d80d4818610a55e1fb788b",
+  measurementId: "G-XK9835JN19"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State Variables
+        let currentUser = null;
+        let currentFinanceType = 'income';
+
+        // --- AUTH LOGIC ---
+        const authScreen = document.getElementById('auth-screen');
+        const appScreen = document.getElementById('app-screen');
+        const loginForm = document.getElementById('loginForm');
+        const authError = document.getElementById('authError');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                authScreen.style.transform = "translateY(-100%)"; // Slide up animation
+                appScreen.style.display = "flex";
+                loadData();
+            } else {
+                currentUser = null;
+                authScreen.style.transform = "translateY(0)";
+                appScreen.style.display = "none";
+            }
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            authError.textContent = "Giriş yapılıyor...";
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    authError.textContent = "";
+                    loginForm.reset();
+                })
+                .catch((error) => {
+                    let msg = "Giriş başarısız.";
+                    if(error.code === 'auth/invalid-credential') msg = "E-posta veya parola hatalı.";
+                    if(error.code === 'auth/too-many-requests') msg = "Çok fazla deneme yaptınız. Biraz bekleyin.";
+                    authError.textContent = msg;
+                });
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => {
+            if(confirm("Güvenli çıkış yapılsın mı?")) signOut(auth);
+        });
+
+        // --- UI NAVIGATION ---
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active'); // Tıklanan butonu aktif yap
+
+            const titles = {'finance': 'Cüzdan', 'passwords': 'Kasa', 'notes': 'Notlar'};
+            document.getElementById('page-title').textContent = titles[tabId];
+        };
+
+        // --- MODAL & FORM LOGIC ---
+        const modal = document.getElementById('addModal');
+        const fabBtn = document.getElementById('fabBtn');
+        const closeModal = document.getElementById('closeModal');
+        const dataForm = document.getElementById('dataForm');
+
+        fabBtn.addEventListener('click', () => { 
+            modal.classList.add('open'); 
+            // Varsayılan olarak finans sekmesi açıksa finans seçili gelsin
+            const activeSection = document.querySelector('.section.active').id;
+            if(activeSection === 'view-passwords') document.getElementById('entryType').value = 'password';
+            else if(activeSection === 'view-notes') document.getElementById('entryType').value = 'note';
+            else document.getElementById('entryType').value = 'finance';
+            updateFormFields();
+        });
+
+        closeModal.addEventListener('click', () => { modal.classList.remove('open'); });
+        
+        window.updateFormFields = () => {
+            const type = document.getElementById('entryType').value;
+            document.getElementById('financeFields').style.display = type === 'finance' ? 'block' : 'none';
+            document.getElementById('passwordFields').style.display = type === 'password' ? 'block' : 'none';
+            document.getElementById('noteFields').style.display = type === 'note' ? 'block' : 'none';
+            
+            // Required alan yönetimi
+            document.getElementById('finDesc').required = (type === 'finance');
+            document.getElementById('finAmount').required = (type === 'finance');
+            document.getElementById('passSite').required = (type === 'password');
+            document.getElementById('noteTitle').required = (type === 'note');
+        };
+
+        window.setFinanceType = (type, el) => {
+            currentFinanceType = type;
+            document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+        };
+
+        window.fillDesc = (text) => {
+            document.getElementById('finDesc').value = text;
+        };
+
+        // --- FIREBASE CRUD OPERATIONS ---
+        dataForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const entryType = document.getElementById('entryType').value;
+            const uid = currentUser.uid;
+            const submitBtn = document.querySelector('.btn-submit');
+            const originalBtnText = submitBtn.textContent;
+            
+            submitBtn.textContent = "Kaydediliyor...";
+            submitBtn.disabled = true;
+
+            try {
+                if (entryType === 'finance') {
+                    const desc = document.getElementById('finDesc').value;
+                    const amount = parseFloat(document.getElementById('finAmount').value);
+                    await addDoc(collection(db, `users/${uid}/transactions`), {
+                        type: currentFinanceType,
+                        description: desc,
+                        amount: amount,
+                        createdAt: serverTimestamp()
+                    });
+                } else if (entryType === 'password') {
+                    await addDoc(collection(db, `users/${uid}/passwords`), {
+                        site: document.getElementById('passSite').value,
+                        username: document.getElementById('passUser').value,
+                        password: document.getElementById('passSecret').value,
+                        createdAt: serverTimestamp()
+                    });
+                } else if (entryType === 'note') {
+                    await addDoc(collection(db, `users/${uid}/notes`), {
+                        title: document.getElementById('noteTitle').value,
+                        content: document.getElementById('noteContent').value,
+                        createdAt: serverTimestamp()
+                    });
+                }
+                
+                modal.classList.remove('open');
+                dataForm.reset();
+            } catch (err) {
+                console.error(err);
+                alert("Hata oluştu: " + err.message);
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // --- DATA LISTENING (REALTIME) ---
+        function loadData() {
+            const uid = currentUser.uid;
+
+            // 1. Transactions Listener
+            const qTrans = query(collection(db, `users/${uid}/transactions`), orderBy('createdAt', 'desc'));
+            onSnapshot(qTrans, (snapshot) => {
+                const list = document.getElementById('transactionList');
+                list.innerHTML = '';
+                let income = 0, expense = 0;
+
+                if (snapshot.empty) {
+                    list.innerHTML = '<li style="text-align:center; padding:20px; color:#94a3b8;">Henüz kayıt yok.</li>';
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const item = document.createElement('li');
+                    item.className = 'transaction-item';
+                    const isInc = data.type === 'income';
+                    if(isInc) income += data.amount; else expense += data.amount;
+
+                    // Tarih formatlama
+                    let dateStr = "";
+                    if(data.createdAt) {
+                        const date = data.createdAt.toDate();
+                        dateStr = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+                    }
+
+                    item.innerHTML = `
+                        <div class="t-info">
+                            <h4>${data.description}</h4>
+                            <p>${dateStr}</p>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <div class="t-amount ${isInc ? 'income' : 'expense'}">
+                                ${isInc ? '+' : '-'}₺${data.amount.toLocaleString('tr-TR', {minimumFractionDigits: 2})}
+                            </div>
+                            <span class="material-icons-round btn-delete-mini" onclick="deleteItem('transactions', '${doc.id}')">delete</span>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+
+                document.getElementById('totalIncome').textContent = `₺${income.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                document.getElementById('totalExpense').textContent = `₺${expense.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+                document.getElementById('totalBalance').textContent = `₺${(income - expense).toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            });
+
+            // 2. Passwords Listener
+            const qPass = query(collection(db, `users/${uid}/passwords`), orderBy('createdAt', 'desc'));
+            onSnapshot(qPass, (snapshot) => {
+                const grid = document.getElementById('passwordList');
+                grid.innerHTML = '';
+                
+                if (snapshot.empty) grid.innerHTML = '<p style="text-align:center; color:#94a3b8; grid-column:span 2;">Kasa boş.</p>';
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'data-card';
+                    card.innerHTML = `
+                        <span class="material-icons-round delete-card" onclick="deleteItem('passwords', '${doc.id}')">delete</span>
+                        <h3>${data.site}</h3>
+                        <div class="meta">${data.username}</div>
+                        <div class="password-field">
+                            <span>••••••</span>
+                            <button class="copy-btn" onclick="revealAndCopy(this, '${data.password}')">GÖSTER</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+
+            // 3. Notes Listener
+            const qNotes = query(collection(db, `users/${uid}/notes`), orderBy('createdAt', 'desc'));
+            onSnapshot(qNotes, (snapshot) => {
+                const grid = document.getElementById('noteList');
+                grid.innerHTML = '';
+                
+                if (snapshot.empty) grid.innerHTML = '<p style="text-align:center; color:#94a3b8; grid-column:span 2;">Not yok.</p>';
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const card = document.createElement('div');
+                    card.className = 'data-card';
+                    card.innerHTML = `
+                        <span class="material-icons-round delete-card" onclick="deleteItem('notes', '${doc.id}')">delete</span>
+                        <h3>${data.title}</h3>
+                        <p style="font-size:0.9rem; color:var(--text-main); white-space: pre-wrap; line-height:1.4;">${data.content}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+            });
+        }
+
+        // Global Fonksiyonlar (HTML onclick için window'a atandı)
+        window.deleteItem = async (col, id) => {
+            if(confirm("Silmek istediğinize emin misiniz?")) {
+                await deleteDoc(doc(db, `users/${currentUser.uid}/${col}`, id));
+            }
+        };
+
+        window.revealAndCopy = (btn, pass) => {
+            // Kopyala
+            navigator.clipboard.writeText(pass).then(() => {
+                const span = btn.previousElementSibling;
+                span.textContent = pass;
+                btn.textContent = "KOPYALANDI";
+                btn.style.color = "#10b981";
+                
+                setTimeout(() => {
+                    span.textContent = "••••••";
+                    btn.textContent = "GÖSTER";
+                    btn.style.color = "";
+                }, 4000);
+            }).catch(err => {
+                alert("Kopyalanamadı, manuel seçin.");
+            });
+        };
+    </script>
+</body>
+</html>
