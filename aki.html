@@ -3,90 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İlahiyat Akademik İlan Platformu</title>
+    <title>Akademik Kadro İlanları - İlahiyat</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .glass-panel { background: white; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .hero-pattern {
+            background-color: #1e293b;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23334155' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
-    <header class="bg-slate-900 text-white shadow-lg">
-        <div class="container mx-auto px-4 py-6 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight"><i class="fas fa-university mr-2"></i>İlahiyat Kariyer</h1>
-                <p class="text-slate-400 text-sm">Akademik İlan ve Kadro Takip Sistemi</p>
+    <div class="hero-pattern text-white border-b border-slate-700">
+        <div class="container mx-auto px-4 py-16 text-center">
+            <div class="inline-block p-3 rounded-full bg-slate-800/50 mb-4 border border-slate-600">
+                <i class="fas fa-mosque text-blue-400 text-2xl"></i>
             </div>
-            <a href="admin.html" target="_blank" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded transition">Yönetici Girişi</a>
+            <h1 class="text-3xl md:text-5xl font-bold tracking-tight mb-3 text-white">
+                Akademik Kadro İlanları
+            </h1>
+            <p class="text-slate-400 text-lg font-medium tracking-wide uppercase text-xs md:text-sm">
+                İlahiyat Fakültelerine Özeldir
+            </p>
         </div>
-    </header>
+    </div>
 
-    <div class="container mx-auto px-4 -mt-8 relative z-10">
-        <div class="glass-panel rounded-xl p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="container mx-auto px-4 -mt-8 mb-10 relative z-10">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Üniversite</label>
-                    <input type="text" id="filterUni" placeholder="Örn: Marmara" class="w-full border-gray-300 border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <div class="relative group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block group-focus-within:text-blue-600">Üniversite</label>
+                    <div class="relative">
+                        <i class="fas fa-university absolute left-3 top-3.5 text-slate-400"></i>
+                        <input type="text" id="filterUni" placeholder="Üniversite adı..." class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Bölüm / Anabilim Dalı</label>
-                    <select id="filterDept" class="w-full border-gray-300 border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                        <option value="">Tümü</option>
+                <div class="relative group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block group-focus-within:text-blue-600">Bölüm / A.B.D.</label>
+                    <div class="relative">
+                        <i class="fas fa-book-open absolute left-3 top-3.5 text-slate-400"></i>
+                        <select id="filterDept" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all appearance-none cursor-pointer">
+                            <option value="">Tüm Bölümler</option>
+                            </select>
+                        <i class="fas fa-chevron-down absolute right-3 top-4 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block group-focus-within:text-blue-600">Kadro Unvanı</label>
+                    <div class="relative">
+                        <i class="fas fa-user-graduate absolute left-3 top-3.5 text-slate-400"></i>
+                        <select id="filterTitle" class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all appearance-none cursor-pointer">
+                            <option value="">Tüm Unvanlar</option>
+                            <option value="Araştırma Görevlisi">Araştırma Görevlisi</option>
+                            <option value="Öğretim Görevlisi">Öğretim Görevlisi</option>
+                            <option value="Dr. Öğretim Üyesi">Dr. Öğretim Üyesi</option>
+                            <option value="Doçent">Doçent</option>
+                            <option value="Profesör">Profesör</option>
                         </select>
+                        <i class="fas fa-chevron-down absolute right-3 top-4 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Kadro Unvanı</label>
-                    <select id="filterTitle" class="w-full border-gray-300 border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
-                        <option value="">Tümü</option>
-                        <option value="Araştırma Görevlisi">Araştırma Görevlisi</option>
-                        <option value="Öğretim Görevlisi">Öğretim Görevlisi</option>
-                        <option value="Dr. Öğretim Üyesi">Dr. Öğretim Üyesi</option>
-                        <option value="Doçent">Doçent</option>
-                        <option value="Profesör">Profesör</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Anahtar Kelime</label>
-                    <input type="text" id="filterKeyword" placeholder="Örn: Hadis usulü, YDS..." class="w-full border-gray-300 border rounded-lg p-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <div class="relative group">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block group-focus-within:text-blue-600">Anahtar Kelime</label>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-3.5 text-slate-400"></i>
+                        <input type="text" id="filterKeyword" placeholder="Şartlar içinde ara..." class="w-full bg-slate-50 border border-slate-200 text-slate-700 rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                    </div>
                 </div>
             </div>
 
-            <div class="mt-6 text-right">
-                <button onclick="fetchJobs()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition duration-200 shadow-md flex items-center inline-flex">
-                    <i class="fas fa-search mr-2"></i> İlanları Listele
+            <div class="mt-6 flex justify-end">
+                <button onclick="fetchJobs()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-blue-500/30 transition duration-200 flex items-center gap-2 transform active:scale-95">
+                    <span>Sonuçları Listele</span>
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8">
-        <div id="loading" class="hidden text-center py-10">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p class="mt-3 text-gray-500">İlanlar taranıyor...</p>
+    <div class="container mx-auto px-4 pb-12 flex-grow">
+        
+        <div id="loading" class="hidden flex flex-col items-center justify-center py-12">
+            <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            <p class="mt-4 text-slate-500 font-medium">İlanlar taranıyor...</p>
         </div>
 
-        <div id="resultsArea" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="col-span-1 md:col-span-2 text-center py-10 text-gray-400">
-                <i class="fas fa-search fa-3x mb-3"></i>
-                <p>Kriterlerinizi belirleyip "İlanları Listele" butonuna basınız.</p>
+        <div id="resultsArea" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="col-span-1 lg:col-span-2 text-center py-16 bg-white border border-dashed border-slate-300 rounded-xl">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-50 mb-4">
+                    <i class="fas fa-search text-slate-300 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-700">Arama Yapın</h3>
+                <p class="text-slate-500 mt-2 max-w-md mx-auto">
+                    Kriterlerinizi yukarıdan belirleyin ve güncel akademik kadro ilanlarını listelemek için butona tıklayın.
+                </p>
             </div>
         </div>
     </div>
 
+    <footer class="bg-white border-t border-slate-200 mt-auto">
+        <div class="container mx-auto px-4 py-6 text-center text-slate-500 text-sm">
+            <p>&copy; 2024 İlahiyat Akademik İlan Platformu. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // --- FIREBASE AYARLARI ---
-        // Buraya kendi Firebase Config bilgilerinizi yapıştırın
+        // Yönetici paneline eklediğiniz aynı config kodlarını buraya yapıştırın.
         const firebaseConfig = {
             apiKey: "SENIN_API_KEYIN",
             authDomain: "SENIN_PROJEN.firebaseapp.com",
@@ -99,7 +146,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- DEPARTMAN VERİSİ ---
+        // --- BÖLÜMLER VERİSİ ---
         const departments = {
             "Temel İslam Bilimleri": [
                 "Tefsir", "Hadis", "Kelam", "İslam Hukuku", "Tasavvuf", "Arap Dili ve Belagatı", "İslam Mezhepleri Tarihi", "Kıraat İlmi"
@@ -112,7 +159,7 @@
             ]
         };
 
-        // Selectbox'ı Doldur
+        // Selectbox Doldurma
         const deptSelect = document.getElementById('filterDept');
         for (const [bolum, anabilimler] of Object.entries(departments)) {
             let optgroup = document.createElement('optgroup');
@@ -121,9 +168,8 @@
                 let option = document.createElement('option');
                 option.value = abd;
                 option.innerText = abd;
-                optgroup.appendChild(option);
+                deptSelect.appendChild(option);
             });
-            deptSelect.appendChild(optgroup);
         }
 
         // --- ARAMA FONKSİYONU ---
@@ -131,105 +177,149 @@
             const loading = document.getElementById('loading');
             const resultsArea = document.getElementById('resultsArea');
             
-            // UI Temizle
+            // Kullanıcı girdilerini al
+            const filterUni = document.getElementById('filterUni').value.trim().toLocaleLowerCase('tr-TR');
+            const filterDept = document.getElementById('filterDept').value;
+            const filterTitle = document.getElementById('filterTitle').value;
+            const filterKeyword = document.getElementById('filterKeyword').value.trim().toLocaleLowerCase('tr-TR');
+
+            // Hiçbir şey seçilmediyse uyar (İsteğe bağlı, şu an tümünü getirir eğer boşsa)
+            // Eğer tüm alanlar boşsa tüm ilanları getirir.
+            
             resultsArea.innerHTML = '';
             loading.classList.remove('hidden');
 
-            const filterUni = document.getElementById('filterUni').value.toLowerCase();
-            const filterDept = document.getElementById('filterDept').value;
-            const filterTitle = document.getElementById('filterTitle').value;
-            const filterKeyword = document.getElementById('filterKeyword').value.toLowerCase();
-
             try {
-                // Firebase Sorgusu: Tüm veriyi çekip client-side filtrelemek bu ölçekte daha esnek arama sağlar
-                // (Keyword ve "contains" araması için)
+                // Firebase'den tarihe göre sıralı çek
                 const q = query(collection(db, "jobs"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
                 
-                let count = 0;
+                let matches = [];
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    
-                    // --- FİLTRELEME MANTIĞI ---
                     let isMatch = true;
 
-                    // Üniversite (İçerir mantığı)
-                    if (filterUni && !data.university.toLowerCase().includes(filterUni)) isMatch = false;
+                    // 1. Üniversite Filtresi (İçerir mantığı)
+                    if (filterUni && !data.university.toLocaleLowerCase('tr-TR').includes(filterUni)) {
+                        isMatch = false;
+                    }
 
-                    // Bölüm (Tam eşleşme)
-                    if (filterDept && data.subDepartment !== filterDept) isMatch = false;
+                    // 2. Bölüm Filtresi (Tam Eşleşme)
+                    if (filterDept && data.subDepartment !== filterDept) {
+                        isMatch = false;
+                    }
 
-                    // Unvan (Tam eşleşme)
-                    if (filterTitle && data.title !== filterTitle) isMatch = false;
+                    // 3. Unvan Filtresi (Tam Eşleşme)
+                    if (filterTitle && data.title !== filterTitle) {
+                        isMatch = false;
+                    }
 
-                    // Keyword (Genel tarama: şartlar, fakülte vb.)
+                    // 4. Kelime Filtresi (Tüm alanlarda arar: Şartlar, Fakülte vb.)
                     if (filterKeyword) {
-                        const content = `${data.requirements} ${data.faculty}`.toLowerCase();
-                        if (!content.includes(filterKeyword)) isMatch = false;
+                        const searchableText = `
+                            ${data.requirements} 
+                            ${data.faculty} 
+                            ${data.university}
+                            ${data.subDepartment}
+                        `.toLocaleLowerCase('tr-TR');
+                        
+                        if (!searchableText.includes(filterKeyword)) {
+                            isMatch = false;
+                        }
                     }
 
                     if (isMatch) {
-                        count++;
-                        renderCard(data, resultsArea);
+                        matches.push(data);
                     }
                 });
 
-                if (count === 0) {
-                    resultsArea.innerHTML = `
-                        <div class="col-span-1 md:col-span-2 text-center py-10 text-gray-500 bg-white rounded-lg border border-gray-200">
-                            <i class="far fa-sad-tear fa-2x mb-3"></i>
-                            <p>Aradığınız kriterlere uygun ilan bulunamadı.</p>
-                        </div>
-                    `;
+                loading.classList.add('hidden');
+
+                if (matches.length > 0) {
+                    matches.forEach(job => renderCard(job, resultsArea));
+                } else {
+                    renderNoResults(resultsArea);
                 }
 
             } catch (error) {
                 console.error("Hata:", error);
-                alert("Veri çekilirken bir hata oluştu.");
-            } finally {
                 loading.classList.add('hidden');
+                resultsArea.innerHTML = `
+                    <div class="col-span-1 lg:col-span-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <strong class="font-bold">Hata!</strong>
+                        <span class="block sm:inline">Veri çekilirken bir sorun oluştu. Lütfen bağlantınızı kontrol edin.</span>
+                    </div>
+                `;
             }
         };
 
         function renderCard(data, container) {
-            // Tarih Formatı
-            const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : '-';
+            const dateStr = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : 'Tarih Yok';
             
+            // Renk kodları (Bölüme göre ayırt edici renkler eklenebilir, şimdilik standart mavi tonları)
+            let badgeColor = "bg-blue-100 text-blue-800 border-blue-200";
+            if(data.title.includes("Prof")) badgeColor = "bg-purple-100 text-purple-800 border-purple-200";
+            if(data.title.includes("Araştırma")) badgeColor = "bg-green-100 text-green-800 border-green-200";
+
             const html = `
-                <div class="bg-white rounded-xl p-6 border border-gray-200 card-hover transition duration-300 flex flex-col h-full relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
-                    
-                    <div class="flex justify-between items-start mb-4">
+                <div class="bg-white rounded-xl shadow-sm hover:shadow-lg border border-slate-200 p-6 transition-all duration-300 fade-in flex flex-col h-full relative group">
+                    <div class="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
+                         <i class="fas fa-external-link-alt text-slate-300 group-hover:text-blue-500"></i>
+                    </div>
+
+                    <div class="flex items-start justify-between mb-4">
                         <div>
-                            <span class="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-md font-semibold mb-2 border border-blue-100">
-                                ${data.subDepartment}
+                            <span class="inline-block ${badgeColor} text-xs font-bold px-2.5 py-0.5 rounded border mb-2">
+                                ${data.title}
                             </span>
-                            <h3 class="text-xl font-bold text-gray-800 leading-tight">${data.title}</h3>
+                            <h2 class="text-xl font-bold text-slate-800">${data.subDepartment}</h2>
                         </div>
-                        <div class="text-right">
-                             <span class="block text-2xl font-bold text-slate-700">${data.count} <span class="text-xs font-normal text-gray-400">Adet</span></span>
+                         <div class="text-right pl-4">
+                            <div class="text-2xl font-bold text-slate-700 leading-none">${data.count}</div>
+                            <div class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Adet</div>
                         </div>
                     </div>
 
-                    <div class="mb-4 space-y-2 text-sm text-gray-600">
-                        <div class="flex items-center"><i class="fas fa-university w-5 text-gray-400"></i> <span class="font-medium text-gray-900">${data.university}</span></div>
-                        <div class="flex items-center"><i class="fas fa-building w-5 text-gray-400"></i> <span>${data.faculty}</span></div>
+                    <div class="space-y-2 mb-5">
+                        <div class="flex items-center text-slate-600 text-sm">
+                            <i class="fas fa-university w-6 text-center text-slate-400 mr-2"></i>
+                            <span class="font-semibold">${data.university}</span>
+                        </div>
+                        <div class="flex items-center text-slate-600 text-sm">
+                            <i class="fas fa-building w-6 text-center text-slate-400 mr-2"></i>
+                            <span>${data.faculty}</span>
+                        </div>
                     </div>
 
-                    <div class="bg-gray-50 p-3 rounded-lg text-sm text-gray-700 mb-6 flex-grow border border-gray-100">
-                        <p class="line-clamp-3"><span class="font-semibold text-gray-900">Şartlar:</span> ${data.requirements}</p>
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-100 text-sm text-slate-600 mb-6 flex-grow">
+                        <p class="font-medium text-slate-900 mb-1">Özel Şartlar:</p>
+                        <p class="leading-relaxed line-clamp-3">${data.requirements}</p>
                     </div>
 
-                    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
-                        <span class="text-xs text-gray-400"><i class="far fa-clock mr-1"></i> ${date}</span>
-                        <a href="${data.link}" target="_blank" class="bg-slate-800 hover:bg-slate-900 text-white text-sm py-2 px-4 rounded-lg transition duration-200">
-                            Başvuruya Git <i class="fas fa-external-link-alt ml-1"></i>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+                        <span class="text-xs text-slate-400 font-medium">
+                            <i class="far fa-calendar-alt mr-1"></i> ${dateStr}
+                        </span>
+                        <a href="${data.link}" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium py-2 px-5 rounded-lg transition-colors duration-200">
+                            İlana Git
                         </a>
                     </div>
                 </div>
             `;
             container.innerHTML += html;
+        }
+
+        function renderNoResults(container) {
+            container.innerHTML = `
+                <div class="col-span-1 lg:col-span-2 text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+                        <i class="fas fa-filter text-slate-400 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900">Sonuç Bulunamadı</h3>
+                    <p class="text-slate-500 mt-1">Aradığınız kriterlere uygun bir ilan mevcut değil.</p>
+                </div>
+            `;
         }
     </script>
 </body>
