@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Paneli - İlan Ekle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background-color: #f8fafc; font-family: sans-serif; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-slate-800 p-6 text-white flex justify-between items-center">
+            <h2 class="text-xl font-bold"><i class="fas fa-plus-circle mr-2"></i>Yeni Akademik İlan Ekle</h2>
+            <a href="index.html" class="text-sm text-slate-300 hover:text-white underline">Siteye Dön</a>
+        </div>
+        
+        <div class="p-8">
+            <form id="jobForm" class="space-y-5">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Üniversite</label>
+                        <input type="text" id="university" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none" placeholder="Örn: Ankara Üniversitesi">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Fakülte</label>
+                        <input type="text" id="faculty" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none" placeholder="Örn: İlahiyat Fakültesi">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Anabilim Dalı</label>
+                    <select id="subDepartment" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none bg-white">
+                        <option value="" disabled selected>Seçiniz...</option>
+                        </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Kadro Unvanı</label>
+                        <select id="title" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none bg-white">
+                            <option value="Araştırma Görevlisi">Araştırma Görevlisi</option>
+                            <option value="Öğretim Görevlisi">Öğretim Görevlisi</option>
+                            <option value="Dr. Öğretim Üyesi">Dr. Öğretim Üyesi</option>
+                            <option value="Doçent">Doçent</option>
+                            <option value="Profesör">Profesör</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Alınacak Sayı</label>
+                        <input type="number" id="count" min="1" value="1" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Başvuru Şartları / Açıklama</label>
+                    <textarea id="requirements" rows="4" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none" placeholder="Örn: Kelam alanında doktora yapıyor olmak..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Başvuru / İlan Linki</label>
+                    <input type="url" id="link" required class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-slate-500 focus:outline-none" placeholder="https://...">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" id="submitBtn" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-lg transition duration-200 shadow-md">
+                        <i class="fas fa-save mr-2"></i> İlanı Kaydet
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // --- AYNI FIREBASE CONFIG BURAYA DA EKLENMELİ ---
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEYIN",
+            authDomain: "SENIN_PROJEN.firebaseapp.com",
+            projectId: "SENIN_PROJE_ID",
+            storageBucket: "SENIN_PROJEN.appspot.com",
+            messagingSenderId: "SENDER_ID",
+            appId: "APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- DEPARTMAN VERİSİ (Dropdown Doldurma) ---
+        const departments = {
+            "Temel İslam Bilimleri": [
+                "Tefsir", "Hadis", "Kelam", "İslam Hukuku", "Tasavvuf", "Arap Dili ve Belagatı", "İslam Mezhepleri Tarihi", "Kıraat İlmi"
+            ],
+            "Felsefe ve Din Bilimleri": [
+                "Din Felsefesi", "Din Psikolojisi", "Din Sosyolojisi", "Din Eğitimi", "Dinler Tarihi", "Felsefe Tarihi", "İslam Felsefesi", "Mantık"
+            ],
+            "İslam Tarihi ve Sanatları": [
+                "İslam Tarihi", "Türk-İslam Edebiyatı", "Türk Din Musikisi", "İslam Sanatları Tarihi"
+            ]
+        };
+
+        const deptSelect = document.getElementById('subDepartment');
+        for (const [bolum, anabilimler] of Object.entries(departments)) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = bolum;
+            anabilimler.forEach(abd => {
+                let option = document.createElement('option');
+                option.value = abd;
+                option.innerText = abd;
+                optgroup.appendChild(option);
+            });
+            deptSelect.appendChild(optgroup);
+        }
+
+        // --- VERİ KAYDETME ---
+        document.getElementById('jobForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
+            btn.disabled = true;
+
+            try {
+                const docRef = await addDoc(collection(db, "jobs"), {
+                    university: document.getElementById('university').value,
+                    faculty: document.getElementById('faculty').value,
+                    subDepartment: document.getElementById('subDepartment').value,
+                    title: document.getElementById('title').value,
+                    count: parseInt(document.getElementById('count').value),
+                    requirements: document.getElementById('requirements').value,
+                    link: document.getElementById('link').value,
+                    createdAt: serverTimestamp() // Sıralama için sunucu saati
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı!',
+                    text: 'İlan sisteme kaydedildi.',
+                    confirmButtonColor: '#1e293b'
+                });
+                
+                document.getElementById('jobForm').reset();
+
+            } catch (error) {
+                console.error("Hata:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Kayıt sırasında bir sorun oluştu.'
+                });
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
