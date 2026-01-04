@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademisyen Kapı Bilgi Sistemi</title>
+    <title>Ofis Bilgi Sistemi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -27,8 +27,8 @@
                 <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-4xl text-slate-800 mb-4 shadow-lg border-4 border-slate-200">
                     <i class="fa-solid fa-user-graduate"></i>
                 </div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Dr. Öğr. Üyesi [ADINIZ SOYADINIZ]</h1>
-                <p class="text-slate-400 text-sm font-medium mt-1">Akademik Ofis Durumu</p>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Dr. Öğr. Üyesi Ahmet Yasin KÜÇÜKTİRYAKİ</h1>
+                <p class="text-slate-400 text-sm font-medium mt-1">Durumu</p>
             </div>
         </div>
 
@@ -66,7 +66,7 @@
             <div id="adminLogin" class="p-8 text-center">
                 <h3 class="font-bold text-xl mb-4 text-slate-700">Panel Erişimi</h3>
                 <input type="password" id="adminPass" placeholder="Şifre" class="w-full p-3 border border-slate-300 rounded-lg mb-4 outline-none focus:border-blue-500 transition">
-                <button onclick="checkAdmin()" class="w-full bg-slate-800 text-white p-3 rounded-lg font-bold hover:bg-slate-700 transition">Giriş Yap</button>
+                <button onclick="checkAdmin()" class="w-full bg-slate-800 text-white p-3 rounded-lg font-bold hover:bg-slate-700 transition">Login</button>
                 <button onclick="toggleAdminPanel()" class="mt-4 text-slate-400 text-sm underline">Vazgeç</button>
             </div>
 
@@ -113,7 +113,7 @@
                         <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-purple-600 group-hover:text-white transition"><i class="fa-solid fa-chalkboard-user"></i></div>
                         <div>
                             <div class="font-bold text-slate-700">5. Dersteyim</div>
-                            <div class="text-xs text-slate-500">Çıkışta uğrayın</div>
+                            <div class="text-xs text-slate-500">Ders çıkışında uğrayın veya eposta gönderin</div>
                         </div>
                     </button>
 
@@ -137,7 +137,7 @@
                         <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center mr-4 group-hover:bg-sky-600 group-hover:text-white transition"><i class="fa-solid fa-laptop-file"></i></div>
                         <div>
                             <div class="font-bold text-slate-700">8. Online Ders</div>
-                            <div class="text-xs text-slate-500">Sonra uğrayın / Mail</div>
+                            <div class="text-xs text-slate-500">Rahatsız etmeyin / Mail</div>
                         </div>
                     </button>
                 </div>
@@ -149,26 +149,27 @@
         // --------------------------------------------------------
         // AYARLAR - Lütfen burayı doldurun
         // --------------------------------------------------------
-        const ADMIN_PASSWORD = "1234"; // Yönetici paneli şifreniz
-        const MAIL_ADDRESS = "ad.soyad@universite.edu.tr"; 
+        const ADMIN_PASSWORD = "253369"; // Yönetici paneli şifreniz
+        const MAIL_ADDRESS = "yasin.kucuktiryaki@deu.edu.tr"; 
         
         // Pushover Ayarları
-        const PUSHOVER_USER_KEY = "BURAYA_PUSHOVER_USER_KEY";
-        const PUSHOVER_APP_TOKEN = "BURAYA_PUSHOVER_APP_TOKEN";
+        const PUSHOVER_USER_KEY = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
+        const PUSHOVER_APP_TOKEN = "ao68emy322x4rzr7fhb85gtzj2zapd";
 
         // Firebase Ayarları (Project Settings -> General -> Web App kısmından)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "...",
-            databaseURL: "...",
-            projectId: "...",
-            storageBucket: "...",
-            messagingSenderId: "...",
-            appId: "..."
-        };
+  apiKey: "AIzaSyC1EL5ptf_29az8hUWPt5e9zmPaw01pECw",
+  authDomain: "hmdysn-office.firebaseapp.com",
+  databaseURL: "https://hmdysn-office-default-rtdb.firebaseio.com",
+  projectId: "hmdysn-office",
+  storageBucket: "hmdysn-office.firebasestorage.app",
+  messagingSenderId: "552872607232",
+  appId: "1:552872607232:web:47f4231fe7a45c1244a2e5",
+  measurementId: "G-Q5PK5D7CF4"
+};
         // --------------------------------------------------------
 
         const app = initializeApp(firebaseConfig);
