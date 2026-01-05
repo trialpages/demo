@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Ülke Bulmaca - Coğrafya Oyunu</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;600;800&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Rubik:wght@300;400;600;800&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     
     <style>
         :root {
             --primary-blue: #003366;
-            --accent-gold: #d4af37; 
-            --dark-ribbon: #1a1f24; /* Sertifikadaki koyu renk */
+            --cert-gold: #D4AF37;       /* Görseldeki altın tonu */
+            --cert-dark: #1F2124;       /* Görseldeki koyu şerit rengi */
             --bg-color: #aad3df;
         }
 
@@ -29,7 +29,7 @@
             width: 100%; height: 100%; top: 0; left: 0;
         }
 
-        /* --- SEVİYE DEĞİŞTİR BUTONU (YENİ - MİNİMAL) --- */
+        /* --- BUTONLAR VE ARAYÜZ --- */
         .level-switch-btn {
             position: absolute; top: 20px; left: 20px;
             pointer-events: auto; z-index: 1005;
@@ -42,33 +42,21 @@
             display: flex; align-items: center; gap: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .level-switch-btn:hover {
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--primary-blue);
-        }
-        .level-switch-btn i { font-size: 0.9rem; }
+        .level-switch-btn:hover { background: rgba(255, 255, 255, 0.9); color: var(--primary-blue); }
 
-        /* --- SEVİYE SEÇİM EKRANI --- */
         #level-selection-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 51, 102, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 3000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0, 51, 102, 0.85); backdrop-filter: blur(10px);
+            z-index: 3000; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
         .level-container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            text-align: center; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); text-align: center; border: 1px solid rgba(255,255,255,0.2);
             max-width: 90%; width: 500px;
         }
 
-        .level-title {
-            font-family: 'Cinzel', serif; color: #fff; font-size: 2rem; margin-bottom: 30px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
+        .level-title { font-family: 'Cinzel', serif; color: #fff; font-size: 2rem; margin-bottom: 30px; }
 
         .level-btn {
             display: block; width: 100%; margin: 15px 0; padding: 20px;
@@ -77,301 +65,246 @@
             cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden;
             text-transform: uppercase; letter-spacing: 1px;
         }
-
-        .level-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .level-btn:hover { transform: translateY(-3px); }
         .level-btn.easy { border-left: 10px solid #2ecc71; }
         .level-btn.medium { border-left: 10px solid #f39c12; }
         .level-btn.hard { border-left: 10px solid #e74c3c; }
-        
         .level-desc { font-size: 0.8rem; font-weight: 400; color: #666; display: block; margin-top: 5px; text-transform: none; }
 
-        /* --- Tasarım İmzası & Sayaç --- */
+        /* --- Sayaç ve İmza --- */
         .designer-credit {
-            position: absolute; bottom: 5px; right: 5px;
-            font-size: 0.60rem; color: #2c3e50;
-            background: rgba(255,255,255,0.6);
-            padding: 4px 10px; border-radius: 15px;
-            pointer-events: auto; font-weight: 600;
-            z-index: 1002; backdrop-filter: blur(2px);
+            position: absolute; bottom: 5px; right: 5px; font-size: 0.60rem; color: #2c3e50;
+            background: rgba(255,255,255,0.6); padding: 4px 10px; border-radius: 15px;
+            pointer-events: auto; font-weight: 600; z-index: 1002; backdrop-filter: blur(2px);
         }
-        .designer-credit a { color: #c0392b; text-decoration: none; transition: color 0.3s; }
-        .designer-credit a:hover { color: #e74c3c; }
-
+        .designer-credit a { color: #c0392b; text-decoration: none; }
         .visitor-counter-badge {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); 
             background: rgba(255, 255, 255, 0.5); padding: 2px 8px; border-radius: 10px;
             pointer-events: auto; z-index: 1002; backdrop-filter: blur(2px);
-            font-size: 0.4rem; opacity: 0.7; transition: opacity 0.3s;
-            display: flex; align-items: center; justify-content: left;
+            font-size: 0.4rem; opacity: 0.7; display: flex; align-items: center;
         }
-        .visitor-counter-badge:hover { opacity: 1; background: rgba(255, 255, 255, 0.9); }
         .visitor-counter-badge img { height: 14px; vertical-align: middle; display: block; }
 
-        /* --- Üst Panel (Skor) --- */
+        /* --- Oyun Panelleri --- */
         .top-panel {
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             display: flex; flex-direction: column; align-items: center; gap: 10px;
             pointer-events: auto; width: 90%; max-width: 500px;
         }
-
         .score-board {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 20px; border-radius: 50px;
-            font-weight: 800; color: #2c3e50;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95); padding: 8px 20px; border-radius: 50px;
+            font-weight: 800; color: #2c3e50; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             font-size: 1rem; display: flex; align-items: center; gap: 10px;
         }
-
         .question-box {
-            background: #e74c3c; color: white;
-            padding: 15px 20px; border-radius: 15px;
-            text-align: center; box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 100%;
+            background: #e74c3c; color: white; padding: 15px 20px; border-radius: 15px;
+            text-align: center; box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4); width: 100%;
         }
-        
-        .find-text { font-size: 0.85rem; opacity: 0.9; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px; }
         .country-name { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
-
-        /* --- Bilgi Kutusu --- */
         .bottom-info {
-            position: absolute; bottom: 20px; left: 20px;
-            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 12px;
-            max-width: 280px; font-size: 0.85rem; color: #444;
-            pointer-events: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            border-left: 5px solid #3498db;
-            transition: transform 0.3s ease;
-            z-index: 1005;
+            position: absolute; bottom: 20px; left: 20px; background: rgba(255,255,255,0.95);
+            padding: 15px; border-radius: 12px; max-width: 280px; font-size: 0.85rem; color: #444;
+            pointer-events: auto; border-left: 5px solid #3498db; z-index: 1005;
         }
-        
         .info-toggle-btn {
-            display: none; position: absolute; bottom: 60px; left: 20px;
-            width: 40px; height: 40px; background: #fff;
-            border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            align-items: center; justify-content: center;
-            font-size: 1.2rem; color: #3498db; pointer-events: auto;
-            z-index: 1002; cursor: pointer;
+            display: none; position: absolute; bottom: 60px; left: 20px; width: 40px; height: 40px;
+            background: #fff; border-radius: 50%; align-items: center; justify-content: center;
+            font-size: 1.2rem; color: #3498db; pointer-events: auto; z-index: 1002;
         }
-
         #feedback-msg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 3rem; font-weight: 900; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            opacity: 0; transition: opacity 0.3s; pointer-events: none; text-align: center; width: 100%; z-index: 1001;
+            font-size: 3rem; font-weight: 900; opacity: 0; pointer-events: none; width: 100%;
+            z-index: 1001; text-align: center; text-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
 
-        /* --- Modal & Input --- */
+        /* --- MODAL --- */
         #modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000;
+            background: rgba(0,0,0,0.9); z-index: 2000;
             justify-content: center; align-items: center; flex-direction: column;
-            backdrop-filter: blur(8px); overflow: hidden; /* Taşmayı engelle */
-            padding: 20px; box-sizing: border-box;
+            backdrop-filter: blur(5px); overflow: hidden;
         }
-        
         .input-container {
             background: #fff; padding: 40px; width: 90%; max-width: 500px;
-            text-align: center; border-radius: 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center; border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
             position: relative; z-index: 2010;
         }
-
         .cert-input { 
             padding: 15px; font-size: 1.1rem; width: 80%; margin: 20px 0; 
-            border: 2px solid #eee; border-radius: 8px; outline: none; transition: 0.3s;
+            border: 2px solid #eee; border-radius: 8px; outline: none;
         }
-        .cert-input:focus { border-color: var(--accent-gold); }
-        
         .btn { 
             background: var(--primary-blue); color: white; padding: 15px 30px; 
             border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; 
-            font-weight: bold; transition: transform 0.2s; text-transform: uppercase; letter-spacing: 1px;
+            font-weight: bold; text-transform: uppercase;
         }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-        /* --- YENİ EŞLEŞEN SERTİFİKA TASARIMI --- */
+        /* --- SERTİFİKA ALANI (GÖRSEL İLE BİREBİR) --- */
         #final-cert-wrapper {
-            display: none; 
-            width: 100%; height: 100%; 
-            position: relative;
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            flex-direction: column;
+            display: none; width: 100%; height: 100%; position: relative;
+            flex-direction: column; justify-content: center; align-items: center;
         }
 
         #cert-scale-container {
             transform-origin: center center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
             margin-bottom: 20px;
         }
 
+        /* A4 benzeri bir oran ama yatay (Landscape) */
         .certificate-paper {
-            width: 1000px; height: 707px; /* A4 Yatay Oran */
-            background: #fdfdfd; position: relative;
-            box-sizing: border-box; overflow: hidden;
-            display: flex; flex-direction: column;
+            width: 1000px; height: 700px; 
+            background-color: #f7f7f7; /* Kırık beyaz arka plan */
+            position: relative; overflow: hidden;
+            font-family: 'Libre Baskerville', serif;
+            color: #333;
         }
 
-        /* Konfetili Arkaplan */
-        .cert-confetti-bg {
+        /* Arka Plan Konfetileri (CSS ile SVG pattern) */
+        .bg-confetti {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="40" r="2" fill="%23d4af37" opacity="0.4"/><circle cx="150" cy="120" r="3" fill="%23d4af37" opacity="0.3"/><circle cx="80" cy="180" r="2" fill="%23d4af37" opacity="0.4"/><circle cx="180" cy="20" r="4" fill="%23d4af37" opacity="0.2"/><path d="M50 50 L55 60 L45 60 Z" fill="%23d4af37" opacity="0.3"/></svg>');
-            opacity: 0.8; z-index: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="40" r="2" fill="%23c5a059" opacity="0.3"/><path d="M50 50 L60 60 L40 60 Z" fill="%23c5a059" opacity="0.2"/><circle cx="350" cy="320" r="3" fill="%23c5a059" opacity="0.3"/><rect x="300" y="350" width="5" height="5" fill="%23c5a059" opacity="0.2"/><circle cx="100" cy="300" r="2" fill="%23c5a059" opacity="0.1"/><circle cx="300" cy="50" r="4" fill="%23c5a059" opacity="0.2"/></svg>');
+            background-repeat: repeat;
+            z-index: 0; pointer-events: none;
+        }
+        /* Köşelerdeki yoğun konfeti etkisi için ek gradient */
+        .bg-gradient-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.1), transparent 40%),
+                        radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.1), transparent 40%);
+            z-index: 0;
         }
 
-        /* Sol Üst Siyah Şerit */
-        .ribbon-top-left {
-            position: absolute; left: 60px; top: 0;
-            width: 90px; height: 320px;
-            background: var(--dark-ribbon);
-            border: 4px solid var(--accent-gold);
-            border-top: none;
+        /* --- SOL ŞERİTLER --- */
+        /* Üst Sol Dikey Şerit */
+        .ribbon-vertical {
+            position: absolute; top: -10px; left: 60px;
+            width: 80px; height: 350px;
+            background: var(--cert-dark);
+            border-left: 3px solid var(--cert-gold);
+            border-right: 3px solid var(--cert-gold);
+            border-bottom: 3px solid var(--cert-gold);
             z-index: 2;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
         }
-
-        /* Sol Üst Madalya */
-        .medal-badge {
-            position: absolute; top: 260px; left: 45px; /* Şeridin ucuna denk */
-            width: 120px; height: 120px;
-            z-index: 5;
-            display: flex; justify-content: center; align-items: center;
+        
+        /* Madalya (Görseldeki gibi) */
+        .medal-wrapper {
+            position: absolute; top: 250px; left: 45px; /* Şeridin altına denk */
+            width: 110px; height: 150px;
+            z-index: 5; display: flex; flex-direction: column; align-items: center;
         }
         
         .medal-circle {
             width: 90px; height: 90px;
-            background: radial-gradient(circle at 30% 30%, #fffacd, #d4af37, #b8860b);
+            background: radial-gradient(circle at 30% 30%, #FFF8DC, #DAA520, #B8860B);
             border-radius: 50%;
-            border: 4px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            border: 2px solid #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             position: relative; z-index: 2;
         }
-        
-        .medal-inner {
-            width: 70px; height: 70px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #fceabb 0%, #fccd4d 50%, #f8b500 51%, #fbdf93 100%);
-            position: absolute; top: 10px; left: 10px;
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.8);
+        .medal-inner-ring {
+            position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%; border: 1px solid #B8860B;
+            background: linear-gradient(135deg, #FFD700 0%, #F0E68C 100%);
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.8);
         }
 
-        /* Madalya Kurdeleleri */
-        .medal-ribbon-tail {
-            position: absolute; top: 50px; z-index: 1;
-            width: 30px; height: 60px;
-            background: var(--dark-ribbon);
-            border: 2px solid var(--accent-gold);
+        /* Madalya Kuyrukları */
+        .medal-tail {
+            position: absolute; top: 55px;
+            width: 25px; height: 50px;
+            background: var(--cert-dark);
+            border: 2px solid var(--cert-gold);
+            border-top: none;
+            z-index: 1;
         }
-        .tail-left { left: 15px; transform: rotate(20deg); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
-        .tail-right { right: 15px; transform: rotate(-20deg); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%); }
+        .tail-left { left: 15px; transform: rotate(20deg); clip-path: polygon(0 0, 100% 0, 50% 100%, 0 80%); }
+        .tail-right { right: 15px; transform: rotate(-20deg); clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%); }
 
-
-        /* Sol Alt Şekil */
-        .shape-bottom-left {
-            position: absolute; bottom: 0; left: 60px;
-            width: 120px; height: 250px;
-            background: var(--dark-ribbon);
-            border: 4px solid var(--accent-gold);
+        /* Alt Sol Şekil */
+        .shape-bottom {
+            position: absolute; bottom: -5px; left: 60px;
+            width: 80px; height: 250px;
+            background: var(--cert-dark);
+            border: 3px solid var(--cert-gold);
             border-bottom: none;
             clip-path: polygon(0 20%, 100% 0, 100% 100%, 0% 100%);
             z-index: 2;
         }
 
-        /* İçerik Alanı */
+        /* --- İÇERİK --- */
         .cert-content-area {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 80px 80px 50px 200px; /* Sol tarafı şerit için boş bırak */
-            box-sizing: border-box;
-            display: flex; flex-direction: column; 
-            text-align: center;
-            z-index: 10;
+            position: absolute; top: 0; left: 160px; right: 40px; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; z-index: 10;
         }
 
-        .cert-title-block {
-            margin-bottom: 30px;
-        }
-
-        .cert-main-title {
-            font-family: 'Cinzel', serif; font-size: 72px; color: #333;
-            font-weight: 700; line-height: 1; margin: 0;
+        .cert-title {
+            font-family: 'Cinzel', serif; font-size: 64px; color: #222;
+            font-weight: 700; line-height: 1.1; margin-bottom: 10px;
             text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
         }
 
-        .cert-honorific {
-            font-family: 'Playfair Display', serif; font-size: 38px; color: #333;
-            margin-top: 30px; margin-bottom: 10px;
+        .cert-name-label {
+            font-family: 'Libre Baskerville', serif; font-size: 42px; color: #111;
+            margin-top: 30px; margin-bottom: 20px;
         }
-        
-        .cert-player-name {
-            font-family: 'Playfair Display', serif; font-size: 42px; color: #111;
-            font-weight: 400; display: inline-block;
+        /* Görselde "Sayın" ve İsim birleşik gibi duruyor */
+        .cert-name-display { font-weight: 400; }
+
+        .cert-body-text {
+            font-family: 'Libre Baskerville', serif; font-size: 20px; color: #333;
+            line-height: 1.6; max-width: 700px; margin: 20px auto;
         }
 
-        .cert-body {
-            font-family: 'Rubik', sans-serif; font-size: 22px; color: #444;
-            line-height: 1.5; margin: 40px auto; max-width: 80%;
-        }
-
-        /* Alt Kısım */
-        .cert-footer-row {
-            margin-top: auto;
-            display: flex; justify-content: space-between; align-items: flex-end;
-            padding-bottom: 20px;
+        /* Footer Alanı */
+        .cert-footer {
+            width: 100%; display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: 50px; padding: 0 40px; box-sizing: border-box;
         }
 
         .footer-left { text-align: left; }
-        .cert-no, .cert-level {
-            font-family: 'Rubik', sans-serif; font-size: 18px; color: #333; margin: 5px 0; font-weight: 600;
-        }
+        .footer-info { font-family: 'Rubik', sans-serif; font-size: 16px; color: #333; font-weight: 600; margin: 4px 0; }
 
-        .footer-center {
-            position: absolute; bottom: 80px; left: 60%; transform: translateX(-50%);
-        }
-        
+        .footer-center { display: flex; justify-content: center; align-items: center; }
         .small-seal {
-            width: 60px; height: 60px;
+            width: 50px; height: 50px;
             background: radial-gradient(circle, #FFD700, #B8860B);
-            border-radius: 50%; border: 3px solid #fff;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%; border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             position: relative;
         }
-        .small-seal:after {
-            content: ''; position: absolute; bottom: -10px; width: 10px; height: 20px;
-            background: #333; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-            transform: rotate(15deg); right: 10px; z-index: -1;
+        .small-seal-tail {
+            position: absolute; bottom: -10px; width: 10px; height: 20px; background: var(--cert-dark); border: 1px solid var(--cert-gold); z-index: -1;
         }
-        .small-seal:before {
-            content: ''; position: absolute; bottom: -10px; width: 10px; height: 20px;
-            background: #333; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 80%, 0 100%);
-            transform: rotate(-15deg); left: 10px; z-index: -1;
-        }
+        .st-l { left: 10px; transform: rotate(20deg); }
+        .st-r { right: 10px; transform: rotate(-20deg); }
 
-        .footer-right { text-align: center; min-width: 200px; }
+        .footer-right { text-align: center; }
         .signature-line {
-            border-top: 2px solid #555; width: 100%; margin-top: 10px; padding-top: 5px;
-            font-family: 'Playfair Display', serif; font-size: 22px; color: #333;
+            border-top: 1px solid #333; width: 180px; margin-top: 5px; padding-top: 5px;
+            font-family: 'Libre Baskerville', serif; font-size: 18px;
         }
 
+        /* --- BUTONLAR (GÖRÜNÜR OLMASI İÇİN) --- */
         .action-buttons {
-            display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;
-            position: relative; z-index: 2005; 
+            display: flex; gap: 15px; justify-content: center; margin-top: 25px; flex-wrap: wrap;
+            position: relative; z-index: 9999; /* En üstte */
+            width: 100%;
         }
-        .btn-outline {
-            background: transparent; border: 2px solid #fff; color: #fff;
-        }
-        .btn-download {
-            background: var(--primary-blue); display: flex; align-items: center; gap: 8px; border: 2px solid #fff;
-        }
-        
+        .btn-outline { background: rgba(0,0,0,0.5); border: 2px solid #fff; color: #fff; }
+        .btn-download { background: var(--primary-blue); border: 2px solid #fff; display: flex; align-items: center; gap: 8px; }
+        .btn-download:hover { background: #004080; }
+
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         @media (max-width: 600px) {
             .country-name { font-size: 1.3rem; }
             .top-panel { width: 95%; top: 10px; }
             .score-board { font-size: 0.9rem; padding: 5px 15px; }
-            .bottom-info { display: none; bottom: 80px; left: 5%; width: 85%; z-index: 1100; }
-            .bottom-info.active { display: block; animation: popIn 0.3s; }
+            .bottom-info { display: none; }
             .info-toggle-btn { display: flex; }
         }
     </style>
@@ -381,20 +314,14 @@
     <div id="level-selection-screen">
         <div class="level-container">
             <div class="level-title">OYUN SEVİYESİ</div>
-            
             <button class="level-btn easy" onclick="selectLevel(1)">
-                KOLAY (A1)
-                <span class="level-desc">En bilinen büyük ülkeler</span>
+                KOLAY (A1) <span class="level-desc">En bilinen büyük ülkeler</span>
             </button>
-            
             <button class="level-btn medium" onclick="selectLevel(2)">
-                ORTA (B1)
-                <span class="level-desc">Avrupa, Asya ve Amerika kıtaları</span>
+                ORTA (B1) <span class="level-desc">Avrupa, Asya ve Amerika kıtaları</span>
             </button>
-            
             <button class="level-btn hard" onclick="selectLevel(3)">
-                ZOR (C1)
-                <span class="level-desc">Tüm dünya ülkeleri (Uzmanlar için)</span>
+                ZOR (C1) <span class="level-desc">Tüm dünya ülkeleri (Uzmanlar için)</span>
             </button>
         </div>
     </div>
@@ -403,14 +330,10 @@
 
     <div class="visitor-counter-badge">
         <script language="JavaScript" type="text/javascript" src="https://gnrcounter.com/counter.php?accId=76d72c8d9ed850d406d12c2b9da03ed1"></script>
-        <noscript>
-        <a href="#" title="Web Analytics">Web Analytics</a>
-        </noscript>
+        <noscript><a href="#" title="Web Analytics">Web Analytics</a></noscript>
     </div>
 
-    <div class="designer-credit">
-        Designed by <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a> & Gemini
-    </div>
+    <div class="designer-credit">Designed by <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a> & Gemini</div>
 
     <div class="game-ui">
         <div class="level-switch-btn" onclick="quitGame()">
@@ -419,11 +342,9 @@
 
         <div class="top-panel">
             <div class="score-board">
-                <span>PUAN:</span>
-                <span id="score-txt" style="color:#e74c3c">0</span>
+                <span>PUAN:</span> <span id="score-txt" style="color:#e74c3c">0</span>
                 <span style="color:#ccc; margin: 0 5px;">|</span>
-                <span>SERİ:</span>
-                <span id="streak-txt" style="color:#27ae60">0</span> / 10
+                <span>SERİ:</span> <span id="streak-txt" style="color:#27ae60">0</span> / 10
             </div>
             <div class="question-box">
                 <div class="find-text">HARİTADA BUL:</div>
@@ -432,16 +353,11 @@
         </div>
 
         <div id="feedback-msg"></div>
-
-        <div class="info-toggle-btn" onclick="toggleInfo()">
-            <i class="fas fa-info"></i>
-        </div>
-
+        <div class="info-toggle-btn" onclick="toggleInfo()"><i class="fas fa-info"></i></div>
         <div class="bottom-info" id="info-box">
             <b style="color:var(--primary-blue)">Nasıl Oynanır?</b><br>
             <div style="margin-top:5px; line-height:1.4;">
-                Kırmızı kutuda yazan ülkeye haritada tıkla.<br>
-                Zoom: Tekerlek veya iki parmak.<br>
+                Kırmızı kutuda yazan ülkeye haritada tıkla.<br>Zoom: Tekerlek veya iki parmak.<br>
                 <strong style="color:#e74c3c">Hedef:</strong> 10 seri yap, sertifikayı kap!
             </div>
         </div>
@@ -458,46 +374,45 @@
         <div id="final-cert-wrapper">
             <div id="cert-scale-container">
                 <div class="certificate-paper" id="printable-area">
-                    <div class="cert-confetti-bg"></div>
+                    <div class="bg-confetti"></div>
+                    <div class="bg-gradient-overlay"></div>
 
-                    <div class="ribbon-top-left"></div>
+                    <div class="ribbon-vertical"></div>
                     
-                    <div class="medal-badge">
-                        <div class="medal-ribbon-tail tail-left"></div>
-                        <div class="medal-ribbon-tail tail-right"></div>
+                    <div class="medal-wrapper">
+                        <div class="medal-tail tail-left"></div>
+                        <div class="medal-tail tail-right"></div>
                         <div class="medal-circle">
-                            <div class="medal-inner"></div>
+                            <div class="medal-inner-ring"></div>
                         </div>
                     </div>
 
-                    <div class="shape-bottom-left"></div>
+                    <div class="shape-bottom"></div>
 
                     <div class="cert-content-area">
-                        <div class="cert-title-block">
-                            <h1 class="cert-main-title">BAŞARI</h1>
-                            <h1 class="cert-main-title">SERTİFİKASI</h1>
+                        <div class="cert-title">BAŞARI<br>SERTİFİKASI</div>
+                        
+                        <div class="cert-name-label">
+                            Sayın <span class="cert-name-display" id="cert-name-display">Morgan Maxwell</span>
                         </div>
 
-                        <div class="cert-honorific">
-                            Sayın <div class="cert-player-name" id="cert-name-display">Ad Soyad</div>
-                        </div>
-
-                        <div class="cert-body">
+                        <div class="cert-body-text">
                             Ülkeler coğrafyası konusunda göstermiş olduğunuz başarı dolayısıyla bu sertifikayı almaya hak kazandınız. Başarılarınızın devamını dileriz.
                         </div>
 
-                        <div class="footer-center">
-                            <div class="small-seal">
-                                <div style="width:40px; height:40px; border-radius:50%; border:1px solid #fff;"></div>
-                            </div>
-                        </div>
-
-                        <div class="cert-footer-row">
+                        <div class="cert-footer">
                             <div class="footer-left">
-                                <div class="cert-no" id="cert-id-txt">Sertifika No: 5498213</div>
-                                <div class="cert-level" id="cert-level-txt">Seviye: C1</div>
+                                <div class="footer-info" id="cert-id-txt">Sertifika No: 5498213</div>
+                                <div class="footer-info" id="cert-level-txt">Seviye: C1</div>
                             </div>
                             
+                            <div class="footer-center">
+                                <div class="small-seal">
+                                    <div class="small-seal-tail st-l"></div>
+                                    <div class="small-seal-tail st-r"></div>
+                                </div>
+                            </div>
+
                             <div class="footer-right">
                                 <div class="signature-line">Cpuzzle Team</div>
                             </div>
@@ -522,28 +437,22 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-    
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
         // --- AYARLAR ---
-        const map = L.map('map', {
-            center: [20, 0], zoom: 2, minZoom: 2, maxZoom: 6, zoomControl: false
-        });
-
+        const map = L.map('map', { center: [20, 0], zoom: 2, minZoom: 2, maxZoom: 6, zoomControl: false });
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy;OpenStreetMap, &copy;CartoDB',
-            subdomains: 'abcd',
-            maxZoom: 19
+            attribution: '&copy;OpenStreetMap', subdomains: 'abcd', maxZoom: 19
         }).addTo(map);
 
         let geojsonLayer;
         let targetFeature = null;
         let score = 0;
         let streak = 0;
-        let currentLevel = 1; // Varsayılan
-        let activeCountryKeys = []; // Seçilen seviyeye göre filtrelenmiş liste
+        let currentLevel = 1;
+        let activeCountryKeys = [];
         
         const dictionary = {
             "Turkey": "Türkiye", "Israel": "İşgalci İsrail", "United States of America": "ABD", "Russia": "Rusya", "China": "Çin",
@@ -564,85 +473,42 @@
             "South Korea": "Güney Kore", "Portugal": "Portekiz", "Hungary": "Macaristan", "Sweden": "İsveç",
             "Norway": "Norveç", "Iceland": "İzlanda", "Syria": "Suriye", "Guatemala": "Guatemala", "El Salvador": "El Salvador", "Honduras": "Honduras", "The Bahamas": "Bahamalar", "Nicaragua": "Nikaragua", "Haiti": "Haiti", "Panama": "Panama", "Costa Rica": "Kosta Rika", "Puerto Rico": "Porto Riko", "Suriname": "Surinam", "Guyana": "Guyana", "French Guiana": "Fransız Guyanası", "Uruguay": "Uruguay", "Eritrea": "Eritre", "Guinea": "Gine", "Djibouti": "Cibuti", "Burundi": "Burundi", "Rwanda": "Ruanda", "Malawi": "Malavi", "Mauritius": "Mauritus", "Oman": "Umman", "Jordan": "Ürdün", "Estonia": "Estonya", "Latvia": "Letonya", "Belarus": "Belarus", "Turkish Republic of Northern Cyprus": "Kuzey Kıbrıs Türk Cumhuriyeti", "Nepal": "Nepal", "Bhutan": "Butan", "Uzbekistan": "Özbekistan", "Turkmenistan": "Türkmenistan", "Georgia": "Gürcistan", "Taiwan": "Tayvan", "Papua New Guinea": "Papua Yeni Gine", "Tasmania": "Tasmanya", "Brunei": "Brunei", "Kyrgyzstan": "Kırgızistan", "Azerbaijan": "Azerbaycan", "Armenia": "Ermenistan", "New Caledonia": "Yeni Kaledonya", "Solomon Islands": "Solomon Adaları", "Fiji": "Fiji", "New Zealand": "Yeni Zelanda", "Laos": "Laos", "Tajikistan": "Tacikistan", "United Arab Emirates": "Birleşik Arap Emirlikleri", "Bahrain": "Bahreyn", "Qatar": "Katar", "Kuwait": "Kuveyt", "Lebanon": "Lübnan", "Singapore": "Singapur", "Andorra": "Andora", "Albania": "Arnavutluk", "Austria": "Avusturya", "Lithuania": "Litvanya", "Belgium": "Belçika", "Bosnia and Herzegovina": "Bosna Hersek", "Bulgaria": "Bulgaristan", "Czech Republic": "Çek Cumhuriyeti", "Denmark": "Danimarka", "Croatia": "Hırvatistan", "Netherlands": "Hollanda", "Switzerland": "İsviçre", "Montenegro": "Karadağ", "Kosovo": "Kosova", "Luxembourg": "Lüksemburg", "North Macedonia": "Kuzey Makedonya", "Malta": "Malta", "Moldova": "Moldova", "Monaco": "Monako", "San Marino": "San Marino", "Slovakia": "Slovakya", "Slovenia": "Slovenya"
         };
+        const easyCountries = ["Turkey","United States of America","Russia","China","Brazil","India","Canada","Australia","Germany","France","United Kingdom","Italy","Japan","Egypt","Saudi Arabia","Spain","Iran"];
+        const mediumCountries = [...easyCountries, "Argentina","Kazakhstan","Algeria","Mexico","Indonesia","Sudan","Libya","Mongolia","Peru","South Africa","Colombia","Pakistan","Ukraine","Poland","Sweden","Norway","Greece","South Korea","Portugal","Romania","Thailand","Malaysia","Iraq","Syria","Azerbaijan","Finland"];
 
-        // --- SEVİYE LİSTELERİ ---
-        const easyCountries = [
-            "Turkey", "United States of America", "Russia", "China", "Brazil", "India", 
-            "Canada", "Australia", "Germany", "France", "United Kingdom", "Italy", 
-            "Japan", "Egypt", "Saudi Arabia", "Spain", "Iran"
-        ];
-        
-        const mediumCountries = [
-            ...easyCountries,
-            "Argentina", "Kazakhstan", "Algeria", "Mexico", "Indonesia", "Sudan", "Libya", 
-            "Mongolia", "Peru", "South Africa", "Colombia", "Pakistan", "Ukraine", 
-            "Poland", "Sweden", "Norway", "Greece", "South Korea", "Portugal", "Romania",
-            "Thailand", "Malaysia", "Iraq", "Syria", "Azerbaijan", "Finland"
-        ];
-
-        // --- OYUN BAŞLATMA ---
         function selectLevel(level) {
             currentLevel = level;
-            
-            // Listeyi Ayarla
             if (level === 1) activeCountryKeys = easyCountries;
             else if (level === 2) activeCountryKeys = mediumCountries;
             else activeCountryKeys = Object.keys(dictionary);
 
-            // Arayüz Geçişi
             document.getElementById('level-selection-screen').style.display = 'none';
             document.querySelector('.game-ui').style.display = 'block';
-            
-            // Harita Verisini Yükle
             loadMapData();
         }
 
-        function quitGame() {
-            // Seviye ekranına dön ve resetle
-            location.reload(); 
-        }
+        function quitGame() { location.reload(); }
 
         function loadMapData() {
             fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-            .then(res => res.json())
-            .then(data => {
+            .then(res => res.json()).then(data => {
                 geojsonLayer = L.geoJson(data, { style: style, onEachFeature: onEachFeature }).addTo(map);
-                map.invalidateSize(); 
-                nextTurn();
+                map.invalidateSize(); nextTurn();
             });
         }
-
-        function style(feature) {
-            return { fillColor: '#ffffff', weight: 1, opacity: 1, color: '#999', dashArray: '3', fillOpacity: 0.5 };
-        }
-
-        function highlightFeature(e) {
-            var layer = e.target;
-            layer.setStyle({ weight: 2, color: '#666', dashArray: '', fillOpacity: 0.7, fillColor: '#f1c40f' });
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { layer.bringToFront(); }
-        }
+        function style() { return { fillColor: '#ffffff', weight: 1, opacity: 1, color: '#999', dashArray: '3', fillOpacity: 0.5 }; }
+        function onEachFeature(feature, layer) { layer.on({ mouseover: highlightFeature, mouseout: resetHighlight, click: checkAnswer }); }
+        function highlightFeature(e) { e.target.setStyle({ weight: 2, color: '#666', dashArray: '', fillOpacity: 0.7, fillColor: '#f1c40f' }); if (!L.Browser.ie) e.target.bringToFront(); }
         function resetHighlight(e) { geojsonLayer.resetStyle(e.target); }
-        function onEachFeature(feature, layer) {
-            layer.on({ mouseover: highlightFeature, mouseout: resetHighlight, click: checkAnswer });
-        }
 
         function nextTurn() {
             let randomEngName = activeCountryKeys[Math.floor(Math.random() * activeCountryKeys.length)];
-            
             if (!dictionary[randomEngName]) { nextTurn(); return; }
-
             let found = false;
             geojsonLayer.eachLayer(function(layer){
-                if(layer.feature.properties.name === randomEngName) {
-                    targetFeature = layer.feature; found = true;
-                }
+                if(layer.feature.properties.name === randomEngName) { targetFeature = layer.feature; found = true; }
             });
-            
-            if(found) {
-                document.getElementById('target-name').innerText = dictionary[randomEngName];
-            } else { 
-                nextTurn(); 
-            }
+            if(found) document.getElementById('target-name').innerText = dictionary[randomEngName]; else nextTurn();
         }
 
         function checkAnswer(e) {
@@ -657,93 +523,43 @@
                 feedback.style.opacity = 1;
                 confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
                 updateUI();
-                if(streak >= 10) { setTimeout(winGame, 1000); }
-                else { setTimeout(() => { geojsonLayer.resetStyle(e.target); feedback.style.opacity = 0; nextTurn(); }, 1000); }
+                if(streak >= 10) setTimeout(winGame, 1000);
+                else setTimeout(() => { geojsonLayer.resetStyle(e.target); feedback.style.opacity = 0; nextTurn(); }, 1000);
             } else {
                 streak = 0; updateUI();
                 e.target.setStyle({ fillColor: '#e74c3c', fillOpacity: 0.9 });
                 feedback.innerHTML = "<span style='color:#c0392b'>YANLIŞ!</span>";
                 feedback.style.opacity = 1;
-                geojsonLayer.eachLayer(function(layer){
-                    if(layer.feature.properties.name === targetName) {
-                        layer.setStyle({ fillColor: '#f39c12', fillOpacity: 0.8 });
-                        setTimeout(() => { geojsonLayer.resetStyle(layer); }, 1500);
-                    }
-                });
+                geojsonLayer.eachLayer(layer => { if(layer.feature.properties.name === targetName) { layer.setStyle({ fillColor: '#f39c12', fillOpacity: 0.8 }); setTimeout(() => geojsonLayer.resetStyle(layer), 1500); }});
                 setTimeout(() => { geojsonLayer.resetStyle(e.target); feedback.style.opacity = 0; nextTurn(); }, 1500);
             }
         }
-
-        function updateUI() {
-            document.getElementById('score-txt').innerText = score;
-            document.getElementById('streak-txt').innerText = streak;
-        }
-
-        function winGame() {
-            document.getElementById('modal-overlay').style.display = 'flex';
-        }
-
-        function toggleInfo() {
-            const box = document.getElementById('info-box');
-            if(box.style.display === 'block') {
-                box.style.display = 'none';
-            } else {
-                box.style.display = 'block';
-                box.classList.add('active');
-            }
-        }
+        function updateUI() { document.getElementById('score-txt').innerText = score; document.getElementById('streak-txt').innerText = streak; }
+        function winGame() { document.getElementById('modal-overlay').style.display = 'flex'; }
+        function toggleInfo() { const box = document.getElementById('info-box'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; }
 
         function resizeCert() {
             const wrapper = document.getElementById('final-cert-wrapper');
             if (wrapper.style.display === 'none') return;
-
             const container = document.getElementById('cert-scale-container');
-            // Cihaz ekranının %90'ını kullanarak ölçekle
             const availableWidth = window.innerWidth * 0.9;
-            const availableHeight = window.innerHeight * 0.8;
-            
             const certWidth = 1000;
-            const certHeight = 707;
-            
-            // En boy oranını koruyarak sığdır
-            let scale = Math.min(
-                availableWidth / certWidth,
-                availableHeight / certHeight
-            );
-            
+            let scale = availableWidth < certWidth ? availableWidth / certWidth : 1;
             container.style.transform = `scale(${scale})`;
-            // Container boyutunu scale edilmiş haliyle güncelle (boşluk kalmasın diye)
-            container.style.width = `${certWidth}px`;
-            container.style.height = `${certHeight}px`;
-            
-            // Wrapper'da scale edilmiş alanı ortala, ama transform alanı kapladığı için margin ayarına gerek yok
-            // sadece görsel olarak küçük görünsün yeter.
-            // Fakat transform scale yer kaplamasını değiştirmez, bu yüzden wrapper içinde margin negatiflemek gerekebilir
-            // Basit çözüm: Scale container'ı wrapper ortasına alıp transform uygulamak yeterli.
+            container.style.width = '1000px'; container.style.height = '700px';
         }
-
         window.addEventListener('resize', resizeCert);
 
         function createCertificate() {
             let name = document.getElementById('player-name').value;
             if(!name) { alert("İsim girmelisin!"); return; }
-            
-            // Veri Doldurma
             document.getElementById('cert-name-display').innerText = name;
-            let certId = Math.floor(100000 + Math.random() * 900000);
-            document.getElementById('cert-id-txt').innerText = "Sertifika No: " + certId;
+            document.getElementById('cert-id-txt').innerText = "Sertifika No: " + Math.floor(100000 + Math.random() * 900000);
+            let lvl = currentLevel === 1 ? "A1" : currentLevel === 2 ? "B1" : "C1";
+            document.getElementById('cert-level-txt').innerText = "Seviye: " + lvl;
             
-            let levelText = "";
-            if(currentLevel === 1) levelText = "A1";
-            else if(currentLevel === 2) levelText = "B1";
-            else levelText = "C1";
-            document.getElementById('cert-level-txt').innerText = "Seviye: " + levelText;
-            
-            // UI Geçişi
             document.getElementById('input-step').style.display = 'none';
-            const wrapper = document.getElementById('final-cert-wrapper');
-            wrapper.style.display = 'flex';
-            
+            document.getElementById('final-cert-wrapper').style.display = 'flex';
             resizeCert();
             confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
         }
@@ -755,27 +571,22 @@
             const container = document.getElementById('cert-scale-container');
             const originalTransform = container.style.transform;
             
-            // İndirirken orijinal boyutuna getir (zoom yok)
+            // Geçici olarak orijinal boyutuna getir (Yüksek kalite için)
             container.style.transform = 'scale(1)';
             
             html2canvas(element, { scale: 2, useCORS: true, allowTaint: true }).then(canvas => {
-                
-                // Geri eski haline (ekrana sığan haline) döndür
-                container.style.transform = originalTransform;
+                container.style.transform = originalTransform; // Geri eski haline döndür
 
                 if (type === 'jpeg') {
                     const link = document.createElement('a');
                     link.download = 'basari-sertifikasi.jpg';
                     link.href = canvas.toDataURL('image/jpeg', 0.9);
                     link.click();
-                } 
-                else if (type === 'pdf') {
+                } else if (type === 'pdf') {
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF('l', 'mm', 'a4');
-                    const pageWidth = 297; 
-                    const pageHeight = 210;
+                    const doc = new jsPDF('l', 'mm', 'a4'); // A4 Yatay
                     const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                    doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight);
+                    doc.addImage(imgData, 'JPEG', 0, 0, 297, 210);
                     doc.save('basari-sertifikasi.pdf');
                 }
             });
