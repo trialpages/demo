@@ -3,595 +3,562 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>Pro Chat</title>
+    <title>Pro Chat v3</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- MODERN TASARIM DEĞİŞKENLERİ --- */
+        /* --- DARK BLUE PALET --- */
         :root {
-            --primary-color: #264D65; /* İstenilen Ton */
-            --primary-light: #3e6b89;
-            --bg-color: #e8ecef;
-            --white: #ffffff;
-            --gray-text: #607d8b;
-            --my-bubble: #264D65;
-            --other-bubble: #ffffff;
-            --shadow: 0 2px 5px rgba(0,0,0,0.05);
+            --bg-body: #0f172a;       /* Çok koyu mavi (Arkaplan) */
+            --bg-app: #1e293b;        /* Koyu slate (Sohbet zemin) */
+            --header-bg: #1e293b;     
+            --input-bg: #334155;
+            --primary: #264D65;       /* İstenilen Petrol Mavisi */
+            --primary-accent: #38bdf8; /* Açık mavi (ikonlar vs) */
+            --bubble-me: #264D65;     
+            --bubble-other: #334155;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
-            margin: 0;
+            margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            height: 100dvh; /* iOS Safari Uyumlu Yükseklik */
+            background-color: var(--bg-body);
+            height: 100dvh;
+            display: flex;
+            align-items: center; justify-content: center; /* Masaüstü ortalama */
+            overflow: hidden;
+            color: var(--text-main);
+        }
+
+        /* --- APP CONTAINER (MOBİL GÖRÜNÜM KORUMA) --- */
+        .app-container {
+            width: 100%;
+            max-width: 480px; /* Masaüstünde taşmayı engeller */
+            height: 100%;
+            background-color: var(--bg-app);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         /* --- GİRİŞ EKRANI --- */
         #login-screen {
-            position: fixed; inset: 0; z-index: 3000;
-            background: var(--primary-color);
+            position: absolute; inset: 0; z-index: 3000;
+            background: var(--bg-body);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
         .login-card {
-            background: white; width: 85%; max-width: 320px; padding: 30px; border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center;
+            background: var(--bg-app); width: 85%; padding: 40px 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid #334155;
         }
-        .login-card h2 { color: var(--primary-color); margin-bottom: 20px; }
+        .login-icon { font-size: 50px; color: var(--primary-accent); margin-bottom: 15px; }
+        .login-title { color: var(--text-main); font-size: 20px; margin-bottom: 25px; font-weight: bold; letter-spacing: 1px; }
+        
         .login-input {
-            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd;
-            border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s;
+            width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #475569;
+            border-radius: 10px; background: #0f172a; color: white; outline: none; font-size: 16px;
         }
-        .login-input:focus { border-color: var(--primary-color); }
+        .login-input:focus { border-color: var(--primary-accent); }
+        
         .login-btn {
-            width: 100%; padding: 12px; background: var(--primary-color); color: white;
-            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px;
+            margin-top: 10px; transition: 0.2s;
         }
+        .login-btn:active { transform: scale(0.98); }
 
         /* --- HEADER --- */
         header {
-            height: 65px; background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 65px; background: var(--header-bg);
+            border-bottom: 1px solid #334155;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px; z-index: 100; flex-shrink: 0;
-            box-shadow: var(--shadow);
+            padding: 0 15px; flex-shrink: 0; z-index: 50;
         }
-        .header-info { display: flex; flex-direction: column; }
-        .app-name { font-weight: 800; color: var(--primary-color); font-size: 18px; }
-        .status-line { font-size: 11px; color: var(--gray-text); font-weight: 500; min-height: 15px; }
-        .typing-text { color: #25D366; font-weight: bold; display: none; }
-        
-        .header-actions { display: flex; gap: 8px; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: 700; font-size: 17px; color: var(--text-main); }
+        .user-status { font-size: 12px; color: #10b981; display: flex; align-items: center; gap: 5px; }
+        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; }
+
+        .header-actions { display: flex; gap: 10px; }
         .icon-btn {
-            width: 38px; height: 38px; border-radius: 50%; border: none; background: white;
-            color: var(--primary-color); display: flex; align-items: center; justify-content: center;
-            font-size: 16px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            width: 40px; height: 40px; border-radius: 50%; border: none; background: #334155;
+            color: var(--text-main); display: flex; align-items: center; justify-content: center;
+            font-size: 18px; cursor: pointer; transition: 0.2s;
         }
         .icon-btn:active { transform: scale(0.9); }
-        .btn-pushover { color: #e11d48; } 
+        .btn-pushover { color: #f43f5e; }
         .btn-call { color: #10b981; }
-        .btn-radio { color: #f59e0b; }
 
         /* --- CHAT ALANI --- */
         #chat-area {
-            flex: 1; overflow-y: auto; padding: 20px 15px;
-            display: flex; flex-direction: column; gap: 10px;
-            scroll-behavior: smooth;
+            flex: 1; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 12px;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px; /* Hafif desen */
         }
-        .msg-row { display: flex; width: 100%; }
-        .msg-row.me { justify-content: flex-end; }
+        
+        .msg-row { display: flex; width: 100%; flex-direction: column; }
+        .msg-row.me { align-items: flex-end; }
+        .msg-row.other { align-items: flex-start; }
         
         .bubble {
-            max-width: 75%; padding: 10px 14px; border-radius: 14px; position: relative;
-            font-size: 14.5px; line-height: 1.4; word-wrap: break-word;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            max-width: 80%; padding: 10px 14px; border-radius: 16px; position: relative;
+            font-size: 15px; line-height: 1.4; word-wrap: break-word; color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        /* Benim Mesajım */
-        .me .bubble {
-            background-color: var(--my-bubble); color: white;
-            border-bottom-right-radius: 2px;
-        }
-        .me .bubble a { color: #ffd700; text-decoration: underline; }
-        .me .msg-time { color: rgba(255,255,255,0.7); }
-
-        /* Karşı Taraf */
-        .other .bubble {
-            background-color: var(--other-bubble); color: #1f2937;
-            border-bottom-left-radius: 2px;
-        }
-        .other .bubble a { color: var(--primary-color); text-decoration: underline; }
-        .other .msg-time { color: #9ca3af; }
-
-        .msg-time {
-            font-size: 10px; text-align: right; margin-top: 4px; display: block;
-        }
+        .me .bubble { background-color: var(--bubble-me); border-bottom-right-radius: 2px; }
+        .other .bubble { background-color: var(--bubble-other); border-bottom-left-radius: 2px; }
         
-        /* Medya */
-        .chat-img { max-width: 100%; border-radius: 8px; margin-top: 5px; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); }
-        .audio-player { width: 200px; height: 30px; margin-top: 5px; }
+        .bubble a { color: #38bdf8; text-decoration: underline; }
+        .msg-time { font-size: 10px; text-align: right; opacity: 0.7; margin-top: 4px; display: block; }
+        
+        /* Resim Önizleme - Minik */
+        .chat-img { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; margin-top: 5px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .audio-player { width: 220px; height: 32px; margin-top: 5px; filter: invert(1); }
+
+        /* Yazıyor Balonu (WhatsApp Style) */
+        #typing-indicator {
+            align-self: flex-start; margin-left: 10px; margin-bottom: 10px;
+            background: var(--bubble-other); padding: 8px 15px; border-radius: 15px;
+            border-bottom-left-radius: 2px; display: none; align-items: center; gap: 5px;
+            font-size: 12px; color: var(--text-muted); width: fit-content;
+        }
+        .dot { width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
         /* --- INPUT ALANI --- */
         .input-wrapper {
-            background: white; padding: 10px; padding-bottom: max(10px, env(safe-area-inset-bottom));
-            display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid rgba(0,0,0,0.05);
+            background: var(--header-bg); padding: 10px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom)); /* iPhone Home Bar */
+            display: flex; align-items: flex-end; gap: 10px; border-top: 1px solid #334155;
         }
-        .attach-btn { color: var(--gray-text); font-size: 22px; padding: 10px; cursor: pointer; }
         
         .text-input {
-            flex: 1; background: #f3f4f6; border: none; border-radius: 20px;
-            padding: 12px 15px; font-size: 16px; max-height: 100px; resize: none; outline: none;
-            color: #333;
+            flex: 1; background: var(--input-bg); border: none; border-radius: 20px;
+            padding: 12px 15px; font-size: 16px; max-height: 100px; resize: none; outline: none; color: white;
         }
         
         .send-btn {
-            width: 45px; height: 45px; border-radius: 50%;
-            background: var(--primary-color); color: white; border: none;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--primary); color: white; border: none;
             display: flex; align-items: center; justify-content: center;
-            font-size: 18px; cursor: pointer; flex-shrink: 0;
-            transition: background 0.2s;
+            font-size: 20px; cursor: pointer; flex-shrink: 0; transition: 0.2s;
         }
-        .recording-mode { background: #ef4444; animation: pulse 1s infinite; }
-        
+        .recording-active { background: #ef4444; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* --- LIGHTBOX & CALL MODAL --- */
-        .fullscreen-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; display: none;
-            align-items: center; justify-content: center; flex-direction: column;
+        /* --- CALL MODAL (Sadece Ses) --- */
+        #call-modal {
+            position: absolute; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 2000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
         }
-        .lightbox-img { max-width: 95%; max-height: 80%; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .close-modal { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
+        .call-avatar { width: 100px; height: 100px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; color: white; animation: ripple 1.5s infinite; }
+        @keyframes ripple { 0% { box-shadow: 0 0 0 0 rgba(38, 77, 101, 0.4); } 100% { box-shadow: 0 0 0 20px rgba(38, 77, 101, 0); } }
+        .hangup-btn { width: 60px; height: 60px; border-radius: 50%; background: #ef4444; color: white; border: none; font-size: 24px; cursor: pointer; margin-top: 30px; }
 
-        .video-wrapper { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; background: #111; }
-        #remoteVideo { width: 100%; height: 100%; object-fit: cover; }
-        #localVideo { position: absolute; bottom: 100px; right: 20px; width: 100px; height: 140px; border-radius: 10px; background: #333; object-fit: cover; border: 2px solid white; }
-        .call-controls {
-            position: absolute; bottom: 0; width: 100%; height: 80px;
-            background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; gap: 20px;
+        /* --- LIGHTBOX --- */
+        #lightbox {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 4000; display: none; align-items: center; justify-content: center;
         }
-        .hangup-btn { background: #ef4444; width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; }
+        #lightbox img { max-width: 100%; max-height: 90%; }
+        .close-lightbox { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; cursor: pointer; }
 
     </style>
 </head>
 <body>
 
+<div class="app-container">
+    
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="font-family: 'Segoe UI', sans-serif;"><i class="fas fa-shield-alt"></i> Güvenli Giriş</h2>
-            <input type="email" id="email" class="login-input" placeholder="E-posta Adresi">
-            <input type="password" id="password" class="login-input" placeholder="Şifre">
-            <button class="login-btn" onclick="login()">Sisteme Gir</button>
-            <p id="login-error" style="color:#ef4444; font-size:12px; margin-top:10px;"></p>
+            <div class="login-icon"><i class="fas fa-cube"></i></div>
+            <div class="login-title">ms4bfcw</div>
+            <input type="email" id="email" class="login-input" placeholder="e-Mail">
+            <input type="password" id="password" class="login-input" placeholder="Password">
+            <button class="login-btn" onclick="login()">Login</button>
+            <p id="login-error" style="color:#f43f5e; font-size:12px; margin-top:10px;"></p>
         </div>
     </div>
 
-    <div id="lightbox" class="fullscreen-modal" onclick="this.style.display='none'">
-        <span class="close-modal">&times;</span>
-        <img id="lightbox-content" class="lightbox-img">
+    <div id="call-modal">
+        <div class="call-avatar"><i class="fas fa-phone"></i></div>
+        <h3 style="color:white; font-weight:normal;">Sesli Arama...</h3>
+        <audio id="remoteAudio" autoplay></audio>
+        <button class="hangup-btn" onclick="endCall()"><i class="fas fa-phone-slash"></i></button>
     </div>
 
-    <div id="call-modal" class="fullscreen-modal">
-        <div class="video-wrapper">
-            <video id="remoteVideo" autoplay playsinline></video>
-            <video id="localVideo" autoplay playsinline muted></video>
-            <div class="call-controls">
-                <button class="hangup-btn" onclick="endCall()"><i class="fas fa-phone-slash"></i></button>
-            </div>
-        </div>
+    <div id="lightbox" onclick="this.style.display='none'">
+        <span class="close-lightbox">&times;</span>
+        <img id="lightbox-img">
     </div>
 
     <header>
-        <div class="header-info">
-            <span class="app-name">Sohbet</span>
-            <div class="status-line">
-                <span id="status-text">Bağlanıyor...</span>
-                <span id="typing-text" class="typing-text">yazıyor...</span>
-            </div>
+        <div class="user-info">
+            <span class="user-name" id="header-username">Sohbet</span>
+            <div class="user-status"><span class="status-dot"></span> Çevrimiçi</div>
         </div>
         <div class="header-actions">
-            <button class="icon-btn btn-pushover" onclick="sendPushover()" title="Acil Bildirim Gönder">
-                <i class="fas fa-bell"></i>
-            </button>
-            <button class="icon-btn btn-radio" onclick="window.open('https://radyo-linkin.com', '_blank')" title="Canlı Radyo">
-                <i class="fas fa-broadcast-tower"></i>
-            </button>
-            <button class="icon-btn btn-call" onclick="startCall()" title="Görüntülü Ara">
-                <i class="fas fa-video"></i>
-            </button>
-            <button class="icon-btn" onclick="logout()" title="Çıkış" style="color:#64748b">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
+            <button class="icon-btn btn-pushover" onclick="sendPushover()"><i class="fas fa-bell"></i></button>
+            <button class="icon-btn btn-call" onclick="startCall()"><i class="fas fa-phone"></i></button>
+            <button class="icon-btn" onclick="logout()" style="color:#94a3b8"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </header>
 
     <div id="chat-area">
+        <div id="typing-indicator">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div> yazıyor...
         </div>
+    </div>
 
     <div class="input-wrapper">
-        <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileSelect(this)">
-        <i class="fas fa-camera attach-btn" onclick="document.getElementById('file-input').click()"></i>
+        <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
+        <i class="fas fa-camera" style="color:#94a3b8; font-size:24px; padding:10px; cursor:pointer;" onclick="document.getElementById('file-input').click()"></i>
         
-        <textarea id="msg-input" class="text-input" rows="1" placeholder="Mesaj yazın..."></textarea>
+        <textarea id="msg-input" class="text-input" rows="1" placeholder="Mesaj..."></textarea>
         
-        <button id="main-btn" class="send-btn">
+        <button id="action-btn" class="send-btn">
             <i class="fas fa-microphone" id="btn-icon"></i>
         </button>
     </div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, push, onChildAdded, onValue, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, onValue, set, remove, serverTimestamp, query, orderByChild, get } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        // --- YAPILANDIRMA ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
-            authDomain: "ms4bfcw.firebaseapp.com",
-            databaseURL: "https://ms4bfcw-default-rtdb.firebaseio.com",
-            projectId: "ms4bfcw",
-            storageBucket: "ms4bfcw.firebasestorage.app",
-            messagingSenderId: "260708453820",
-            appId: "1:260708453820:web:7857e835708603aba62fb9",
-            measurementId: "G-WFMF5VGM8F"
-        };
-        
-        // PUSHOVER API BİLGİLERİ
-        const PUSHOVER_USER = "at55iwugiminzvndbzucvoknuiwi4k";
-        const PUSHOVER_TOKEN = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
+    // --- CONFIG ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCw44jmuiJsEXqEz71bCEPiRkc4JrAtbKM",
+        authDomain: "ms4bfcw.firebaseapp.com",
+        databaseURL: "https://ms4bfcw-default-rtdb.firebaseio.com",
+        projectId: "ms4bfcw",
+        storageBucket: "ms4bfcw.firebasestorage.app",
+        messagingSenderId: "260708453820",
+        appId: "1:260708453820:web:7857e835708603aba62fb9"
+    };
 
-        // INIT
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        let currentUser = null;
+    const PUSHOVER_USER = "at55iwugiminzvndbzucvoknuiwi4k";
+    const PUSHOVER_TOKEN = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
 
-        // --- AUTH ---
-        window.login = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, e, p).catch(err => {
-                document.getElementById('login-error').innerText = "Giriş Hatası: " + err.message;
-            });
-        };
-        
-        window.logout = () => signOut(auth);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+    let currentUser = null;
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('status-text').innerText = "Çevrimiçi";
-                setupPresence();
-                listenMessages();
-                listenTyping();
-                listenCalls();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-            }
+    // --- USER MAPPING ---
+    const USERS = {
+        "hi@hi.com": "Ayda",
+        "ahm@et.com": "Ahmet"
+    };
+
+    // --- AUTH LOGIC ---
+    window.login = () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        signInWithEmailAndPassword(auth, e, p).catch(err => {
+            document.getElementById('login-error').innerText = "Login failed: " + err.message;
         });
+    };
 
-        // --- MESAJLAŞMA ---
-        const chatArea = document.getElementById('chat-area');
-        const msgInput = document.getElementById('msg-input');
-        const mainBtn = document.getElementById('main-btn');
-        const btnIcon = document.getElementById('btn-icon');
+    window.logout = () => {
+        signOut(auth).then(() => {
+            document.getElementById('email').value = "";
+            document.getElementById('password').value = "";
+            location.reload();
+        });
+    };
 
-        // Text Input & Typing
-        msgInput.addEventListener('input', () => {
-            msgInput.style.height = 'auto';
-            msgInput.style.height = msgInput.scrollHeight + 'px';
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('login-screen').style.display = 'none';
             
-            const hasText = msgInput.value.trim().length > 0;
-            btnIcon.className = hasText ? "fas fa-paper-plane" : "fas fa-microphone";
+            // Set Username
+            const name = USERS[user.email] || "Kullanıcı";
+            document.getElementById('header-username').innerText = name;
             
-            // Veritabanına Yazıyor Gönder
-            if (currentUser) {
-                set(ref(db, `typing/${currentUser.uid}`), hasText);
-                // 3 sn sonra otomatik sil (Debounce)
-                clearTimeout(window.typingTimeout);
-                window.typingTimeout = setTimeout(() => set(ref(db, `typing/${currentUser.uid}`), false), 3000);
-            }
-        });
+            // Presence
+            set(ref(db, 'status/' + user.uid), { state: 'online', name: name });
 
-        // Enter Gönderim
-        msgInput.addEventListener('keypress', (e) => {
-            if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-        });
+            initChat();
+            cleanOldMessages(); // 1 günden eski mesajları temizle
+        } else {
+            document.getElementById('login-screen').style.display = 'flex';
+        }
+    });
 
-        // Gönder / Ses Kaydı Buton Mantığı
-        mainBtn.addEventListener('click', (e) => {
-            if (msgInput.value.trim().length > 0) sendMessage();
-        });
+    // --- CHAT LOGIC ---
+    const chatArea = document.getElementById('chat-area');
+    const msgInput = document.getElementById('msg-input');
+    const actionBtn = document.getElementById('action-btn');
+    const btnIcon = document.getElementById('btn-icon');
+    const typingIndicator = document.getElementById('typing-indicator');
 
-        // Mesaj Gönder Fonksiyonu
-        async function sendMessage() {
-            const text = msgInput.value.trim();
-            if (!text) return;
+    let isRecording = false;
+    let typingTimeout;
 
-            await push(ref(db, 'messages'), {
-                sender: currentUser.uid,
-                type: 'text',
-                content: text,
-                time: serverTimestamp()
-            });
+    // Input Handling
+    msgInput.addEventListener('input', () => {
+        msgInput.style.height = 'auto';
+        msgInput.style.height = msgInput.scrollHeight + 'px';
+        
+        const hasText = msgInput.value.trim().length > 0;
+        
+        // Icon logic: Text varsa "Send", yoksa "Mic"
+        if(hasText) {
+            btnIcon.className = "fas fa-paper-plane";
+            isRecording = false; // Reset recording state if typing
+            actionBtn.classList.remove('recording-active');
+        } else {
+            btnIcon.className = "fas fa-microphone";
+        }
 
+        // Typing Status
+        set(ref(db, `typing/${currentUser.uid}`), hasText);
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => set(ref(db, `typing/${currentUser.uid}`), false), 2000);
+    });
+
+    // Button Logic (Send or Record Toggle)
+    actionBtn.onclick = () => {
+        const text = msgInput.value.trim();
+        
+        if (text) {
+            sendMessage('text', text);
+        } else {
+            // Toggle Recording
+            toggleRecording();
+        }
+    };
+
+    async function sendMessage(type, content) {
+        let payload = {
+            sender: currentUser.uid,
+            type: type,
+            time: serverTimestamp()
+        };
+        if(type === 'text') payload.content = content;
+        if(type === 'image' || type === 'audio') payload.url = content;
+
+        await push(ref(db, 'messages'), payload);
+        
+        if(type === 'text') {
             msgInput.value = '';
             msgInput.style.height = 'auto';
             btnIcon.className = "fas fa-microphone";
             set(ref(db, `typing/${currentUser.uid}`), false);
         }
+    }
 
-        // Mesajları Dinle & Ekrana Bas
-        function listenMessages() {
-            onChildAdded(ref(db, 'messages'), (snapshot) => {
-                const msg = snapshot.val();
-                const isMe = msg.sender === currentUser.uid;
-                const row = document.createElement('div');
-                row.className = `msg-row ${isMe ? 'me' : 'other'}`;
-
-                // Linkleri Köprü Yap
-                let contentHtml = '';
-                if (msg.type === 'text') {
-                    contentHtml = msg.content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-                } else if (msg.type === 'image') {
-                    contentHtml = `<img src="${msg.url}" class="chat-img" onclick="showLightbox('${msg.url}')">`;
-                } else if (msg.type === 'audio') {
-                    contentHtml = `<audio controls src="${msg.url}" class="audio-player"></audio>`;
-                }
-
-                const date = new Date(msg.time);
-                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                row.innerHTML = `
-                    <div class="bubble">
-                        ${contentHtml}
-                        <span class="msg-time">${timeStr}</span>
-                    </div>
-                `;
-                
-                chatArea.appendChild(row);
-                chatArea.scrollTop = chatArea.scrollHeight;
-            });
-        }
-
-        // Yazıyor Durumu Dinleme
-        function listenTyping() {
-            onValue(ref(db, 'typing'), (snap) => {
-                let isTyping = false;
-                snap.forEach(child => {
-                    if (child.key !== currentUser.uid && child.val() === true) isTyping = true;
-                });
-                
-                const typingEl = document.getElementById('typing-text');
-                const statusEl = document.getElementById('status-text');
-                
-                if (isTyping) {
-                    typingEl.style.display = 'inline';
-                    statusEl.style.display = 'none';
-                } else {
-                    typingEl.style.display = 'none';
-                    statusEl.style.display = 'inline';
-                }
-            });
-        }
-
-        // --- DOSYA YÜKLEME ---
-        window.handleFileSelect = async (input) => {
-            const file = input.files[0];
-            if (!file) return;
-
-            // Önce placeholder mesaj atabiliriz (isteğe bağlı), burada direkt yüklüyoruz
-            const storageRef = sRef(storage, 'images/' + Date.now() + '_' + file.name);
-            const snapshot = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snapshot.ref);
-
-            push(ref(db, 'messages'), {
-                sender: currentUser.uid,
-                type: 'image',
-                url: url,
-                time: serverTimestamp()
-            });
-        };
-
-        window.showLightbox = (url) => {
-            document.getElementById('lightbox-content').src = url;
-            document.getElementById('lightbox').style.display = 'flex';
-        };
-
-        // --- SES KAYDI (BAS-KONUŞ) ---
-        let mediaRecorder, audioChunks = [];
-        
-        const startRecording = async (e) => {
-            if (msgInput.value.length > 0) return; // Yazı varsa kayıt yapma
-            e.preventDefault();
+    function initChat() {
+        // Listen Messages
+        onChildAdded(ref(db, 'messages'), (snap) => {
+            const m = snap.val();
+            const isMe = m.sender === currentUser.uid;
             
+            const div = document.createElement('div');
+            div.className = `msg-row ${isMe ? 'me' : 'other'}`;
+            
+            let inner = '';
+            if(m.type === 'text') inner = m.content.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+            if(m.type === 'image') inner = `<img src="${m.url}" class="chat-img" onclick="showLightbox(this.src)">`;
+            if(m.type === 'audio') inner = `<audio controls src="${m.url}" class="audio-player"></audio>`;
+
+            const time = new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+            div.innerHTML = `<div class="bubble">${inner}<span class="msg-time">${time}</span></div>`;
+            
+            // Insert before typing indicator
+            chatArea.insertBefore(div, typingIndicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        });
+
+        // Listen Typing
+        onValue(ref(db, 'typing'), snap => {
+            let isTyping = false;
+            snap.forEach(c => {
+                if(c.key !== currentUser.uid && c.val()) isTyping = true;
+            });
+            typingIndicator.style.display = isTyping ? 'flex' : 'none';
+            if(isTyping) chatArea.scrollTop = chatArea.scrollHeight;
+        });
+        
+        // Listen Calls
+        listenCalls();
+    }
+
+    // --- MEDIA ---
+    window.handleFile = async (input) => {
+        if(!input.files[0]) return;
+        const file = input.files[0];
+        const s = sRef(storage, 'media/' + Date.now() + '_' + file.name);
+        const snap = await uploadBytes(s, file);
+        const url = await getDownloadURL(snap.ref);
+        sendMessage('image', url);
+    };
+
+    window.showLightbox = (src) => {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox').style.display = 'flex';
+    };
+
+    // --- AUDIO RECORDING (TOGGLE) ---
+    let mediaRecorder, audioChunks = [];
+
+    async function toggleRecording() {
+        if (!isRecording) {
+            // START
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
-                
-                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-                
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
                 mediaRecorder.onstop = async () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    const audioRef = sRef(storage, 'voice/' + Date.now() + '.mp3');
-                    const snap = await uploadBytes(audioRef, audioBlob);
+                    const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+                    const s = sRef(storage, 'voice/' + Date.now() + '.mp3');
+                    const snap = await uploadBytes(s, blob);
                     const url = await getDownloadURL(snap.ref);
-                    
-                    push(ref(db, 'messages'), {
-                        sender: currentUser.uid,
-                        type: 'audio',
-                        url: url,
-                        time: serverTimestamp()
-                    });
-                    
-                    mainBtn.classList.remove('recording-mode');
+                    sendMessage('audio', url);
                 };
-                
                 mediaRecorder.start();
-                mainBtn.classList.add('recording-mode');
-            } catch (err) {
-                console.error("Mikrofon hatası:", err);
-                alert("Mikrofona erişilemedi.");
-            }
-        };
+                isRecording = true;
+                actionBtn.classList.add('recording-active');
+            } catch(e) { alert("Mic Error: " + e.message); }
+        } else {
+            // STOP & SEND
+            if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+            isRecording = false;
+            actionBtn.classList.remove('recording-active');
+        }
+    }
 
-        const stopRecording = (e) => {
-            if (mediaRecorder && mediaRecorder.state !== "inactive") {
-                mediaRecorder.stop();
-            }
-        };
-
-        // Mobil ve Masaüstü Eventleri
-        mainBtn.addEventListener('mousedown', startRecording);
-        mainBtn.addEventListener('mouseup', stopRecording);
-        mainBtn.addEventListener('touchstart', startRecording);
-        mainBtn.addEventListener('touchend', stopRecording);
-
-        // --- PUSHOVER BİLDİRİMİ ---
-        window.sendPushover = () => {
-            const msg = prompt("Tüm kullanıcılara gidecek bildirim mesajı:");
-            if (!msg) return;
-
-            const formData = new FormData();
-            formData.append("token", PUSHOVER_TOKEN);
-            formData.append("user", PUSHOVER_USER);
-            formData.append("message", msg);
-            formData.append("title", "Yeni Sohbet Bildirimi");
-            formData.append("sound", "cosmic");
-
-            fetch("https://api.pushover.net/1/messages.json", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) alert("Bildirim başarıyla gönderildi!");
-                else alert("Bildirim gönderilemedi (CORS hatası olabilir).");
-            })
-            .catch(error => {
-                console.error("Pushover Error:", error);
-                alert("Hata oluştu. Not: Localhost'ta CORS sorunu yaşanabilir.");
+    // --- CLEANUP FUNCTION (1 GÜN) ---
+    function cleanOldMessages() {
+        const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+        const q = query(ref(db, 'messages'), orderByChild('time')); // Zamana göre sırala
+        
+        get(q).then(snapshot => {
+            snapshot.forEach(child => {
+                const msg = child.val();
+                if (msg.time < oneDayAgo) {
+                    // Veritabanından sil (Dosyalar Storage'da kalır ama erişilemez olur)
+                    remove(child.ref);
+                }
             });
+        });
+    }
+
+    // --- CALL SYSTEM (AUDIO ONLY) ---
+    let pc, localStream;
+    const servers = { iceServers: [{ urls: 'stun:stun1.l.google.com:19302' }] };
+    const callModal = document.getElementById('call-modal');
+    
+    window.startCall = async () => {
+        const callId = push(ref(db, 'calls')).key;
+        setupCallUI();
+        
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        
+        pc = new RTCPeerConnection(servers);
+        localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+        
+        pc.onicecandidate = e => {
+            if(e.candidate) push(ref(db, `calls/${callId}/candidates`), { cand: JSON.stringify(e.candidate), sender: currentUser.uid });
+        };
+        pc.ontrack = e => {
+            document.getElementById('remoteAudio').srcObject = e.streams[0];
         };
 
-        // --- WEBRTC GÖRÜNTÜLÜ ARAMA ---
-        let localStream, pc;
-        const servers = { iceServers: [{ urls: 'stun:stun1.l.google.com:19302' }] };
-        const callModal = document.getElementById('call-modal');
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        
+        // Timestamp ekledik - Eski çağrıları filtrelemek için
+        set(ref(db, `calls/${callId}`), { 
+            type: 'offer', 
+            sdp: JSON.stringify(offer), 
+            sender: currentUser.uid,
+            timestamp: serverTimestamp() 
+        });
 
-        window.startCall = async () => {
-            const callId = push(ref(db, 'calls')).key;
-            callModal.style.display = 'flex';
+        onValue(ref(db, `calls/${callId}/answer`), async snap => {
+            const d = snap.val();
+            if(d && !pc.currentRemoteDescription) await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(d.sdp)));
+        });
+        
+        listenCandidates(callId);
+    };
+
+    function listenCalls() {
+        onChildAdded(ref(db, 'calls'), async snap => {
+            const d = snap.val();
             
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            document.getElementById('localVideo').srcObject = localStream;
+            // STALE CALL CHECK: 60 saniyeden eski çağrıları yoksay
+            const now = Date.now();
+            if (d.timestamp && (now - d.timestamp > 60000)) return;
 
-            pc = new RTCPeerConnection(servers);
-            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+            if(d.type === 'offer' && d.sender !== currentUser.uid) {
+                if(!confirm(USERS[d.sender] ? USERS[d.sender] + " arıyor..." : "Sesli Arama Geliyor!")) return;
+                
+                setupCallUI();
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                
+                pc = new RTCPeerConnection(servers);
+                localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+                
+                pc.onicecandidate = e => {
+                    if(e.candidate) push(ref(db, `calls/${snap.key}/candidates`), { cand: JSON.stringify(e.candidate), sender: currentUser.uid });
+                };
+                pc.ontrack = e => {
+                    document.getElementById('remoteAudio').srcObject = e.streams[0];
+                };
 
-            pc.onicecandidate = event => {
-                if (event.candidate) {
-                    push(ref(db, `calls/${callId}/candidates`), {
-                        candidate: JSON.stringify(event.candidate),
-                        sender: currentUser.uid
-                    });
-                }
-            };
+                await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(d.sdp)));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                
+                set(ref(db, `calls/${snap.key}/answer`), { sdp: JSON.stringify(answer), sender: currentUser.uid });
+                listenCandidates(snap.key);
+            }
+        });
+    }
 
-            pc.ontrack = event => {
-                document.getElementById('remoteVideo').srcObject = event.streams[0];
-            };
+    function listenCandidates(callId) {
+        onChildAdded(ref(db, `calls/${callId}/candidates`), snap => {
+            const d = snap.val();
+            if(d.sender !== currentUser.uid) pc.addIceCandidate(new RTCIceCandidate(JSON.parse(d.cand)));
+        });
+    }
 
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
+    function setupCallUI() { callModal.style.display = 'flex'; }
+    window.endCall = () => { location.reload(); };
 
-            set(ref(db, `calls/${callId}`), {
-                type: 'offer',
-                sdp: JSON.stringify(offer),
-                sender: currentUser.uid
-            });
+    // --- PUSHOVER (NO-CORS) ---
+    window.sendPushover = () => {
+        const msg = prompt("Bildirim Mesajı:");
+        if(!msg) return;
 
-            // Cevabı Bekle
-            onValue(ref(db, `calls/${callId}/answer`), async (snapshot) => {
-                const data = snapshot.val();
-                if (data && !pc.currentRemoteDescription) {
-                    await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(data.sdp)));
-                }
-            });
+        const p = new URLSearchParams();
+        p.append("token", PUSHOVER_TOKEN);
+        p.append("user", PUSHOVER_USER);
+        p.append("message", msg);
+        p.append("title", "Sohbet Bildirimi");
 
-            listenCandidates(callId);
-        };
+        fetch("https://api.pushover.net/1/messages.json", {
+            method: "POST",
+            body: p,
+            mode: 'no-cors' 
+        }).then(() => alert("Bildirim gönderildi."));
+    };
 
-        function listenCalls() {
-            onChildAdded(ref(db, 'calls'), async (snapshot) => {
-                const data = snapshot.val();
-                if (data.type === 'offer' && data.sender !== currentUser.uid) {
-                    const accept = confirm("Görüntülü Arama Geliyor! Cevapla?");
-                    if (!accept) return;
-
-                    const callId = snapshot.key;
-                    callModal.style.display = 'flex';
-
-                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    document.getElementById('localVideo').srcObject = localStream;
-
-                    pc = new RTCPeerConnection(servers);
-                    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-                    pc.onicecandidate = event => {
-                        if (event.candidate) {
-                            push(ref(db, `calls/${callId}/candidates`), {
-                                candidate: JSON.stringify(event.candidate),
-                                sender: currentUser.uid
-                            });
-                        }
-                    };
-
-                    pc.ontrack = event => {
-                        document.getElementById('remoteVideo').srcObject = event.streams[0];
-                    };
-
-                    await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(data.sdp)));
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-
-                    set(ref(db, `calls/${callId}/answer`), {
-                        sdp: JSON.stringify(answer),
-                        sender: currentUser.uid
-                    });
-
-                    listenCandidates(callId);
-                }
-            });
-        }
-
-        function listenCandidates(callId) {
-            onChildAdded(ref(db, `calls/${callId}/candidates`), (snapshot) => {
-                const data = snapshot.val();
-                if (data.sender !== currentUser.uid) {
-                    pc.addIceCandidate(new RTCIceCandidate(JSON.parse(data.candidate)));
-                }
-            });
-        }
-
-        window.endCall = () => {
-            if (pc) pc.close();
-            if (localStream) localStream.getTracks().forEach(track => track.stop());
-            callModal.style.display = 'none';
-            location.reload();
-        };
-
-        function setupPresence() {
-            // Basit presence
-            const userStatusRef = ref(db, 'status/' + currentUser.uid);
-            set(userStatusRef, 'online');
-        }
-
-    </script>
+</script>
 </body>
 </html>
