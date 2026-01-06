@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>Pro Chat v4</title>
+    <title>Pro Chat v5 (Final)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         /* --- DARK SLATE PALET --- */
@@ -228,7 +228,7 @@
     </div>
 
     <div class="input-wrapper">
-        <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
+        <input type="file" id="file-input" hidden accept="image/*">
         <i class="fas fa-camera" style="color:#94a3b8; font-size:24px; padding:10px; cursor:pointer;" onclick="document.getElementById('file-input').click()"></i>
         
         <textarea id="msg-input" class="text-input" rows="1" placeholder="Mesaj..."></textarea>
@@ -256,8 +256,7 @@
         appId: "1:260708453820:web:7857e835708603aba62fb9"
     };
 
-    // --- PUSHOVER KEYS (DÜZELTİLDİ) ---
-    // User Key: u ile başlayan, Token: a ile başlayan
+    // --- PUSHOVER KEYS ---
     const PUSHOVER_APP_TOKEN = "at55iwugiminzvndbzucvoknuiwi4k"; 
     const PUSHOVER_USER_KEY = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
 
@@ -284,9 +283,7 @@
     };
 
     window.logout = () => {
-        // Çıkış yaparken durumu offline yap
         if(currentUser) set(ref(db, 'status/' + currentUser.uid), { state: 'offline' });
-        
         signOut(auth).then(() => {
             document.getElementById('email').value = "";
             document.getElementById('password').value = "";
@@ -299,16 +296,11 @@
             currentUser = user;
             document.getElementById('login-screen').style.display = 'none';
             
-            // Kullanıcı Adını Başlığa Yaz
-            const myName = USERS[user.email] || "Kullanıcı";
-            // document.getElementById('header-username').innerText = myName; // Kendi adımızı yazmaya gerek yok, karşıyı yazacağız
-
-            // Presence System
             const myStatusRef = ref(db, 'status/' + user.uid);
             set(myStatusRef, { state: 'online', email: user.email });
             onDisconnect(myStatusRef).set({ state: 'offline', email: user.email });
 
-            setupPartnerStatus(); // Karşı tarafı izle
+            setupPartnerStatus();
             initChat();
             cleanOldMessages(); 
         } else {
@@ -316,14 +308,12 @@
         }
     });
 
-    // --- PARTNER STATUS LOGIC ---
     function setupPartnerStatus() {
         const statusRef = ref(db, 'status');
         onValue(statusRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
 
-            // Kendim dışındaki ilk kullanıcıyı bul (Ahmet ise Ayda'yı, Ayda ise Ahmet'i)
             let partnerName = "Diğer Kişi";
             let partnerState = "offline";
             
@@ -335,10 +325,8 @@
                 }
             });
 
-            // Başlığı Güncelle: Örn: "Ayda"
             document.getElementById('header-username').innerText = partnerName;
             
-            // Durum Metni Güncelle
             const statusText = document.getElementById('partner-text');
             const statusDot = document.getElementById('partner-dot');
             
@@ -388,7 +376,6 @@
             btnIcon.className = "fas fa-microphone";
         }
 
-        // Typing
         set(ref(db, `typing/${currentUser.uid}`), hasText);
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => set(ref(db, `typing/${currentUser.uid}`), false), 2000);
@@ -422,15 +409,12 @@
         }
     }
 
-    // Sohbeti Silme (Clear Chat)
+    // Sohbeti Silme
     window.clearChat = async () => {
         if(confirm("Tüm sohbet geçmişini ve dosyaları silmek istediğine emin misin?")) {
             await remove(ref(db, 'messages'));
-            // Media'ları temizlemek için veritabanı boşaltılır, 
-            // Storage manuel temizlenir veya Cloud Functions gerekir.
-            // Burada arayüz temizliği için DB temizlemek yeterli.
             chatArea.innerHTML = "";
-            chatArea.appendChild(typingIndicator); // Typing'i geri koy
+            chatArea.appendChild(typingIndicator);
             alert("Sohbet temizlendi.");
         }
     };
@@ -456,10 +440,8 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         });
 
-        // Sohbet Silindiğinde Arayüzü Temizle
         onValue(ref(db, 'messages'), (snap) => {
             if(!snap.exists()) {
-                 // Sadece typing indicator kalsın
                  while (chatArea.firstChild && chatArea.firstChild !== typingIndicator) {
                     chatArea.removeChild(chatArea.firstChild);
                 }
@@ -478,22 +460,36 @@
         listenCalls();
     }
 
-    // --- MEDIA ---
-    window.handleFile = async (input) => {
-        if(!input.files[0]) return;
-        const file = input.files[0];
-        const s = sRef(storage, 'media/' + Date.now() + '_' + file.name);
-        const snap = await uploadBytes(s, file);
-        const url = await getDownloadURL(snap.ref);
-        sendMessage('image', url);
-    };
+    // --- MEDIA UPLOAD FIX ---
+    // JavaScript ile event listener ekleyerek sorunu çözüyoruz
+    const fileInput = document.getElementById('file-input');
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
 
+        // Dosya seçildiyse yükleme işlemini başlat
+        try {
+            // "Gönderiliyor..." efekti veya disable eklenebilir ama basit tutuyoruz
+            const s = sRef(storage, 'media/' + Date.now() + '_' + file.name);
+            const snap = await uploadBytes(s, file);
+            const url = await getDownloadURL(snap.ref);
+            sendMessage('image', url);
+        } catch(error) {
+            alert("Resim yüklenemedi! Lütfen Firebase Storage Kurallarını (Rules) kontrol edin. Hata: " + error.message);
+            console.error(error);
+        } finally {
+            // Input değerini sıfırla ki aynı resim tekrar seçilebilsin
+            fileInput.value = '';
+        }
+    });
+
+    // --- RESİM LIGHTBOX ---
     window.showLightbox = (src) => {
         document.getElementById('lightbox-img').src = src;
         document.getElementById('lightbox').style.display = 'flex';
     };
 
-    // --- AUDIO RECORDING (TOGGLE) ---
+    // --- AUDIO RECORDING ---
     let mediaRecorder, audioChunks = [];
 
     async function toggleRecording() {
@@ -521,7 +517,7 @@
         }
     }
 
-    // --- CLEANUP FUNCTION ---
+    // --- CLEANUP ---
     function cleanOldMessages() {
         const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
         const q = query(ref(db, 'messages'), orderByChild('time'));
@@ -533,7 +529,7 @@
         });
     }
 
-    // --- CALL SYSTEM (FIXED) ---
+    // --- CALL SYSTEM (FIXED - ZAMAN AŞIMI & TEMİZLİK EKLENDİ) ---
     let pc, localStream;
     const servers = { iceServers: [{ urls: 'stun:stun1.l.google.com:19302' }] };
     const callModal = document.getElementById('call-modal');
@@ -542,7 +538,6 @@
         currentCallId = push(ref(db, 'calls')).key;
         setupCallUI("Aranıyor...");
         
-        // Arayan kişi sekmesi kapatırsa aramayı veritabanından sil
         onDisconnect(ref(db, `calls/${currentCallId}`)).remove();
 
         localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -581,29 +576,24 @@
             const d = snap.val();
             const callKey = snap.key;
 
-            // ZAMAN KONTROLÜ (Çok Önemli Düzeltme): 
-            // Çağrı 30 saniyeden eskiyse yoksay ve veritabanından sil
+            // ZAMAN KONTROLÜ: 30 saniyeden eski çağrıları yoksay ve sil
             const now = Date.now();
             if (!d.timestamp || (now - d.timestamp > 30000)) {
-                // Eski çağrıyı temizle
-                remove(ref(db, `calls/${callKey}`));
+                remove(ref(db, `calls/${callKey}`)); // Eski çağrıyı temizle
                 return;
             }
 
             if(d.type === 'offer' && d.sender !== currentUser.uid) {
-                // Partnerin adını bul
-                const callerName = USERS[Object.keys(USERS).find(key => key !== currentUser.email)] || "Biri"; // Basit mantık
+                const callerName = USERS[Object.keys(USERS).find(key => key !== currentUser.email)] || "Biri";
                 
                 if(!confirm(`${callerName} sesli arıyor... Cevapla?`)) {
-                    // Reddedersem çağrıyı sil
-                    remove(ref(db, `calls/${callKey}`));
+                    remove(ref(db, `calls/${callKey}`)); // Reddedilince sil
                     return;
                 }
                 
                 currentCallId = callKey;
                 setupCallUI("Bağlanıyor...");
                 
-                // Bağlantı koparsa temizle
                 onDisconnect(ref(db, `calls/${currentCallId}`)).remove();
 
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -628,10 +618,10 @@
             }
         });
         
-        // Çağrı Silindiğinde Modalı Kapat (Karşı taraf kapattığında)
+        // Karşı taraf kapatırsa
         onValue(ref(db, 'calls'), snap => {
             if (currentCallId && !snap.hasChild(currentCallId)) {
-                 endCall(false); // DB'den silmeye gerek yok zaten silinmiş
+                 endCall(false); 
             }
         });
     }
@@ -653,17 +643,14 @@
         if (localStream) localStream.getTracks().forEach(track => track.stop());
         callModal.style.display = 'none';
         
-        // Aramayı sonlandır butonuna basıldıysa DB'den sil, böylece karşıda da kapanır
         if (shouldRemove && currentCallId) {
-            remove(ref(db, `calls/${currentCallId}`));
+            remove(ref(db, `calls/${currentCallId}`)); // Kapatınca sil
         }
         currentCallId = null;
-        // location.reload(); // Sayfa yenilemeye gerek kalmadı
     };
 
-    // --- PUSHOVER (KNOCK KNOCK) ---
+    // --- PUSHOVER (Knock Knock - NO CORS) ---
     window.sendPushover = () => {
-        // Hazır Mesaj
         const msg = "Knock Knock! (Kapı Çalıyor)";
         
         const p = new URLSearchParams();
@@ -671,8 +658,9 @@
         p.append("user", PUSHOVER_USER_KEY);
         p.append("message", msg);
         p.append("title", "Sohbet Uyarısı");
-        p.append("sound", "doorbell"); // Kapı zili sesi varsa
+        p.append("sound", "doorbell"); // Kapı zili sesi
 
+        // mode: 'no-cors' ile hata almadan gönderim
         fetch("https://api.pushover.net/1/messages.json", {
             method: "POST",
             body: p,
