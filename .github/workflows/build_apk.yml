@@ -1,4 +1,4 @@
-name: Islam App Build (Debug Fix)
+name: Islam App Build Final
 
 on: [push, workflow_dispatch]
 
@@ -7,27 +7,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
 
-      # Eksik dosyaları oluştur
-      - run: flutter create . --platforms android
-      
-      # Paketleri indir
-      - run: flutter pub get
-      
-      # Garanti çalışan DEBUG moduna dönüyoruz (Fat APK)
-      - name: APK Derle (Debug Mod)
+      # Önceki hatalı dosya artıklarını temizle
+      - name: Temizlik Yap
+        run: flutter clean
+
+      # Eksik Android dosyalarını yeniden oluştur
+      - name: Projeyi Hazirla
+        run: flutter create . --platforms android
+
+      # Kütüphaneleri indir
+      - name: Paketleri Getir
+        run: flutter pub get
+
+      # İkonu images.png dosyasından üret
+      - name: Ikonlari Olustur
+        run: dart run flutter_launcher_icons
+
+      # APK'yı üret
+      - name: APK Derle
         run: flutter build apk --debug
 
-      # Oluşan dosyayı yükle
+      # Dosyayı sun
       - name: APK Yukle
         uses: actions/upload-artifact@v4
         with:
-          name: islam-app-calisan
+          name: islam-app-ikonlu
           path: build/app/outputs/flutter-apk/app-debug.apk
