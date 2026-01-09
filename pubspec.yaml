@@ -1,5 +1,5 @@
-name: islam_ansiklopedisi_app
-description: Islam Ansiklopedisi Okuma ve Not Alma Uygulamasi
+name: islam_ansiklopedisi
+description: Profesyonel Islam Ansiklopedisi Uygulamasi
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -9,12 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Web sitesini göstermek için
   webview_flutter: ^4.7.0
-  # Notları ve yer imlerini telefona kaydetmek için
   shared_preferences: ^2.2.2
-  # İkonlar için
   cupertino_icons: ^1.0.2
+  intl: ^0.19.0 # Tarih formatı için
 
 dev_dependencies:
   flutter_test:
