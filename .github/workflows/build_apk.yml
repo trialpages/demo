@@ -1,4 +1,4 @@
-name: Islam App Build Final
+name: Islam App Build Fix
 
 on: [push, workflow_dispatch]
 
@@ -17,29 +17,29 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      # Önceki hatalı dosya artıklarını temizle
-      - name: Temizlik Yap
+      - name: Temizlik
         run: flutter clean
 
-      # Eksik Android dosyalarını yeniden oluştur
       - name: Projeyi Hazirla
         run: flutter create . --platforms android
 
-      # Kütüphaneleri indir
+      # --- KRİTİK DÜZELTME: Min SDK Sürümünü Yükseltme ---
+      # WebView paketinin çalışması için Android minimum sürümünü 21 yapıyoruz
+      - name: Android Ayarlarini Duzelt
+        run: |
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle
+
       - name: Paketleri Getir
         run: flutter pub get
 
-      # İkonu images.png dosyasından üret
       - name: Ikonlari Olustur
         run: dart run flutter_launcher_icons
 
-      # APK'yı üret
       - name: APK Derle
         run: flutter build apk --debug
 
-      # Dosyayı sun
       - name: APK Yukle
         uses: actions/upload-artifact@v4
         with:
-          name: islam-app-ikonlu
+          name: islam-app-final
           path: build/app/outputs/flutter-apk/app-debug.apk
