@@ -20,10 +20,10 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   flutter_launcher_icons: ^0.13.1
 
-# İkon Ayarları (Senin dosyan images.png olduğu için burayı güncelledim)
+# İkon Ayarları
 flutter_launcher_icons:
   android: "launcher_icon"
-  ios: true
+  ios: false             # <--- HATAYI ÇÖZEN KISIM BURASI (True idi False yaptık)
   image_path: "images.png"
   min_sdk_android: 21
 
