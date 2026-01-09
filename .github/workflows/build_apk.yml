@@ -1,0 +1,30 @@
+name: APK Oluşturucu
+
+on: [push, workflow_dispatch] # Hem kod yükleyince hem de mobilden butona basınca çalışır
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu Çek
+        uses: actions/checkout@v4
+
+      - name: Java'yı Kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Flutter Kur (Eğer projen Flutter ise)
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+
+      - name: APK Derle
+        run: flutter build apk --debug # Eğer projen Native Android ise burayı ./gradlew assembleDebug yapmalısın
+
+      - name: APK'yı Kaydet
+        uses: actions/upload-artifact@v4
+        with:
+          name: uygulama-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
