@@ -1,6 +1,6 @@
 name: APK Oluşturucu
 
-on: [push, workflow_dispatch] # Hem kod yükleyince hem de mobilden butona basınca çalışır
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -15,13 +15,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Flutter Kur (Eğer projen Flutter ise)
+      - name: Flutter Kur
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
 
+      - name: Eksik Proje Dosyalarini Olustur
+        run: flutter create . --platforms android
+
+      - name: Paketleri Getir
+        run: flutter pub get
+
       - name: APK Derle
-        run: flutter build apk --debug # Eğer projen Native Android ise burayı ./gradlew assembleDebug yapmalısın
+        run: flutter build apk --debug
 
       - name: APK'yı Kaydet
         uses: actions/upload-artifact@v4
