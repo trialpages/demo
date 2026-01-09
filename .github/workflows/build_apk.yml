@@ -1,4 +1,4 @@
-name: Islam App Rescue
+name: Islam App Rescue Final
 
 on: [push, workflow_dispatch]
 
@@ -23,7 +23,7 @@ jobs:
       - name: Projeyi Oluştur
         run: flutter create . --platforms android
 
-      # BU KISIM KRİTİK: Webview için Android sürümünü güvenli bir şekilde 21 yapıyoruz
+      # WebView hatasını önleyen kod
       - name: Gradle Ayarlarini Duzelt
         run: |
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle
@@ -31,7 +31,7 @@ jobs:
       - name: Paketleri Getir
         run: flutter pub get
 
-      # İkon kısmını atladık, önce APK'yı alalım
+      # BURADA ARTIK IKON KOMUTU YOK!
       
       - name: APK Derle
         run: flutter build apk --debug
