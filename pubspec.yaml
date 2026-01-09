@@ -1,5 +1,5 @@
-name: ilk_uygulamam
-description: Benim ilk mobil uygulamam.
+name: islam_ansiklopedisi_app
+description: Islam Ansiklopedisi Okuma ve Not Alma Uygulamasi
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -9,11 +9,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Web sitesini göstermek için
+  webview_flutter: ^4.7.0
+  # Notları ve yer imlerini telefona kaydetmek için
+  shared_preferences: ^2.2.2
+  # İkonlar için
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
