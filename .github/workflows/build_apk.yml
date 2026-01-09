@@ -1,4 +1,4 @@
-name: Islam App Build Fix v2
+name: Islam App Rescue
 
 on: [push, workflow_dispatch]
 
@@ -17,26 +17,27 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      - name: Projeyi Hazirla
+      - name: Temizlik Yap
+        run: flutter clean
+
+      - name: Projeyi Oluştur
         run: flutter create . --platforms android
 
-      # --- ZORLA DÜZELTME KOMUTU ---
-      # Android sürümünü ne olursa olsun 21 yap (WebView hatasını çözer)
-      - name: Min SDK Surumunu Guncelle
+      # BU KISIM KRİTİK: Webview için Android sürümünü güvenli bir şekilde 21 yapıyoruz
+      - name: Gradle Ayarlarini Duzelt
         run: |
-          sed -i 's/minSdkVersion .*/minSdkVersion 21/g' android/app/build.gradle
+          sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle
 
       - name: Paketleri Getir
         run: flutter pub get
 
-      - name: Ikonlari Olustur
-        run: dart run flutter_launcher_icons
-
+      # İkon kısmını atladık, önce APK'yı alalım
+      
       - name: APK Derle
         run: flutter build apk --debug
 
       - name: APK Yukle
         uses: actions/upload-artifact@v4
         with:
-          name: islam-app-son
+          name: islam-app-calisan
           path: build/app/outputs/flutter-apk/app-debug.apk
