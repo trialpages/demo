@@ -1,4 +1,4 @@
-name: Islam App Rescue Final
+name: Final Build
 
 on: [push, workflow_dispatch]
 
@@ -17,27 +17,26 @@ jobs:
         with:
           flutter-version: '3.19.0'
 
-      - name: Temizlik Yap
+      - name: Temizlik
         run: flutter clean
 
-      - name: Projeyi Oluştur
+      - name: Proje Olustur
         run: flutter create . --platforms android
 
-      # WebView hatasını önleyen kod
-      - name: Gradle Ayarlarini Duzelt
+      # WebView için Android sürüm ayarı (Mecburi)
+      - name: SDK Ayari
         run: |
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 21/g' android/app/build.gradle
 
       - name: Paketleri Getir
         run: flutter pub get
-
-      # BURADA ARTIK IKON KOMUTU YOK!
       
+      # APK Derle
       - name: APK Derle
         run: flutter build apk --debug
 
       - name: APK Yukle
         uses: actions/upload-artifact@v4
         with:
-          name: islam-app-calisan
+          name: islam-app-sonuc
           path: build/app/outputs/flutter-apk/app-debug.apk
