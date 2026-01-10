@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Öğr. Üyesi Ahmet Yasin KÜÇÜKTİRYAKİ - Ofis Durumu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .7; } }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-slate-200 to-slate-300">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden fade-in relative z-10">
+        <div class="bg-slate-800 p-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cube-coat.png')]"></div>
+            <div class="relative z-10">
+                <div class="w-24 h-24 bg-white rounded-full mx-auto flex items-center justify-center text-4xl text-slate-800 mb-4 shadow-lg border-4 border-slate-200">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-white tracking-tight">Dr. Öğr. Üyesi Ahmet Yasin KÜÇÜKTİRYAKİ</h1>
+                <p class="text-slate-400 text-sm font-medium mt-1">Anlık Ofis Durumu</p>
+            </div>
+        </div>
+
+        <div class="p-8 text-center">
+            
+            <div id="statusContainer" class="mb-8">
+                <div id="statusIcon" class="text-6xl mb-4 text-slate-300 transition-colors duration-500">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                </div>
+                <h2 id="statusTitle" class="text-2xl font-bold text-slate-800 mb-2 transition-all">Yükleniyor...</h2>
+                <p id="statusDesc" class="text-slate-500 text-sm font-medium">Güncel durum verisi alınıyor.</p>
+            </div>
+
+            <div id="actionArea" class="space-y-3"></div>
+
+            <div id="limitWarning" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-xs rounded border border-red-100">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Çok fazla bildirim gönderildi. Lütfen daha sonra tekrar deneyin.
+            </div>
+        </div>
+        
+        <div class="bg-slate-50 p-4 text-center border-t border-slate-100 flex justify-between items-center px-6">
+            <p class="text-xs text-slate-400">Son güncelleme: <span id="lastUpdate">...</span></p>
+            <a href="admin.html" class="text-xs text-slate-300 hover:text-slate-500"><i class="fa-solid fa-lock"></i></a>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- AYARLAR ---
+        const MAIL_ADDRESS = "yasin.kucuktiryaki@deu.edu.tr"; 
+        const APPOINTMENT_LINK = "https://calendar.app.google/7nCFXSj3Kqq5u8KT9"; 
+        const PUSHOVER_USER_KEY = "ufn2wuu8zcxrv3ige2dezipxpymwhh";
+        const PUSHOVER_APP_TOKEN = "ao68emy322x4rzr7fhb85gtzj2zapd";
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1EL5ptf_29az8hUWPt5e9zmPaw01pECw",
+            authDomain: "hmdysn-office.firebaseapp.com",
+            databaseURL: "https://hmdysn-office-default-rtdb.firebaseio.com",
+            projectId: "hmdysn-office",
+            storageBucket: "hmdysn-office.firebasestorage.app",
+            messagingSenderId: "552872607232",
+            appId: "1:552872607232:web:47f4231fe7a45c1244a2e5",
+            measurementId: "G-Q5PK5D7CF4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const statusRef = ref(db, 'officeStatus');
+
+        // Durum Tanımları
+        const statusDefinitions = {
+            1: { title: "Okuldayım", desc: "Lütfen bildirim gönderin ve 5 dk. kadar bekleyin.", icon: "fa-school", colorClass: "text-green-600", type: "notify", allowBooking: false },
+            2: { title: "Toplantıdayım", desc: "Şu an görüşemiyorum. Acilse e-posta atın veya randevu alın.", icon: "fa-users", colorClass: "text-amber-600", type: "mail", allowBooking: true },
+            3: { title: "Okul Dışındayım", desc: "Bugün ofiste olmayacağım. E-posta ile ulaşabilir veya randevu alabilirsiniz.", icon: "fa-person-walking-arrow-right", colorClass: "text-rose-600", type: "mail", allowBooking: true },
+            4: { title: "İl Dışındayım", desc: "Şehir dışındayım. Lütfen e-posta yoluyla iletişime geçiniz.", icon: "fa-plane", colorClass: "text-indigo-600", type: "mail", allowBooking: true },
+            5: { title: "Dersteyim", desc: "Şu an dersteyim. Ders çıkışı uğrayabilirsiniz.", icon: "fa-chalkboard-user", colorClass: "text-purple-600", type: "info", allowBooking: false },
+            6: { title: "Lütfen Rahatsız Etmeyin", desc: "Şu an yoğun çalışıyorum, müsait değilim.", icon: "fa-ban", colorClass: "text-gray-500", type: "none", allowBooking: false },
+            7: { title: "Müsaitim", desc: "İçeri buyrun, kapıyı çalmanıza gerek yok.", icon: "fa-door-open", colorClass: "text-emerald-600", type: "info", allowBooking: false },
+            8: { title: "Online Ders / Toplantı", desc: "Sesli görüşme yapıyorum. Lütfen daha sonra uğrayın.", icon: "fa-headset", colorClass: "text-sky-600", type: "mail", allowBooking: true }
+        };
+
+        // Firebase Dinleme
+        onValue(statusRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) updateUI(data.id, data.timestamp);
+        });
+
+        function updateUI(statusId, timestamp) {
+            const currentStatus = statusDefinitions[statusId] || statusDefinitions[6]; 
+            const actionArea = document.getElementById('actionArea');
+            const iconEl = document.getElementById('statusIcon');
+            
+            document.getElementById('statusTitle').innerText = currentStatus.title;
+            document.getElementById('statusTitle').className = `text-2xl font-bold mb-2 transition-all ${currentStatus.colorClass}`;
+            document.getElementById('statusDesc').innerText = currentStatus.desc;
+            
+            iconEl.className = `text-6xl mb-4 transition-colors duration-500 ${currentStatus.colorClass}`;
+            iconEl.innerHTML = `<i class="fa-solid ${currentStatus.icon} ${statusId == 1 ? 'animate-pulse-slow' : ''}"></i>`;
+
+            if(timestamp) {
+                const date = new Date(timestamp);
+                document.getElementById('lastUpdate').innerText = date.getHours() + ":" + String(date.getMinutes()).padStart(2, '0');
+            }
+
+            actionArea.innerHTML = "";
+            let htmlContent = "";
+
+            if (currentStatus.type === "notify") {
+                if(!isRateLimited()) {
+                    htmlContent = `
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <label class="block text-left text-xs font-bold text-slate-500 uppercase mb-2">Adınız Soyadınız</label>
+                            <input type="text" id="visitorName" class="w-full p-3 border border-slate-300 rounded-lg mb-3 focus:outline-none focus:border-green-500" placeholder="Örn: Ahmet Yılmaz">
+                            <button onclick="window.triggerNotification()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition transform active:scale-95 flex items-center justify-center">
+                                <i class="fa-solid fa-bell mr-2"></i> Hocaya Bildir
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    htmlContent = `<div class="p-4 bg-gray-100 rounded-lg text-gray-500 text-sm mb-2"><i class="fa-solid fa-clock-rotate-left"></i> Bildirim limitiniz doldu.</div><a href="mailto:${MAIL_ADDRESS}" class="block w-full bg-white border border-slate-300 text-slate-700 font-bold py-3 px-4 rounded-lg hover:bg-slate-50 transition flex items-center justify-center"><i class="fa-solid fa-envelope mr-2"></i> E-posta Gönder</a>`;
+                }
+            } else if (currentStatus.type === "mail") {
+                htmlContent += `<a href="mailto:${MAIL_ADDRESS}" class="block w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-blue-700 transition transform active:scale-95 flex items-center justify-center"><i class="fa-solid fa-envelope mr-2"></i> E-posta Gönder</a>`;
+                if (currentStatus.allowBooking && APPOINTMENT_LINK) {
+                    htmlContent += `<a href="${APPOINTMENT_LINK}" target="_blank" class="block w-full mt-2 bg-purple-600 text-white font-bold py-3 px-4 rounded-lg shadow hover:bg-purple-700 transition transform active:scale-95 flex items-center justify-center"><i class="fa-solid fa-calendar-check mr-2"></i> Randevu Oluştur</a>`;
+                }
+            }
+            actionArea.innerHTML = htmlContent;
+        }
+
+        function isRateLimited() {
+            const today = new Date().toLocaleDateString();
+            const lastDate = localStorage.getItem('usageDate');
+            let count = parseInt(localStorage.getItem('usageCount')) || 0;
+            if (lastDate !== today) { localStorage.setItem('usageDate', today); localStorage.setItem('usageCount', 0); return false; }
+            return count >= 2;
+        }
+
+        window.triggerNotification = () => {
+            const nameInput = document.getElementById('visitorName');
+            const name = nameInput.value.trim();
+            if (!name) { alert("Lütfen adınızı giriniz."); return; }
+            const btn = document.querySelector('button[onclick="window.triggerNotification()"]');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...';
+            
+            const params = new URLSearchParams();
+            params.append("token", PUSHOVER_APP_TOKEN);
+            params.append("user", PUSHOVER_USER_KEY);
+            params.append("message", `KAPI ZİLİ: ${name} kapıda bekliyor.`);
+            params.append("sound", "classical"); 
+            params.append("priority", "1"); 
+
+            fetch("https://api.pushover.net/1/messages.json", { method: "POST", body: params, mode: 'no-cors' })
+            .then(() => { alert("Bildirim iletildi."); localStorage.setItem('usageCount', (parseInt(localStorage.getItem('usageCount')) || 0) + 1); location.reload(); })
+            .catch(err => { console.error(err); alert("Hata oluştu."); location.reload(); });
+        };
+    </script>
+</body>
+</html>
