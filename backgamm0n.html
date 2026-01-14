@@ -3,118 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Online Tavla</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Pro Master Tavla - Online</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --bg-color: #121212;
             --wood-dark: #3e2723;
-            --wood-light: #d7ccc8;
-            --board-bg: #5d4037;
-            --point-dark: #3e2723;
-            --point-light: #efebe9;
-            --checker-white: #f5f5f5;
-            --checker-black: #212121;
-            --accent: #ffb300;
+            --wood-light: #5d4037;
+            --board-border: #2d1b16;
+            --point-1: #d7ccc8; /* Açık renk üçgen */
+            --point-2: #3e2723; /* Koyu renk üçgen */
+            --checker-white: #e0e0e0;
+            --checker-black: #1a1a1a;
+            --highlight: rgba(0, 255, 0, 0.4);
+            --selected: rgba(255, 215, 0, 0.5);
+            --accent: #ffb74d;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
             color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
             margin: 0;
+            height: 100vh;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- Giriş Ekranı --- */
-        #lobby {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
+        /* --- LOBBY --- */
+        #lobby-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .lobby-box {
+            background: #2c2c2c;
+            padding: 40px;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #444;
         }
-
-        input {
-            padding: 10px;
+        .lobby-box h1 { margin-bottom: 20px; color: var(--accent); }
+        .lobby-box input {
+            padding: 12px;
             border-radius: 5px;
-            border: none;
-            margin: 10px;
-            width: 200px;
+            border: 1px solid #555;
+            background: #333;
+            color: white;
+            width: 250px;
+            margin-bottom: 20px;
+            font-size: 16px;
         }
-
-        button {
-            padding: 10px 20px;
-            border-radius: 5px;
+        .btn {
+            padding: 12px 25px;
             border: none;
-            background: var(--accent);
-            color: #000;
+            border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            font-size: 16px;
+            transition: 0.2s;
+            margin: 5px;
         }
-        button:hover { transform: scale(1.05); }
-        button:disabled { background: #555; cursor: not-allowed; }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-primary:hover { background: #ffca28; transform: translateY(-2px); }
+        .btn-secondary { background: #424242; color: white; }
+        .btn-secondary:hover { background: #616161; }
 
-        /* --- Oyun Alanı --- */
-        #game-container {
+        /* --- OYUN ALANI --- */
+        #game-layout {
             display: none;
-            flex-direction: column;
-            align-items: center;
+            flex-direction: row;
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
+            height: 90vh;
+            gap: 20px;
+            padding: 20px;
         }
 
-        #status-bar {
-            width: 100%;
+        /* --- TAHTA --- */
+        .board-container {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .info-bar {
+            background: #333;
+            padding: 10px 20px;
+            border-radius: 10px 10px 0 0;
             display: flex;
             justify-content: space-between;
-            background: #333;
-            padding: 10px;
-            border-radius: 10px 10px 0 0;
-            box-sizing: border-box;
+            align-items: center;
+            border-bottom: 2px solid #444;
         }
 
-        /* --- Tavla Tahtası --- */
-        .board {
-            width: 100%;
-            aspect-ratio: 4/3;
-            background-color: var(--board-bg);
-            border: 15px solid var(--wood-dark);
-            border-radius: 5px;
+        .player-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        
+        .status-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #555; /* Offline */
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            transition: background-color 0.3s;
+        }
+        .status-light.online {
+            background-color: #00e676; /* Online */
+            box-shadow: 0 0 8px #00e676;
+        }
+
+        .wood-board {
+            flex: 1;
+            background-color: var(--wood-light);
+            border: 15px solid var(--board-border);
+            border-radius: 0 0 10px 10px;
             display: flex;
             position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.6);
         }
 
         .half-board {
             flex: 1;
             display: flex;
-            border-left: 2px solid rgba(0,0,0,0.3);
-            border-right: 2px solid rgba(0,0,0,0.3);
             position: relative;
+            border-left: 1px solid rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(0,0,0,0.2);
         }
-        
-        .middle-bar {
-            width: 40px;
-            background: var(--wood-dark);
+
+        .bar {
+            width: 60px;
+            background: var(--board-border);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 10px #000;
+            box-shadow: inset 0 0 20px #000;
         }
 
-        /* --- Üçgenler (Points) --- */
-        .points-row {
+        /* Üçgenler */
+        .point-container {
             position: absolute;
             width: 100%;
-            height: 40%;
+            height: 45%;
             display: flex;
         }
         .top-row { top: 0; }
@@ -123,573 +168,771 @@
         .point {
             flex: 1;
             height: 100%;
+            position: relative;
+            /* Üçgen şekli */
+            background: linear-gradient(to bottom, transparent 0%, transparent 100%);
+        }
+        /* Üçgenin görseli pseudo-element ile yapılır ki taşlar üzerine gelsin */
+        .point::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 0;
+        }
+        .point:nth-child(odd)::before { background-color: var(--point-2); }
+        .point:nth-child(even)::before { background-color: var(--point-1); }
+
+        .point.valid-move::before { background-color: var(--highlight) !important; }
+        .point.selected::before { background-color: var(--selected) !important; }
+
+        /* Taş Alanı (Üçgenin içi) */
+        .checker-stack {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Taşlar yukarıdan başlar (görsel ters çevrilince düzelir) */
-            padding-top: 5px;
-            position: relative;
+            padding-top: 10px;
+            z-index: 10;
             cursor: pointer;
         }
-        .point:nth-child(odd) { background-color: var(--point-dark); }
-        .point:nth-child(even) { background-color: var(--point-light); }
-        
-        /* Seçili Alan Vurgusu */
-        .point.valid-target { background-color: rgba(0, 255, 0, 0.3) !important; }
-        .point.selected { background-color: rgba(255, 215, 0, 0.4) !important; }
+        /* Alttaki board (rotate edilmiş) için taşları düzelt */
+        .bottom-row .checker-stack {
+            transform: rotate(180deg); 
+            justify-content: flex-end; /* Taşlar tabandan başlasın */
+            padding-top: 0;
+            padding-bottom: 10px;
+        }
 
-        /* --- Pullar --- */
+        /* --- PULLAR --- */
         .checker {
-            width: 80%;
+            width: 80%; /* Üçgen genişliğine göre */
+            max-width: 45px;
             aspect-ratio: 1;
             border-radius: 50%;
-            margin-bottom: 2px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 -4px 4px rgba(0,0,0,0.2), inset 0 4px 4px rgba(255,255,255,0.3);
-            z-index: 10;
+            position: relative;
+            margin-bottom: -60%; /* Üst üste binme efekti! */
+            box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+            transition: all 0.2s;
         }
-        .checker.white { background: var(--checker-white); border: 1px solid #ccc; }
-        .checker.black { background: var(--checker-black); border: 1px solid #000; }
-        
-        /* Kırık Pullar (Bar) */
+        .bottom-row .checker {
+            margin-bottom: 0;
+            margin-top: -60%;
+        }
+
+        .checker.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #e0e0e0);
+            border: 4px solid #ccc;
+        }
+        .checker.black {
+            background: radial-gradient(circle at 30% 30%, #444, #000);
+            border: 4px solid #222;
+        }
+        /* Son pulun üzerinde sayı yazsın eğer çok varsa */
+        .checker-count {
+            position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 12px; font-weight: bold;
+            color: red; 
+            text-shadow: 0 0 2px white;
+            z-index: 20;
+        }
+
+        /* Kırık Taşlar (Bar) */
         .bar-slot {
-            width: 30px;
-            height: 30px;
+            width: 40px; height: 40px;
             border-radius: 50%;
-            margin: 2px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin: 5px 0;
             cursor: pointer;
+            box-shadow: 0 0 10px red;
         }
 
-        /* Toplanan Pullar (Off) */
-        .off-board {
+        /* Zarlar */
+        .dice-area {
             position: absolute;
-            right: -50px;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            background: var(--wood-dark);
-            border-left: 2px solid #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- Zarlar --- */
-        #dice-area {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             display: flex;
-            gap: 10px;
-            pointer-events: none; /* Tıklamayı engellemesin */
+            gap: 15px;
+            z-index: 50;
+            pointer-events: none;
         }
         .die {
-            width: 40px;
-            height: 40px;
+            width: 50px; height: 50px;
             background: white;
             border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 24px;
-            color: black;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            color: #333;
             border: 1px solid #999;
         }
-        
-        #controls {
-            margin-top: 15px;
+        .die.rolling { animation: spin 0.5s ease-out; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Kontroller */
+        .controls-area {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        #game-msg {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #ffca28;
+        }
+
+        /* --- SOHBET & LOG --- */
+        .sidebar {
+            flex: 1;
+            background: #2c2c2c;
+            border-radius: 10px;
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            border: 1px solid #444;
+            max-width: 300px;
         }
-
-        /* Dönüş Göstergesi */
-        .turn-indicator {
-            padding: 5px 10px;
-            border-radius: 4px;
+        .chat-header {
+            padding: 10px;
+            background: #333;
+            border-radius: 10px 10px 0 0;
             font-weight: bold;
+            text-align: center;
         }
-        .turn-white { background: white; color: black; }
-        .turn-black { background: black; color: white; border: 1px solid white; }
+        #chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+            background: #222;
+        }
+        .chat-input-area {
+            padding: 10px;
+            display: flex;
+            gap: 5px;
+            background: #333;
+            border-radius: 0 0 10px 10px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 8px;
+            border-radius: 4px;
+            border: none;
+        }
+        .msg { margin-bottom: 5px; }
+        .msg strong { color: var(--accent); }
+        .msg.sys { color: #888; font-style: italic; font-size: 12px; }
 
-        @media (max-width: 600px) {
-            .board { border-width: 5px; }
-            .checker { width: 90%; }
+        @media (max-width: 800px) {
+            #game-layout { flex-direction: column; height: 100%; overflow-y: auto;}
+            .sidebar { max-width: 100%; height: 200px; }
         }
     </style>
 </head>
 <body>
 
-    <div id="lobby">
-        <h2><i class="fas fa-dice"></i> Pro Online Tavla</h2>
-        <p>Arkadaşınla oynamak için bir oda ismi belirleyin.</p>
-        <input type="text" id="roomName" placeholder="Oda Adı (örn: masa1)">
-        <br>
-        <button onclick="joinGame('white')">Beyaz Olarak Katıl (Kur)</button>
-        <button onclick="joinGame('black')">Siyah Olarak Katıl</button>
-        <p id="msg" style="color: #ffb300; margin-top:10px; font-size: 0.9em;"></p>
+    <div id="lobby-overlay">
+        <div class="lobby-box">
+            <h1><i class="fas fa-dice"></i> Pro Master Tavla</h1>
+            <p>Oda ismini gir ve tarafını seç</p>
+            <input type="text" id="roomName" placeholder="Oda Adı (Örn: masa1)" value="masa1">
+            <br>
+            <button class="btn btn-primary" onclick="initGame('white')">⚪ Beyaz Ol (Kur)</button>
+            <button class="btn btn-secondary" onclick="initGame('black')">⚫ Siyah Ol (Katıl)</button>
+        </div>
     </div>
 
-    <div id="game-container">
-        <div id="status-bar">
-            <span id="player-info">Oyuncu: ...</span>
-            <div id="turn-display" class="turn-indicator">Sıra: ...</div>
-        </div>
-
-        <div class="board">
-            <div class="half-board" id="left-board">
-                <div class="points-row top-row" id="top-left"></div> <div class="points-row bottom-row" id="bottom-left"></div> </div>
-
-            <div class="middle-bar">
-                <div id="bar-white" class="checker white bar-slot" style="display:none;" onclick="handleBarClick('white')"></div>
-                <div style="flex:1"></div>
-                <div id="bar-black" class="checker black bar-slot" style="display:none;" onclick="handleBarClick('black')"></div>
-            </div>
-
-            <div class="half-board" id="right-board">
-                <div class="points-row top-row" id="top-right"></div> <div class="points-row bottom-row" id="bottom-right"></div> <div id="dice-area">
-                    <div id="die1" class="die" style="display:none;"></div>
-                    <div id="die2" class="die" style="display:none;"></div>
+    <div id="game-layout">
+        
+        <div class="board-container">
+            <div class="info-bar">
+                <div class="player-status">
+                    <div id="status-white" class="status-light"></div>
+                    <span>Beyaz</span>
+                </div>
+                <div style="font-weight: bold; color: var(--accent);" id="turn-indicator">Sıra: Bekleniyor</div>
+                <div class="player-status">
+                    <span>Siyah</span>
+                    <div id="status-black" class="status-light"></div>
                 </div>
             </div>
 
-             <div class="off-board">
-                <div id="off-white" style="color:white; font-size:12px;">0</div>
-                <div id="off-black" style="color:black; background:white; padding:2px; font-size:12px; margin-top:auto;">0</div>
+            <div class="wood-board">
+                <div class="dice-area">
+                    <div id="die1" class="die" style="display:none;"></div>
+                    <div id="die2" class="die" style="display:none;"></div>
+                </div>
+
+                <div id="game-msg"></div>
+
+                <div class="half-board">
+                    <div class="point-container top-row" id="top-left"></div> <div class="point-container bottom-row" id="bottom-left"></div> </div>
+
+                <div class="bar">
+                    <div id="bar-white" class="checker white bar-slot" style="display:none;" onclick="handleBarClick('white')"></div>
+                    <div id="bar-black" class="checker black bar-slot" style="display:none;" onclick="handleBarClick('black')"></div>
+                </div>
+
+                <div class="half-board">
+                    <div class="point-container top-row" id="top-right"></div> <div class="point-container bottom-row" id="bottom-right"></div> </div>
+            </div>
+
+            <div class="controls-area">
+                <button id="rollBtn" class="btn btn-primary" onclick="rollDice()" style="display:none;">ZAR AT</button>
+                <button id="passBtn" class="btn btn-secondary" onclick="passTurn()" style="display:none;">PAS GEÇ</button>
             </div>
         </div>
 
-        <div id="controls">
-            <button id="rollBtn" onclick="rollDice()">Zar At</button>
-            <button id="passBtn" onclick="passTurn()" style="display:none; background-color: #d32f2f; color:white;">Pas Geç</button>
+        <div class="sidebar">
+            <div class="chat-header"><i class="fas fa-comments"></i> Sohbet</div>
+            <div id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Mesaj yaz..." onkeypress="handleChatKey(event)">
+                <button class="btn btn-primary" style="padding: 5px 10px;" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+            </div>
         </div>
-        <p id="game-message" style="color: #ccc; margin-top:5px; height: 20px;"></p>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // --- 1. FIREBASE KONFIGURASYONU ---
-        // Burayı kendi proje bilgilerinizle doldurun!
+        // --- FIREBASE AYARLARI ---
         const firebaseConfig = {
-  apiKey: "AIzaSyARZya4A5Jf-Sb-DVEWWyuycYTBpbFugHE",
-  authDomain: "backgamm0n.firebaseapp.com",
-  databaseURL: "https://backgamm0n-default-rtdb.firebaseio.com",
-  projectId: "backgamm0n",
-  storageBucket: "backgamm0n.firebasestorage.app",
-  messagingSenderId: "554189551640",
-  appId: "1:554189551640:web:c500ada35668d650eeab6d"
-};
-
-        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-            alert("Lütfen HTML kodundaki firebaseConfig bölümünü kendi bilgilerinizle güncelleyin!");
-        } else {
-            firebase.initializeApp(firebaseConfig);
-        }
+            apiKey: "AIzaSyARZya4A5Jf-Sb-DVEWWyuycYTBpbFugHE", // User provided key
+            authDomain: "backgamm0n.firebaseapp.com",
+            databaseURL: "https://backgamm0n-default-rtdb.firebaseio.com",
+            projectId: "backgamm0n",
+            storageBucket: "backgamm0n.firebasestorage.app",
+            messagingSenderId: "554189551640",
+            appId: "1:554189551640:web:c500ada35668d650eeab6d"
+        };
         
+        firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- OYUN DEĞİŞKENLERİ ---
-        let myColor = null; // 'white' veya 'black'
-        let roomId = null;
-        let gameState = {
-            board: [], // 0-23 arası noktalar. Pozitif: Beyaz, Negatif: Siyah
-            bar: { white: 0, black: 0 },
-            off: { white: 0, black: 0 },
-            turn: 'white',
-            dice: [],
-            movesLeft: [], // Kullanılabilir zar değerleri
-            lastMoveTime: 0
-        };
+        // --- GLOBAL DEĞİŞKENLER ---
+        let myColor = '';
+        let roomId = '';
+        let currentGameState = null;
+        let selectedIndex = -1; // -1: yok, 99: bar
 
         // --- BAŞLANGIÇ ---
-        function initBoard() {
-            // Standart Tavla Dizilimi
-            // Index 0: Sağ Üst (Beyaz için 24, Siyah için 1)
-            // Bizim mantık: 0-23 arası.
-            // Beyaz: 23'ten 0'a gider. (Ev: 0-5)
-            // Siyah: 0'dan 23'e gider. (Ev: 18-23)
+        function initGame(color) {
+            const nameInput = document.getElementById('roomName');
+            if(nameInput.value.trim() === '') { alert("Oda adı gerekli!"); return; }
             
-            gameState.board = Array(24).fill(0);
-            
-            // Siyah Taşlar (Negatif) -> 0'dan 23'e gider
-            gameState.board[0] = -2;  // Siyahın başlangıcı
-            gameState.board[11] = -5;
-            gameState.board[16] = -3;
-            gameState.board[18] = -5;
-
-            // Beyaz Taşlar (Pozitif) -> 23'ten 0'a gider
-            gameState.board[23] = 2;  // Beyazın başlangıcı
-            gameState.board[12] = 5;
-            gameState.board[7] = 3;
-            gameState.board[5] = 5;
-
-            gameState.bar = { white: 0, black: 0 };
-            gameState.off = { white: 0, black: 0 };
-            gameState.turn = 'white';
-            gameState.dice = [];
-            gameState.movesLeft = [];
-        }
-
-        // --- FIREBASE İŞLEMLERİ ---
-        function joinGame(color) {
-            const roomName = document.getElementById('roomName').value.trim();
-            if (!roomName) return alert("Oda adı girin!");
-            
-            roomId = roomName;
+            roomId = nameInput.value.trim();
             myColor = color;
             
-            document.getElementById('lobby').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-            document.getElementById('player-info').innerText = `Sen: ${color === 'white' ? 'Beyaz' : 'Siyah'}`;
+            document.getElementById('lobby-overlay').style.display = 'none';
+            document.getElementById('game-layout').style.display = 'flex';
 
-            const gameRef = db.ref('games/' + roomId);
+            setupPresence(); // Online durumu
+            listenGame();    // Oyun dinleyici
+            listenChat();    // Sohbet dinleyici
 
-            gameRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    gameState = data;
+            if(color === 'white') {
+                // Oyunu sıfırla/başlat
+                checkAndCreateGame();
+            }
+        }
+
+        function checkAndCreateGame() {
+            db.ref(`games/${roomId}`).once('value', sn => {
+                if(!sn.exists()) {
+                    resetBoard();
+                }
+            });
+        }
+
+        function resetBoard() {
+            // Standart Tavla Dizilimi (0-23)
+            // Beyaz: 0 -> 23 yönü
+            // Siyah: 23 -> 0 yönü
+            const board = Array(24).fill(0);
+            
+            // Beyaz taşlar (+)
+            board[0] = 2; board[11] = 5; board[16] = 3; board[18] = 5;
+            
+            // Siyah taşlar (-)
+            board[23] = -2; board[12] = -5; board[7] = -3; board[5] = -5;
+
+            const initialState = {
+                board: board,
+                bar: { white: 0, black: 0 },
+                off: { white: 0, black: 0 },
+                turn: 'white', // İlk sıra beyazda
+                dice: [],
+                movesLeft: [],
+                lastAction: Date.now()
+            };
+            
+            db.ref(`games/${roomId}`).set(initialState);
+            addSystemMessage("Yeni oyun başlatıldı.");
+        }
+
+        // --- PRESENCE (ONLINE DURUMU) ---
+        function setupPresence() {
+            const connectedRef = db.ref(".info/connected");
+            const myStatusRef = db.ref(`games/${roomId}/players/${myColor}`);
+            
+            connectedRef.on("value", (snap) => {
+                if (snap.val() === true) {
+                    myStatusRef.set(true);
+                    myStatusRef.onDisconnect().set(false);
+                }
+            });
+
+            // Rakipleri dinle
+            db.ref(`games/${roomId}/players`).on('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('status-white').className = `status-light ${data.white ? 'online' : ''}`;
+                document.getElementById('status-black').className = `status-light ${data.black ? 'online' : ''}`;
+            });
+        }
+
+        // --- OYUN DİNLEYİCİSİ (SYNC) ---
+        function listenGame() {
+            db.ref(`games/${roomId}`).on('value', snap => {
+                const data = snap.val();
+                if(data) {
+                    currentGameState = data;
                     renderBoard();
                     updateUI();
-                } else {
-                    // Oda yoksa oluştur
-                    if (color === 'white') {
-                        initBoard();
-                        saveGame();
-                    }
                 }
             });
         }
 
-        function saveGame() {
-            gameState.lastMoveTime = Date.now();
-            db.ref('games/' + roomId).set(gameState);
-        }
-
-        // --- OYUN MANTIĞI & RENDER ---
-        
+        // --- RENDER (ÇİZİM) ---
         function renderBoard() {
-            // DOM Temizliği
-            document.querySelectorAll('.point').forEach(p => { p.innerHTML = ''; p.className = 'point'; });
+            // Tahtadaki üçgenleri oluştur (İlk seferde veya temizleyip)
+            // Mapping: 
+            // Top Right: 18-23 (Beyazın evi gibi düşünülürse) -> Visual Index
+            // Mantıksal Array 0-23
+            // Visual Layout:
+            // Top Right: 18-23 ? Hayır, standart tavla dizilimi karışık olabilir.
+            // BİZİM MANTIK: 
+            // 0 index = Sol Üst (Beyaz başlangıcı) -> 11 Sol Alt
+            // 12 Sağ Alt -> 23 Sağ Üst 
+            // (Bu görsel dizilimi değiştirebiliriz, ama kodu basitleştirmek için array indexini görsel indexe mapleyeceğiz)
             
-            // Pointleri Maplemek (Görsel yerleşim)
-            // Top Right: 0-5, Top Left: 6-11
-            // Bottom Left: 12-17, Bottom Right: 18-23
+            // Daha yaygın tavla dizilimi:
+            // Sağ Üst: 13-18 (Black), 19-24 (White start) -> Bizim 0 burada olsun.
+            // Bizim 0-23 array mantığı:
+            // 0: Beyaz Başlangıç (En uzak)
+            // 23: Beyaz Bitiş (Toplama)
             
-            const mapPointToId = (i) => {
-                if (i >= 0 && i <= 5) return { row: 'top-right', idx: 5-i }; // 0 sağ en uç
-                if (i >= 6 && i <= 11) return { row: 'top-left', idx: 11-i };
-                if (i >= 12 && i <= 17) return { row: 'bottom-left', idx: i-12 };
-                if (i >= 18 && i <= 23) return { row: 'bottom-right', idx: i-18 };
-            };
-
-            // HTML point elementlerini oluşturma (Sadece ilk renderda yapılabilir ama basitlik için her seferinde yapıyoruz)
-            const rows = ['top-right', 'top-left', 'bottom-left', 'bottom-right'];
-            rows.forEach(id => {
-                const el = document.getElementById(id);
-                if(el.children.length === 0) {
-                    for(let k=0; k<6; k++) {
-                        const div = document.createElement('div');
-                        div.className = 'point';
-                        // Doğru indexi bulmak için ters işlem
-                        let boardIndex;
-                        if(id === 'top-right') boardIndex = 5-k;
-                        if(id === 'top-left') boardIndex = 11-k;
-                        if(id === 'bottom-left') boardIndex = 12+k;
-                        if(id === 'bottom-right') boardIndex = 18+k;
-                        
-                        div.dataset.index = boardIndex;
-                        div.onclick = () => handlePointClick(boardIndex);
-                        
-                        // Renk
-                        if(id.includes('top')) {
-                            if((boardIndex % 2) === 0) div.classList.add('dark');
-                        } else {
-                            if((boardIndex % 2) !== 0) div.classList.add('dark');
-                        }
-                        el.appendChild(div);
-                    }
-                }
+            // Visual Mapping (DOM ID'lerine göre):
+            // top-right: 18-23 (Ters sıra)
+            // top-left: 12-17 (Ters sıra)
+            // bottom-left: 11-6
+            // bottom-right: 5-0 
+            // *Bu mapping ile Beyaz C şekli çizer: Sağ üstten başlar, sola, aşağı, sağ alta.*
+            
+            // Temizlik
+            ['top-right', 'top-left', 'bottom-left', 'bottom-right'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
             });
 
-            // Taşları Yerleştir
-            gameState.board.forEach((count, index) => {
-                const points = document.querySelectorAll('.point');
-                const targetPoint = Array.from(points).find(p => parseInt(p.dataset.index) === index);
+            // Render loop
+            for(let i=0; i<24; i++) {
+                let targetId;
+                // Mapping Logic (Beyazın 23'e gittiği varsayımı)
+                // 0-5: Bottom Right (Ev Beyaz için) -> Dizilim ters mi?
+                // Standart: Beyaz sağ üstten girer (24), sol üst, sol alt, sağ alt (1).
+                // Bizim Array: 0 -> 23.
+                // 0 indexi görsel olarak nerede? Sağ üst diyelim.
                 
-                if (targetPoint) {
-                    // Mevcut taşları temizle
-                    targetPoint.innerHTML = ''; 
+                // MAPPING DÜZELTME:
+                // 0-5: Top Right (White Start)
+                // 6-11: Top Left
+                // 12-17: Bottom Left
+                // 18-23: Bottom Right (White Home)
+                
+                if (i >= 0 && i <= 5) targetId = 'top-right';
+                else if (i >= 6 && i <= 11) targetId = 'top-left';
+                else if (i >= 12 && i <= 17) targetId = 'bottom-left';
+                else targetId = 'bottom-right';
+
+                const container = document.getElementById(targetId);
+                
+                // Üçgen Div'i
+                const pointDiv = document.createElement('div');
+                pointDiv.className = 'point';
+                pointDiv.dataset.index = i;
+                pointDiv.onclick = () => handlePointClick(i);
+                
+                // Seçim vurgusu
+                if(i === selectedIndex) pointDiv.classList.add('selected');
+                
+                // Hamle vurgusu
+                if(isValidTarget(i)) pointDiv.classList.add('valid-move');
+
+                // Taşları Yerleştirme
+                const count = currentGameState.board[i];
+                if(count !== 0) {
+                    const stackDiv = document.createElement('div');
+                    stackDiv.className = 'checker-stack';
                     
                     const num = Math.abs(count);
                     const type = count > 0 ? 'white' : 'black';
-                    
-                    // Görsel sıkışıklık olmasın diye max 5 taş göster, üzerine sayı yazılabilir ama şimdilik üst üste binme efekti yapalım
-                    const displayCount = num > 5 ? 5 : num;
-                    
-                    for(let i=0; i<displayCount; i++) {
-                        const checker = document.createElement('div');
-                        checker.className = `checker ${type}`;
-                        if(i === displayCount -1 && num > 5) {
-                            checker.innerText = num;
-                            checker.style.display = 'flex';
-                            checker.style.justifyContent = 'center';
-                            checker.style.alignItems = 'center';
-                            checker.style.fontSize = '12px';
+                    const displayCount = num > 5 ? 5 : num; // Görsel limit
+
+                    for(let k=0; k<displayCount; k++) {
+                        const c = document.createElement('div');
+                        c.className = `checker ${type}`;
+                        if(k === displayCount-1 && num > 5) {
+                             const span = document.createElement('span');
+                             span.className = 'checker-count';
+                             span.innerText = num;
+                             c.appendChild(span);
                         }
-                        targetPoint.appendChild(checker);
+                        stackDiv.appendChild(c);
                     }
+                    pointDiv.appendChild(stackDiv);
                 }
-            });
 
-            // Bar Durumu
-            const barWhite = document.getElementById('bar-white');
-            const barBlack = document.getElementById('bar-black');
+                // Sıralama (Sağdan sola mı soldan sağa mı?)
+                // Sağ üst (0-5): 5 en sağ, 0 en sol mu? Genelde tavlada sağdan sola sayılır.
+                // Flex-direction row default. 
+                // Biz CSS'te flex-direction: row-reverse yaparsak sağdan başlar.
+                // JS ile insert yaparken sırayı kontrol edelim.
+                // Top Right (0-5): 0 en sağda olsun.
+                if(targetId === 'top-right' || targetId === 'bottom-right') {
+                    // index küçük olan sağda olmalı. appendChild sona ekler.
+                    // 0 ekle, 1 ekle... 5 ekle. -> 0 1 2 3 4 5 (Soldan sağa).
+                    // Biz 5 4 3 2 1 0 istiyoruz.
+                    // Konteyner style: flex-direction: row-reverse verilebilir CSS'te.
+                    container.style.flexDirection = 'row-reverse';
+                } else {
+                     container.style.flexDirection = 'row';
+                }
+
+                container.appendChild(pointDiv);
+            }
+
+            // --- Bar ---
+            const bw = document.getElementById('bar-white');
+            const bb = document.getElementById('bar-black');
+            bw.style.display = currentGameState.bar.white > 0 ? 'block' : 'none';
+            if(currentGameState.bar.white > 1) bw.innerText = currentGameState.bar.white; else bw.innerText = '';
             
-            barWhite.style.display = gameState.bar.white > 0 ? 'block' : 'none';
-            barWhite.innerText = gameState.bar.white > 1 ? gameState.bar.white : '';
-            
-            barBlack.style.display = gameState.bar.black > 0 ? 'block' : 'none';
-            barBlack.innerText = gameState.bar.black > 1 ? gameState.bar.black : '';
+            bb.style.display = currentGameState.bar.black > 0 ? 'block' : 'none';
+            if(currentGameState.bar.black > 1) bb.innerText = currentGameState.bar.black; else bb.innerText = '';
 
-            // Toplanan Taşlar
-            document.getElementById('off-white').innerText = gameState.off.white;
-            document.getElementById('off-black').innerText = gameState.off.black;
+            // Seçim Barda mı?
+            if(selectedIndex === 99) {
+                if(myColor === 'white') bw.style.boxShadow = "0 0 15px yellow";
+                else bb.style.boxShadow = "0 0 15px yellow";
+            } else {
+                bw.style.boxShadow = ""; bb.style.boxShadow = "";
+            }
 
-            // Zar Görünümü
+            // --- Zarlar ---
             const d1 = document.getElementById('die1');
             const d2 = document.getElementById('die2');
-            if(gameState.dice.length > 0) {
-                d1.style.display = 'flex'; d1.innerText = gameState.dice[0];
-                d2.style.display = 'flex'; d2.innerText = gameState.dice[1];
-                // Kullanılan zarları gri yap
-                if(gameState.movesLeft.length < gameState.dice.length) {
-                    // Basit bir görselleştirme: Kaç tane kullanıldıysa o kadarını soluk yap
-                    // Tam mantık karmaşık, burada basit tutuyoruz.
+            
+            if(currentGameState.dice && currentGameState.dice.length > 0) {
+                d1.style.display = 'flex'; d1.innerText = currentGameState.dice[0];
+                d2.style.display = 'flex'; d2.innerText = currentGameState.dice[1];
+                
+                // MovesLeft'e göre opaklık (kullanıldı mı?)
+                // Tam mantık karmaşık, basitçe: movesLeft boşsa soluk yap
+                if(currentGameState.movesLeft.length === 0) {
+                    d1.style.opacity = 0.5; d2.style.opacity = 0.5;
+                } else {
+                    d1.style.opacity = 1; d2.style.opacity = 1;
                 }
             } else {
-                d1.style.display = 'none';
-                d2.style.display = 'none';
+                d1.style.display = 'none'; d2.style.display = 'none';
             }
         }
 
+        // --- UI GÜNCELLEME ---
         function updateUI() {
-            const turnDisplay = document.getElementById('turn-display');
-            turnDisplay.innerText = `Sıra: ${gameState.turn === 'white' ? 'BEYAZ' : 'SİYAH'}`;
-            turnDisplay.className = `turn-indicator ${gameState.turn === 'white' ? 'turn-white' : 'turn-black'}`;
+            const turnInd = document.getElementById('turn-indicator');
+            const isMyTurn = currentGameState.turn === myColor;
+            
+            let text = currentGameState.turn === 'white' ? "Sıra: BEYAZ" : "Sıra: SİYAH";
+            if(isMyTurn) text += " (SEN)";
+            turnInd.innerText = text;
+            turnInd.style.color = isMyTurn ? "#00e676" : "#fff";
 
             const rollBtn = document.getElementById('rollBtn');
             const passBtn = document.getElementById('passBtn');
-            
-            // Sadece sırası gelen ve zarı atmamışsa zar butonunu göster
-            if(gameState.turn === myColor && gameState.dice.length === 0) {
-                rollBtn.disabled = false;
-                rollBtn.style.display = 'inline-block';
-                passBtn.style.display = 'none';
-            } else if (gameState.turn === myColor && gameState.movesLeft.length > 0) {
-                rollBtn.style.display = 'none';
-                passBtn.style.display = 'inline-block'; // Hamle yapamazsa pas geçmek için
+
+            // Buton Mantığı
+            if(isMyTurn) {
+                if(currentGameState.dice.length === 0) {
+                    rollBtn.style.display = 'block';
+                    passBtn.style.display = 'none';
+                } else if(currentGameState.movesLeft.length === 0) {
+                    // Otomatik tur değişimi yoksa, veya tıkandıysa
+                     rollBtn.style.display = 'none';
+                     passBtn.style.display = 'none';
+                     // Genelde hamle bitince otomatik geçer ama manuel pas butonu koyabiliriz
+                     // Eğer hamle yapamaz durumdaysa pas butonu aç
+                     if(!canMakeAnyMove()) {
+                         passBtn.style.display = 'block';
+                     } else {
+                         // Hamle bitti mi?
+                         // Normalde hamle yapınca movesLeft azalır, 0 olunca tur döner.
+                         // Burada logic hatası olmasın diye bekliyoruz.
+                     }
+                } else {
+                    rollBtn.style.display = 'none';
+                    // Hamle yapamıyorsa?
+                    if(!canMakeAnyMove()) {
+                        passBtn.style.display = 'block';
+                    } else {
+                        passBtn.style.display = 'none';
+                    }
+                }
             } else {
-                rollBtn.disabled = true;
                 rollBtn.style.display = 'none';
                 passBtn.style.display = 'none';
             }
         }
 
-        // --- HAMLE MEKANİZMASI ---
-        
-        let selectedIndex = -1; // -1: yok, 99: bar
+        // --- OYUN MANTIĞI ---
 
         function rollDice() {
-            if(gameState.turn !== myColor) return;
+            if(currentGameState.turn !== myColor) return;
             
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
             
-            gameState.dice = [d1, d2];
-            gameState.movesLeft = (d1 === d2) ? [d1, d1, d1, d1] : [d1, d2];
+            // Animasyon sınıfı ekle (lokal)
+            document.getElementById('die1').classList.add('rolling');
+            document.getElementById('die2').classList.add('rolling');
+            setTimeout(() => {
+                document.querySelectorAll('.die').forEach(d => d.classList.remove('rolling'));
+            }, 500);
+
+            let moves = [];
+            if(d1 === d2) moves = [d1, d1, d1, d1];
+            else moves = [d1, d2];
+
+            db.ref(`games/${roomId}`).update({
+                dice: [d1, d2],
+                movesLeft: moves
+            });
             
-            saveGame();
+            addSystemMessage(`${myColor === 'white' ? 'Beyaz' : 'Siyah'} zar attı: ${d1}-${d2}`);
         }
 
-        function passTurn() {
-             // Hamle hakkı kalmadıysa veya yapılamıyorsa sıra devret
-             gameState.turn = gameState.turn === 'white' ? 'black' : 'white';
-             gameState.dice = [];
-             gameState.movesLeft = [];
-             selectedIndex = -1;
-             saveGame();
-        }
-
-        // Bar'daki taşa tıklama
         function handleBarClick(color) {
-            if(gameState.turn !== myColor) return;
+            if(currentGameState.turn !== myColor) return;
             if(color !== myColor) return;
-            if(gameState.bar[color] <= 0) return;
-            if(gameState.movesLeft.length === 0) return;
-
-            selectedIndex = 99; // Bar seçildi
-            highlightValidMoves(99);
+            if(currentGameState.bar[color] <= 0) return;
+            
+            selectedIndex = 99;
+            renderBoard();
         }
 
         function handlePointClick(index) {
-            if(gameState.turn !== myColor) return;
-            if(gameState.movesLeft.length === 0) return;
+            if(currentGameState.turn !== myColor) return;
+            if(currentGameState.movesLeft.length === 0) return;
 
-            // Eğer barda taş varsa, önce onu oynamak zorundasın
-            if(gameState.bar[myColor] > 0 && selectedIndex !== 99) {
-                document.getElementById('game-message').innerText = "Önce kırık taşını oyuna sokmalısın!";
+            // Bar zorunluluğu
+            if(currentGameState.bar[myColor] > 0 && selectedIndex !== 99) {
+                showMsg("Önce kırık taşını oynamalısın!");
                 return;
             }
 
-            // Seçim yapma
-            const count = gameState.board[index];
+            // Seçim
+            const count = currentGameState.board[index];
             const isMyPiece = (myColor === 'white' && count > 0) || (myColor === 'black' && count < 0);
 
-            // Eğer zaten seçili bir yer varsa ve burası geçerli bir hedefse -> OYNA
-            if (selectedIndex !== -1) {
-                if (isValidMove(selectedIndex, index)) {
-                    makeMove(selectedIndex, index);
+            // Hedefe Tıklama (Hamle Yap)
+            if(selectedIndex !== -1) {
+                if(index === selectedIndex) { selectedIndex = -1; renderBoard(); return; } // Seçimi kaldır
+
+                if(validateMove(selectedIndex, index)) {
+                    executeMove(selectedIndex, index);
                     selectedIndex = -1;
-                    renderBoard(); // Seçimleri temizle
                     return;
                 }
             }
 
-            // Yeni seçim
-            if (isMyPiece) {
+            // Kaynağa Tıklama (Seç)
+            if(isMyPiece) {
                 selectedIndex = index;
-                renderBoard(); // Önce temizle
-                // Tekrar seçili yap
-                const points = document.querySelectorAll('.point');
-                const p = Array.from(points).find(el => parseInt(el.dataset.index) === index);
-                if(p) p.classList.add('selected');
-                
-                highlightValidMoves(index);
+                renderBoard();
             }
         }
 
-        function highlightValidMoves(fromIndex) {
-            const points = document.querySelectorAll('.point');
-            
-            gameState.movesLeft.forEach(die => {
-                let targetIndex;
-                if (myColor === 'white') {
-                    // Beyaz: 23 -> 0 yönünde. Bar'dan giriş 23, 22...
-                    if(fromIndex === 99) targetIndex = 24 - die; 
-                    else targetIndex = fromIndex - die;
-                } else {
-                    // Siyah: 0 -> 23 yönünde. Bar'dan giriş 0, 1...
-                    if(fromIndex === 99) targetIndex = die - 1;
-                    else targetIndex = fromIndex + die;
-                }
+        // --- DOĞRULAMA (VALIDATION) ---
+        function isValidTarget(targetIndex) {
+            // Sadece görsel highlight için
+            if(selectedIndex === -1) return false;
+            return validateMove(selectedIndex, targetIndex);
+        }
 
-                // Hedef tahta sınırları içinde mi?
-                if (targetIndex >= 0 && targetIndex <= 23) {
-                    // Kurallara uygun mu?
-                    if (checkRule(targetIndex)) {
-                        const p = Array.from(points).find(el => parseInt(el.dataset.index) === targetIndex);
-                        if(p) p.classList.add('valid-target');
-                    }
+        function validateMove(from, to) {
+            // Mesafe hesabı
+            let diff;
+            if(myColor === 'white') {
+                // Beyaz 0 -> 23 gidiyor.
+                if(from === 99) diff = to + 1; // Bar'dan giriş (Index 0 = Zar 1) => Hayır.
+                // Bar girişi: Beyaz 0 indexine girmek için 1 atmalı mı?
+                // Bizim mapping: 0 Başlangıç. 
+                // Beyaz barda iken 0-5 arasına girer.
+                // Eğer zar 1 ise index 0'a girer mi?
+                // Logic: Beyaz 0 -> 23. Bardan giriş -1 -> 0.
+                // Mesafe = To - (-1) = To + 1.
+                // Zar 1 ise -> Index 0. Doğru.
+                else diff = to - from;
+            } else {
+                // Siyah 23 -> 0 gidiyor (Negatif board değerleri)
+                // Hareket yönü ters (index azalmalı)
+                if(from === 99) diff = 24 - to; // Bardan giriş (Index 23 = Zar 1)
+                else diff = from - to;
+            }
+
+            if(diff <= 0) return false; // Geri gidemez
+
+            // Zarlarda bu değer var mı?
+            if(!currentGameState.movesLeft.includes(diff)) return false;
+
+            // Hedef müsait mi?
+            const targetCount = currentGameState.board[to];
+            // Boşsa OK
+            if(targetCount === 0) return true;
+            // Benim taşımsa OK
+            if(myColor === 'white' && targetCount > 0) return true;
+            if(myColor === 'black' && targetCount < 0) return true;
+            // Rakip 1 taşsa (Kırma) OK
+            if(Math.abs(targetCount) === 1) return true;
+            
+            return false; // Rakip kapı (2+ taş)
+        }
+
+        // --- HAMLE İŞLEME ---
+        function executeMove(from, to) {
+            let updates = {...currentGameState};
+            
+            // 1. Zarı sil
+            let diff;
+            if(myColor === 'white') diff = from === 99 ? to + 1 : to - from;
+            else diff = from === 99 ? 24 - to : from - to;
+            
+            const dieIdx = updates.movesLeft.indexOf(diff);
+            updates.movesLeft.splice(dieIdx, 1);
+
+            // 2. Taşı al
+            if(from === 99) {
+                updates.bar[myColor]--;
+            } else {
+                if(myColor === 'white') updates.board[from]--;
+                else updates.board[from]++;
+            }
+
+            // 3. Hedefe koy (Kırma var mı?)
+            const tCount = updates.board[to];
+            const isEnemy = (myColor === 'white' && tCount < 0) || (myColor === 'black' && tCount > 0);
+            
+            if(isEnemy && Math.abs(tCount) === 1) {
+                // Kır!
+                if(myColor === 'white') {
+                    updates.board[to] = 1;
+                    updates.bar.black++;
+                    addSystemMessage("Beyaz, Siyahı kırdı!");
+                } else {
+                    updates.board[to] = -1;
+                    updates.bar.white++;
+                    addSystemMessage("Siyah, Beyazı kırdı!");
                 }
-                
-                // Toplama durumu (Bearing off)
-                // Basit kontrol: Tüm taşlar evde mi? (Bu detay kodu çok uzatır, basitleştirilmiş toplama)
-                // Şimdilik sadece tahta içi hareket ve kırma eklendi.
+            } else {
+                if(myColor === 'white') updates.board[to]++;
+                else updates.board[to]--;
+            }
+
+            // 4. Sıra Devri
+            if(updates.movesLeft.length === 0) {
+                updates.turn = myColor === 'white' ? 'black' : 'white';
+                updates.dice = [];
+            }
+
+            db.ref(`games/${roomId}`).set(updates);
+        }
+        
+        function passTurn() {
+            db.ref(`games/${roomId}`).update({
+                turn: myColor === 'white' ? 'black' : 'white',
+                dice: [],
+                movesLeft: []
+            });
+            addSystemMessage(`${myColor === 'white' ? 'Beyaz' : 'Siyah'} pas geçti.`);
+        }
+
+        // Basit hamle kontrolü (Pas butonu için)
+        function canMakeAnyMove() {
+            // Tüm zarlar için tüm olası hamleleri dene (Çok basit kontrol)
+            // Detaylı algoritma gerekir, şimdilik false dönmesin diye true bırakıyoruz
+            // Kullanıcı kilitlenirse Pas butonuna basar.
+            return false; 
+        }
+
+        // --- SOHBET SİSTEMİ ---
+        function listenChat() {
+            db.ref(`games/${roomId}/chat`).limitToLast(20).on('child_added', snap => {
+                const msg = snap.val();
+                const div = document.createElement('div');
+                div.className = msg.sender === 'Sistem' ? 'msg sys' : 'msg';
+                div.innerHTML = `<strong>${msg.sender}:</strong> ${msg.text}`;
+                const box = document.getElementById('chat-messages');
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
             });
         }
-        
-        function checkRule(targetIndex) {
-            const count = gameState.board[targetIndex];
-            // Hedef boş mu?
-            if (count === 0) return true;
-            // Hedef benim taşım mı?
-            if ((myColor === 'white' && count > 0) || (myColor === 'black' && count < 0)) return true;
-            // Hedef rakip ama sadece 1 taş mı (Kırma)?
-            if (Math.abs(count) === 1) return true;
+
+        function sendChat() {
+            const inp = document.getElementById('chatInput');
+            const txt = inp.value.trim();
+            if(!txt) return;
             
-            // Hedef rakip ve kapı yapmış (2+ taş)
-            return false;
+            db.ref(`games/${roomId}/chat`).push({
+                sender: myColor === 'white' ? 'Beyaz' : 'Siyah',
+                text: txt,
+                time: Date.now()
+            });
+            inp.value = '';
         }
 
-        function isValidMove(from, to) {
-            // Basit doğrulama: Hareket mesafesi zarlarda var mı?
-            let distance;
-            if(myColor === 'white') {
-                if(from === 99) distance = 24 - to;
-                else distance = from - to;
-            } else {
-                if(from === 99) distance = to + 1; // 0 indexi 1. zardır
-                else distance = to - from;
-            }
-            
-            // Bu mesafe kullanılabilecek zarlar arasında var mı?
-            if(gameState.movesLeft.includes(distance)) {
-                return checkRule(to);
-            }
-            return false;
+        function addSystemMessage(text) {
+            db.ref(`games/${roomId}/chat`).push({
+                sender: 'Sistem',
+                text: text,
+                time: Date.now()
+            });
         }
 
-        function makeMove(from, to) {
-            // 1. Zarı düş
-            let distance;
-            if(myColor === 'white') {
-                distance = from === 99 ? 24 - to : from - to;
-            } else {
-                distance = from === 99 ? to + 1 : to - from;
-            }
-            
-            const dieIndex = gameState.movesLeft.indexOf(distance);
-            if(dieIndex > -1) {
-                gameState.movesLeft.splice(dieIndex, 1);
-            }
-
-            // 2. Taşı kaldır
-            if(from === 99) {
-                gameState.bar[myColor]--;
-            } else {
-                if(myColor === 'white') gameState.board[from]--;
-                else gameState.board[from]++;
-            }
-
-            // 3. Taşı koy (veya kır)
-            const targetCount = gameState.board[to];
-            
-            // Kırma kontrolü
-            if(targetCount !== 0 && ((myColor === 'white' && targetCount === -1) || (myColor === 'black' && targetCount === 1))) {
-                // Rakibi kır
-                if(myColor === 'white') {
-                    gameState.board[to] = 1; // Benim taşım
-                    gameState.bar.black++; // Rakip bara
-                } else {
-                    gameState.board[to] = -1;
-                    gameState.bar.white++;
-                }
-                showMessage("Kırdın!");
-            } else {
-                // Normal ekleme
-                if(myColor === 'white') gameState.board[to]++;
-                else gameState.board[to]--;
-            }
-
-            // 4. Sıra kontrolü
-            if(gameState.movesLeft.length === 0) {
-                gameState.turn = gameState.turn === 'white' ? 'black' : 'white';
-                gameState.dice = [];
-            }
-
-            saveGame();
+        function handleChatKey(e) {
+            if(e.key === 'Enter') sendChat();
         }
-        
-        function showMessage(msg) {
-            const el = document.getElementById('game-message');
-            el.innerText = msg;
-            setTimeout(() => el.innerText = '', 2000);
+
+        function showMsg(txt) {
+            const el = document.getElementById('game-msg');
+            el.innerText = txt;
+            setTimeout(() => el.innerText = '', 3000);
         }
 
     </script>
