@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BackGamm0n</title>
+    <title>Pro Master Tavla - Final</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #121212;
             --wood-dark: #3e2723;
-            --wood-light: #6d4c41; /* Biraz daha açık */
+            --wood-light: #5d4037;
             --board-border: #2d1b16;
-            --point-dark: #3e2723;
-            --point-light: #d7ccc8;
-            --highlight: rgba(0, 255, 0, 0.5);
-            --selected: rgba(255, 215, 0, 0.6);
+            --point-dark: #3e2723; /* Koyu Üçgen */
+            --point-light: #d7ccc8; /* Açık Üçgen */
             --accent: #ffb74d;
+            --highlight: rgba(0, 255, 0, 0.4);
         }
 
         * { box-sizing: border-box; touch-action: manipulation; }
@@ -26,94 +25,105 @@
             background-color: var(--bg-color);
             color: white;
             margin: 0;
-            height: 100dvh; /* Dynamic Viewport Height for Mobile */
+            height: 100dvh; /* Mobilde adres çubuğu sorunu için */
             overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- GİRİŞ EKRANI (LOBBY) --- */
+        /* --- LOBI (Overlay) --- */
         #lobby-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             display: flex; justify-content: center; align-items: center;
-            z-index: 2000; backdrop-filter: blur(8px);
+            z-index: 2000; backdrop-filter: blur(5px);
         }
         .lobby-box {
             background: #2c2c2c; padding: 30px; border-radius: 15px;
-            text-align: center; width: 90%; max-width: 400px;
-            border: 1px solid #444;
+            text-align: center; width: 85%; max-width: 350px;
+            border: 1px solid #555;
         }
-        .lobby-box h1 { margin: 0 0 20px; color: var(--accent); font-size: 24px; }
         .lobby-box input {
-            width: 100%; padding: 15px; margin-bottom: 20px;
-            border-radius: 8px; border: 1px solid #555;
-            background: #1a1a1a; color: white; font-size: 16px;
+            width: 100%; padding: 12px; margin: 15px 0;
+            background: #111; border: 1px solid #444; color: white; border-radius: 5px;
         }
         .btn {
-            width: 100%; padding: 15px; margin: 5px 0; border: none;
-            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;
+            width: 100%; padding: 12px; margin: 5px 0; border: none;
+            border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px;
         }
-        .btn-primary { background: var(--accent); color: #000; }
-        .btn-secondary { background: #424242; color: white; }
+        .btn-primary { background: var(--accent); color: black; }
+        .btn-secondary { background: #444; color: white; }
 
         /* --- OYUN ALANI --- */
         #game-layout {
-            display: none; /* JS ile açılacak */
+            display: none;
             flex-direction: column;
             width: 100%; height: 100%;
-            padding: 5px;
         }
 
-        /* Üst Bilgi */
-        .info-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #2c2c2c; padding: 10px; border-radius: 8px;
-            margin-bottom: 5px; height: 50px;
+        /* 1. Üst Bilgi */
+        .top-bar {
+            height: 50px; background: #222; display: flex;
+            justify-content: space-between; align-items: center;
+            padding: 0 15px; border-bottom: 1px solid #333;
         }
-        .player-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-        .status-dot {
-            width: 10px; height: 10px; border-radius: 50%; background: #555;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5); transition: 0.3s;
-        }
-        .status-dot.online { background: #00e676; box-shadow: 0 0 8px #00e676; }
-        
-        #turn-indicator { font-weight: bold; color: var(--accent); }
+        .user-tag { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .led { width: 10px; height: 10px; border-radius: 50%; background: #555; transition: 0.3s; }
+        .led.on { background: #00e676; box-shadow: 0 0 8px #00e676; }
+        #turn-msg { font-weight: bold; color: var(--accent); font-size: 14px; }
 
-        /* Tahta */
-        .board-wrapper {
+        /* 2. Tahta (Esnek Alan) */
+        .board-container {
             flex: 1; /* Kalan tüm alanı kapla */
+            background: var(--board-border);
+            padding: 10px; /* Mobilde çerçeve kalınlığı */
+            display: flex;
+            position: relative;
+        }
+        .wood-surface {
+            flex: 1;
             background: var(--wood-light);
-            border: 8px solid var(--board-border);
-            border-radius: 8px;
-            display: flex; position: relative;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.7);
-            overflow: hidden; /* Taşmayı engelle */
+            border: 2px solid rgba(0,0,0,0.5);
+            display: flex;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
         }
 
+        /* Sol ve Sağ Bloklar */
         .half-board {
-            flex: 1; display: flex;
-            border-right: 2px solid rgba(0,0,0,0.3);
-            border-left: 2px solid rgba(0,0,0,0.3);
+            flex: 1; /* %50 genişlik */
+            display: flex;
+            position: relative;
+            border-left: 1px solid rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(0,0,0,0.2);
         }
-        .bar {
-            width: 40px; background: var(--wood-dark);
+        
+        /* Bar (Orta Kısım) */
+        .bar-area {
+            width: 35px; /* Mobilde daraltıldı */
+            background: var(--wood-dark);
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            box-shadow: inset 0 0 15px #000;
+            box-shadow: inset 0 0 10px #000;
+            border-left: 2px solid #222;
+            border-right: 2px solid #222;
         }
 
-        /* Noktalar (Points) */
-        .point-column {
-            position: absolute; width: 100%; height: 43%; display: flex;
+        /* Üçgen Satırları */
+        .points-row {
+            position: absolute; width: 100%; height: 45%; 
+            display: flex;
         }
         .top-row { top: 0; }
-        .bottom-row { bottom: 0; transform: rotate(180deg); } /* Alt tarafı döndür */
+        .bottom-row { bottom: 0; transform: rotate(180deg); }
 
         .point {
-            flex: 1; height: 100%; position: relative;
-            /* Üçgen Görseli */
+            flex: 1; /* Alanı eşit bölüş */
+            height: 100%;
+            position: relative;
+            cursor: pointer;
         }
+        /* Üçgen Çizimi */
         .point::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             clip-path: polygon(50% 100%, 0 0, 100% 0);
@@ -122,92 +132,103 @@
         .point:nth-child(odd)::before { background: var(--point-dark); }
         .point:nth-child(even)::before { background: var(--point-light); }
         
-        .point.valid::before { background: var(--highlight) !important; }
-        .point.selected::before { background: var(--selected) !important; }
+        /* Highlight */
+        .point.valid-move::before { background: var(--highlight) !important; }
+        .point.selected::before { background: rgba(255, 215, 0, 0.5) !important; }
 
-        /* --- TAŞLAR (CHECKERS) --- */
-        .checker-container {
+        /* --- PULLAR (Responsive) --- */
+        .stack {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 10; display: flex; flex-direction: column; align-items: center;
-            padding-top: 2%; /* Üstten biraz boşluk */
+            z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            padding-top: 5px;
         }
-        /* Alt satırın taşları için ters düzenleme (rotate olduğu için) */
-        .bottom-row .checker-container {
-            /* Zaten row rotate olduğu için taşlar tepeden iniyor gibi görünür ama aslında board'un ortasından kenara doğrudur. 
-               Biz görsel olarak düzeltelim. */
-             /* Transform rotate 180 yapıldığı için, flex-start aslında board'un dış kenarıdır. */
+        /* Alttakiler (Rotate olduğu için) */
+        .bottom-row .stack { 
+            /* Rotate olduğu için "top" aslında görsel olarak alt oluyor. 
+               Taşları dizerken normal diziyoruz, görsel zaten dönüyor. */
+             padding-top: 5px; 
         }
 
         .checker {
-            width: 85%; aspect-ratio: 1; border-radius: 50%;
-            margin-bottom: -10%; /* Üst üste binme */
+            width: 85%; /* Üçgenin genişliğinin %85'i */
+            aspect-ratio: 1;
+            border-radius: 50%;
+            margin-bottom: -15%; /* Daha sıkı istif */
             box-shadow: 0 2px 4px rgba(0,0,0,0.6);
             position: relative;
         }
-        .checker.white { background: radial-gradient(circle at 30% 30%, #fff, #ddd); border: 2px solid #bbb; }
-        .checker.black { background: radial-gradient(circle at 30% 30%, #444, #111); border: 2px solid #000; }
+        .checker.white { background: radial-gradient(circle at 30% 30%, #fff, #ddd); border: 1px solid #bbb; }
+        .checker.black { background: radial-gradient(circle at 30% 30%, #333, #000); border: 1px solid #000; }
         
-        /* Bar Taşları */
-        .bar-checker { width: 34px; height: 34px; border-radius: 50%; margin: 4px; box-shadow: 0 0 10px #ff0000; cursor: pointer; }
-
-        /* Zarlar ve Mesaj */
-        .center-overlay {
+        .checker-count {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 50; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 10px;
-        }
-        .dice-wrapper { display: flex; gap: 15px; }
-        .die {
-            width: 45px; height: 45px; background: white; border-radius: 8px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 24px; font-weight: bold; color: black; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            border: 1px solid #ccc;
-        }
-        #game-msg {
-            background: rgba(0,0,0,0.7); color: #ffb74d; padding: 5px 15px;
-            border-radius: 20px; font-size: 14px; text-align: center; white-space: nowrap;
+            color: red; font-size: 10px; font-weight: bold;
         }
 
-        /* Kontroller */
+        /* Bar Pulları */
+        .bar-checker {
+            width: 30px; height: 30px; border-radius: 50%; margin: 5px 0;
+            box-shadow: 0 0 10px yellow; cursor: pointer;
+        }
+
+        /* 3. Kontrol Paneli (Alt) */
         .controls {
-            height: 60px; display: flex; justify-content: center; align-items: center; gap: 15px;
-            background: #222; margin-top: 5px; border-radius: 8px;
+            height: 70px; background: #222;
+            display: flex; justify-content: center; align-items: center; gap: 20px;
+            border-top: 1px solid #333;
         }
         .ctrl-btn {
-            padding: 10px 30px; border-radius: 25px; border: none;
+            padding: 12px 30px; border-radius: 30px; border: none;
             font-weight: bold; font-size: 16px; cursor: pointer;
         }
-        .btn-roll { background: #00e676; color: #004d40; }
+        .btn-roll { background: #00e676; color: #004d40; box-shadow: 0 4px 0 #00695c; }
+        .btn-roll:active { transform: translateY(4px); box-shadow: none; }
         .btn-pass { background: #d32f2f; color: white; }
 
-        /* --- CHAT OVERLAY --- */
-        #chat-toggle {
-            position: fixed; bottom: 80px; right: 20px;
-            width: 50px; height: 50px; border-radius: 50%;
-            background: var(--accent); color: black; border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;
-            z-index: 200; font-size: 20px; display: flex; justify-content: center; align-items: center;
+        /* Zarlar ve Mesaj (Ortada Yüzen) */
+        .overlay-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; z-index: 50;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .dice-box { display: flex; gap: 10px; }
+        .die {
+            width: 45px; height: 45px; background: #fff; border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 22px; font-weight: bold; color: #000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); border: 1px solid #ccc;
+        }
+        #game-msg {
+            background: rgba(0,0,0,0.8); color: var(--accent);
+            padding: 5px 15px; border-radius: 15px; font-size: 13px;
+        }
+
+        /* --- SOHBET --- */
+        #chat-btn {
+            position: fixed; bottom: 85px; right: 20px;
+            width: 45px; height: 45px; border-radius: 50%;
+            background: var(--accent); border: none; z-index: 100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); font-size: 18px; cursor: pointer;
         }
         #chat-panel {
-            position: fixed; bottom: 80px; right: 80px;
-            width: 300px; height: 350px;
-            background: #2c2c2c; border-radius: 15px;
+            position: fixed; bottom: 85px; right: 75px;
+            width: 280px; height: 300px;
+            background: #2c2c2c; border-radius: 10px;
             display: none; flex-direction: column;
-            border: 1px solid #444; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            z-index: 199; overflow: hidden;
+            border: 1px solid #444; z-index: 99;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
         }
-        .chat-header { background: #333; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .chat-body { flex: 1; padding: 10px; overflow-y: auto; background: #222; font-size: 13px; }
-        .chat-input { display: flex; padding: 5px; background: #333; }
-        .chat-input input { flex: 1; padding: 8px; border-radius: 4px; border: none; }
-        .chat-input button { margin-left: 5px; padding: 0 10px; background: var(--accent); border: none; border-radius: 4px; cursor: pointer;}
-        .msg-row { margin-bottom: 5px; }
-        .msg-sys { color: #aaa; font-style: italic; font-size: 11px; }
-        .msg-user { color: white; }
+        .chat-msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 12px; }
+        .chat-inp { display: flex; padding: 5px; background: #222; border-radius: 0 0 10px 10px; }
+        .chat-inp input { flex: 1; padding: 5px; border: none; border-radius: 3px; }
+        .msg-row { margin-bottom: 4px; color: #ddd; }
+        .msg-sys { color: #888; font-style: italic; }
 
         @media (max-width: 600px) {
-            #chat-panel {
-                width: 90%; right: 5%; height: 40vh; bottom: 140px;
-            }
+            .board-container { padding: 5px; } /* Mobilde kenarı incelt */
+            .checker { margin-bottom: -25%; } /* Mobilde taşları daha çok sıkıştır */
+            #chat-panel { right: 10px; bottom: 140px; } /* Mobilde chat konumu */
         }
     </style>
 </head>
@@ -215,45 +236,40 @@
 
     <div id="lobby-overlay">
         <div class="lobby-box">
-            <h1><i class="fas fa-chess-board"></i> Pro Tavla</h1>
-            <input type="text" id="roomName" placeholder="Oda Adı (Örn: masa1)" value="masa1">
-            <button class="btn btn-primary" onclick="startGame('white')">BEYAZ (Oyunu Kur)</button>
-            <button class="btn btn-secondary" onclick="startGame('black')">SİYAH (Katıl)</button>
+            <h2 style="color: var(--accent); margin-top:0;">🎲 Pro Master Tavla</h2>
+            <input type="text" id="roomName" value="masa1" placeholder="Oda İsmi">
+            <button class="btn btn-primary" onclick="initGame('white')">BEYAZ (Oyunu Kur)</button>
+            <button class="btn btn-secondary" onclick="initGame('black')">SİYAH (Katıl)</button>
         </div>
     </div>
 
     <div id="game-layout">
-        <div class="info-bar">
-            <div class="player-badge">
-                <div id="status-white" class="status-dot"></div> <span>Beyaz</span>
-            </div>
-            <div id="turn-indicator">BAĞLANILIYOR...</div>
-            <div class="player-badge">
-                <span>Siyah</span> <div id="status-black" class="status-dot"></div>
-            </div>
+        <div class="top-bar">
+            <div class="user-tag"><div id="led-white" class="led"></div> <span>Beyaz</span></div>
+            <div id="turn-msg">BAĞLANIYOR...</div>
+            <div class="user-tag"><span>Siyah</span> <div id="led-black" class="led"></div></div>
         </div>
 
-        <div class="board-wrapper">
-            <div class="half-board">
-                <div class="point-column top-row" id="tl"></div>
-                <div class="point-column bottom-row" id="bl"></div>
-            </div>
+        <div class="board-container">
+            <div class="wood-surface">
+                
+                <div class="half-board">
+                    <div class="points-row top-row" id="tl"></div> <div class="points-row bottom-row" id="bl"></div> </div>
 
-            <div class="bar">
-                <div id="bar-white" class="bar-checker white" style="display:none;" onclick="clickBar('white')"></div>
-                <div id="bar-black" class="bar-checker black" style="display:none;" onclick="clickBar('black')"></div>
-            </div>
+                <div class="bar-area">
+                    <div id="bar-white" class="bar-checker white" style="display:none;" onclick="handleBar('white')"></div>
+                    <div id="bar-black" class="bar-checker black" style="display:none;" onclick="handleBar('black')"></div>
+                </div>
 
-            <div class="half-board">
-                <div class="point-column top-row" id="tr"></div>
-                <div class="point-column bottom-row" id="br"></div>
-            </div>
+                <div class="half-board">
+                    <div class="points-row top-row" id="tr"></div> <div class="points-row bottom-row" id="br"></div> </div>
 
-            <div class="center-overlay">
-                <div id="game-msg"></div>
-                <div class="dice-wrapper">
-                    <div id="die1" class="die" style="display:none;"></div>
-                    <div id="die2" class="die" style="display:none;"></div>
+                <div class="overlay-center">
+                    <div id="game-msg"></div>
+                    <div class="dice-box">
+                        <div id="die1" class="die" style="display:none;"></div>
+                        <div id="die2" class="die" style="display:none;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -264,21 +280,17 @@
         </div>
     </div>
 
-    <button id="chat-toggle" onclick="toggleChat()"><i class="fas fa-comment"></i></button>
+    <button id="chat-btn" onclick="toggleChat()"><i class="fas fa-comment-alt"></i></button>
     <div id="chat-panel">
-        <div class="chat-header">
-            <span>Sohbet</span>
-            <span style="cursor:pointer" onclick="toggleChat()">✖</span>
-        </div>
-        <div class="chat-body" id="chat-msgs"></div>
-        <div class="chat-input">
-            <input type="text" id="chatInp" placeholder="Yaz..." onkeypress="handleEnter(event)">
-            <button onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+        <div class="chat-msgs" id="chat-box"></div>
+        <div class="chat-inp">
+            <input type="text" id="chatInput" placeholder="Mesaj..." onkeypress="if(event.key==='Enter') sendChat()">
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyARZya4A5Jf-Sb-DVEWWyuycYTBpbFugHE",
@@ -292,364 +304,220 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let myColor = null;
-        let roomId = "masa1";
-        let gameState = null;
-        let selectedIndex = -1; // -1: Yok, 99: Bar
+        let myColor = null, roomId = null, gameState = null, selectedIndex = -1;
 
-        function startGame(color) {
-            const inputName = document.getElementById('roomName').value;
-            if(!inputName) return alert("Oda adı girin!");
-            
-            roomId = inputName;
-            myColor = color;
-            
+        function initGame(color) {
+            const r = document.getElementById('roomName').value;
+            if(!r) return alert("Oda adı girin!");
+            roomId = r; myColor = color;
             document.getElementById('lobby-overlay').style.display = 'none';
             document.getElementById('game-layout').style.display = 'flex';
-
-            // Online Ol
-            const connectedRef = db.ref(".info/connected");
-            connectedRef.on("value", (snap) => {
-                if (snap.val() === true) {
-                    const con = db.ref(`games/${roomId}/presence/${myColor}`);
-                    con.set(true);
-                    con.onDisconnect().set(false);
-                }
-            });
-
-            // Beyazsa ve Oyun Yoksa Başlat (Zorla)
+            
+            // Auto-start check
             if(myColor === 'white') {
-                db.ref(`games/${roomId}/board`).once('value', sn => {
-                    if(!sn.exists()) resetGame();
-                });
+                db.ref(`games/${roomId}/board`).once('value', s => { if(!s.exists()) resetGame(); });
             }
 
-            listenGame();
-            listenPresence();
+            // Listeners
+            setupPresence();
+            db.ref(`games/${roomId}`).on('value', s => { 
+                if(s.exists()) { gameState = s.val(); render(); updateUI(); }
+            });
             listenChat();
         }
 
         function resetGame() {
-            // Basitleştirilmiş Array Mantığı:
-            // Index 0 -> 23
-            // Beyaz: 23'ten 0'a gider.
-            // Siyah: 0'dan 23'e gider.
+            // Setup: Beyaz (Pos), Siyah (Neg)
+            // 0 index -> Beyaz için 24 (Sağ Üst köşe başlangıç olsun mu? Hayır standart tavla)
+            // Bizim Mapping:
+            // 0-5: Sağ Alt (Beyaz Evi) -> Beyaz 23->0 topluyor.
+            // 18-23: Sağ Üst (Siyah Evi)
+            const b = Array(24).fill(0);
+            b[23]=2; b[12]=5; b[7]=3; b[5]=5; // Beyaz
+            b[0]=-2; b[11]=-5; b[16]=-3; b[18]=-5; // Siyah
             
-            const board = Array(24).fill(0);
-            // Siyah (Negatif)
-            board[0] = -2; board[11] = -5; board[16] = -3; board[18] = -5; 
-            // Beyaz (Pozitif)
-            board[23] = 2; board[12] = 5; board[7] = 3; board[5] = 5;
-
-            const state = {
-                board: board,
-                turn: 'white',
-                dice: [],
-                moves: [],
-                bar: { white: 0, black: 0 },
-                msg: "Oyun Başladı"
-            };
-            db.ref(`games/${roomId}`).update(state);
-        }
-
-        function listenPresence() {
-            db.ref(`games/${roomId}/presence`).on('value', sn => {
-                const v = sn.val() || {};
-                document.getElementById('status-white').className = `status-dot ${v.white ? 'online' : ''}`;
-                document.getElementById('status-black').className = `status-dot ${v.black ? 'online' : ''}`;
+            db.ref(`games/${roomId}`).set({
+                board: b, turn: 'white', dice: [], moves: [], bar: {white:0, black:0}, msg: "Oyun Başladı"
             });
         }
 
-        function listenGame() {
-            db.ref(`games/${roomId}`).on('value', sn => {
-                const data = sn.val();
-                if(!data) return; // Data henüz yoksa bekle
-
-                gameState = data;
-                renderBoard();
-                updateUI();
+        function setupPresence() {
+            db.ref(".info/connected").on("value", s => {
+                if(s.val()) db.ref(`games/${roomId}/p/${myColor}`).set(true).then(()=>db.ref(`games/${roomId}/p/${myColor}`).onDisconnect().set(false));
+            });
+            db.ref(`games/${roomId}/p`).on('value', s => {
+                const v = s.val() || {};
+                document.getElementById('led-white').className = `led ${v.white?'on':''}`;
+                document.getElementById('led-black').className = `led ${v.black?'on':''}`;
             });
         }
 
-        // --- RENDER ---
-        function renderBoard() {
-            // DOM Temizliği
-            ['tl', 'bl', 'tr', 'br'].forEach(id => document.getElementById(id).innerHTML = '');
-
-            // Taş Yerleşimi
-            // Mapping:
-            // 0-5: Sağ Alt (br) -> Ama Beyaz 23->0. Yani Beyaz Evi.
-            // 6-11: Sol Alt (bl)
-            // 12-17: Sol Üst (tl)
-            // 18-23: Sağ Üst (tr)
+        function render() {
+            ['tl','bl','tr','br'].forEach(id => document.getElementById(id).innerHTML='');
             
-            // Flex yönlendirmeleri için:
-            // Üstler (tl, tr): Soldan Sağa (Küçük index solda) -> Normal
-            // Altlar (bl, br): Soldan Sağa mı? 
-            // Alt sıra görsel olarak döndürüldü (rotate 180). 
-            // Bu yüzden DOM'a eklerken sırayı dikkatli yönetmeliyiz.
-
+            // Mapping: 0-5(br), 6-11(bl), 12-17(tl), 18-23(tr)
             for(let i=0; i<24; i++) {
-                let targetId;
-                if(i >= 0 && i <= 5) targetId = 'br';       // Sağ Alt (Beyaz Evi)
-                else if(i >= 6 && i <= 11) targetId = 'bl';  // Sol Alt
-                else if(i >= 12 && i <= 17) targetId = 'tl'; // Sol Üst
-                else targetId = 'tr';                        // Sağ Üst (Siyah Evi)
+                let tid;
+                if(i<=5) tid='br'; else if(i<=11) tid='bl'; else if(i<=17) tid='tl'; else tid='tr';
+                
+                const box = document.getElementById(tid);
+                const p = document.createElement('div');
+                p.className = `point ${i===selectedIndex?'selected':''} ${checkValid(i)?'valid-move':''}`;
+                p.onclick = () => handleClick(i);
 
-                const container = document.getElementById(targetId);
-                const pt = document.createElement('div');
-                pt.className = 'point';
-                if(i === selectedIndex) pt.classList.add('selected');
-                if(checkValid(i)) pt.classList.add('valid');
-                pt.onclick = () => clickPoint(i);
-
-                // Taşlar
-                const count = gameState.board[i];
-                if(count !== 0) {
-                    const wrap = document.createElement('div');
-                    wrap.className = 'checker-container';
-                    
-                    const num = Math.abs(count);
-                    const type = count > 0 ? 'white' : 'black';
-                    const maxShow = num > 5 ? 5 : num;
-
-                    for(let k=0; k<maxShow; k++) {
-                        const chk = document.createElement('div');
-                        chk.className = `checker ${type}`;
-                        if(k===maxShow-1 && num > 5) {
-                            chk.innerText = num;
-                            chk.style.display='flex'; chk.style.justifyContent='center'; 
-                            chk.style.alignItems='center'; chk.style.fontSize='12px'; chk.style.color='red';
+                if(gameState.board[i] !== 0) {
+                    const stack = document.createElement('div'); stack.className='stack';
+                    const c = gameState.board[i];
+                    const num = Math.abs(c);
+                    const type = c>0?'white':'black';
+                    const max = num>5?5:num;
+                    for(let k=0; k<max; k++) {
+                        const ch = document.createElement('div'); ch.className=`checker ${type}`;
+                        if(k===max-1 && num>5) {
+                            const sp = document.createElement('span'); sp.className='checker-count'; sp.innerText=num; ch.appendChild(sp);
                         }
-                        wrap.appendChild(chk);
+                        stack.appendChild(ch);
                     }
-                    pt.appendChild(wrap);
+                    p.appendChild(stack);
                 }
 
-                // Append Logic:
-                // Üst satırlar (12-17, 18-23): index arttıkça sağa gider.
-                // Alt satırlar (0-5, 6-11): rotate(180) olduğu için index arttıkça SOLA gider.
-                // Ama Backgammon dizilimi şöyledir:
-                // Üst: 12(sol)..17 ..Bar.. 18..23(sağ)
-                // Alt: 11(sol)..6  ..Bar.. 5...0(sağ)
-                
-                // Bizim 0-5 br'de. 0 en sağda olmalı.
-                // 18-23 tr'de. 23 en sağda olmalı.
-                
-                // Flex container row olduğu için normalde:
-                // append 0, append 1 -> [0, 1] (0 solda)
-                // BR için 0 sağda olmalı -> reverse gerekli.
-                
-                if(targetId === 'tr' || targetId === 'tl') {
-                    // Normal sıra (Küçük solda)
-                    container.appendChild(pt); 
-                } else {
-                    // Alt taraf (rotate 180 oldugu için)
-                    // Görsel olarak 180 döndüğü için, DOM'a ilk eklenen SAĞDA (rotate yüzünden solda gibi) gözükür.
-                    // Burası karışık, en iyisi CSS ile row-reverse yapmak yerine JS ile prepend kullanalım veya style verelim.
-                    // Basit yöntem: Alt satırlar için row-reverse CSS ekleyelim.
-                    container.style.flexDirection = 'row-reverse';
-                    container.appendChild(pt);
-                }
+                // Append Logic: 
+                // Üstler (tl, tr): Düz sıra.
+                // Altlar (bl, br): Rotate 180 oldugu için DÜZ sıra eklersek görsel TERS olur.
+                // Tavla'da alt sıra Sağdan Sola gider (Görsel). 
+                // Flex row-reverse yaparsak: 0, 1, 2 -> Görsel: 2, 1, 0.
+                // Tavla'da sağ alt 0. 
+                if(tid==='br' || tid==='bl') box.style.flexDirection = 'row-reverse';
+                else box.style.flexDirection = 'row';
+
+                box.appendChild(p);
             }
             
             // Bar
-            const bw = document.getElementById('bar-white');
-            const bb = document.getElementById('bar-black');
-            bw.style.display = gameState.bar && gameState.bar.white > 0 ? 'block' : 'none';
-            bb.style.display = gameState.bar && gameState.bar.black > 0 ? 'block' : 'none';
-            bw.style.boxShadow = (selectedIndex === 99 && myColor==='white') ? '0 0 15px yellow' : '';
-            bb.style.boxShadow = (selectedIndex === 99 && myColor==='black') ? '0 0 15px yellow' : '';
+            const bw=document.getElementById('bar-white'), bb=document.getElementById('bar-black');
+            bw.style.display=gameState.bar.white>0?'block':'none';
+            bb.style.display=gameState.bar.black>0?'block':'none';
+            if(selectedIndex===99 && myColor==='white') bw.style.boxShadow='0 0 10px yellow'; else bw.style.boxShadow='';
+            if(selectedIndex===99 && myColor==='black') bb.style.boxShadow='0 0 10px yellow'; else bb.style.boxShadow='';
 
-            // Zarlar
-            const d1 = document.getElementById('die1');
-            const d2 = document.getElementById('die2');
-            if(gameState.dice && gameState.dice.length > 0) {
-                d1.style.display='flex'; d1.innerText = gameState.dice[0];
-                d2.style.display='flex'; d2.innerText = gameState.dice[1];
-            } else {
-                d1.style.display='none'; d2.style.display='none';
-            }
-            
-            // Mesaj
-            const msgEl = document.getElementById('game-msg');
-            msgEl.innerText = gameState.msg || "";
-            msgEl.style.display = gameState.msg ? 'block' : 'none';
+            // Dice
+            const d1=document.getElementById('die1'), d2=document.getElementById('die2');
+            if(gameState.dice.length){ d1.style.display='flex'; d1.innerText=gameState.dice[0]; d2.style.display='flex'; d2.innerText=gameState.dice[1]; }
+            else { d1.style.display='none'; d2.style.display='none'; }
+
+            // Msg
+            const m = document.getElementById('game-msg');
+            m.innerText = gameState.msg || "";
+            m.style.display = gameState.msg ? 'block' : 'none';
         }
 
         function updateUI() {
-            const ind = document.getElementById('turn-indicator');
             const isMe = gameState.turn === myColor;
-            ind.innerText = isMe ? "SIRA SENDE" : (gameState.turn === 'white' ? "SIRA BEYAZDA" : "SIRA SİYAHDA");
-            ind.style.color = isMe ? "#00e676" : "#aaa";
-
+            document.getElementById('turn-msg').innerText = isMe ? "SIRA SENDE" : (gameState.turn==='white'?"SIRA BEYAZDA":"SIRA SİYAHDA");
+            
             const btnRoll = document.getElementById('rollBtn');
             const btnPass = document.getElementById('passBtn');
+            btnRoll.style.display='none'; btnPass.style.display='none';
 
             if(isMe) {
-                if(!gameState.dice || gameState.dice.length === 0) {
-                    btnRoll.style.display = 'block';
-                    btnPass.style.display = 'none';
-                } else if(!gameState.moves || gameState.moves.length === 0) {
-                     btnRoll.style.display = 'none';
-                     btnPass.style.display = 'block'; // Hamle yoksa pas geç
-                } else {
-                    btnRoll.style.display = 'none';
-                    btnPass.style.display = 'none';
-                }
-            } else {
-                btnRoll.style.display = 'none';
-                btnPass.style.display = 'none';
+                if(!gameState.dice.length) btnRoll.style.display='block';
+                else if(!gameState.moves.length) btnPass.style.display='block';
             }
         }
 
-        // --- MANTIK ---
+        // --- GAME LOGIC ---
         function rollDice() {
-            const d1 = Math.floor(Math.random()*6)+1;
-            const d2 = Math.floor(Math.random()*6)+1;
-            let m = (d1===d2) ? [d1,d1,d1,d1] : [d1,d2];
-            
-            db.ref(`games/${roomId}`).update({
-                dice: [d1, d2],
-                moves: m,
-                msg: `${myColor === 'white' ? 'Beyaz' : 'Siyah'} attı: ${d1}-${d2}`
-            });
+            const d1=Math.floor(Math.random()*6)+1, d2=Math.floor(Math.random()*6)+1;
+            const m = (d1===d2)?[d1,d1,d1,d1]:[d1,d2];
+            db.ref(`games/${roomId}`).update({dice:[d1,d2], moves:m, msg:`${myColor==='white'?'Beyaz':'Siyah'} attı: ${d1}-${d2}`});
         }
 
-        function clickBar(c) {
-            if(gameState.turn !== myColor) return;
-            if(c !== myColor) return;
-            selectedIndex = 99;
-            renderBoard();
+        function handleBar(c) {
+            if(gameState.turn!==myColor || c!==myColor) return;
+            selectedIndex=99; render();
         }
 
-        function clickPoint(i) {
-            if(gameState.turn !== myColor) return;
-            if(!gameState.moves || gameState.moves.length === 0) return;
+        function handleClick(i) {
+            if(gameState.turn!==myColor || !gameState.moves.length) return;
+            if(gameState.bar[myColor]>0 && selectedIndex!==99) { alert("Önce bar!"); return; }
 
-            // Bar kontrolü
-            if(gameState.bar && gameState.bar[myColor] > 0 && selectedIndex !== 99) {
-                alert("Önce kırık taşını oynamalısın!");
-                return;
-            }
+            const c = gameState.board[i];
+            const isMine = (myColor==='white'&&c>0) || (myColor==='black'&&c<0);
 
-            // Seçim
-            const count = gameState.board[i];
-            const isMyPiece = (myColor==='white' && count>0) || (myColor==='black' && count<0);
-
-            if(selectedIndex === -1) {
-                if(isMyPiece) { selectedIndex = i; renderBoard(); }
+            if(selectedIndex===-1) {
+                if(isMine) { selectedIndex=i; render(); }
             } else {
-                // Hamle Yap
-                if(i === selectedIndex) { selectedIndex = -1; renderBoard(); return; }
-                
-                if(tryMove(selectedIndex, i)) {
-                    selectedIndex = -1;
-                } else {
-                    // Geçersizse ve kendi taşımsa seçimi değiştir
-                    if(isMyPiece) { selectedIndex = i; renderBoard(); }
-                }
+                if(i===selectedIndex) { selectedIndex=-1; render(); return; }
+                if(tryMove(selectedIndex, i)) selectedIndex=-1;
+                else if(isMine) { selectedIndex=i; render(); }
             }
         }
 
         function checkValid(to) {
-            if(selectedIndex === -1) return false;
+            if(selectedIndex===-1) return false;
             return canMove(selectedIndex, to);
         }
 
         function canMove(from, to) {
-            // Mesafe
-            let dist;
-            if(myColor === 'white') {
-                dist = (from === 99) ? (24 - to) : (from - to); // Beyaz 23->0 (Bar 24 sayılır)
-                // Düzeltme: Beyaz 23->0 gidiyor. Bar'dan girişi neresi? 24.
-                // Eğer Zar 1 ise -> 23'e iner.
-                // 24 - 23 = 1.
-            } else {
-                dist = (from === 99) ? (to + 1) : (to - from); // Siyah 0->23 (Bar -1 sayılır)
-            }
-
-            if(dist <= 0) return false;
-            if(!gameState.moves.includes(dist)) return false;
-
-            const target = gameState.board[to];
-            // Dolu mu? (Rakip kapı)
-            if(myColor === 'white' && target < -1) return false;
-            if(myColor === 'black' && target > 1) return false;
+            let d;
+            if(myColor==='white') d = (from===99) ? (24-to) : (from-to);
+            else d = (from===99) ? (to+1) : (to-from);
             
+            if(d<=0 || !gameState.moves.includes(d)) return false;
+            const t = gameState.board[to];
+            if(myColor==='white' && t<-1) return false;
+            if(myColor==='black' && t>1) return false;
             return true;
         }
 
         function tryMove(from, to) {
             if(!canMove(from, to)) return false;
-
-            let updates = JSON.parse(JSON.stringify(gameState)); // Deep Copy
+            let st = JSON.parse(JSON.stringify(gameState));
             
-            // Zarı düş
-            let dist = (myColor === 'white') ? ((from===99)?24-to:from-to) : ((from===99)?to+1:to-from);
-            const idx = updates.moves.indexOf(dist);
-            updates.moves.splice(idx, 1);
+            let d = (myColor==='white') ? ((from===99)?24-to:from-to) : ((from===99)?to+1:to-from);
+            st.moves.splice(st.moves.indexOf(d), 1);
 
-            // Taşı al
-            if(from === 99) updates.bar[myColor]--;
-            else {
-                if(myColor==='white') updates.board[from]--; else updates.board[from]++;
-            }
+            if(from===99) st.bar[myColor]--;
+            else { if(myColor==='white') st.board[from]--; else st.board[from]++; }
 
-            // Taşı koy (Kırma var mı?)
-            const t = updates.board[to];
-            const hit = (myColor==='white' && t===-1) || (myColor==='black' && t===1);
-
+            const t = st.board[to];
+            const hit = (myColor==='white'&&t===-1)||(myColor==='black'&&t===1);
             if(hit) {
-                if(myColor==='white') { updates.board[to]=1; updates.bar.black++; }
-                else { updates.board[to]=-1; updates.bar.white++; }
-                updates.msg = "KIRDI!";
+                if(myColor==='white') { st.board[to]=1; st.bar.black++; }
+                else { st.board[to]=-1; st.bar.white++; }
+                st.msg="KIRDI!";
             } else {
-                if(myColor==='white') updates.board[to]++; else updates.board[to]--;
+                if(myColor==='white') st.board[to]++; else st.board[to]--;
             }
 
-            // Tur Bitti mi?
-            if(updates.moves.length === 0) {
-                updates.turn = (myColor==='white') ? 'black' : 'white';
-                updates.dice = [];
-                updates.msg = "Sıra geçti";
-            } else {
-                updates.msg = "";
-            }
+            if(st.moves.length===0) {
+                st.turn = (myColor==='white')?'black':'white'; st.dice=[]; st.msg="Sıra geçti";
+            } else st.msg="";
 
-            db.ref(`games/${roomId}`).set(updates);
+            db.ref(`games/${roomId}`).set(st);
             return true;
         }
 
         function passTurn() {
-            db.ref(`games/${roomId}`).update({
-                turn: (myColor==='white')?'black':'white',
-                dice: [], moves: [], msg: "Pas geçildi"
-            });
+            db.ref(`games/${roomId}`).update({turn:myColor==='white'?'black':'white', dice:[], moves:[], msg:"Pas"});
         }
 
-        // --- SOHBET ---
-        function toggleChat() {
-            const p = document.getElementById('chat-panel');
-            p.style.display = (p.style.display === 'flex') ? 'none' : 'flex';
-        }
-        function listenChat() {
-            db.ref(`games/${roomId}/chat`).limitToLast(10).on('child_added', sn => {
-                const val = sn.val();
-                const d = document.createElement('div');
-                d.className = 'msg-row ' + (val.u === 'Sistem' ? 'msg-sys' : 'msg-user');
-                d.innerHTML = `<strong>${val.u}:</strong> ${val.t}`;
-                document.getElementById('chat-msgs').appendChild(d);
-            });
+        // --- CHAT ---
+        function toggleChat() { 
+            const p=document.getElementById('chat-panel'); p.style.display=p.style.display==='flex'?'none':'flex'; 
         }
         function sendChat() {
-            const i = document.getElementById('chatInp');
-            if(!i.value) return;
-            db.ref(`games/${roomId}/chat`).push({ u: (myColor==='white'?'Beyaz':'Siyah'), t: i.value });
-            i.value = '';
+            const i=document.getElementById('chatInput'); if(!i.value)return;
+            db.ref(`games/${roomId}/chat`).push({u:myColor==='white'?'Beyaz':'Siyah', t:i.value}); i.value='';
         }
-        function handleEnter(e) { if(e.key==='Enter') sendChat(); }
-
+        function listenChat(){
+            db.ref(`games/${roomId}/chat`).limitToLast(10).on('child_added', s=>{
+                const v=s.val();
+                const d=document.createElement('div'); d.className='msg-row';
+                d.innerHTML=`<b>${v.u}:</b> ${v.t}`;
+                document.getElementById('chat-box').appendChild(d);
+            });
+        }
     </script>
 </body>
 </html>
