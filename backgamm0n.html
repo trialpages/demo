@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Online Tavla</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --wood-dark: #3e2723;
+            --wood-light: #d7ccc8;
+            --board-bg: #5d4037;
+            --point-dark: #3e2723;
+            --point-light: #efebe9;
+            --checker-white: #f5f5f5;
+            --checker-black: #212121;
+            --accent: #ffb300;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* --- Giriş Ekranı --- */
+        #lobby {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { transform: scale(1.05); }
+        button:disabled { background: #555; cursor: not-allowed; }
+
+        /* --- Oyun Alanı --- */
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        #status-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            background: #333;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            box-sizing: border-box;
+        }
+
+        /* --- Tavla Tahtası --- */
+        .board {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: var(--board-bg);
+            border: 15px solid var(--wood-dark);
+            border-radius: 5px;
+            display: flex;
+            position: relative;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .half-board {
+            flex: 1;
+            display: flex;
+            border-left: 2px solid rgba(0,0,0,0.3);
+            border-right: 2px solid rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .middle-bar {
+            width: 40px;
+            background: var(--wood-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        /* --- Üçgenler (Points) --- */
+        .points-row {
+            position: absolute;
+            width: 100%;
+            height: 40%;
+            display: flex;
+        }
+        .top-row { top: 0; }
+        .bottom-row { bottom: 0; transform: rotate(180deg); }
+
+        .point {
+            flex: 1;
+            height: 100%;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Taşlar yukarıdan başlar (görsel ters çevrilince düzelir) */
+            padding-top: 5px;
+            position: relative;
+            cursor: pointer;
+        }
+        .point:nth-child(odd) { background-color: var(--point-dark); }
+        .point:nth-child(even) { background-color: var(--point-light); }
+        
+        /* Seçili Alan Vurgusu */
+        .point.valid-target { background-color: rgba(0, 255, 0, 0.3) !important; }
+        .point.selected { background-color: rgba(255, 215, 0, 0.4) !important; }
+
+        /* --- Pullar --- */
+        .checker {
+            width: 80%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            margin-bottom: 2px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 -4px 4px rgba(0,0,0,0.2), inset 0 4px 4px rgba(255,255,255,0.3);
+            z-index: 10;
+        }
+        .checker.white { background: var(--checker-white); border: 1px solid #ccc; }
+        .checker.black { background: var(--checker-black); border: 1px solid #000; }
+        
+        /* Kırık Pullar (Bar) */
+        .bar-slot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+
+        /* Toplanan Pullar (Off) */
+        .off-board {
+            position: absolute;
+            right: -50px;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: var(--wood-dark);
+            border-left: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Zarlar --- */
+        #dice-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 10px;
+            pointer-events: none; /* Tıklamayı engellemesin */
+        }
+        .die {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            border: 1px solid #999;
+        }
+        
+        #controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Dönüş Göstergesi */
+        .turn-indicator {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .turn-white { background: white; color: black; }
+        .turn-black { background: black; color: white; border: 1px solid white; }
+
+        @media (max-width: 600px) {
+            .board { border-width: 5px; }
+            .checker { width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="lobby">
+        <h2><i class="fas fa-dice"></i> Pro Online Tavla</h2>
+        <p>Arkadaşınla oynamak için bir oda ismi belirleyin.</p>
+        <input type="text" id="roomName" placeholder="Oda Adı (örn: masa1)">
+        <br>
+        <button onclick="joinGame('white')">Beyaz Olarak Katıl (Kur)</button>
+        <button onclick="joinGame('black')">Siyah Olarak Katıl</button>
+        <p id="msg" style="color: #ffb300; margin-top:10px; font-size: 0.9em;"></p>
+    </div>
+
+    <div id="game-container">
+        <div id="status-bar">
+            <span id="player-info">Oyuncu: ...</span>
+            <div id="turn-display" class="turn-indicator">Sıra: ...</div>
+        </div>
+
+        <div class="board">
+            <div class="half-board" id="left-board">
+                <div class="points-row top-row" id="top-left"></div> <div class="points-row bottom-row" id="bottom-left"></div> </div>
+
+            <div class="middle-bar">
+                <div id="bar-white" class="checker white bar-slot" style="display:none;" onclick="handleBarClick('white')"></div>
+                <div style="flex:1"></div>
+                <div id="bar-black" class="checker black bar-slot" style="display:none;" onclick="handleBarClick('black')"></div>
+            </div>
+
+            <div class="half-board" id="right-board">
+                <div class="points-row top-row" id="top-right"></div> <div class="points-row bottom-row" id="bottom-right"></div> <div id="dice-area">
+                    <div id="die1" class="die" style="display:none;"></div>
+                    <div id="die2" class="die" style="display:none;"></div>
+                </div>
+            </div>
+
+             <div class="off-board">
+                <div id="off-white" style="color:white; font-size:12px;">0</div>
+                <div id="off-black" style="color:black; background:white; padding:2px; font-size:12px; margin-top:auto;">0</div>
+            </div>
+        </div>
+
+        <div id="controls">
+            <button id="rollBtn" onclick="rollDice()">Zar At</button>
+            <button id="passBtn" onclick="passTurn()" style="display:none; background-color: #d32f2f; color:white;">Pas Geç</button>
+        </div>
+        <p id="game-message" style="color: #ccc; margin-top:5px; height: 20px;"></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // --- 1. FIREBASE KONFIGURASYONU ---
+        // Burayı kendi proje bilgilerinizle doldurun!
+        const firebaseConfig = {
+  apiKey: "AIzaSyARZya4A5Jf-Sb-DVEWWyuycYTBpbFugHE",
+  authDomain: "backgamm0n.firebaseapp.com",
+  databaseURL: "https://backgamm0n-default-rtdb.firebaseio.com",
+  projectId: "backgamm0n",
+  storageBucket: "backgamm0n.firebasestorage.app",
+  messagingSenderId: "554189551640",
+  appId: "1:554189551640:web:c500ada35668d650eeab6d"
+};
+
+        if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+            alert("Lütfen HTML kodundaki firebaseConfig bölümünü kendi bilgilerinizle güncelleyin!");
+        } else {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const db = firebase.database();
+
+        // --- OYUN DEĞİŞKENLERİ ---
+        let myColor = null; // 'white' veya 'black'
+        let roomId = null;
+        let gameState = {
+            board: [], // 0-23 arası noktalar. Pozitif: Beyaz, Negatif: Siyah
+            bar: { white: 0, black: 0 },
+            off: { white: 0, black: 0 },
+            turn: 'white',
+            dice: [],
+            movesLeft: [], // Kullanılabilir zar değerleri
+            lastMoveTime: 0
+        };
+
+        // --- BAŞLANGIÇ ---
+        function initBoard() {
+            // Standart Tavla Dizilimi
+            // Index 0: Sağ Üst (Beyaz için 24, Siyah için 1)
+            // Bizim mantık: 0-23 arası.
+            // Beyaz: 23'ten 0'a gider. (Ev: 0-5)
+            // Siyah: 0'dan 23'e gider. (Ev: 18-23)
+            
+            gameState.board = Array(24).fill(0);
+            
+            // Siyah Taşlar (Negatif) -> 0'dan 23'e gider
+            gameState.board[0] = -2;  // Siyahın başlangıcı
+            gameState.board[11] = -5;
+            gameState.board[16] = -3;
+            gameState.board[18] = -5;
+
+            // Beyaz Taşlar (Pozitif) -> 23'ten 0'a gider
+            gameState.board[23] = 2;  // Beyazın başlangıcı
+            gameState.board[12] = 5;
+            gameState.board[7] = 3;
+            gameState.board[5] = 5;
+
+            gameState.bar = { white: 0, black: 0 };
+            gameState.off = { white: 0, black: 0 };
+            gameState.turn = 'white';
+            gameState.dice = [];
+            gameState.movesLeft = [];
+        }
+
+        // --- FIREBASE İŞLEMLERİ ---
+        function joinGame(color) {
+            const roomName = document.getElementById('roomName').value.trim();
+            if (!roomName) return alert("Oda adı girin!");
+            
+            roomId = roomName;
+            myColor = color;
+            
+            document.getElementById('lobby').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('player-info').innerText = `Sen: ${color === 'white' ? 'Beyaz' : 'Siyah'}`;
+
+            const gameRef = db.ref('games/' + roomId);
+
+            gameRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    gameState = data;
+                    renderBoard();
+                    updateUI();
+                } else {
+                    // Oda yoksa oluştur
+                    if (color === 'white') {
+                        initBoard();
+                        saveGame();
+                    }
+                }
+            });
+        }
+
+        function saveGame() {
+            gameState.lastMoveTime = Date.now();
+            db.ref('games/' + roomId).set(gameState);
+        }
+
+        // --- OYUN MANTIĞI & RENDER ---
+        
+        function renderBoard() {
+            // DOM Temizliği
+            document.querySelectorAll('.point').forEach(p => { p.innerHTML = ''; p.className = 'point'; });
+            
+            // Pointleri Maplemek (Görsel yerleşim)
+            // Top Right: 0-5, Top Left: 6-11
+            // Bottom Left: 12-17, Bottom Right: 18-23
+            
+            const mapPointToId = (i) => {
+                if (i >= 0 && i <= 5) return { row: 'top-right', idx: 5-i }; // 0 sağ en uç
+                if (i >= 6 && i <= 11) return { row: 'top-left', idx: 11-i };
+                if (i >= 12 && i <= 17) return { row: 'bottom-left', idx: i-12 };
+                if (i >= 18 && i <= 23) return { row: 'bottom-right', idx: i-18 };
+            };
+
+            // HTML point elementlerini oluşturma (Sadece ilk renderda yapılabilir ama basitlik için her seferinde yapıyoruz)
+            const rows = ['top-right', 'top-left', 'bottom-left', 'bottom-right'];
+            rows.forEach(id => {
+                const el = document.getElementById(id);
+                if(el.children.length === 0) {
+                    for(let k=0; k<6; k++) {
+                        const div = document.createElement('div');
+                        div.className = 'point';
+                        // Doğru indexi bulmak için ters işlem
+                        let boardIndex;
+                        if(id === 'top-right') boardIndex = 5-k;
+                        if(id === 'top-left') boardIndex = 11-k;
+                        if(id === 'bottom-left') boardIndex = 12+k;
+                        if(id === 'bottom-right') boardIndex = 18+k;
+                        
+                        div.dataset.index = boardIndex;
+                        div.onclick = () => handlePointClick(boardIndex);
+                        
+                        // Renk
+                        if(id.includes('top')) {
+                            if((boardIndex % 2) === 0) div.classList.add('dark');
+                        } else {
+                            if((boardIndex % 2) !== 0) div.classList.add('dark');
+                        }
+                        el.appendChild(div);
+                    }
+                }
+            });
+
+            // Taşları Yerleştir
+            gameState.board.forEach((count, index) => {
+                const points = document.querySelectorAll('.point');
+                const targetPoint = Array.from(points).find(p => parseInt(p.dataset.index) === index);
+                
+                if (targetPoint) {
+                    // Mevcut taşları temizle
+                    targetPoint.innerHTML = ''; 
+                    
+                    const num = Math.abs(count);
+                    const type = count > 0 ? 'white' : 'black';
+                    
+                    // Görsel sıkışıklık olmasın diye max 5 taş göster, üzerine sayı yazılabilir ama şimdilik üst üste binme efekti yapalım
+                    const displayCount = num > 5 ? 5 : num;
+                    
+                    for(let i=0; i<displayCount; i++) {
+                        const checker = document.createElement('div');
+                        checker.className = `checker ${type}`;
+                        if(i === displayCount -1 && num > 5) {
+                            checker.innerText = num;
+                            checker.style.display = 'flex';
+                            checker.style.justifyContent = 'center';
+                            checker.style.alignItems = 'center';
+                            checker.style.fontSize = '12px';
+                        }
+                        targetPoint.appendChild(checker);
+                    }
+                }
+            });
+
+            // Bar Durumu
+            const barWhite = document.getElementById('bar-white');
+            const barBlack = document.getElementById('bar-black');
+            
+            barWhite.style.display = gameState.bar.white > 0 ? 'block' : 'none';
+            barWhite.innerText = gameState.bar.white > 1 ? gameState.bar.white : '';
+            
+            barBlack.style.display = gameState.bar.black > 0 ? 'block' : 'none';
+            barBlack.innerText = gameState.bar.black > 1 ? gameState.bar.black : '';
+
+            // Toplanan Taşlar
+            document.getElementById('off-white').innerText = gameState.off.white;
+            document.getElementById('off-black').innerText = gameState.off.black;
+
+            // Zar Görünümü
+            const d1 = document.getElementById('die1');
+            const d2 = document.getElementById('die2');
+            if(gameState.dice.length > 0) {
+                d1.style.display = 'flex'; d1.innerText = gameState.dice[0];
+                d2.style.display = 'flex'; d2.innerText = gameState.dice[1];
+                // Kullanılan zarları gri yap
+                if(gameState.movesLeft.length < gameState.dice.length) {
+                    // Basit bir görselleştirme: Kaç tane kullanıldıysa o kadarını soluk yap
+                    // Tam mantık karmaşık, burada basit tutuyoruz.
+                }
+            } else {
+                d1.style.display = 'none';
+                d2.style.display = 'none';
+            }
+        }
+
+        function updateUI() {
+            const turnDisplay = document.getElementById('turn-display');
+            turnDisplay.innerText = `Sıra: ${gameState.turn === 'white' ? 'BEYAZ' : 'SİYAH'}`;
+            turnDisplay.className = `turn-indicator ${gameState.turn === 'white' ? 'turn-white' : 'turn-black'}`;
+
+            const rollBtn = document.getElementById('rollBtn');
+            const passBtn = document.getElementById('passBtn');
+            
+            // Sadece sırası gelen ve zarı atmamışsa zar butonunu göster
+            if(gameState.turn === myColor && gameState.dice.length === 0) {
+                rollBtn.disabled = false;
+                rollBtn.style.display = 'inline-block';
+                passBtn.style.display = 'none';
+            } else if (gameState.turn === myColor && gameState.movesLeft.length > 0) {
+                rollBtn.style.display = 'none';
+                passBtn.style.display = 'inline-block'; // Hamle yapamazsa pas geçmek için
+            } else {
+                rollBtn.disabled = true;
+                rollBtn.style.display = 'none';
+                passBtn.style.display = 'none';
+            }
+        }
+
+        // --- HAMLE MEKANİZMASI ---
+        
+        let selectedIndex = -1; // -1: yok, 99: bar
+
+        function rollDice() {
+            if(gameState.turn !== myColor) return;
+            
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            
+            gameState.dice = [d1, d2];
+            gameState.movesLeft = (d1 === d2) ? [d1, d1, d1, d1] : [d1, d2];
+            
+            saveGame();
+        }
+
+        function passTurn() {
+             // Hamle hakkı kalmadıysa veya yapılamıyorsa sıra devret
+             gameState.turn = gameState.turn === 'white' ? 'black' : 'white';
+             gameState.dice = [];
+             gameState.movesLeft = [];
+             selectedIndex = -1;
+             saveGame();
+        }
+
+        // Bar'daki taşa tıklama
+        function handleBarClick(color) {
+            if(gameState.turn !== myColor) return;
+            if(color !== myColor) return;
+            if(gameState.bar[color] <= 0) return;
+            if(gameState.movesLeft.length === 0) return;
+
+            selectedIndex = 99; // Bar seçildi
+            highlightValidMoves(99);
+        }
+
+        function handlePointClick(index) {
+            if(gameState.turn !== myColor) return;
+            if(gameState.movesLeft.length === 0) return;
+
+            // Eğer barda taş varsa, önce onu oynamak zorundasın
+            if(gameState.bar[myColor] > 0 && selectedIndex !== 99) {
+                document.getElementById('game-message').innerText = "Önce kırık taşını oyuna sokmalısın!";
+                return;
+            }
+
+            // Seçim yapma
+            const count = gameState.board[index];
+            const isMyPiece = (myColor === 'white' && count > 0) || (myColor === 'black' && count < 0);
+
+            // Eğer zaten seçili bir yer varsa ve burası geçerli bir hedefse -> OYNA
+            if (selectedIndex !== -1) {
+                if (isValidMove(selectedIndex, index)) {
+                    makeMove(selectedIndex, index);
+                    selectedIndex = -1;
+                    renderBoard(); // Seçimleri temizle
+                    return;
+                }
+            }
+
+            // Yeni seçim
+            if (isMyPiece) {
+                selectedIndex = index;
+                renderBoard(); // Önce temizle
+                // Tekrar seçili yap
+                const points = document.querySelectorAll('.point');
+                const p = Array.from(points).find(el => parseInt(el.dataset.index) === index);
+                if(p) p.classList.add('selected');
+                
+                highlightValidMoves(index);
+            }
+        }
+
+        function highlightValidMoves(fromIndex) {
+            const points = document.querySelectorAll('.point');
+            
+            gameState.movesLeft.forEach(die => {
+                let targetIndex;
+                if (myColor === 'white') {
+                    // Beyaz: 23 -> 0 yönünde. Bar'dan giriş 23, 22...
+                    if(fromIndex === 99) targetIndex = 24 - die; 
+                    else targetIndex = fromIndex - die;
+                } else {
+                    // Siyah: 0 -> 23 yönünde. Bar'dan giriş 0, 1...
+                    if(fromIndex === 99) targetIndex = die - 1;
+                    else targetIndex = fromIndex + die;
+                }
+
+                // Hedef tahta sınırları içinde mi?
+                if (targetIndex >= 0 && targetIndex <= 23) {
+                    // Kurallara uygun mu?
+                    if (checkRule(targetIndex)) {
+                        const p = Array.from(points).find(el => parseInt(el.dataset.index) === targetIndex);
+                        if(p) p.classList.add('valid-target');
+                    }
+                }
+                
+                // Toplama durumu (Bearing off)
+                // Basit kontrol: Tüm taşlar evde mi? (Bu detay kodu çok uzatır, basitleştirilmiş toplama)
+                // Şimdilik sadece tahta içi hareket ve kırma eklendi.
+            });
+        }
+        
+        function checkRule(targetIndex) {
+            const count = gameState.board[targetIndex];
+            // Hedef boş mu?
+            if (count === 0) return true;
+            // Hedef benim taşım mı?
+            if ((myColor === 'white' && count > 0) || (myColor === 'black' && count < 0)) return true;
+            // Hedef rakip ama sadece 1 taş mı (Kırma)?
+            if (Math.abs(count) === 1) return true;
+            
+            // Hedef rakip ve kapı yapmış (2+ taş)
+            return false;
+        }
+
+        function isValidMove(from, to) {
+            // Basit doğrulama: Hareket mesafesi zarlarda var mı?
+            let distance;
+            if(myColor === 'white') {
+                if(from === 99) distance = 24 - to;
+                else distance = from - to;
+            } else {
+                if(from === 99) distance = to + 1; // 0 indexi 1. zardır
+                else distance = to - from;
+            }
+            
+            // Bu mesafe kullanılabilecek zarlar arasında var mı?
+            if(gameState.movesLeft.includes(distance)) {
+                return checkRule(to);
+            }
+            return false;
+        }
+
+        function makeMove(from, to) {
+            // 1. Zarı düş
+            let distance;
+            if(myColor === 'white') {
+                distance = from === 99 ? 24 - to : from - to;
+            } else {
+                distance = from === 99 ? to + 1 : to - from;
+            }
+            
+            const dieIndex = gameState.movesLeft.indexOf(distance);
+            if(dieIndex > -1) {
+                gameState.movesLeft.splice(dieIndex, 1);
+            }
+
+            // 2. Taşı kaldır
+            if(from === 99) {
+                gameState.bar[myColor]--;
+            } else {
+                if(myColor === 'white') gameState.board[from]--;
+                else gameState.board[from]++;
+            }
+
+            // 3. Taşı koy (veya kır)
+            const targetCount = gameState.board[to];
+            
+            // Kırma kontrolü
+            if(targetCount !== 0 && ((myColor === 'white' && targetCount === -1) || (myColor === 'black' && targetCount === 1))) {
+                // Rakibi kır
+                if(myColor === 'white') {
+                    gameState.board[to] = 1; // Benim taşım
+                    gameState.bar.black++; // Rakip bara
+                } else {
+                    gameState.board[to] = -1;
+                    gameState.bar.white++;
+                }
+                showMessage("Kırdın!");
+            } else {
+                // Normal ekleme
+                if(myColor === 'white') gameState.board[to]++;
+                else gameState.board[to]--;
+            }
+
+            // 4. Sıra kontrolü
+            if(gameState.movesLeft.length === 0) {
+                gameState.turn = gameState.turn === 'white' ? 'black' : 'white';
+                gameState.dice = [];
+            }
+
+            saveGame();
+        }
+        
+        function showMessage(msg) {
+            const el = document.getElementById('game-message');
+            el.innerText = msg;
+            setTimeout(() => el.innerText = '', 2000);
+        }
+
+    </script>
+</body>
+</html>
