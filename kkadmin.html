@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yönetici Paneli - Keşf-i Kadim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ADMIN CSS */
+        :root {
+            --admin-bg: #f0f2f5;
+            --admin-header: #2c3e50;
+            --gold-color: #d4af37;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--admin-bg); margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Minimal Navbar */
+        .admin-navbar {
+            width: 100%; height: 60px; background: var(--admin-header); color: #fff; padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;
+            box-sizing: border-box; position: sticky; top: 0; z-index: 1000;
+        }
+        .admin-brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: bold; color: var(--gold-color); }
+        .admin-logout-btn {
+            background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px;
+            font-size: 0.8rem; border-radius: 4px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 8px;
+        }
+        .admin-logout-btn:hover { background-color: #c0392b; border-color: #c0392b; }
+
+        /* Container */
+        .admin-container { width: 100%; max-width: 800px; margin: 30px auto; padding: 0 20px; box-sizing: border-box; }
+
+        /* Sekmeler */
+        .tabs { display: flex; background: #fff; border-radius: 8px 8px 0 0; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .tab-btn {
+            flex: 1; padding: 15px; border: none; background: #f8f9fa; color: #7f8c8d;
+            font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+            transition: all 0.3s; border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active { background: #fff; color: #2c3e50; border-bottom-color: var(--gold-color); }
+        .tab-btn:hover:not(.active) { background: #ecf0f1; }
+        
+        .tab-content { display: none; background: #fff; padding: 25px; border-radius: 0 0 8px 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Formlar */
+        h3 { margin-top: 0; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; color: #2c3e50; font-size: 1.2rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #34495e; font-size: 0.9rem; }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid #dfe6e9; border-radius: 6px;
+            font-size: 1rem; font-family: 'Inter', sans-serif; transition: border-color 0.3s;
+            box-sizing: border-box; background: #fdfdfd;
+        }
+        .form-control:focus { outline: none; border-color: var(--gold-color); background: #fff; }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+        
+        .admin-submit-btn {
+            width: 100%; padding: 14px; background-color: #2c3e50; color: #fff; border: none;
+            border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: background 0.3s; margin-top: 10px;
+        }
+        .admin-submit-btn:hover { background-color: var(--gold-color); }
+
+        /* Onay Listesi */
+        .pending-list { list-style: none; padding: 0; margin: 0; }
+        .pending-item {
+            background: #fff; border: 1px solid #e1e1e1; padding: 15px; border-radius: 8px;
+            margin-bottom: 15px; position: relative; border-left: 4px solid #f39c12;
+        }
+        .pending-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.85rem; color: #7f8c8d; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+        .pending-text { display: block; font-style: italic; color: #555; background: #fafafa; padding: 12px; border-radius: 4px; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.5; }
+        
+        .action-buttons { display: flex; gap: 10px; }
+        .action-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; color: #fff; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .btn-approve { background: #27ae60; }
+        .btn-edit { background: #3498db; }
+        .btn-reject { background: #e74c3c; }
+
+        /* Login Ekranı */
+        #login-section { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: #f0f2f5; display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box; }
+        .login-card { background: #fff; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .login-card h2 { margin-top: 0; color: #2c3e50; margin-bottom: 25px; }
+
+        @media (max-width: 600px) {
+            .admin-container { padding: 10px; margin-top: 10px; }
+            .tab-btn { font-size: 0.85rem; padding: 12px 5px; }
+            .action-buttons { flex-direction: column; }
+            .admin-navbar { padding: 0 15px; }
+            .admin-logout-btn span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="login-section">
+    <div class="login-card">
+        <h2><i class="fa-solid fa-feather-pointed"></i> Yönetici Girişi</h2>
+        <form id="loginForm">
+            <div class="form-group" style="text-align:left;">
+                <label>E-Posta</label>
+                <input type="email" id="email" class="form-control" required placeholder="admin@example.com">
+            </div>
+            <div class="form-group" style="text-align:left;">
+                <label>Şifre</label>
+                <input type="password" id="password" class="form-control" required placeholder="••••••">
+            </div>
+            <button type="submit" class="admin-submit-btn">Giriş Yap</button>
+            <div id="loginStatus" style="margin-top:15px; color:#e74c3c; font-size:0.9rem;"></div>
+        </form>
+    </div>
+</div>
+
+<div id="dashboard-section" style="display:none; width:100%;">
+    
+    <nav class="admin-navbar">
+        <div class="admin-brand">Keşf-i Kadim Panel</div>
+        <button class="admin-logout-btn" onclick="window.logout()">
+            <i class="fa-solid fa-power-off"></i> <span>Çıkış</span>
+        </button>
+    </nav>
+
+    <div class="admin-container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'tab-comments')">
+                <i class="fa-regular fa-comments"></i> Onay Bekleyenler
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'tab-add-poem')">
+                <i class="fa-solid fa-pen-nib"></i> Yeni Şiir Ekle
+            </button>
+        </div>
+
+        <div id="tab-comments" class="tab-content active">
+            <h3>Bekleyen Yorumlar</h3>
+            <ul id="pendingCommentsList" class="pending-list">
+                <li style="text-align:center; color:#999; padding:20px;">Yükleniyor...</li>
+            </ul>
+        </div>
+
+        <div id="tab-add-poem" class="tab-content">
+            <h3>Manzume Bilgileri</h3>
+            <form id="poemForm">
+                <div class="form-group">
+                    <label>Şiir Başlığı</label>
+                    <input type="text" id="title" class="form-control" required placeholder="Örn: Sükût-u Hayal">
+                </div>
+
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <input type="date" id="date" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Şiir Metni (Türkçe)</label>
+                    <textarea id="text" class="form-control" required placeholder="Şiir mısralarını buraya girin..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Arapça Metin <span style="font-weight:normal; font-size:0.8em; color:#999;">(Opsiyonel)</span></label>
+                    <textarea id="arabicText" class="form-control" placeholder="Varsa arapçasını buraya girin..." dir="rtl"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Hikayesi <span style="font-weight:normal; font-size:0.8em; color:#999;">(Opsiyonel)</span></label>
+                    <textarea id="story" class="form-control" placeholder="Bu şiirin yazılma hikayesi nedir?"></textarea>
+                </div>
+
+                <button type="submit" class="admin-submit-btn">Yayınla</button>
+                <div id="status" style="margin-top:15px; text-align:center; font-weight:600;"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where, doc, updateDoc, deleteDoc, collectionGroup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // YENİ CONFIG
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-4F9cNNF9CM_1gQc2qZdm0BqhHRGtS7c",
+      authDomain: "kesfi-kadim.firebaseapp.com",
+      projectId: "kesfi-kadim",
+      storageBucket: "kesfi-kadim.firebasestorage.app",
+      messagingSenderId: "984931459491",
+      appId: "1:984931459491:web:cf75e7e310e6a8e421fa16",
+      measurementId: "G-L6YBVQEVQB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Oturum Kontrolü
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            loadPendingComments();
+        } else {
+            document.getElementById('login-section').style.display = 'flex';
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('loginForm').reset(); // Form Reset
+        }
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value);
+        } catch (error) { document.getElementById('loginStatus').innerText = "Giriş Hatası: Bilgileri kontrol edin."; }
+    });
+
+    window.openTab = (evt, tabName) => {
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    };
+
+    async function loadPendingComments() {
+        const list = document.getElementById('pendingCommentsList');
+        const q = query(collectionGroup(db, 'comments'), where('isApproved', '==', false));
+        try {
+            const snapshot = await getDocs(q);
+            list.innerHTML = '';
+            if(snapshot.empty) { list.innerHTML = '<li style="text-align:center; padding:10px;">Onay bekleyen yorum yok.</li>'; return; }
+            
+            snapshot.forEach(d => {
+                const data = d.data();
+                const poemId = d.ref.parent.parent.id;
+                const commentId = d.id;
+                const safeText = data.text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
+                const li = document.createElement('li');
+                li.className = 'pending-item';
+                li.innerHTML = `
+                    <div class="pending-meta"><strong>${data.author}</strong></div>
+                    <span class="pending-text" id="text-${commentId}">${data.text}</span>
+                    <div class="action-buttons">
+                        <button class="action-btn btn-approve" onclick="window.approveComment('${poemId}', '${commentId}')"><i class="fa-solid fa-check"></i> Onayla</button>
+                        <button class="action-btn btn-edit" onclick="window.editComment('${poemId}', '${commentId}', '${safeText}')"><i class="fa-solid fa-pen"></i> Düzenle</button>
+                        <button class="action-btn btn-reject" onclick="window.rejectComment('${poemId}', '${commentId}')"><i class="fa-solid fa-trash"></i> Sil</button>
+                    </div>`;
+                list.appendChild(li);
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    document.getElementById('poemForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        const status = document.getElementById('status');
+        btn.disabled = true; btn.innerText = "Kaydediliyor...";
+        try {
+            await addDoc(collection(db, "poems"), {
+                title: document.getElementById('title').value,
+                date: document.getElementById('date').value,
+                text: document.getElementById('text').value,
+                arabicText: document.getElementById('arabicText').value,
+                story: document.getElementById('story').value,
+                createdAt: new Date()
+            });
+            status.style.color = "green"; status.innerText = "Yayınlandı!"; e.target.reset();
+        } catch (e) { status.style.color = "red"; status.innerText = "Hata oluştu."; }
+        finally { btn.disabled = false; btn.innerText = "Yayınla"; }
+    });
+
+    window.approveComment = async (poemId, commentId) => {
+        if(!confirm("Yorum yayınlansın mı?")) return;
+        await updateDoc(doc(db, `poems/${poemId}/comments/${commentId}`), { isApproved: true });
+        loadPendingComments();
+    };
+
+    window.rejectComment = async (poemId, commentId) => {
+        if(!confirm("Yorum silinsin mi?")) return;
+        await deleteDoc(doc(db, `poems/${poemId}/comments/${commentId}`));
+        loadPendingComments();
+    };
+
+    window.editComment = async (poemId, commentId, currentText) => {
+        const newText = prompt("Yorumu düzenle:", currentText);
+        if(newText !== null && newText !== currentText) {
+            await updateDoc(doc(db, `poems/${poemId}/comments/${commentId}`), { text: newText });
+            loadPendingComments();
+        }
+    };
+    
+    window.logout = () => signOut(auth);
+</script>
+
+</body>
+</html>
