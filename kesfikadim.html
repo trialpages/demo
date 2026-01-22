@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Keşf-i Kadim fi Nazm-ı Fehîm</title>
+
+    <meta name="description" content="Keşf-i Kadim fi Nazm-ı Fehîm. Fatih Küçüktiryaki Divanı'ndan manzum ibareler ve şiirler.">
+    <meta name="keywords" content="Fatih Küçüktiryaki, şiir, divan şiiri, manzum, aruz, hece, tasavvuf, edebiyat, eski şiir">
+    <meta name="author" content="Fatih Küçüktiryaki">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- GENEL AYARLAR --- */
+        :root {
+            --bg-color: #f4f1ea;
+            --text-color: #2c2c2c;
+            --accent-color: #8e44ad;
+            --gold-color: #d4af37;
+            --card-bg: #ffffff;
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            margin: 0; padding: 0; line-height: 1.7; overflow-x: hidden;
+        }
+
+        /* --- BAŞLIK (HEADER) --- */
+        .public-header {
+            position: relative; height: 65vh; min-height: 400px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; color: #fff; padding: 20px;
+            /* YENİ GÖRSEL */
+            background-image: url('http://www.kalemguzeli.org/images/upload/MHakanOzsarac_001.jpg');
+            background-size: cover; background-position: center top;
+        }
+        /* Görsel üzerine karanlık filtre */
+        .public-header::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1; }
+        .public-header .content { position: relative; z-index: 2; width: 100%; max-width: 900px; }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; font-size: 3.2rem; margin: 0; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6); letter-spacing: 1px;
+        }
+        .tagline { 
+            font-family: 'Playfair Display', serif; font-style: italic;
+            color: rgba(255,255,255,0.95); font-size: 1.3rem; margin-top: 20px; 
+            font-weight: 400; letter-spacing: 0.5px;
+        }
+        .author-link { 
+            font-family: 'Dancing Script', cursive; font-size: 1.6rem; color: var(--gold-color); 
+            text-decoration: none; margin-left: 10px; border-bottom: 1px dotted transparent; transition: all 0.3s;
+        }
+        .author-link:hover { border-bottom-color: var(--gold-color); color: #fff; }
+
+        /* --- KART VE İÇERİK --- */
+        .container { max-width: 800px; margin: -60px auto 0; padding: 0 20px 60px; position: relative; z-index: 3; }
+        .poem-card { 
+            background: var(--card-bg); padding: 50px 40px; margin-bottom: 60px; 
+            border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        }
+        .poem-date { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #999; text-align: center; margin-bottom: 15px; }
+        .poem-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; text-align: center; margin-bottom: 30px; color: #111; }
+        .poem-content { font-family: 'Playfair Display', serif; font-size: 1.1rem; white-space: pre-wrap; text-align: center; margin-bottom: 30px; color: #333; line-height: 1.9; }
+        .poem-content.dense-text { font-size: 0.95rem !important; line-height: 1.7; }
+        
+        .arabic-section { 
+            background-color: #fafafa; border-right: 3px solid var(--gold-color); 
+            padding: 20px; margin: 25px 0; text-align: right; direction: rtl; 
+            font-family: 'Amiri', serif; font-size: 1.5rem; color: #444; 
+        }
+
+        /* Hikaye Butonu */
+        .story-btn { 
+            background: none; border: 1px dashed #ddd; width: 100%; padding: 15px; 
+            color: #777; font-family: 'Inter', sans-serif; font-size: 0.9rem; 
+            text-align: center; margin-top: 20px; cursor: pointer; transition: all 0.3s;
+        }
+        .story-btn:hover { border-color: var(--gold-color); color: var(--gold-color); }
+        .story-content { 
+            display: none; padding: 25px; background: #f9f9f9; font-size: 0.95rem; 
+            color: #555; margin-top: 10px; border-radius: 4px; font-style: italic; 
+            border-left: 3px solid #ccc; 
+        }
+
+        /* Paylaşım Butonları */
+        .share-container { display: flex; justify-content: center; gap: 15px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+        .share-btn { 
+            width: 45px; height: 45px; border-radius: 50%; display: flex; 
+            align-items: center; justify-content: center; text-decoration: none; 
+            color: white; font-size: 1.2rem; border: none; cursor: pointer; transition: transform 0.3s;
+        }
+        .share-btn:hover { transform: translateY(-3px); }
+        .btn-x { background-color: #000; }
+        .btn-fb { background-color: #1877f2; }
+        .btn-native { background-color: var(--accent-color); }
+        .x-icon { width: 18px; height: 18px; fill: white; }
+
+        /* Yorum Alanı (Inline) */
+        .inline-comments-area { margin-top: 40px; border-top: 1px solid #f0f0f0; padding-top: 25px; }
+        .comments-header { font-size: 0.9rem; font-weight: 600; color: #ccc; text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        
+        .comment-list { list-style: none; padding: 0; margin: 0; }
+        .comment-item { padding: 15px 0; border-bottom: 1px solid #f9f9f9; font-size: 0.95rem; }
+        .comment-item:last-child { border-bottom: none; }
+        .comment-author { font-weight: 600; color: #333; font-family: 'Playfair Display', serif; display: block; margin-bottom: 4px; }
+        .comment-text { color: #555; line-height: 1.6; font-weight: 300; }
+        .comment-date { font-size: 0.75rem; color: #aaa; display: block; margin-top: 6px; }
+        
+        .show-more-link { display: block; text-align: center; margin-top: 10px; color: var(--gold-color); cursor: pointer; font-size: 0.85rem; text-decoration: underline; background: none; border: none; width: 100%; }
+
+        .add-comment-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; margin-top: 20px; padding: 12px;
+            background: #fdfdfd; border: 1px dashed #ddd; color: #666;
+            border-radius: 4px; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.3s;
+        }
+        .add-comment-btn:hover { border-color: var(--gold-color); color: var(--gold-color); background: #fff; }
+
+        /* Diğer Bileşenler */
+        #backToTopBtn {
+            position: fixed; bottom: 30px; right: 30px; z-index: 1000; width: 50px; height: 50px; background-color: var(--text-color);
+            color: var(--gold-color); border: 1px solid var(--gold-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.4s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 1.2rem; cursor: pointer;
+        }
+        #backToTopBtn.show { opacity: 1; visibility: visible; }
+        #backToTopBtn:hover { background-color: var(--gold-color); color: #fff; transform: translateY(-5px); }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); z-index: 3000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: #fff; width: 90%; max-width: 450px; border-radius: 8px; padding: 30px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        .close-modal-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; background: none; border: none; color: #999; cursor: pointer; }
+        .close-modal-btn:hover { color: var(--gold-color); }
+        .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; text-align: center; margin: 0 0 20px 0; color: #333; }
+        
+        .form-label { font-size: 0.85rem; font-weight: 600; color: #555; margin-bottom: 5px; display: block; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 0.9rem; margin-bottom: 15px; box-sizing: border-box; }
+        .form-input:focus { border-color: var(--gold-color); outline: none; }
+        .submit-btn { width: 100%; padding: 12px; background: #2c2c2c; color: #fff; border: none; border-radius: 4px; font-size: 0.95rem; cursor: pointer; transition: background 0.3s; }
+        .submit-btn:hover { background: var(--gold-color); }
+
+        /* Mobil Uyum */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; white-space: normal; }
+            .tagline { font-size: 1rem; }
+            .poem-card { padding: 30px 20px; }
+            .poem-title { font-size: 1.5rem; }
+            .poem-content.dense-text { font-size: 0.9rem !important; line-height: 1.6; }
+        }
+    </style>
+</head>
+<body>
+
+<button id="backToTopBtn" onclick="scrollToTop()" title="Başa Dön">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<header class="public-header">
+    <div class="content">
+        <h1>Keşf-i Kadim fi Nazm-ı Fehîm</h1>
+        <div class="tagline">
+            <span>kadîmin keşfinden manzum ibareye</span>
+            <span style="opacity:0.6; margin: 0 10px;">|</span>
+            <a href="https://www.facebook.com/share/1D7T86tpGP" target="_blank" class="author-link">Fatih Küçüktiryaki Divanı</a>
+        </div>
+    </div>
+</header>
+
+<div class="container" id="poems-container">
+    <p style="text-align: center; color: #999; margin-top: 50px;">Yükleniyor...</p>
+</div>
+
+<div id="commentModal" class="modal-overlay">
+    <div class="modal-content">
+        <button class="close-modal-btn" onclick="closeModal()">&times;</button>
+        <h3 class="modal-title">Yorum Ekle</h3>
+        <p style="font-size:0.85rem; color:#777; text-align:center; margin-bottom:20px;" id="modalPoemTitle"></p>
+        
+        <form id="modalCommentForm">
+            <input type="hidden" id="currentPoemId">
+            
+            <label class="form-label">Ad Soyad</label>
+            <input type="text" class="form-input" id="commentName" required maxlength="40" placeholder="Adınız">
+            
+            <label class="form-label">Yorumunuz</label>
+            <textarea class="form-input" id="commentText" rows="4" required placeholder="Düşünceleriniz..."></textarea>
+            
+            <button type="submit" class="submit-btn">Gönder</button>
+            <div id="modalMsg" style="color:green; font-size:0.85rem; text-align:center; margin-top:10px; display:none;">
+                Yorumunuz onaya gönderildi.
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // YENİ CONFIG BİLGİLERİ
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-4F9cNNF9CM_1gQc2qZdm0BqhHRGtS7c",
+      authDomain: "kesfi-kadim.firebaseapp.com",
+      projectId: "kesfi-kadim",
+      storageBucket: "kesfi-kadim.firebasestorage.app",
+      messagingSenderId: "984931459491",
+      appId: "1:984931459491:web:cf75e7e310e6a8e421fa16",
+      measurementId: "G-L6YBVQEVQB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadPoems() {
+        const container = document.getElementById('poems-container');
+        
+        const q = query(collection(db, "poems"), orderBy("date", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        container.innerHTML = '';
+
+        querySnapshot.forEach((docSnapshot) => {
+            const data = docSnapshot.data();
+            const docId = docSnapshot.id;
+            const date = new Date(data.date).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Satır kontrolü
+            const lines = data.text.split('\n');
+            let maxLineLength = 0;
+            lines.forEach(line => { if (line.length > maxLineLength) maxLineLength = line.length; });
+            const conditionalClass = maxLineLength > 45 ? 'dense-text' : '';
+
+            // Tırnak sorunu düzeltmesi
+            const safeTitle = data.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            const arabicHtml = data.arabicText ? `<div class="arabic-section">${data.arabicText.replace(/\n/g, '<br>')}</div>` : '';
+            const storyHtml = data.story ? `
+                <button class="story-btn" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                    <i class="fa-solid fa-feather-pointed"></i> Hikayesini Oku
+                </button>
+                <div class="story-content">${data.story}</div>
+            ` : '';
+
+            const currentUrl = encodeURIComponent(window.location.href);
+            const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${currentUrl}`;
+            
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'poem-card';
+            cardDiv.id = `poem-${docId}`;
+            cardDiv.innerHTML = `
+                <div class="poem-date">${date}</div>
+                <h2 class="poem-title">${data.title}</h2>
+                ${arabicHtml}
+                <div class="poem-content ${conditionalClass}">${data.text}</div>
+                ${storyHtml}
+
+                <div class="share-container">
+                    <a href="${xUrl}" target="_blank" class="share-btn btn-x" title="X'te Paylaş">
+                         <svg class="x-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                    </a>
+                    <button onclick="window.shareFacebook('${currentUrl}')" class="share-btn btn-fb" title="Facebook'ta Paylaş">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </button>
+                    <button onclick="window.nativeShare('${safeTitle}', \`${data.text.replace(/`/g, "\\`")}\`)" class="share-btn btn-native" title="Gönder">
+                        <i class="fa-solid fa-share-nodes"></i>
+                    </button>
+                </div>
+
+                <div class="inline-comments-area">
+                    <div id="comments-list-${docId}"></div>
+                    <button class="add-comment-btn" onclick="window.openCommentModal('${docId}', '${safeTitle}')">
+                        <i class="fa-regular fa-comment-dots"></i> Yorum Ekle
+                    </button>
+                </div>
+            `;
+            container.appendChild(cardDiv);
+            loadComments(docId);
+        });
+    }
+
+    async function loadComments(poemId) {
+        const listDiv = document.getElementById(`comments-list-${poemId}`);
+        try {
+            const q = query(
+                collection(db, `poems/${poemId}/comments`), 
+                where("isApproved", "==", true),
+                orderBy("createdAt", "desc")
+            );
+            const snapshot = await getDocs(q);
+
+            if(snapshot.empty) return;
+
+            listDiv.innerHTML = '<div class="comments-header">Yorumlar</div>';
+            const ul = document.createElement('ul');
+            ul.className = 'comment-list';
+            
+            const comments = [];
+            snapshot.forEach(d => comments.push(d.data()));
+
+            comments.forEach((c, index) => {
+                const li = document.createElement('li');
+                li.className = 'comment-item';
+                if(index >= 2) li.style.display = 'none';
+                const dateStr = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : '';
+                li.innerHTML = `
+                    <span class="comment-author">${c.author}</span>
+                    <span class="comment-text">${c.text}</span>
+                    <span class="comment-date">${dateStr}</span>
+                `;
+                ul.appendChild(li);
+            });
+
+            listDiv.appendChild(ul);
+            if(comments.length > 2) {
+                const showBtn = document.createElement('button');
+                showBtn.className = 'show-more-link';
+                showBtn.innerText = `Tüm yorumları göster (${comments.length})`;
+                showBtn.onclick = function() {
+                    ul.querySelectorAll('li').forEach(li => li.style.display = 'block');
+                    this.style.display = 'none';
+                };
+                listDiv.appendChild(showBtn);
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // Modal İşlemleri
+    window.openCommentModal = (poemId, title) => {
+        document.getElementById('currentPoemId').value = poemId;
+        document.getElementById('modalPoemTitle').innerText = `"${title}"`;
+        document.getElementById('commentModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeModal = () => {
+        document.getElementById('commentModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        document.getElementById('modalMsg').style.display = 'none';
+        document.getElementById('modalCommentForm').reset();
+    };
+
+    document.getElementById('modalCommentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const poemId = document.getElementById('currentPoemId').value;
+        const name = document.getElementById('commentName').value;
+        const text = document.getElementById('commentText').value;
+        const btn = e.target.querySelector('button');
+        const msg = document.getElementById('modalMsg');
+
+        btn.disabled = true; btn.innerText = "Gönderiliyor...";
+        try {
+            await addDoc(collection(db, `poems/${poemId}/comments`), {
+                author: name, text: text, createdAt: serverTimestamp(), isApproved: false
+            });
+            e.target.reset();
+            msg.style.display = 'block';
+            setTimeout(() => window.closeModal(), 2000);
+        } catch(e) { alert("Hata oluştu."); }
+        finally { btn.disabled = false; btn.innerText = "Gönder"; }
+    });
+
+    // Ortak Fonksiyonlar
+    window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.shareFacebook = (url) => window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, 'fb', 'width=600,height=400');
+    window.nativeShare = async (title, text) => {
+        if(navigator.share) try { await navigator.share({ title, text, url: window.location.href }); } catch(e){}
+        else alert("Bağlantı kopyalandı!");
+    };
+    window.addEventListener('scroll', () => {
+        const btn = document.getElementById('backToTopBtn');
+        if(btn) { if(window.scrollY > 300) btn.classList.add('show'); else btn.classList.remove('show'); }
+    });
+
+    loadPoems();
+</script>
+
+</body>
+</html>
