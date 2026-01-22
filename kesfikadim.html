@@ -32,29 +32,59 @@
 
         /* --- BAŞLIK (HEADER) --- */
         .public-header {
-            position: relative; height: 65vh; min-height: 400px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; color: #fff; padding: 20px;
-            /* YENİ GÖRSEL */
-            background-image: url('http://www.kalemguzeli.org/images/upload/MHakanOzsarac_001.jpg');
-            background-size: cover; background-position: center top;
+            position: relative; 
+            height: 65vh; 
+            min-height: 450px;
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+            text-align: center; 
+            color: #fff; 
+            padding: 20px;
+            /* YENİ İSLAMİ/SUFİ AESTHETIC GÖRSEL (İnsan yok, geometrik, sıcak tonlar) */
+            background-image: url('https://images.unsplash.com/photo-1590076215667-27b9c9225721?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover; 
+            /* Görselin odak noktasını ayarladım (Çok aşağı çekmeden orantılı) */
+            background-position: center 30%; 
         }
-        /* Görsel üzerine karanlık filtre */
-        .public-header::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1; }
+        /* Görsel üzerine estetik karanlık filtre */
+        .public-header::before { 
+            content: ''; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)); 
+            z-index: 1; 
+        }
         .public-header .content { position: relative; z-index: 2; width: 100%; max-width: 900px; }
 
         h1 { 
             font-family: 'Playfair Display', serif; font-size: 3.2rem; margin: 0; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6); letter-spacing: 1px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5); letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            display: inline-block;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
         }
+        
         .tagline { 
             font-family: 'Playfair Display', serif; font-style: italic;
-            color: rgba(255,255,255,0.95); font-size: 1.3rem; margin-top: 20px; 
+            color: rgba(255,255,255,0.95); font-size: 1.3rem; 
             font-weight: 400; letter-spacing: 0.5px;
+            margin-bottom: 15px; /* Altına boşluk */
+        }
+        
+        /* İmza Linki (Yeni Satırda) */
+        .author-container {
+            margin-top: 10px;
         }
         .author-link { 
-            font-family: 'Dancing Script', cursive; font-size: 1.6rem; color: var(--gold-color); 
-            text-decoration: none; margin-left: 10px; border-bottom: 1px dotted transparent; transition: all 0.3s;
+            font-family: 'Dancing Script', cursive; 
+            font-size: 1.8rem; /* Biraz daha belirgin */
+            color: var(--gold-color); 
+            text-decoration: none; 
+            border-bottom: 1px dotted transparent; 
+            transition: all 0.3s;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
         .author-link:hover { border-bottom-color: var(--gold-color); color: #fff; }
 
@@ -131,6 +161,25 @@
         #backToTopBtn.show { opacity: 1; visibility: visible; }
         #backToTopBtn:hover { background-color: var(--gold-color); color: #fff; transform: translateY(-5px); }
 
+        /* Menü Butonu */
+        .menu-toggle-btn {
+            position: fixed; top: 20px; right: 20px; z-index: 2000; background-color: rgba(0, 0, 0, 0.7); color: #fff;
+            border: 1px solid rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px); cursor: pointer;
+        }
+        .menu-toggle-btn:hover { background-color: var(--gold-color); border-color: var(--gold-color); }
+
+        /* Fullscreen Menu */
+        .fullscreen-menu {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(20, 20, 20, 0.98); z-index: 1999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.4s ease;
+        }
+        .fullscreen-menu.active { opacity: 1; visibility: visible; }
+        .fullscreen-menu h3 { color: var(--gold-color); font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .menu-list { list-style: none; padding: 0; text-align: center; max-height: 70vh; overflow-y: auto; width: 100%; }
+        .menu-list a { color: #fff; text-decoration: none; font-family: 'Playfair Display', serif; font-size: 1.3rem; transition: color 0.3s; display: block; padding: 10px; }
+        .menu-list a:hover { color: var(--gold-color); }
+
         /* Modal Overlay */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -155,7 +204,7 @@
         /* Mobil Uyum */
         @media (max-width: 600px) {
             h1 { font-size: 1.8rem; white-space: normal; }
-            .tagline { font-size: 1rem; }
+            .tagline { font-size: 1.1rem; }
             .poem-card { padding: 30px 20px; }
             .poem-title { font-size: 1.5rem; }
             .poem-content.dense-text { font-size: 0.9rem !important; line-height: 1.6; }
@@ -168,13 +217,26 @@
     <i class="fa-solid fa-arrow-up"></i>
 </button>
 
+<button class="menu-toggle-btn" onclick="toggleMenu()">
+    <i class="fa-solid fa-bars"></i>
+</button>
+
+<div class="fullscreen-menu" id="fullMenu">
+    <button class="menu-toggle-btn" style="background:transparent; border:none; top:20px; right:20px;" onclick="toggleMenu()">
+        <i class="fa-solid fa-xmark" style="font-size: 2rem;"></i>
+    </button>
+    <h3>Fihrist</h3>
+    <ul class="menu-list" id="menu-list"></ul>
+</div>
+
 <header class="public-header">
     <div class="content">
         <h1>Keşf-i Kadim fi Nazm-ı Fehîm</h1>
         <div class="tagline">
-            <span>kadîmin keşfinden manzum ibareye</span>
-            <span style="opacity:0.6; margin: 0 10px;">|</span>
-            <a href="https://www.facebook.com/share/1D7T86tpGP" target="_blank" class="author-link">Fatih Küçüktiryaki Divanı</a>
+            kadîmin keşfinden manzum ibareye
+        </div>
+        <div class="author-container">
+            <a href="https://www.facebook.com/share/1D7T86tpGP" target="_blank" class="author-link">Fatih Küçüktiryaki Divanından şiirler</a>
         </div>
     </div>
 </header>
@@ -210,7 +272,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // YENİ CONFIG BİLGİLERİ
+    // YENİ FIREBASE BİLGİLERİ
     const firebaseConfig = {
       apiKey: "AIzaSyB-4F9cNNF9CM_1gQc2qZdm0BqhHRGtS7c",
       authDomain: "kesfi-kadim.firebaseapp.com",
@@ -224,28 +286,37 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // --- JS FONKSİYONLARI ---
     async function loadPoems() {
         const container = document.getElementById('poems-container');
+        const menuList = document.getElementById('menu-list');
         
         const q = query(collection(db, "poems"), orderBy("date", "desc"));
         const querySnapshot = await getDocs(q);
 
         container.innerHTML = '';
+        menuList.innerHTML = '';
 
         querySnapshot.forEach((docSnapshot) => {
             const data = docSnapshot.data();
             const docId = docSnapshot.id;
             const date = new Date(data.date).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Satır kontrolü
+            // Satır kontrolü (Mobilde küçültme)
             const lines = data.text.split('\n');
             let maxLineLength = 0;
             lines.forEach(line => { if (line.length > maxLineLength) maxLineLength = line.length; });
             const conditionalClass = maxLineLength > 45 ? 'dense-text' : '';
 
-            // Tırnak sorunu düzeltmesi
+            // Tırnak sorunu düzeltmesi (Başlıkta ' varsa)
             const safeTitle = data.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
+            // Menüye Ekle
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="javascript:void(0)" onclick="goToPoem('${docId}')">${data.title}</a>`;
+            menuList.appendChild(li);
+
+            // İçerikler
             const arabicHtml = data.arabicText ? `<div class="arabic-section">${data.arabicText.replace(/\n/g, '<br>')}</div>` : '';
             const storyHtml = data.story ? `
                 <button class="story-btn" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
@@ -257,6 +328,7 @@
             const currentUrl = encodeURIComponent(window.location.href);
             const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${currentUrl}`;
             
+            // Kart HTML
             const cardDiv = document.createElement('div');
             cardDiv.className = 'poem-card';
             cardDiv.id = `poem-${docId}`;
@@ -271,22 +343,24 @@
                     <a href="${xUrl}" target="_blank" class="share-btn btn-x" title="X'te Paylaş">
                          <svg class="x-icon" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
                     </a>
-                    <button onclick="window.shareFacebook('${currentUrl}')" class="share-btn btn-fb" title="Facebook'ta Paylaş">
+                    <button onclick="shareFacebook('${currentUrl}')" class="share-btn btn-fb" title="Facebook'ta Paylaş">
                         <i class="fa-brands fa-facebook-f"></i>
                     </button>
-                    <button onclick="window.nativeShare('${safeTitle}', \`${data.text.replace(/`/g, "\\`")}\`)" class="share-btn btn-native" title="Gönder">
+                    <button onclick="nativeShare('${safeTitle}', \`${data.text.replace(/`/g, "\\`")}\`)" class="share-btn btn-native" title="Gönder">
                         <i class="fa-solid fa-share-nodes"></i>
                     </button>
                 </div>
 
                 <div class="inline-comments-area">
                     <div id="comments-list-${docId}"></div>
-                    <button class="add-comment-btn" onclick="window.openCommentModal('${docId}', '${safeTitle}')">
+                    <button class="add-comment-btn" onclick="openCommentModal('${docId}', '${safeTitle}')">
                         <i class="fa-regular fa-comment-dots"></i> Yorum Ekle
                     </button>
                 </div>
             `;
             container.appendChild(cardDiv);
+            
+            // Yorumları Yükle
             loadComments(docId);
         });
     }
@@ -294,6 +368,7 @@
     async function loadComments(poemId) {
         const listDiv = document.getElementById(`comments-list-${poemId}`);
         try {
+            // isApproved: true olanları çek
             const q = query(
                 collection(db, `poems/${poemId}/comments`), 
                 where("isApproved", "==", true),
@@ -301,7 +376,7 @@
             );
             const snapshot = await getDocs(q);
 
-            if(snapshot.empty) return;
+            if(snapshot.empty) return; // Yorum yoksa boş
 
             listDiv.innerHTML = '<div class="comments-header">Yorumlar</div>';
             const ul = document.createElement('ul');
@@ -313,7 +388,9 @@
             comments.forEach((c, index) => {
                 const li = document.createElement('li');
                 li.className = 'comment-item';
+                // İlk 2'den sonrasını gizle
                 if(index >= 2) li.style.display = 'none';
+
                 const dateStr = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleDateString('tr-TR') : '';
                 li.innerHTML = `
                     <span class="comment-author">${c.author}</span>
@@ -324,6 +401,8 @@
             });
 
             listDiv.appendChild(ul);
+
+            // "Tümünü Göster" Linki
             if(comments.length > 2) {
                 const showBtn = document.createElement('button');
                 showBtn.className = 'show-more-link';
@@ -334,10 +413,10 @@
                 };
                 listDiv.appendChild(showBtn);
             }
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error("Yorum Hatası:", e); }
     }
 
-    // Modal İşlemleri
+    // Modal Fonksiyonlarını Global'e Ata (HTML'den çağırmak için)
     window.openCommentModal = (poemId, title) => {
         document.getElementById('currentPoemId').value = poemId;
         document.getElementById('modalPoemTitle').innerText = `"${title}"`;
@@ -352,6 +431,7 @@
         document.getElementById('modalCommentForm').reset();
     };
 
+    // Yorum Gönderme
     document.getElementById('modalCommentForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const poemId = document.getElementById('currentPoemId').value;
@@ -363,16 +443,28 @@
         btn.disabled = true; btn.innerText = "Gönderiliyor...";
         try {
             await addDoc(collection(db, `poems/${poemId}/comments`), {
-                author: name, text: text, createdAt: serverTimestamp(), isApproved: false
+                author: name, 
+                text: text, 
+                createdAt: serverTimestamp(), 
+                isApproved: false // Admin onayı gerekli
             });
             e.target.reset();
             msg.style.display = 'block';
-            setTimeout(() => window.closeModal(), 2000);
+            setTimeout(() => window.closeModal(), 2500);
         } catch(e) { alert("Hata oluştu."); }
         finally { btn.disabled = false; btn.innerText = "Gönder"; }
     });
 
-    // Ortak Fonksiyonlar
+    // Menü ve Diğer Global Fonksiyonlar
+    window.toggleMenu = () => document.getElementById('fullMenu').classList.toggle('active');
+    window.goToPoem = (id) => {
+        document.getElementById('fullMenu').classList.remove('active');
+        const el = document.getElementById(`poem-${id}`);
+        if(el) {
+            const y = el.getBoundingClientRect().top + window.scrollY - 20;
+            window.scrollTo({top: y, behavior: 'smooth'});
+        }
+    };
     window.scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
     window.shareFacebook = (url) => window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, 'fb', 'width=600,height=400');
     window.nativeShare = async (title, text) => {
@@ -384,6 +476,7 @@
         if(btn) { if(window.scrollY > 300) btn.classList.add('show'); else btn.classList.remove('show'); }
     });
 
+    // Başlat
     loadPoems();
 </script>
 
