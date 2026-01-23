@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Calligraphy & Tezhip Generator</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Gulzar&family=Noto+Kufi+Arabic:wght@100..900&family=Reem+Kufi:wght@400..700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gold: #d4af37;
+            --secondary-gold: #aa8c2c;
+            --deep-teal: #0f3038;
+            --paper-cream: #f9f4e3;
+            --bg-color: #f4f6f8;
+            --text-dark: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-weight: 300;
+            color: var(--deep-teal);
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* --- Controls Section --- */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--deep-teal);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--primary-gold);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button.download-btn {
+            background-color: var(--deep-teal);
+            color: var(--primary-gold);
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button.download-btn:hover {
+            background-color: #092126;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 48, 56, 0.3);
+        }
+
+        /* --- Preview / Tezhip Canvas --- */
+        .canvas-wrapper {
+            margin-bottom: 40px;
+            overflow: auto; /* Handle scroll if too big */
+            padding: 10px;
+        }
+
+        /* The actual element to capture */
+        #tezhip-canvas {
+            width: 600px;
+            height: 600px;
+            background-color: var(--paper-cream);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            /* The complex layered border effect (Tezhip simulation) */
+            border: 15px solid var(--deep-teal);
+            box-shadow: 
+                0 0 0 5px var(--primary-gold), 
+                inset 0 0 0 5px var(--primary-gold),
+                inset 0 0 0 15px var(--deep-teal),
+                inset 0 0 60px rgba(0,0,0,0.1); 
+            /* Subtle texture pattern */
+            background-image: radial-gradient(#d4af37 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Corner ornamentation using pseudo elements */
+        #tezhip-canvas::before, #tezhip-canvas::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--primary-gold);
+            pointer-events: none;
+        }
+
+        #tezhip-canvas::before {
+            top: 25px;
+            left: 25px;
+            border-right: none;
+            border-bottom: none;
+            border-top-width: 5px;
+            border-left-width: 5px;
+        }
+
+        #tezhip-canvas::after {
+            bottom: 25px;
+            right: 25px;
+            border-left: none;
+            border-top: none;
+            border-bottom-width: 5px;
+            border-right-width: 5px;
+        }
+
+        /* Inner container to center corner styles for the other two corners */
+        .inner-decor {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+        }
+        .inner-decor::before, .inner-decor::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--primary-gold);
+        }
+        .inner-decor::before {
+            top: 25px;
+            right: 25px;
+            border-left: none;
+            border-bottom: none;
+            border-top-width: 5px;
+            border-right-width: 5px;
+        }
+        .inner-decor::after {
+            bottom: 25px;
+            left: 25px;
+            border-right: none;
+            border-top: none;
+            border-bottom-width: 5px;
+            border-left-width: 5px;
+        }
+
+        /* The Text itself */
+        .calligraphy-text {
+            direction: rtl;
+            color: #000;
+            text-align: center;
+            padding: 40px;
+            line-height: 1.8;
+            z-index: 10;
+            /* Default Font */
+            font-family: 'Amiri', serif; 
+            font-size: 48px;
+            word-wrap: break-word;
+            width: 70%;
+        }
+
+        /* Font Classes Mapping */
+        .font-rika { font-family: 'Aref Ruqaa', serif; }
+        .font-naskh { font-family: 'Amiri', serif; }
+        .font-kufi { font-family: 'Reem Kufi', sans-serif; }
+        .font-thuluth { font-family: 'Scheherazade New', serif; }
+        .font-farisi { font-family: 'Gulzar', serif; }
+
+        /* Responsive adjustments */
+        @media (max-width: 700px) {
+            .controls { grid-template-columns: 1fr; }
+            #tezhip-canvas { width: 100%; height: auto; aspect-ratio: 1/1; }
+            .calligraphy-text { width: 85%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Hat Sanatı & Tezhip Oluşturucu</h1>
+        <p class="subtitle">Arabic Calligraphy Generator</p>
+    </header>
+
+    <div class="controls">
+        <div class="control-group full-width">
+            <label for="text-input">Metin (Arapça / Text)</label>
+            <input type="text" id="text-input" dir="rtl" placeholder="Buraya Arapça yazın..." value="بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ">
+        </div>
+
+        <div class="control-group">
+            <label for="font-select">Yazı Tipi (Font Style)</label>
+            <select id="font-select">
+                <option value="font-naskh">Nesih (Naskh)</option>
+                <option value="font-rika">Rika (Ruqaa)</option>
+                <option value="font-kufi">Kufi</option>
+                <option value="font-thuluth">Sülüs / Endülüs (Thuluth)</option>
+                <option value="font-farisi">Farisi (Nastaliq)</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="size-range">Yazı Boyutu (Size)</label>
+            <input type="range" id="size-range" min="20" max="120" value="48">
+        </div>
+
+        <div class="control-group full-width">
+            <button id="download-btn" class="download-btn">
+                <span>Resmi İndir (Download JPG)</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="canvas-wrapper">
+        <div id="tezhip-canvas">
+            <div class="inner-decor"></div>
+            <div id="text-display" class="calligraphy-text font-naskh">
+                بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const textInput = document.getElementById('text-input');
+            const fontSelect = document.getElementById('font-select');
+            const sizeRange = document.getElementById('size-range');
+            const textDisplay = document.getElementById('text-display');
+            const downloadBtn = document.getElementById('download-btn');
+            const captureArea = document.getElementById('tezhip-canvas');
+
+            // 1. Live Text Update
+            textInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                // If empty, show a placeholder space to keep layout
+                textDisplay.innerText = val ? val : ' ';
+            });
+
+            // 2. Font Switching
+            fontSelect.addEventListener('change', (e) => {
+                // Remove all previous font classes
+                textDisplay.classList.remove('font-rika', 'font-naskh', 'font-kufi', 'font-thuluth', 'font-farisi');
+                // Add selected class
+                textDisplay.classList.add(e.target.value);
+            });
+
+            // 3. Size Adjustment
+            sizeRange.addEventListener('input', (e) => {
+                textDisplay.style.fontSize = `${e.target.value}px`;
+            });
+
+            // 4. Image Export (html2canvas)
+            downloadBtn.addEventListener('click', () => {
+                // Visual feedback
+                const originalText = downloadBtn.innerText;
+                downloadBtn.innerText = "Hazırlanıyor... (Processing)";
+                downloadBtn.style.opacity = "0.7";
+
+                html2canvas(captureArea, {
+                    scale: 2, // High resolution
+                    backgroundColor: null, // Transparent checks if needed, but we have bg set
+                    useCORS: true // Allow loading fonts properly
+                }).then(canvas => {
+                    // Create an anchor tag to trigger download
+                    const link = document.createElement('a');
+                    link.download = 'hat-sanati-tezhip.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+
+                    // Reset button
+                    downloadBtn.innerText = originalText;
+                    downloadBtn.style.opacity = "1";
+                }).catch(err => {
+                    console.error("Hata oluştu:", err);
+                    alert("Resim oluşturulurken bir hata meydana geldi.");
+                    downloadBtn.innerText = originalText;
+                    downloadBtn.style.opacity = "1";
+                });
+            });
+        });
+    </script>
+</body>
+</html>
