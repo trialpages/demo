@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mobil Titreşim Testi</title>
+<style>
+  /* Sayfanın tamamını kapsayan stil */
+  body {
+    display: flex;
+    justify_content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    overflow-x: hidden; /* Yanlardan taşmayı engelle */
+  }
+
+  button {
+    padding: 20px 40px;
+    font-size: 20px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  /* Görsel Sallanma Animasyonu (CSS) */
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-3px, -2px) rotate(-1deg); }
+    20% { transform: translate(-5px, 0px) rotate(1deg); }
+    30% { transform: translate(5px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(5px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  }
+
+  /* Bu sınıf eklendiğinde animasyon çalışır */
+  .sallan {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite; 
+  }
+</style>
+</head>
+<body>
+
+<button onclick="depremEtkisi()">TIKLA ve SALLA!</button>
+
+<script>
+  function depremEtkisi() {
+    // 1. Görsel Sallantı: Body'ye class ekle
+    document.body.classList.add('sallan');
+
+    // 2. Fiziksel Titreşim (Vibration API)
+    // 200ms titret, 100ms dur, 200ms titret...
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 200, 100, 200]);
+    } else {
+      console.log("Cihaz titreşimi desteklemiyor veya izin verilmedi.");
+    }
+
+    // 1 saniye sonra durdur
+    setTimeout(function() {
+      document.body.classList.remove('sallan');
+      if (navigator.vibrate) navigator.vibrate(0); // Titreşimi durdur
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
