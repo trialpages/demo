@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Haber Bildirim Testi</title>
+    <title>Haber Bildirim Testi v2</title>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding: 20px;">
 
-    <h2>🔔 Bildirim Test Sayfası</h2>
+    <h2>🔔 Bildirim Test Sayfası (Düzeltildi)</h2>
     <p>Aşağıdaki butona basarak bildirim izni verin.</p>
     
-    <button id="btn-notify" style="padding: 15px 30px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+    <button id="btn-notify" style="padding: 15px 30px; font-size: 16px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 5px;">
         Bildirimleri Aç
     </button>
     
     <div style="margin-top: 20px;">
+        <h3>Durum:</h3>
+        <p id="status-text" style="color: blue;">Hazır.</p>
+
         <h3>Oluşan Token:</h3>
-        <p style="font-size: 12px; color: gray;">Bu token'ı Firebase Console'da test mesajı atarken kullanacaksın.</p>
         <textarea id="token-display" rows="5" style="width: 100%; max-width: 500px; padding: 10px;"></textarea>
     </div>
 
@@ -24,7 +26,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging.js";
 
-        // Senin verdiğin Config Bilgileri
+        // Config Bilgilerin
         const firebaseConfig = {
             apiKey: "AIzaSyAr5FUC9uAmPkRWz1nqtllBodHYqpBB9ac",
             authDomain: "arabicinlevels.firebaseapp.com",
@@ -35,55 +37,59 @@
             measurementId: "G-10RV9BVZWS"
         };
 
-        // Uygulamayı başlat
         const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
-
-        // Senin verdiğin Public Key (VAPID Key)
+        
         const vapidKey = "BEWRdNwkPd2Gmi29zUGl5BJJ8Glnjs-jYlBjbogwYHKfcifVBOnVTQyJJNfFwObMFmNFG21W2tb0afSzI6NQwP0";
 
-        // Service Worker'ı manuel olarak kaydetme (GitHub Pages için garanti yöntem)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./firebase-messaging-sw.js')
-            .then((registration) => {
-                console.log('Service Worker başarıyla kuruldu:', registration.scope);
-            }).catch((err) => {
-                console.log('Service Worker hatası:', err);
-            });
-        }
+        const statusText = document.getElementById('status-text');
 
-        document.getElementById('btn-notify').addEventListener('click', () => {
-            requestPermission();
-        });
-
-        function requestPermission() {
-            console.log('İzin isteniyor...');
-            Notification.requestPermission().then((permission) => {
+        document.getElementById('btn-notify').addEventListener('click', async () => {
+            statusText.innerText = "İzin isteniyor...";
+            
+            try {
+                const permission = await Notification.requestPermission();
+                
                 if (permission === 'granted') {
-                    console.log('İzin verildi.');
-                    // Token al
-                    getToken(messaging, { 
-                        vapidKey: vapidKey,
-                        serviceWorkerRegistration: navigator.serviceWorker.ready 
-                    }).then((currentToken) => {
+                    statusText.innerText = "İzin verildi. Service Worker kuruluyor...";
+                    
+                    // DÜZELTME BURADA YAPILDI:
+                    // Önce Service Worker'ı kaydet ve kaydı (registration) bir değişkene al.
+                    if ('serviceWorker' in navigator) {
+                        const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+                        console.log("SW Kaydedildi:", registration);
+
+                        statusText.innerText = "Token alınıyor...";
+
+                        // Token isterken "hazır" olan registration nesnesini elle veriyoruz.
+                        const currentToken = await getToken(messaging, { 
+                            vapidKey: vapidKey,
+                            serviceWorkerRegistration: registration 
+                        });
+
                         if (currentToken) {
                             console.log('Token:', currentToken);
                             document.getElementById('token-display').value = currentToken;
-                            alert("Token başarıyla alındı! Aşağıdaki kutudan kopyalayabilirsin.");
+                            statusText.innerText = "Başarılı! Token kutuda.";
+                            alert("Token başarıyla alındı!");
                         } else {
-                            console.log('Token oluşturulamadı. İzinleri kontrol et.');
+                            statusText.innerText = "Token oluşturulamadı.";
                         }
-                    }).catch((err) => {
-                        console.log('Hata oluştu: ', err);
-                        alert("Hata: " + err);
-                    });
-                } else {
-                    alert('Bildirim izni reddedildi. Tarayıcı ayarlarından site izinlerini sıfırla.');
-                }
-            });
-        }
+                    } else {
+                        alert("Tarayıcınız Service Worker desteklemiyor.");
+                    }
 
-        // Sayfa açıkken mesaj gelirse
+                } else {
+                    statusText.innerText = "İzin reddedildi.";
+                    alert('Bildirim izni vermediniz.');
+                }
+            } catch (err) {
+                console.error('Hata:', err);
+                statusText.innerText = "Hata oluştu: " + err.message;
+                alert("Hata: " + err.message); // Mobilde hatayı görmek için
+            }
+        });
+
         onMessage(messaging, (payload) => {
             console.log('Ön planda mesaj:', payload);
             alert(`YENİ HABER: ${payload.notification.title}\n${payload.notification.body}`);
