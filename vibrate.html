@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sevgi Gönder</title>
+<title></title>
 <style>
   body {
     margin: 0;
@@ -21,8 +21,8 @@
   button {
     z-index: 10; /* Kalplerin üzerinde dursun */
     padding: 15px 30px;
-    font-size: 20px;
-    background-color: #e91e63;
+    font-size: 5px;
+    background-color: #ffff;
     color: white;
     border: none;
     border-radius: 50px;
@@ -59,7 +59,7 @@
 </head>
 <body>
 
-<button onclick="sevgiGonder()">💖 Sevgi Yolla 💖</button>
+<button onclick="sevgiGonder()">click</button>
 
 <script>
   function sevgiGonder() {
@@ -75,7 +75,7 @@
       const kalp = document.createElement("div");
       
       // Rastgele Kalp veya Öpücük seç
-      const emojiler = ["❤️", "💖", "💋", "😍", "💞"];
+      const emojiler = ["💋"];
       kalp.innerText = emojiler[Math.floor(Math.random() * emojiler.length)];
       
       kalp.classList.add("ask-objesi");
