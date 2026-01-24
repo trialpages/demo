@@ -3,86 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sesli ve Titreşimli Efekt</title>
+<title>Sevgi Gönder</title>
 <style>
   body {
+    margin: 0;
+    height: 100vh;
+    background-color: #fce4ec; /* Tatlı bir pembe arka plan */
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* Taşmaları gizle */
     display: flex;
     justify_content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #222; /* Daha dramatik bir koyu tema */
-    color: white;
-    font-family: sans-serif;
-    overflow-x: hidden;
+    align-items: flex-end; /* Butonu aşağı koyalım */
+    padding-bottom: 50px;
   }
 
+  /* Buton Stili */
   button {
-    padding: 20px 40px;
-    font-size: 18px;
-    background: #e74c3c; /* Kırmızı buton */
+    z-index: 10; /* Kalplerin üzerinde dursun */
+    padding: 15px 30px;
+    font-size: 20px;
+    background-color: #e91e63;
     color: white;
     border: none;
     border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     cursor: pointer;
-    transition: transform 0.1s;
+    transition: transform 0.2s;
   }
 
   button:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
   }
 
-  /* Sallanma Animasyonu */
-  @keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-3px, -2px) rotate(-1deg); }
-    20% { transform: translate(-5px, 0px) rotate(1deg); }
-    30% { transform: translate(5px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(5px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  /* Uçan Objelerin Temel Stili */
+  .ask-objesi {
+    position: fixed;
+    bottom: -50px; /* Ekranın hemen altından başla */
+    font-size: 24px;
+    pointer-events: none; /* Tıklamaları engellemesin */
+    animation: yukariuc 3s linear forwards; /* Animasyon tanımla */
   }
 
-  .sallan {
-    animation: shake 0.5s;
-    animation-iteration-count: infinite; 
+  /* Yukarı Uçma Animasyonu */
+  @keyframes yukariuc {
+    0% {
+      transform: translateY(0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-110vh) scale(1.5) rotate(360deg); /* Ekranın tepesine git */
+      opacity: 0; /* Kaybol */
+    }
   }
 </style>
 </head>
 <body>
 
-<audio id="uyariSesi" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-
-<button onclick="kaosBaslat()">🚨 SİSTEMİ TETİKLE 🚨</button>
+<button onclick="sevgiGonder()">💖 Sevgi Yolla 💖</button>
 
 <script>
-  function kaosBaslat() {
-    // 1. Görsel Sallantı
-    document.body.classList.add('sallan');
-
-    // 2. Ses Çalma
-    var ses = document.getElementById("uyariSesi");
-    ses.currentTime = 0; // Ses zaten çalıyorsa başa sar
-    ses.play().catch(function(error) {
-      console.log("Ses çalma hatası: Tarayıcı izin vermemiş olabilir.");
-    });
-
-    // 3. Fiziksel Titreşim (Android)
-    if (navigator.vibrate) {
-      // 500ms titre, 200ms dur, 500ms titre
-      navigator.vibrate([500, 200, 500]);
+  function sevgiGonder() {
+    // Tek seferde 10-15 tane kalp fırlatmak için döngü kuralım
+    // Böylece 'patlama' efekti olur.
+    for (let i = 0; i < 15; i++) {
+      createHeart(i * 100); // Her birini hafif gecikmeli fırlat
     }
+  }
 
-    // 1.2 saniye sonra her şeyi durdur
-    setTimeout(function() {
-      document.body.classList.remove('sallan');
-      if (navigator.vibrate) navigator.vibrate(0);
-    }, 1200);
+  function createHeart(gecikme) {
+    setTimeout(() => {
+      const kalp = document.createElement("div");
+      
+      // Rastgele Kalp veya Öpücük seç
+      const emojiler = ["❤️", "💖", "💋", "😍", "💞"];
+      kalp.innerText = emojiler[Math.floor(Math.random() * emojiler.length)];
+      
+      kalp.classList.add("ask-objesi");
+
+      // Rastgele Yatay Pozisyon (Ekranın %0 ile %100'ü arasında)
+      kalp.style.left = Math.random() * 100 + "vw";
+
+      // Rastgele Boyut (20px ile 50px arası)
+      const boyut = Math.random() * 30 + 20;
+      kalp.style.fontSize = boyut + "px";
+
+      // Rastgele Animasyon Süresi (2sn ile 5sn arası - kimisi hızlı kimisi yavaş gitsin)
+      const sure = Math.random() * 3 + 2; 
+      kalp.style.animationDuration = sure + "s";
+
+      document.body.appendChild(kalp);
+
+      // DOM Temizliği: Animasyon bitince elementi sil (Telefonu kasmasın diye)
+      setTimeout(() => {
+        kalp.remove();
+      }, sure * 1000);
+
+    }, gecikme);
   }
 </script>
 
