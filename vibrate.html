@@ -3,31 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobil Titreşim Testi</title>
+<title>Sesli ve Titreşimli Efekt</title>
 <style>
-  /* Sayfanın tamamını kapsayan stil */
   body {
     display: flex;
     justify_content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    overflow-x: hidden; /* Yanlardan taşmayı engelle */
+    background-color: #222; /* Daha dramatik bir koyu tema */
+    color: white;
+    font-family: sans-serif;
+    overflow-x: hidden;
   }
 
   button {
     padding: 20px 40px;
-    font-size: 20px;
-    background: #ff4757;
+    font-size: 18px;
+    background: #e74c3c; /* Kırmızı buton */
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
     cursor: pointer;
+    transition: transform 0.1s;
   }
 
-  /* Görsel Sallanma Animasyonu (CSS) */
+  button:active {
+    transform: scale(0.95);
+  }
+
+  /* Sallanma Animasyonu */
   @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-3px, -2px) rotate(-1deg); }
@@ -42,7 +48,6 @@
     100% { transform: translate(1px, -2px) rotate(-1deg); }
   }
 
-  /* Bu sınıf eklendiğinde animasyon çalışır */
   .sallan {
     animation: shake 0.5s;
     animation-iteration-count: infinite; 
@@ -51,26 +56,33 @@
 </head>
 <body>
 
-<button onclick="depremEtkisi()">TIKLA ve SALLA!</button>
+<audio id="uyariSesi" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
+
+<button onclick="kaosBaslat()">🚨 SİSTEMİ TETİKLE 🚨</button>
 
 <script>
-  function depremEtkisi() {
-    // 1. Görsel Sallantı: Body'ye class ekle
+  function kaosBaslat() {
+    // 1. Görsel Sallantı
     document.body.classList.add('sallan');
 
-    // 2. Fiziksel Titreşim (Vibration API)
-    // 200ms titret, 100ms dur, 200ms titret...
+    // 2. Ses Çalma
+    var ses = document.getElementById("uyariSesi");
+    ses.currentTime = 0; // Ses zaten çalıyorsa başa sar
+    ses.play().catch(function(error) {
+      console.log("Ses çalma hatası: Tarayıcı izin vermemiş olabilir.");
+    });
+
+    // 3. Fiziksel Titreşim (Android)
     if (navigator.vibrate) {
-      navigator.vibrate([200, 100, 200, 100, 200]);
-    } else {
-      console.log("Cihaz titreşimi desteklemiyor veya izin verilmedi.");
+      // 500ms titre, 200ms dur, 500ms titre
+      navigator.vibrate([500, 200, 500]);
     }
 
-    // 1 saniye sonra durdur
+    // 1.2 saniye sonra her şeyi durdur
     setTimeout(function() {
       document.body.classList.remove('sallan');
-      if (navigator.vibrate) navigator.vibrate(0); // Titreşimi durdur
-    }, 1000);
+      if (navigator.vibrate) navigator.vibrate(0);
+    }, 1200);
   }
 </script>
 
