@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesyonel Zikirmatik</title>
+    <style>
+        :root {
+            /* Kullanıcı Tercihine Uygun Renk Paleti */
+            --bg-color: #F5F5DC;       /* Bej */
+            --primary-text: #3E2723;   /* Koyu Kahve */
+            --accent-blue: #1976D2;    /* Mavi */
+            --accent-brown: #8D6E63;   /* Açık Kahve */
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px -1px rgba(62, 39, 35, 0.1), 0 2px 4px -1px rgba(62, 39, 35, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; /* Mobilde çift tıklamayı engeller */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Ana Konteyner */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        /* Başlık Alanı */
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-brown);
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--primary-text);
+        }
+
+        /* Giriş Alanı */
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--accent-brown);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--white);
+            color: var(--primary-text);
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .btn-new {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-new:active {
+            opacity: 0.8;
+        }
+
+        /* Sayaç Alanı */
+        .counter-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .current-zikir-name {
+            font-size: 1.2rem;
+            color: var(--accent-brown);
+            margin-bottom: 15px;
+            font-weight: 500;
+            min-height: 1.5em;
+        }
+
+        .count-display {
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--primary-text);
+            margin: 10px 0;
+            line-height: 1;
+        }
+
+        /* Büyük Zikir Butonu */
+        .zikir-btn {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--accent-brown) 0%, #5D4037 100%);
+            border: 8px solid #D7CCC8;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            touch-action: manipulation; /* Mobilde gecikmeyi önler */
+        }
+
+        .zikir-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Kayıtlı Zikirler Listesi */
+        .history-section {
+            width: 100%;
+            background: rgba(255,255,255,0.6);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .history-title {
+            text-align: left;
+            font-size: 1rem;
+            color: var(--accent-brown);
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .zikir-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .zikir-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .zikir-item:hover {
+            transform: translateX(5px);
+        }
+
+        .zikir-item.active {
+            border-left-color: var(--accent-blue);
+            background-color: #E3F2FD;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        .item-count {
+            font-size: 0.9rem;
+            color: var(--accent-brown);
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ef5350;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Geri Bildirim Animasyonu */
+        @keyframes pulse-anim {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse-anim 0.2s ease-in-out;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Zikirmatik</h1>
+    </header>
+
+    <div class="input-group">
+        <input type="text" id="zikirInput" placeholder="Zikir ismini buraya yazın..." oninput="updateCurrentName()">
+        <button class="btn-new" onclick="startNewZikir()">Yeni</button>
+    </div>
+
+    <div class="counter-card" id="counterCard">
+        <div class="current-zikir-name" id="displayZikirName">İsimsiz Zikir</div>
+        <div class="count-display" id="displayCount">0</div>
+        
+        <div class="zikir-btn" id="mainBtn" onclick="increment()">
+            <div style="text-align:center">
+                <span style="font-size:2rem;">Bas</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-section">
+        <div class="history-title">Kayıtlı Zikirlerim</div>
+        <ul class="zikir-list" id="zikirList">
+            </ul>
+    </div>
+</div>
+
+<script>
+    // --- Veri Yapısı ve Değişkenler ---
+    let currentZikir = {
+        id: Date.now(),
+        name: "",
+        count: 0
+    };
+    
+    let allZikirs = [];
+
+    // --- Ses Context (Bip Sesi için) ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = new AudioContext();
+
+    function playBeep() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 notası
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.1); // 100ms süre
+    }
+
+    // --- Titreşim ---
+    function triggerVibration() {
+        if (navigator.vibrate) {
+            navigator.vibrate(200); // 200ms titreşim
+        }
+    }
+
+    // --- Başlangıç ---
+    window.onload = function() {
+        loadData();
+        // Eğer kayıtlı veri yoksa varsayılanı başlat
+        if (allZikirs.length === 0) {
+            saveCurrentToHistory(); 
+        } else {
+            // Son zikri seç
+            currentZikir = allZikirs[0]; 
+            updateUI();
+        }
+        renderList();
+    };
+
+    // --- Ana Fonksiyonlar ---
+
+    function increment() {
+        currentZikir.count++;
+        
+        // Görsel efekt
+        const countDisplay = document.getElementById('displayCount');
+        countDisplay.classList.remove('pulse');
+        void countDisplay.offsetWidth; // Reflow tetikle
+        countDisplay.classList.add('pulse');
+
+        // Kontrol: Her 100'de bir uyarı
+        if (currentZikir.count % 100 === 0) {
+            playBeep();
+            triggerVibration();
+        }
+
+        saveCurrentToHistory();
+        updateUI();
+        renderList();
+    }
+
+    function updateCurrentName() {
+        const inputVal = document.getElementById('zikirInput').value;
+        currentZikir.name = inputVal;
+        document.getElementById('displayZikirName').innerText = inputVal || "İsimsiz Zikir";
+        saveCurrentToHistory();
+        renderList(); // Listeki ismi de güncelle
+    }
+
+    function startNewZikir() {
+        // Mevcut olanı zaten saveCurrentToHistory ile sürekli güncelliyoruz.
+        // Yeni bir obje oluştur.
+        currentZikir = {
+            id: Date.now(),
+            name: "",
+            count: 0
+        };
+        
+        // UI Temizle
+        document.getElementById('zikirInput').value = "";
+        updateUI();
+        
+        // Listeye ekle (Listenin başına gelir çünkü id en yeni)
+        allZikirs.unshift(currentZikir);
+        saveData();
+        renderList();
+    }
+
+    function selectZikir(id) {
+        const selected = allZikirs.find(z => z.id === id);
+        if (selected) {
+            currentZikir = selected;
+            document.getElementById('zikirInput').value = currentZikir.name;
+            updateUI();
+            renderList(); // Aktif sınıfını güncellemek için
+        }
+    }
+
+    function deleteZikir(event, id) {
+        event.stopPropagation(); // Tıklama event'i parent'a gitmesin
+        if(confirm("Bu zikri silmek istediğinize emin misiniz?")) {
+            allZikirs = allZikirs.filter(z => z.id !== id);
+            
+            // Eğer silinen şu an seçili olan ise, yeni bir tane başlat veya ilkini seç
+            if (currentZikir.id === id) {
+                if (allZikirs.length > 0) {
+                    currentZikir = allZikirs[0];
+                } else {
+                    currentZikir = { id: Date.now(), name: "", count: 0 };
+                    allZikirs.push(currentZikir);
+                }
+            }
+            
+            document.getElementById('zikirInput').value = currentZikir.name;
+            updateUI();
+            saveData();
+            renderList();
+        }
+    }
+
+    // --- Yardımcı Fonksiyonlar ---
+
+    function updateUI() {
+        document.getElementById('displayCount').innerText = currentZikir.count;
+        document.getElementById('displayZikirName').innerText = currentZikir.name || "İsimsiz Zikir";
+        
+        // Input alanı boşsa placeholder görünsün diye value'yu güncellemiyoruz
+        // Sadece zikir değiştiğinde inputu güncellemek için yukarıda set ediyoruz.
+    }
+
+    function saveCurrentToHistory() {
+        // Mevcut zikri listede bul ve güncelle, yoksa ekle
+        const index = allZikirs.findIndex(z => z.id === currentZikir.id);
+        if (index > -1) {
+            allZikirs[index] = currentZikir;
+        } else {
+            allZikirs.unshift(currentZikir);
+        }
+        saveData();
+    }
+
+    function renderList() {
+        const listEl = document.getElementById('zikirList');
+        listEl.innerHTML = "";
+
+        // Tarihe göre sırala (Yeniler üstte)
+        allZikirs.sort((a, b) => b.id - a.id);
+
+        allZikirs.forEach(z => {
+            const isActive = z.id === currentZikir.id ? 'active' : '';
+            const displayName = z.name || "İsimsiz Zikir";
+            
+            const li = document.createElement('li');
+            li.className = `zikir-item ${isActive}`;
+            li.onclick = () => selectZikir(z.id);
+            
+            li.innerHTML = `
+                <div class="item-info">
+                    <span class="item-name">${displayName}</span>
+                    <span class="item-count">Sayı: ${z.count}</span>
+                </div>
+                <button class="delete-btn" onclick="deleteZikir(event, ${z.id})">🗑</button>
+            `;
+            listEl.appendChild(li);
+        });
+    }
+
+    // --- LocalStorage İşlemleri ---
+    function saveData() {
+        localStorage.setItem('zikirmatik_data', JSON.stringify(allZikirs));
+    }
+
+    function loadData() {
+        const data = localStorage.getItem('zikirmatik_data');
+        if (data) {
+            allZikirs = JSON.parse(data);
+        }
+    }
+</script>
+
+</body>
+</html>
