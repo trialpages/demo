@@ -3,84 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Video Caster</title>
+    <title>Ultimate Web Caster</title>
     <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #222; color: white; }
-        input { width: 80%; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: none; }
-        button { padding: 15px 30px; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        :root { --primary: #e50914; --bg: #141414; --text: #fff; --gray: #333; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* Chromecast Butonu için Google'ın özel etiketi */
-        google-cast-launcher {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 20px;
-            display: block; /* Butonun görünmesi için */
+        .container { width: 100%; max-width: 500px; text-align: center; }
+        h2 { margin-bottom: 5px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        p.desc { font-size: 0.9em; color: #aaa; margin-bottom: 20px; }
+
+        /* Cast Butonu Konteyneri */
+        .cast-wrapper { 
+            background: var(--gray); padding: 10px; border-radius: 50%; 
+            width: 60px; height: 60px; margin: 0 auto 20px auto;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(229, 9, 20, 0.4);
         }
+        
+        /* Google'ın Butonunu Zorla Göster */
+        google-cast-launcher { width: 40px; height: 40px; display: block; cursor: pointer; --connected-color: var(--primary); --disconnected-color: #fff; }
+
+        .input-group { position: relative; width: 100%; margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; border-radius: 8px; border: 2px solid var(--gray); background: #222; color: #fff; font-size: 16px; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        .btn-play { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+        .btn-play:active { transform: scale(0.98); }
+
+        .status-box { margin-top: 20px; padding: 15px; background: #222; border-radius: 8px; border-left: 4px solid var(--gray); text-align: left; font-size: 0.9em; min-height: 50px; }
+        .status-box.error { border-color: red; color: #ffcccc; }
+        .status-box.success { border-color: #00ff00; color: #ccffcc; }
+
+        .history { margin-top: 30px; width: 100%; text-align: left; }
+        .history h3 { font-size: 1em; border-bottom: 1px solid var(--gray); padding-bottom: 5px; color: #888; }
+        .history-item { padding: 10px; background: #222; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; cursor: pointer; }
+        .history-item:hover { background: #333; }
+        .badge { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; background: #444; margin-right: 5px; }
     </style>
 </head>
 <body>
 
-    <h2>📺 TV'ye Gönder</h2>
-    
-    <google-cast-launcher id="cast-btn"></google-cast-launcher>
+    <div class="container">
+        <h2>Web Caster Pro</h2>
+        <p class="desc">Link yapıştır, TV'de izle.</p>
 
-    <input type="text" id="videoUrl" placeholder="Video linkini (mp4/m3u8) buraya yapıştır...">
-    <button onclick="playOnTV()">OYNAT</button>
+        <div class="cast-wrapper">
+            <google-cast-launcher id="cast-btn"></google-cast-launcher>
+        </div>
 
-    <div id="status" style="margin-top:20px; color: yellow;"></div>
+        <div id="warn-msg" style="display:none; color: orange; font-size: 0.8em; margin-bottom: 10px; text-align: left;">
+            <i class="fas fa-exclamation-triangle"></i> Bu bir web sayfası linki. Videoyu TV'de açamazsın. "Video Avcısı" ile asıl linki (.mp4/.m3u8) bulmalısın.
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="videoUrl" placeholder="https://site.com/video.mp4" oninput="checkUrl()">
+            <div style="position: absolute; right: 10px; top: 12px; color: #666; cursor: pointer;" onclick="pasteUrl()">
+                <i class="fas fa-paste"></i>
+            </div>
+        </div>
+
+        <button class="btn-play" onclick="playOnTV()">
+            <i class="fas fa-play"></i> TV'DE OYNAT
+        </button>
+
+        <div id="status" class="status-box">
+            <i class="fas fa-info-circle"></i> Durum: Hazır. Önce yukarıdaki ikona basıp TV'ye bağlan.
+        </div>
+
+        <div class="history">
+            <h3><i class="fas fa-history"></i> Son İzlenenler</h3>
+            <div id="history-list"></div>
+            <div style="text-align: center; margin-top: 10px;">
+                <button onclick="clearHistory()" style="background:none; border:none; color:#555; cursor:pointer; font-size:0.8em;">Geçmişi Temizle</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // 1. Cast Framework Başlatma
+        // 1. Cast API Başlatma
         window['__onGCastApiAvailable'] = function(isAvailable) {
             if (isAvailable) {
                 cast.framework.CastContext.getInstance().setOptions({
-                    receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, // Varsayılan video oynatıcı
+                    receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
                     autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
                 });
-                document.getElementById('status').innerText = "Cast API Hazır. TV'ye bağlanabilirsin.";
+                logStatus("Cast API yüklendi. Eğer buton görünmüyorsa 'https' kullandığından emin ol.", "normal");
+            } else {
+                logStatus("Cast API yüklenemedi. Chrome kullandığına emin misin?", "error");
             }
         };
 
-        // 2. Videoyu TV'ye Gönderme Fonksiyonu
+        // 2. URL Kontrolü (Youtube/Embed engelleme)
+        function checkUrl() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const warn = document.getElementById('warn-msg');
+            
+            // Eğer URL bir web sayfası ise uyar
+            if (url.includes('youtube.com') || url.includes('closeload') || url.includes('vimeo.com') || (!url.includes('.mp4') && !url.includes('.m3u8') && url.length > 10)) {
+                if(!url.includes('.m3u8') && !url.includes('.mp4')) {
+                    warn.style.display = 'block';
+                    warn.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Bu link bir web sayfası gibi görünüyor. TV bunu oynatamaz. Lütfen <b>.mp4</b> veya <b>.m3u8</b> ile biten direkt video linki kullanın.`;
+                } else {
+                    warn.style.display = 'none';
+                }
+            } else {
+                warn.style.display = 'none';
+            }
+        }
+
+        async function pasteUrl() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('videoUrl').value = text;
+                checkUrl();
+            } catch (err) {
+                alert("Yapıştırma izni verilmedi.");
+            }
+        }
+
+        // 3. TV'ye Gönderme
         function playOnTV() {
-            var url = document.getElementById('videoUrl').value;
+            var url = document.getElementById('videoUrl').value.trim();
             var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
 
-            if (!url) {
-                alert("Lütfen bir video linki yapıştırın!");
-                return;
+            if (!url) { alert("Lütfen link girin!"); return; }
+            if (!castSession) { 
+                logStatus("HATA: TV Bağlı değil! Önce üstteki ikona basıp cihaz seç.", "error"); 
+                // Manuel bağlanmayı tetikle
+                cast.framework.CastContext.getInstance().requestSession();
+                return; 
             }
 
-            if (!castSession) {
-                alert("Önce yukarıdaki Cast ikonuna basıp TV'ye bağlanmalısın!");
-                return;
+            // İçerik tipini belirle
+            let contentType = 'video/mp4';
+            let streamType = chrome.cast.media.StreamType.BUFFERED;
+
+            if (url.includes('.m3u8')) {
+                contentType = 'application/x-mpegurl'; // HLS Canlı Yayın/Dizi Formatı
+                streamType = chrome.cast.media.StreamType.BUFFERED;
             }
 
-            // Medya Bilgilerini Oluştur
-            var mediaInfo = new chrome.cast.media.MediaInfo(url, 'video/mp4');
-            
-            // Eğer canlı yayın (HLS/m3u8) ise type'ı değiştir
-            if(url.includes('.m3u8')) {
-                mediaInfo.contentType = 'application/x-mpegurl';
-                mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
-            } else {
-                mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
-            }
-            
-            // Metadata (TV ekranında görünecek yazı)
+            var mediaInfo = new chrome.cast.media.MediaInfo(url, contentType);
+            mediaInfo.streamType = streamType;
             mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
-            mediaInfo.metadata.title = 'Web Video Yayını';
+            mediaInfo.metadata.title = 'Web Yayını';
             mediaInfo.metadata.subtitle = url;
+            mediaInfo.metadata.images = [{url: 'https://cdn-icons-png.flaticon.com/512/3163/3163478.png'}];
 
-            // Yükleme İsteği
             var request = new chrome.cast.media.LoadRequest(mediaInfo);
 
+            logStatus("TV'ye yükleniyor...", "normal");
+
             castSession.loadMedia(request).then(
-                function() { console.log('Yükleme Başarılı'); document.getElementById('status').innerText = "TV'de Oynatılıyor..."; },
-                function(errorCode) { console.log('Hata Kodu: ' + errorCode); document.getElementById('status').innerText = "Hata oluştu: " + errorCode; }
+                function() { 
+                    logStatus("Başarılı! TV'de oynatılıyor.", "success"); 
+                    addToHistory(url);
+                },
+                function(errorCode) { 
+                    logStatus("HATA Kodu: " + errorCode + ". Link kırık veya format desteklenmiyor (CORS Hatası).", "error"); 
+                }
             );
         }
+
+        function logStatus(msg, type) {
+            const el = document.getElementById('status');
+            el.innerHTML = msg;
+            el.className = 'status-box ' + type;
+        }
+
+        // --- GEÇMİŞ YÖNETİMİ ---
+        function addToHistory(url) {
+            let history = JSON.parse(localStorage.getItem('castHistory')) || [];
+            // Aynı link varsa sil, en başa ekle
+            history = history.filter(item => item !== url);
+            history.unshift(url);
+            if(history.length > 5) history.pop(); // Son 5 kayıt
+            localStorage.setItem('castHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem('castHistory')) || [];
+            list.innerHTML = "";
+            history.forEach(url => {
+                let badge = url.includes('.m3u8') ? '<span class="badge" style="color:#00ff00">HLS</span>' : '<span class="badge" style="color:#00ccff">MP4</span>';
+                let shortUrl = url.substring(0, 30) + "...";
+                list.innerHTML += `<div class="history-item" onclick="document.getElementById('videoUrl').value='${url}'; checkUrl();">
+                    <div>${badge} ${shortUrl}</div>
+                    <i class="fas fa-chevron-right"></i>
+                </div>`;
+            });
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('castHistory');
+            renderHistory();
+        }
+
+        // Sayfa açılınca geçmişi yükle
+        renderHistory();
     </script>
 </body>
 </html>
