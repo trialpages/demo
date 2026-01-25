@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Video Caster</title>
+    <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #222; color: white; }
+        input { width: 80%; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: none; }
+        button { padding: 15px 30px; background: #e50914; color: white; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        
+        /* Chromecast Butonu için Google'ın özel etiketi */
+        google-cast-launcher {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            display: block; /* Butonun görünmesi için */
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📺 TV'ye Gönder</h2>
+    
+    <google-cast-launcher id="cast-btn"></google-cast-launcher>
+
+    <input type="text" id="videoUrl" placeholder="Video linkini (mp4/m3u8) buraya yapıştır...">
+    <button onclick="playOnTV()">OYNAT</button>
+
+    <div id="status" style="margin-top:20px; color: yellow;"></div>
+
+    <script>
+        // 1. Cast Framework Başlatma
+        window['__onGCastApiAvailable'] = function(isAvailable) {
+            if (isAvailable) {
+                cast.framework.CastContext.getInstance().setOptions({
+                    receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID, // Varsayılan video oynatıcı
+                    autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+                });
+                document.getElementById('status').innerText = "Cast API Hazır. TV'ye bağlanabilirsin.";
+            }
+        };
+
+        // 2. Videoyu TV'ye Gönderme Fonksiyonu
+        function playOnTV() {
+            var url = document.getElementById('videoUrl').value;
+            var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+
+            if (!url) {
+                alert("Lütfen bir video linki yapıştırın!");
+                return;
+            }
+
+            if (!castSession) {
+                alert("Önce yukarıdaki Cast ikonuna basıp TV'ye bağlanmalısın!");
+                return;
+            }
+
+            // Medya Bilgilerini Oluştur
+            var mediaInfo = new chrome.cast.media.MediaInfo(url, 'video/mp4');
+            
+            // Eğer canlı yayın (HLS/m3u8) ise type'ı değiştir
+            if(url.includes('.m3u8')) {
+                mediaInfo.contentType = 'application/x-mpegurl';
+                mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
+            } else {
+                mediaInfo.streamType = chrome.cast.media.StreamType.BUFFERED;
+            }
+            
+            // Metadata (TV ekranında görünecek yazı)
+            mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
+            mediaInfo.metadata.title = 'Web Video Yayını';
+            mediaInfo.metadata.subtitle = url;
+
+            // Yükleme İsteği
+            var request = new chrome.cast.media.LoadRequest(mediaInfo);
+
+            castSession.loadMedia(request).then(
+                function() { console.log('Yükleme Başarılı'); document.getElementById('status').innerText = "TV'de Oynatılıyor..."; },
+                function(errorCode) { console.log('Hata Kodu: ' + errorCode); document.getElementById('status').innerText = "Hata oluştu: " + errorCode; }
+            );
+        }
+    </script>
+</body>
+</html>
