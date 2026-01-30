@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Küçüktiryaki Elektrik Ltd. Şti. - Profesyonel Elektrik Hizmetleri</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans&display=swap" rel="stylesheet">
+
+    <style>
+        /* Genel Ayarlar */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        /* Renk Paleti */
+        :root {
+            --primary-color: #0b2545; /* Lacivert */
+            --accent-color: #ffc107; /* Elektrik Sarısı */
+            --light-bg: #f8f9fa;
+        }
+
+        /* Navbar (Menü) */
+        .navbar {
+            background-color: var(--primary-color);
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .nav-link {
+            color: #ddd !important;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+        .btn-warning {
+            background-color: var(--accent-color);
+            border: none;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Hero Bölümü (Kapak) */
+        .hero-section {
+            background: linear-gradient(rgba(11, 37, 69, 0.8), rgba(11, 37, 69, 0.8)), url('https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        .hero-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        /* Hizmet Kutuları */
+        .service-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            height: 100%;
+            text-align: center;
+        }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-bottom: 5px solid var(--accent-color);
+        }
+        .icon-box {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        /* İletişim Bölümü */
+        .contact-section {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .form-control {
+            border-radius: 0;
+            padding: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #061426;
+            color: #aaa;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-bolt text-warning"></i> Küçüktiryaki Elektrik</a>
+            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#anasayfa">Ana Sayfa</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hizmetler">Hizmetlerimiz</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hakkimizda">Hakkımızda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#iletisim">İletişim</a></li>
+                    <li class="nav-item ms-2">
+                        <a href="tel:+905550000000" class="btn btn-warning px-4 rounded-pill">
+                            <i class="fas fa-phone-alt me-2"></i> Hemen Ara
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header id="anasayfa" class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title">Elektrik İşlerinizde Güvenilir Çözüm Ortağınız</h1>
+                    <p class="hero-text">7/24 Acil Servis, Planlı Bakım ve Profesyonel Kurulum Hizmetleri ile Küçüktiryaki Elektrik Ltd. Şti. yanınızda.</p>
+                    <a href="#iletisim" class="btn btn-warning btn-lg px-5 rounded-pill">Teklif Alın</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="hizmetler" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h6 class="text-primary fw-bold text-uppercase">Neler Yapıyoruz?</h6>
+                <h2 class="mb-3">Profesyonel Elektrik Hizmetleri</h2>
+                <div class="mx-auto bg-warning" style="height: 3px; width: 70px;"></div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-tools"></i></div>
+                        <h4>Arıza & Bakım Onarım</h4>
+                        <p>Ev ve iş yerlerinizdeki elektrik arızalarının tespiti, sigorta değişimi ve pano bakımları.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-home"></i></div>
+                        <h4>Elektrik Tesisatı</h4>
+                        <p>İnşaat, tadilat ve yenileme projeleriniz için sıva altı ve sıva üstü komple tesisat döşeme işlemleri.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-lightbulb"></i></div>
+                        <h4>Aydınlatma Sistemleri</h4>
+                        <p>LED aydınlatma, avize montajı, bahçe aydınlatması ve dekoratif ışıklandırma çözümleri.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-wifi"></i></div>
+                        <h4>Akıllı Ev Sistemleri</h4>
+                        <p>Ev otomasyonu, uzaktan kontrol sistemleri ve akıllı priz/anahtar kurulumları.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-video"></i></div>
+                        <h4>Güvenlik Sistemleri</h4>
+                        <p>Güvenlik kamerası (CCTV), alarm sistemleri ve görüntülü diafon kurulum ve bakımı.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="service-card">
+                        <div class="icon-box"><i class="fas fa-network-wired"></i></div>
+                        <h4>İnternet & Telefon</h4>
+                        <p>Modem kurulumu, internet kablosu çekimi, sinyal güçlendirme ve altyapı düzenlemeleri.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="hakkimizda" class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a783?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Elektrikçi" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-lg-6 ps-lg-5 mt-4 mt-lg-0">
+                    <h2 class="mb-4">Neden Küçüktiryaki Elektrik?</h2>
+                    <p class="lead">Yılların verdiği tecrübe ve uzman kadromuz ile elektrik sektöründe güvenin adresi olmaya devam ediyoruz.</p>
+                    <p>Müşteri memnuniyetini en üst seviyede tutarak, iş güvenliği standartlarına uygun, garantili ve hızlı çözümler üretiyoruz. Küçük bir priz tamirinden, komple bina tesisatına kadar her işe aynı titizlikle yaklaşıyoruz.</p>
+                    
+                    <ul class="list-unstyled mt-4">
+                        <li class="mb-2"><i class="fas fa-check-circle text-warning me-2"></i> Sertifikalı ve Uzman Ekip</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-warning me-2"></i> 7/24 Acil Destek</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-warning me-2"></i> Ekonomik Fiyat Garantisi</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="iletisim" class="contact-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <h2>Bize Ulaşın</h2>
+                    <p>Elektrik ile ilgili her türlü sorununuz için bizi arayabilir veya formu doldurarak teklif isteyebilirsiniz.</p>
+                    
+                    <div class="mt-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-phone fa-2x text-warning me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Telefon</h5>
+                                <p class="mb-0">+90 555 000 00 00</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-map-marker-alt fa-2x text-warning me-3"></i>
+                            <div>
+                                <h5 class="mb-0">Adres</h5>
+                                <p class="mb-0">Sanayi Mah. Elektrikçiler Cad. No:12, İstanbul</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-envelope fa-2x text-warning me-3"></i>
+                            <div>
+                                <h5 class="mb-0">E-Posta</h5>
+                                <p class="mb-0">info@kucuktiryakielektrik.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <form class="bg-white p-4 rounded text-dark shadow">
+                        <h4 class="mb-3">Servis Talep Formu</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Adınız Soyadınız</label>
+                            <input type="text" class="form-control" placeholder="İsim Giriniz">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefon Numaranız</label>
+                            <input type="tel" class="form-control" placeholder="05XX XXX XX XX">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hizmet Türü</label>
+                            <select class="form-select">
+                                <option>Arıza Tespiti</option>
+                                <option>Montaj</option>
+                                <option>Tesisat Yenileme</option>
+                                <option>Diğer</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mesajınız</label>
+                            <textarea class="form-control" rows="3" placeholder="Sorunu kısaca anlatınız..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Gönder</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p class="mb-0">&copy; 2024 Küçüktiryaki Elektrik Ltd. Şti. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
