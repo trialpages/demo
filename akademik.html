@@ -3,60 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akademik Portfolyo & Yönetim</title>
+    <title>Akademik Portfolyo Sistemi</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
         :root {
-            --primary-color: #2c3e50; /* Koyu Mavi/Gri */
-            --secondary-color: #d2b48c; /* Bej/Toprak */
-            --bg-light: #f8f9fa;
-            --text-dark: #333;
+            --primary-color: #1a252f; /* Akademik Lacivert */
+            --secondary-color: #c0392b; /* Vurgu Kırmızısı */
+            --accent-bg: #fdfbf7; /* Kağıt/Bej Rengi */
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--accent-bg); padding-top: 70px; }
         
-        /* Navbar */
-        .navbar { background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .navbar-brand { font-weight: bold; color: var(--primary-color); }
-        .nav-link { color: var(--text-dark); font-weight: 500; }
-        .nav-link:hover, .nav-link.active { color: var(--secondary-color); }
-
-        /* Sections */
-        section { padding: 60px 0; min-height: 80vh; display: none; }
+        /* Navbar Tasarımı */
+        .navbar { background-color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .navbar-brand { font-weight: 700; color: var(--primary-color) !important; }
+        .nav-link { color: #555; font-weight: 500; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { color: var(--secondary-color) !important; }
+        
+        /* Bölümler */
+        section { min-height: 80vh; padding: 40px 0; display: none; animation: fadeIn 0.5s; }
         section.active { display: block; }
-        
-        /* Cards & Stats */
-        .stat-card { background: #fff; border-left: 5px solid var(--secondary-color); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .work-item { background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #eee; transition: transform 0.2s; }
-        .work-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        
-        /* Admin Panel */
-        #admin-panel { border-top: 5px solid red; background: #fff4f4; }
-        .admin-controls { display: none; } /* Giriş yapılınca açılacak */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        h1, h2, h3 { color: var(--primary-color); }
-        .badge-type { background-color: var(--secondary-color); color: #fff; }
+        /* Kartlar */
+        .stat-card { background: #fff; border-radius: 10px; padding: 25px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); border-bottom: 4px solid var(--secondary-color); }
+        .work-item { background: #fff; padding: 20px; margin-bottom: 15px; border-radius: 8px; border-left: 4px solid #ddd; transition: 0.3s; }
+        .work-item:hover { transform: translateX(5px); border-left-color: var(--secondary-color); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        /* Badge */
+        .badge-academic { background-color: var(--primary-color); color: #fff; font-size: 0.8em; padding: 5px 10px; border-radius: 20px; }
+
+        /* Admin */
+        .admin-box { border: 2px dashed #ccc; background: #fff; padding: 20px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">Dr. Adınız Soyadınız</a>
+            <a class="navbar-brand" href="#" onclick="showSection('home')"><i class="fas fa-university"></i> Dr. Adınız Soyadınız</a>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" onclick="showSection('home')">Anasayfa</a></li>
                     <li class="nav-item"><a class="nav-link" onclick="showSection('cv')">Özgeçmiş</a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="showSection('works')">Akademik Çalışmalar</a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="showSection('citations')">Atıflar & İndeksler</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('works')">Yayınlar</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="showSection('citations')">Atıflar & İndeks</a></li>
                     <li class="nav-item"><a class="nav-link" onclick="showSection('contact')">İletişim</a></li>
                     <li class="nav-item"><a class="nav-link text-danger" onclick="showSection('admin')"><i class="fas fa-lock"></i></a></li>
                 </ul>
@@ -64,40 +66,45 @@
         </div>
     </nav>
 
-    <section id="home" class="active" style="margin-top: 50px;">
-        <div class="container text-center">
-            <img src="https://via.placeholder.com/150" class="rounded-circle mb-4" alt="Profil">
-            <h1 class="display-4">Hoş Geldiniz</h1>
-            <p class="lead text-muted">Akademik Kişisel Web Sayfası</p>
-            <div class="row mt-5">
-                <div class="col-md-8 mx-auto">
-                    <div class="card p-4 shadow-sm border-0">
-                        <h3>Duyurular</h3>
-                        <div id="public-announcements" class="text-start">
-                            <div class="alert alert-info">Sisteme hoşgeldiniz. Veriler yükleniyor...</div>
-                        </div>
-                    </div>
-                </div>
+    <section id="home" class="active">
+        <div class="container text-center mt-5">
+            <div style="width: 150px; height: 150px; background: #ddd; margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #fff;">
+                <i class="fas fa-user"></i>
+            </div>
+            <h1 class="display-4 mt-3">Dr. Adınız Soyadınız</h1>
+            <p class="lead text-muted">Bölüm / Fakülte / Üniversite</p>
+            <hr class="w-25 mx-auto my-4">
+            <p class="col-md-8 mx-auto">
+                Hoş geldiniz. Bu platformda akademik çalışmalarımı, yayınlarımı ve güncel atıf analizlerimi bulabilirsiniz.
+            </p>
+            <div class="alert alert-warning mt-5">
+                <i class="fas fa-info-circle"></i> Sistem şu an Demo modundadır. Firebase ayarlarını kodun en altındaki ilgili alana yapıştırdığınızda veriler aktif olacaktır.
             </div>
         </div>
     </section>
 
     <section id="cv">
         <div class="container">
-            <h2 class="mb-4">Özgeçmiş</h2>
+            <h2 class="mb-4 text-primary">Özgeçmiş</h2>
             <div class="row">
                 <div class="col-md-6">
-                    <h3><i class="fas fa-graduation-cap text-secondary"></i> Eğitim Bilgileri</h3>
-                    <ul class="list-group list-group-flush" id="cv-education">
-                        <li class="list-group-item"><strong>Doktora:</strong> Üniversite Adı, Yıl</li>
-                        <li class="list-group-item"><strong>Yüksek Lisans:</strong> Üniversite Adı, Yıl</li>
-                    </ul>
+                    <div class="card p-4 border-0 shadow-sm mb-4">
+                        <h4><i class="fas fa-graduation-cap text-danger"></i> Eğitim</h4>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-3"><strong>2018 - 2022</strong><br>Doktora, X Üniversitesi Sosyal Bilimler Enstitüsü</li>
+                            <li class="mb-3"><strong>2015 - 2018</strong><br>Yüksek Lisans, Y Üniversitesi</li>
+                            <li><strong>2011 - 2015</strong><br>Lisans, Z Üniversitesi</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <h3><i class="fas fa-briefcase text-secondary"></i> İdari Görevler</h3>
-                    <ul class="list-group list-group-flush" id="cv-admin">
-                        <li class="list-group-item">Bölüm Başkanlığı (2020-2023)</li>
-                    </ul>
+                    <div class="card p-4 border-0 shadow-sm">
+                        <h4><i class="fas fa-briefcase text-danger"></i> İdari Görevler</h4>
+                        <ul class="list-unstyled mt-3">
+                            <li class="mb-3"><strong>2023 - Devam</strong><br>Bölüm Başkan Yardımcılığı</li>
+                            <li><strong>2022 - 2023</strong><br>Farabi Koordinatörlüğü</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,137 +112,186 @@
 
     <section id="works">
         <div class="container">
-            <h2 class="mb-4">Akademik Çalışmalar</h2>
-            
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item"><button class="nav-link active" onclick="filterWorks('all')">Tümü</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="filterWorks('Makale')">Makaleler</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="filterWorks('Kitap')">Kitaplar</button></li>
-                <li class="nav-item"><button class="nav-link" onclick="filterWorks('Bildiri')">Sempozyum</button></li>
-            </ul>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">Akademik Çalışmalar</h2>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Filtrele
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" onclick="window.filterWorks('all')">Tümü</a></li>
+                        <li><a class="dropdown-item" onclick="window.filterWorks('Makale')">Makaleler</a></li>
+                        <li><a class="dropdown-item" onclick="window.filterWorks('Kitap')">Kitaplar</a></li>
+                        <li><a class="dropdown-item" onclick="window.filterWorks('Bildiri')">Bildiriler</a></li>
+                    </ul>
+                </div>
+            </div>
 
             <div id="works-list">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i><br>Veritabanı bağlantısı bekleniyor...
                 </div>
+            </div>
         </div>
     </section>
 
     <section id="citations">
         <div class="container">
-            <h2 class="mb-4">Atıf Analizi ve İndeksler</h2>
+            <h2 class="mb-4 text-primary">Atıf Analizi</h2>
             
             <div class="row mb-5">
                 <div class="col-md-4">
-                    <div class="stat-card text-center">
-                        <h1 class="display-3" id="stat-hindex">-</h1>
-                        <p class="text-muted">h-indeksi</p>
+                    <div class="stat-card">
+                        <h1 class="display-4 fw-bold" id="stat-hindex">0</h1>
+                        <p class="text-muted text-uppercase small">h-indeksi</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="stat-card text-center">
-                        <h1 class="display-3" id="stat-i10">-</h1>
-                        <p class="text-muted">i10-indeksi</p>
+                    <div class="stat-card">
+                        <h1 class="display-4 fw-bold" id="stat-i10">0</h1>
+                        <p class="text-muted text-uppercase small">i10-indeksi</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="stat-card text-center">
-                        <h1 class="display-3" id="stat-total">-</h1>
-                        <p class="text-muted">Toplam Atıf</p>
+                    <div class="stat-card">
+                        <h1 class="display-4 fw-bold" id="stat-total">0</h1>
+                        <p class="text-muted text-uppercase small">Toplam Atıf</p>
                     </div>
                 </div>
             </div>
 
-            <div class="card p-3 mb-4">
-                <h4>Yıllara Göre Atıf Grafiği</h4>
-                <canvas id="citationChart" style="max-height: 400px;"></canvas>
+            <div class="card p-4 shadow-sm">
+                <h5>Yıllara Göre Atıf Dağılımı</h5>
+                <canvas id="citationChart" style="max-height: 350px;"></canvas>
             </div>
         </div>
     </section>
 
     <section id="admin">
         <div class="container">
-            <h2 class="text-danger">Yönetim Paneli</h2>
-            
-            <div id="login-form" class="card p-4 col-md-4 mx-auto">
-                <h4>Giriş Yap</h4>
-                <input type="email" id="admin-email" class="form-control mb-2" placeholder="Email">
-                <input type="password" id="admin-pass" class="form-control mb-2" placeholder="Şifre">
-                <button onclick="adminLogin()" class="btn btn-danger w-100">Giriş</button>
+            <div class="d-flex align-items-center mb-4">
+                <h2 class="text-danger me-3">Yönetim Paneli</h2>
+                <small class="text-muted">(Sadece yetkili erişimi)</small>
             </div>
 
-            <div id="admin-content" class="admin-controls mt-4">
-                <button onclick="adminLogout()" class="btn btn-outline-secondary mb-3">Çıkış Yap</button>
-                
+            <div id="login-form" class="card p-5 mx-auto" style="max-width: 400px;">
+                <h4 class="text-center mb-3">Giriş Yap</h4>
+                <input type="email" id="admin-email" class="form-control mb-3" placeholder="E-posta">
+                <input type="password" id="admin-pass" class="form-control mb-3" placeholder="Şifre">
+                <button onclick="window.adminLogin()" class="btn btn-danger w-100">Panel Girişi</button>
+            </div>
+
+            <div id="admin-content" style="display: none;">
+                <div class="d-flex justify-content-end mb-3">
+                    <button onclick="window.adminLogout()" class="btn btn-secondary btn-sm">Çıkış Yap</button>
+                </div>
+
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="card p-3 mb-3">
-                            <h4><i class="fas fa-plus"></i> Yeni Çalışma Ekle</h4>
+                    <div class="col-lg-6 mb-4">
+                        <div class="admin-box">
+                            <h5 class="text-primary"><i class="fas fa-book"></i> Yeni Eser Ekle</h5>
+                            <hr>
                             <form id="form-work">
-                                <input type="text" id="w-title" class="form-control mb-2" placeholder="Çalışma Başlığı (Makale/Kitap Adı)" required>
+                                <input type="text" id="w-title" class="form-control mb-2" placeholder="Eser Başlığı" required>
                                 <select id="w-type" class="form-control mb-2">
                                     <option value="Makale">Makale</option>
                                     <option value="Kitap">Kitap</option>
                                     <option value="Kitap Bölümü">Kitap Bölümü</option>
-                                    <option value="Bildiri">Sempozyum Bildirisi</option>
+                                    <option value="Bildiri">Bildiri</option>
                                 </select>
                                 <input type="number" id="w-year" class="form-control mb-2" placeholder="Yıl">
-                                <input type="text" id="w-detail" class="form-control mb-2" placeholder="Dergi Adı / Yayınevi / Detay">
-                                <button type="button" onclick="addWork()" class="btn btn-primary">Kaydet</button>
+                                <input type="text" id="w-detail" class="form-control mb-2" placeholder="Dergi / Yayınevi Adı">
+                                <button type="button" onclick="window.addWork()" class="btn btn-primary w-100">Kaydet</button>
                             </form>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="card p-3 mb-3">
-                            <h4><i class="fas fa-quote-right"></i> Manuel Atıf Girişi</h4>
-                            <form id="form-citation">
-                                <label>Hangi Çalışmanıza Atıf Yapıldı?</label>
-                                <select id="c-target-work" class="form-control mb-2"></select>
-                                
-                                <hr>
-                                <label>Atıf Yapan Eserin Bilgileri:</label>
-                                <input type="text" id="c-title" class="form-control mb-2" placeholder="Atıf Yapan Eser Başlığı">
-                                <input type="text" id="c-author" class="form-control mb-2" placeholder="Yazar(lar)">
-                                <input type="text" id="c-source" class="form-control mb-2" placeholder="Dergi Adı / Kitap Yayınevi">
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="text" id="c-index" class="form-control mb-2" placeholder="İndeks (SCI, TRDizin vb.)">
-                                    </div>
-                                    <div class="col">
-                                        <input type="number" id="c-year" class="form-control mb-2" placeholder="Yıl">
-                                    </div>
-                                </div>
-                                <button type="button" onclick="addCitation()" class="btn btn-success">Atıfı Ekle</button>
-                            </form>
+                    <div class="col-lg-6 mb-4">
+                        <div class="admin-box">
+                            <h5 class="text-success"><i class="fas fa-quote-right"></i> Atıf Ekle</h5>
+                            <hr>
+                            <label class="small text-muted">Hangi eserine atıf yapıldı?</label>
+                            <select id="c-target-work" class="form-control mb-3"></select>
+                            
+                            <label class="small text-muted">Atıf yapan kaynağın bilgileri:</label>
+                            <input type="text" id="c-title" class="form-control mb-2" placeholder="Atıf Yapan Eser Başlığı">
+                            <input type="text" id="c-author" class="form-control mb-2" placeholder="Yazar(lar)">
+                            <div class="row g-2">
+                                <div class="col"><input type="text" id="c-source" class="form-control" placeholder="Dergi/Yayınevi"></div>
+                                <div class="col"><input type="text" id="c-index" class="form-control" placeholder="İndeks (SCI vb.)"></div>
+                                <div class="col"><input type="number" id="c-year" class="form-control" placeholder="Yıl"></div>
+                            </div>
+                            <button type="button" onclick="window.addCitation()" class="btn btn-success w-100 mt-2">Atıfı Kaydet</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="card p-4 bg-light border-success">
-                    <h4>Raporlama</h4>
-                    <p>Tüm atıflarınızı ve hesaplanan indekslerinizi içeren resmi formatta bir Word dosyası oluşturur.</p>
-                    <button onclick="generateDocxReport()" class="btn btn-lg btn-success"><i class="fas fa-file-word"></i> Atıf Raporunu İndir (.docx)</button>
+                <div class="alert alert-success d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong><i class="fas fa-file-word"></i> Resmi Atıf Raporu</strong>
+                        <p class="mb-0 small">Tüm verileri YÖK formatına uygun tablo halinde indirir.</p>
+                    </div>
+                    <button onclick="window.generateDocxReport()" class="btn btn-success">Rapor İndir (.docx)</button>
                 </div>
-
             </div>
         </div>
     </section>
-    
+
     <section id="contact">
-        <div class="container text-center">
-            <h2>İletişim</h2>
-            <p class="lead">email@universite.edu.tr</p>
-            <p>Üniversite Adresi, Fakülte Binası, Oda No: 123</p>
+        <div class="container">
+            <h2 class="text-primary mb-4">İletişim</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong><i class="fas fa-envelope"></i> E-Posta:</strong> isim@universite.edu.tr</p>
+                    <p><strong><i class="fas fa-map-marker-alt"></i> Adres:</strong> Üniversite Kampüsü, Fakülte Binası, B-Blok, Oda: 204</p>
+                    <p><strong><i class="fas fa-phone"></i> Telefon:</strong> +90 212 123 45 67</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-light p-5 text-center text-muted rounded">
+                        Harita Alanı
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Sayfa Değiştirme Fonksiyonu
+        window.showSection = function(id) {
+            // Tüm sectionları gizle
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            // İstenen sectionu göster
+            document.getElementById(id).classList.add('active');
+            
+            // Linklerin aktiflik durumunu güncelle
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            // Bu basit bir eşleştirme, id'ye göre aktif classı verilebilir
+            
+            // Mobildeysek ve menü açıksa kapat
+            const navbarCollapse = document.getElementById('navbarNav');
+            if (navbarCollapse.classList.contains('show')) {
+                const bsCollapse = new bootstrap.Collapse(navbarCollapse, {toggle: false});
+                bsCollapse.hide();
+            }
+            window.scrollTo(0,0);
+        };
+
+        // UI için boş filtre fonksiyonu (Veri gelince dolacak)
+        window.filterWorks = function(type) { console.log("Filtre: " + type); };
+    </script>
+
     <script type="module">
-        // 1. FIREBASE KURULUMU (Kendi keylerinizi buraya yapıştıracaksınız)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
+        // --- DİKKAT: BURAYA KENDİ BİLGİLERİNİZİ GİRİNİZ ---
+        // Eğer bu alan boşsa site sadece tasarım olarak çalışır, veri kaydetmez.
         const firebaseConfig = {
-            apiKey: "BURAYA_KENDI_API_KEY_GELECEK",
+            apiKey: "API_KEY_BURAYA",
             authDomain: "PROJE_ID.firebaseapp.com",
             projectId: "PROJE_ID",
             storageBucket: "PROJE_ID.firebasestorage.app",
@@ -243,77 +299,115 @@
             appId: "APP_ID"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        // Uygulamayı Başlatma (Hata korumalı)
+        let db, auth;
+        let isFirebaseActive = false;
 
-        // GLOBAL DEĞİŞKENLER
+        try {
+            if (firebaseConfig.apiKey === "API_KEY_BURAYA") {
+                console.warn("Firebase Config girilmediği için Demo Modunda çalışıyor.");
+                document.getElementById('works-list').innerHTML = `<div class="alert alert-info">Firebase bağlantısı yapılmadı. Burası yayınlarınızın listeleneceği alandır.</div>`;
+            } else {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                isFirebaseActive = true;
+                initApp(); // Verileri çekmeye başla
+            }
+        } catch (e) {
+            console.error("Firebase Hatası:", e);
+        }
+
+        // Global Değişkenler
         let allWorks = [];
         let allCitations = [];
 
-        // 2. VERİ ÇEKME VE HESAPLAMA FONKSİYONLARI
-        async function loadData() {
-            // Çalışmaları Çek
-            const worksQ = query(collection(db, "works"), orderBy("year", "desc"));
-            const worksSnap = await getDocs(worksQ);
-            allWorks = worksSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        // 1. Verileri Çekme ve Dinleme
+        function initApp() {
+            if(!isFirebaseActive) return;
 
-            // Atıfları Çek
-            const citQ = query(collection(db, "citations"), orderBy("year", "desc"));
-            const citSnap = await getDocs(citQ);
-            allCitations = citSnap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+            // Yayınları Dinle
+            const qWorks = query(collection(db, "works"), orderBy("year", "desc"));
+            onSnapshot(qWorks, (snapshot) => {
+                allWorks = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                refreshUI();
+            });
 
-            renderWorks();
-            calculateIndices();
-            populateSelectBox(); // Admin paneli için selectbox doldur
+            // Atıfları Dinle
+            const qCitations = query(collection(db, "citations"), orderBy("year", "desc"));
+            onSnapshot(qCitations, (snapshot) => {
+                allCitations = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                refreshUI();
+            });
+
+            // Auth Durumu
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    document.getElementById("login-form").style.display = "none";
+                    document.getElementById("admin-content").style.display = "block";
+                } else {
+                    document.getElementById("login-form").style.display = "block";
+                    document.getElementById("admin-content").style.display = "none";
+                }
+            });
         }
 
-        function renderWorks(filter = 'all') {
+        // 2. Arayüzü Güncelleme
+        function refreshUI() {
+            renderWorks('all');
+            populateSelectBox();
+            calculateIndices();
+        }
+
+        // 3. Global Fonksiyonları Window'a Bağlama (HTML'den erişmek için)
+        window.filterWorks = (type) => {
+            renderWorks(type);
+        };
+
+        function renderWorks(filter) {
             const list = document.getElementById("works-list");
             list.innerHTML = "";
             
-            allWorks.forEach(work => {
-                if(filter === 'all' || work.type === filter) {
-                    // Bu çalışmaya yapılan atıf sayısını bul
-                    const citationCount = allCitations.filter(c => c.targetWorkID === work.id).length;
-                    
-                    const html = `
-                    <div class="work-item">
-                        <div class="d-flex justify-content-between">
-                            <h5>${work.title}</h5>
-                            <span class="badge badge-type">${work.type}</span>
-                        </div>
-                        <p class="text-muted mb-1">${work.detail} (${work.year})</p>
-                        <small class="text-primary fw-bold"><i class="fas fa-quote-left"></i> Atıf Sayısı: ${citationCount}</small>
-                    </div>`;
-                    list.innerHTML += html;
-                }
+            let filtered = allWorks;
+            if (filter !== 'all') {
+                filtered = allWorks.filter(w => w.type === filter);
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="alert alert-light">Bu kategoride kayıt bulunamadı.</div>';
+                return;
+            }
+
+            filtered.forEach(work => {
+                const citationCount = allCitations.filter(c => c.targetWorkID === work.id).length;
+                
+                list.innerHTML += `
+                <div class="work-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="mb-1">${work.title}</h5>
+                        <span class="badge badge-academic">${work.type}</span>
+                    </div>
+                    <p class="mb-1 text-muted">${work.detail} (${work.year})</p>
+                    <div class="mt-2">
+                        <span class="text-danger fw-bold small"><i class="fas fa-quote-left"></i> ${citationCount} Atıf</span>
+                    </div>
+                </div>`;
             });
         }
 
         function calculateIndices() {
-            // Her çalışma için atıf sayısını hesapla
-            let counts = allWorks.map(w => {
-                return allCitations.filter(c => c.targetWorkID === w.id).length;
-            });
-
-            // Büyükten küçüğe sırala
+            // H-Index Hesaplama Mantığı
+            let counts = allWorks.map(w => allCitations.filter(c => c.targetWorkID === w.id).length);
             counts.sort((a, b) => b - a);
 
-            // H-Index Hesapla
             let hIndex = 0;
             for (let i = 0; i < counts.length; i++) {
-                if (counts[i] >= i + 1) {
-                    hIndex = i + 1;
-                } else {
-                    break;
-                }
+                if (counts[i] >= i + 1) hIndex = i + 1;
+                else break;
             }
 
-            // i10-Index Hesapla
+            // i10 Index
             let i10Index = counts.filter(n => n >= 10).length;
-
-            // Toplam Atıf
             let totalCitations = counts.reduce((a, b) => a + b, 0);
 
             // Ekrana Yaz
@@ -321,82 +415,37 @@
             document.getElementById("stat-i10").innerText = i10Index;
             document.getElementById("stat-total").innerText = totalCitations;
 
-            drawChart();
+            // Grafik Güncelle
+            updateChart();
         }
 
-        function drawChart() {
-            // Yıllara göre atıf dağılımını hazırla
+        // Grafik Oluşturma
+        let myChart = null;
+        function updateChart() {
             const years = {};
-            allCitations.forEach(c => {
-                years[c.year] = (years[c.year] || 0) + 1;
-            });
+            allCitations.forEach(c => { years[c.year] = (years[c.year] || 0) + 1; });
             
             const labels = Object.keys(years).sort();
             const data = labels.map(y => years[y]);
 
             const ctx = document.getElementById('citationChart');
-            new Chart(ctx, {
+            
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Yıllık Atıf Sayısı',
+                        label: 'Yıllık Atıf',
                         data: data,
-                        backgroundColor: '#d2b48c',
-                        borderColor: '#2c3e50',
-                        borderWidth: 1
+                        backgroundColor: '#c0392b',
+                        borderRadius: 5
                     }]
-                }
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
             });
         }
-
-        // 3. ADMIN İŞLEMLERİ
-        window.adminLogin = () => {
-            const e = document.getElementById("admin-email").value;
-            const p = document.getElementById("admin-pass").value;
-            signInWithEmailAndPassword(auth, e, p)
-                .then(() => alert("Giriş Başarılı"))
-                .catch(err => alert("Hata: " + err.message));
-        };
-
-        window.adminLogout = () => signOut(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById("login-form").style.display = "none";
-                document.getElementById("admin-content").style.display = "block";
-            } else {
-                document.getElementById("login-form").style.display = "block";
-                document.getElementById("admin-content").style.display = "none";
-            }
-        });
-
-        window.addWork = async () => {
-            const data = {
-                title: document.getElementById("w-title").value,
-                type: document.getElementById("w-type").value,
-                year: parseInt(document.getElementById("w-year").value),
-                detail: document.getElementById("w-detail").value,
-                createdAt: new Date()
-            };
-            await addDoc(collection(db, "works"), data);
-            alert("Çalışma Eklendi!");
-            loadData(); // Arayüzü yenile
-        };
-
-        window.addCitation = async () => {
-            const data = {
-                targetWorkID: document.getElementById("c-target-work").value,
-                citingTitle: document.getElementById("c-title").value,
-                citingAuthor: document.getElementById("c-author").value,
-                source: document.getElementById("c-source").value,
-                index: document.getElementById("c-index").value,
-                year: parseInt(document.getElementById("c-year").value)
-            };
-            await addDoc(collection(db, "citations"), data);
-            alert("Atıf Eklendi!");
-            loadData();
-        };
 
         function populateSelectBox() {
             const sel = document.getElementById("c-target-work");
@@ -404,81 +453,105 @@
             allWorks.forEach(w => {
                 const opt = document.createElement("option");
                 opt.value = w.id;
-                opt.innerText = w.title.substring(0, 50) + "...";
+                opt.innerText = w.title.substring(0, 60) + (w.title.length>60 ? "..." : "");
                 sel.appendChild(opt);
             });
         }
 
-        // 4. DOCX RAPOR OLUŞTURMA (Özel İsteğiniz)
-        window.generateDocxReport = () => {
-            const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
+        // 4. Admin İşlemleri
+        window.adminLogin = () => {
+            if(!isFirebaseActive) { alert("Firebase ayarları yapılmamış!"); return; }
+            const e = document.getElementById("admin-email").value;
+            const p = document.getElementById("admin-pass").value;
+            signInWithEmailAndPassword(auth, e, p)
+                .then(() => alert("Giriş Başarılı"))
+                .catch(err => alert("Hata: " + err.message));
+        };
 
-            // Tablo Satırlarını Oluştur
+        window.adminLogout = () => {
+            if(isFirebaseActive) signOut(auth);
+        };
+
+        window.addWork = async () => {
+            if(!isFirebaseActive) return;
+            try {
+                await addDoc(collection(db, "works"), {
+                    title: document.getElementById("w-title").value,
+                    type: document.getElementById("w-type").value,
+                    year: parseInt(document.getElementById("w-year").value),
+                    detail: document.getElementById("w-detail").value,
+                    createdAt: new Date()
+                });
+                alert("Eser Kaydedildi!");
+                document.getElementById("form-work").reset();
+            } catch(e) { alert("Hata: " + e.message); }
+        };
+
+        window.addCitation = async () => {
+            if(!isFirebaseActive) return;
+            try {
+                await addDoc(collection(db, "citations"), {
+                    targetWorkID: document.getElementById("c-target-work").value,
+                    citingTitle: document.getElementById("c-title").value,
+                    citingAuthor: document.getElementById("c-author").value,
+                    source: document.getElementById("c-source").value,
+                    index: document.getElementById("c-index").value,
+                    year: parseInt(document.getElementById("c-year").value)
+                });
+                alert("Atıf Eklendi!");
+            } catch(e) { alert("Hata: " + e.message); }
+        };
+
+        // 5. DOCX Raporu (Firebase'den bağımsız çalışabilir ama veri lazım)
+        window.generateDocxReport = () => {
+            if(allCitations.length === 0) { alert("Raporlanacak atıf verisi yok."); return; }
+            
+            const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, HeadingLevel } = docx;
+
             const tableRows = [
                 new TableRow({
                     children: [
-                        new TableCell({ children: [new Paragraph({text: "Sıra", bold: true})], width: { size: 10, type: WidthType.PERCENTAGE } }),
-                        new TableCell({ children: [new Paragraph({text: "Atıf Yapan Eser", bold: true})], width: { size: 40, type: WidthType.PERCENTAGE } }),
-                        new TableCell({ children: [new Paragraph({text: "Atıf Yapılan Çalışmanız", bold: true})], width: { size: 40, type: WidthType.PERCENTAGE } }),
-                        new TableCell({ children: [new Paragraph({text: "Yıl", bold: true})], width: { size: 10, type: WidthType.PERCENTAGE } }),
-                    ],
-                }),
+                        new TableCell({ children: [new Paragraph({text: "#", bold: true})], width: {size: 5, type: WidthType.PERCENTAGE} }),
+                        new TableCell({ children: [new Paragraph({text: "Atıf Yapan Eser", bold: true})], width: {size: 45, type: WidthType.PERCENTAGE} }),
+                        new TableCell({ children: [new Paragraph({text: "Kendi Eseriniz", bold: true})], width: {size: 40, type: WidthType.PERCENTAGE} }),
+                        new TableCell({ children: [new Paragraph({text: "Yıl", bold: true})], width: {size: 10, type: WidthType.PERCENTAGE} }),
+                    ]
+                })
             ];
 
-            allCitations.forEach((cit, index) => {
-                const targetWork = allWorks.find(w => w.id === cit.targetWorkID);
-                tableRows.push(
-                    new TableRow({
-                        children: [
-                            new TableCell({ children: [new Paragraph((index + 1).toString())] }),
-                            new TableCell({ children: [
-                                new Paragraph({ children: [new TextRun({ text: cit.citingTitle, bold: true })] }),
-                                new Paragraph(cit.citingAuthor),
-                                new Paragraph({ text: `${cit.source} (${cit.index})`, italics: true })
-                            ]}),
-                            new TableCell({ children: [new Paragraph(targetWork ? targetWork.title : "Silinmiş Çalışma")] }),
-                            new TableCell({ children: [new Paragraph(cit.year.toString())] }),
-                        ],
-                    })
-                );
+            allCitations.forEach((cit, i) => {
+                const target = allWorks.find(w => w.id === cit.targetWorkID);
+                tableRows.push(new TableRow({
+                    children: [
+                        new TableCell({ children: [new Paragraph((i+1).toString())] }),
+                        new TableCell({ children: [
+                            new Paragraph({text: cit.citingTitle, bold: true}),
+                            new Paragraph(cit.citingAuthor),
+                            new Paragraph({text: `${cit.source} (${cit.index})`, italics: true})
+                        ]}),
+                        new TableCell({ children: [new Paragraph(target ? target.title : "Silinmiş Eser")] }),
+                        new TableCell({ children: [new Paragraph(cit.year.toString())] }),
+                    ]
+                }));
             });
 
             const doc = new Document({
                 sections: [{
-                    properties: {},
                     children: [
                         new Paragraph({ text: "AKADEMİK ATIF RAPORU", heading: HeadingLevel.HEADING_1, alignment: "center" }),
-                        new Paragraph({ text: `Rapor Tarihi: ${new Date().toLocaleDateString('tr-TR')}`, alignment: "center" }),
-                        new Paragraph({ text: "" }), // Boşluk
-                        new Paragraph({ text: `Toplam Atıf: ${document.getElementById("stat-total").innerText} | h-indeksi: ${document.getElementById("stat-hindex").innerText}`, bold: true }),
-                        new Paragraph({ text: "" }), // Boşluk
-                        new Table({
-                            rows: tableRows,
-                            width: { size: 100, type: WidthType.PERCENTAGE },
-                        }),
-                    ],
-                }],
+                        new Paragraph({ text: `Oluşturulma Tarihi: ${new Date().toLocaleDateString()}`, alignment: "center" }),
+                        new Paragraph({ text: "" }),
+                        new Paragraph({ text: `Toplam Atıf: ${document.getElementById("stat-total").innerText} | H-Index: ${document.getElementById("stat-hindex").innerText}`, bold: true }),
+                        new Paragraph({ text: "" }),
+                        new Table({ rows: tableRows, width: {size: 100, type: WidthType.PERCENTAGE} })
+                    ]
+                }]
             });
 
-            Packer.toBlob(doc).then((blob) => {
+            Packer.toBlob(doc).then(blob => {
                 saveAs(blob, "Atif_Raporu.docx");
             });
         };
-
-        // Diğer UI Fonksiyonları
-        window.showSection = (id) => {
-            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            // Menü aktiflik güncellemesi basitçe yapılabilir
-        };
-        
-        window.filterWorks = (type) => {
-            renderWorks(type == 'all' ? 'all' : type);
-            // Buton aktiflik sınıfları güncellenebilir
-        }
-
-        // Başlangıç
-        loadData();
     </script>
 </body>
 </html>
