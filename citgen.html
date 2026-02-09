@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akademik Atıf Oluşturucu | Pro</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/citation-js@0.7.14/build/citation.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .glass-panel { background: white; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .loading-spinner { border-top-color: #3b82f6; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <nav class="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-slate-800">Akademik<span class="text-blue-600">Referans</span></h1>
+            </div>
+            <div class="text-sm text-gray-500 hidden sm:block">v1.0 • DOI / ISBN / BibTeX Destekli</div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="md:col-span-2 space-y-6">
+                
+                <div class="glass-panel rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-blue-500"></i> Kaynak Girişi
+                        </h2>
+                        
+                        <div class="bg-gray-100 p-1 rounded-lg flex text-xs font-medium">
+                            <button onclick="setMode('single')" id="btn-single" class="px-3 py-1.5 rounded-md bg-white shadow text-blue-700 transition-all">Tekil</button>
+                            <button onclick="setMode('bulk')" id="btn-bulk" class="px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700 transition-all">Toplu Liste</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Atıf Stili</label>
+                            <select id="style-select" class="w-full border-gray-300 bg-gray-50 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 border">
+                                <option value="apa">APA (7th Edition)</option>
+                                <option value="chicago-note-bibliography">Chicago (17th Ed. - Dipnot & Kaynakça)</option>
+                                <option value="modern-language-association">MLA (9th Edition)</option>
+                                <option value="ieee">IEEE</option>
+                                <option value="vanouver">Vancouver</option>
+                            </select>
+                            <p class="text-xs text-gray-400 mt-1">*İSNAD sistemi teknik yapısı gereği Chicago stiline çok yakındır.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                <span id="input-label">DOI, ISBN veya BibTeX</span>
+                            </label>
+                            <textarea id="input-area" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-sm" placeholder="Örnek: 10.1038/nature12345 veya 978-3-16-148410-0"></textarea>
+                            <p class="text-xs text-gray-500 mt-2 flex justify-between">
+                                <span><i class="fa-solid fa-info-circle"></i> Toplu modda her satıra bir kod giriniz.</span>
+                                <button onclick="clearInput()" class="text-red-500 hover:text-red-700">Temizle</button>
+                            </p>
+                        </div>
+
+                        <button onclick="processCitation()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                            <span id="loading-icon" class="hidden loading-spinner w-4 h-4 border-2 border-white rounded-full"></span>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Dönüştür
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+                    <h3 class="font-bold mb-1">Nasıl Çalışır?</h3>
+                    <p>Bu araç <strong>DOI</strong> (Makale kimlik no), <strong>ISBN</strong> (Kitap no) veya <strong>BibTeX</strong> verilerini uluslararası veritabanlarından (Crossref, Google Books) çeker ve seçtiğiniz formatta düzenler.</p>
+                </div>
+
+            </div>
+
+            <div class="md:col-span-1">
+                <div class="glass-panel rounded-xl p-6 h-full flex flex-col">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-green-600"></i> Sonuçlar
+                    </h2>
+                    
+                    <div id="results-container" class="flex-1 overflow-y-auto space-y-4 max-h-[500px] text-sm custom-scrollbar">
+                        <div id="empty-state" class="text-center py-10 text-gray-400">
+                            <i class="fa-solid fa-copy text-4xl mb-3 opacity-20"></i>
+                            <p>Henüz bir veri girişi yapılmadı.</p>
+                        </div>
+                    </div>
+
+                    <div id="action-buttons" class="mt-4 pt-4 border-t border-gray-100 hidden">
+                        <button onclick="copyAll()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                            <i class="fa-regular fa-copy"></i> Tümünü Kopyala
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="max-w-5xl mx-auto px-6 py-6 text-center text-xs text-gray-400">
+        &copy; 2026 Akademik Referans Aracı. Gizlilik odaklıdır, veriler sunucuda saklanmaz.
+    </footer>
+
+    <script>
+        const Cite = require('citation-js');
+        let currentMode = 'single';
+
+        // Mod Değiştirme (Tekil / Toplu)
+        function setMode(mode) {
+            currentMode = mode;
+            const btnSingle = document.getElementById('btn-single');
+            const btnBulk = document.getElementById('btn-bulk');
+            const inputLabel = document.getElementById('input-label');
+            const inputArea = document.getElementById('input-area');
+
+            if (mode === 'single') {
+                btnSingle.className = "px-3 py-1.5 rounded-md bg-white shadow text-blue-700 transition-all";
+                btnBulk.className = "px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700 transition-all";
+                inputLabel.innerText = "DOI, ISBN veya BibTeX";
+                inputArea.placeholder = "Örnek: 10.1038/nature12345";
+                inputArea.rows = 4;
+            } else {
+                btnBulk.className = "px-3 py-1.5 rounded-md bg-white shadow text-blue-700 transition-all";
+                btnSingle.className = "px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-700 transition-all";
+                inputLabel.innerText = "Alt alta DOI veya ISBN Listesi";
+                inputArea.placeholder = "10.1038/nature12345\n978-3-16-148410-0\n10.1109/5.771073";
+                inputArea.rows = 10;
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('input-area').value = '';
+            document.getElementById('results-container').innerHTML = `
+                <div id="empty-state" class="text-center py-10 text-gray-400">
+                    <i class="fa-solid fa-copy text-4xl mb-3 opacity-20"></i>
+                    <p>Henüz bir veri girişi yapılmadı.</p>
+                </div>`;
+            document.getElementById('action-buttons').classList.add('hidden');
+        }
+
+        // Ana İşlem Fonksiyonu
+        async function processCitation() {
+            const input = document.getElementById('input-area').value.trim();
+            const style = document.getElementById('style-select').value;
+            const resultContainer = document.getElementById('results-container');
+            const loadingIcon = document.getElementById('loading-icon');
+
+            if (!input) {
+                alert("Lütfen geçerli bir DOI, ISBN veya veri giriniz.");
+                return;
+            }
+
+            // UI Loading State
+            loadingIcon.classList.remove('hidden');
+            resultContainer.innerHTML = ''; 
+
+            try {
+                let inputs = [];
+                
+                if (currentMode === 'bulk') {
+                    // Satır satır ayır, boşlukları temizle
+                    inputs = input.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
+                } else {
+                    inputs = [input];
+                }
+
+                let generatedHTML = '';
+
+                // Her bir girdi için işlem yap
+                for (let i = 0; i < inputs.length; i++) {
+                    const entry = inputs[i];
+                    try {
+                        // Veriyi Çek
+                        const data = await Cite.async(entry);
+                        
+                        // İstenen formatta çıktıyı al
+                        const output = data.format('bibliography', {
+                            format: 'html',
+                            template: style,
+                            lang: 'en-US'
+                        });
+
+                        // Meta verileri al (Başlık vs göstermek için)
+                        const meta = data.data[0];
+                        const title = meta.title || "Başlıksız Eser";
+                        const author = meta.author ? meta.author[0].family : "Yazar Bilinmiyor";
+                        const year = meta.issued ? meta.issued['date-parts'][0][0] : "Tarihsiz";
+
+                        // HTML Kartı Oluştur
+                        generatedHTML += `
+                            <div class="bg-white p-3 border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 transition-colors group relative">
+                                <div class="text-xs text-gray-400 font-mono mb-1 truncate">${entry}</div>
+                                <div class="font-serif text-slate-900 leading-relaxed citation-text pr-8">
+                                    ${output}
+                                </div>
+                                <button onclick="copySingle(this)" class="absolute top-2 right-2 text-gray-400 hover:text-blue-600 p-1" title="Kopyala">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                                <div class="mt-2 text-xs text-blue-600 bg-blue-50 inline-block px-2 py-0.5 rounded">
+                                    ${author}, ${year}
+                                </div>
+                            </div>
+                        `;
+
+                    } catch (err) {
+                        generatedHTML += `
+                            <div class="bg-red-50 p-3 border border-red-200 rounded-lg">
+                                <div class="text-red-700 text-sm font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Hata</div>
+                                <p class="text-xs text-red-600">"${entry}" verisi çekilemedi. Format hatalı veya veritabanında yok.</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                resultContainer.innerHTML = generatedHTML;
+                document.getElementById('action-buttons').classList.remove('hidden');
+
+            } catch (error) {
+                console.error(error);
+                resultContainer.innerHTML = `<div class="text-red-500 text-center">Genel bir hata oluştu. Lütfen konsolu kontrol edin.</div>`;
+            } finally {
+                loadingIcon.classList.add('hidden');
+            }
+        }
+
+        // Tekil Kopyalama
+        function copySingle(btn) {
+            const card = btn.closest('div');
+            // Citation text div'inin içindeki metni al (HTML taglerinden arındırılmış)
+            const text = card.querySelector('.citation-text').innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-green-500"></i>';
+                setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
+            });
+        }
+
+        // Tümünü Kopyala
+        function copyAll() {
+            const texts = document.querySelectorAll('.citation-text');
+            let fullText = "";
+            texts.forEach(div => {
+                fullText += div.innerText + "\n\n";
+            });
+
+            navigator.clipboard.writeText(fullText).then(() => {
+                const btn = document.querySelector('#action-buttons button');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Kopyalandı!';
+                btn.classList.remove('bg-slate-800');
+                btn.classList.add('bg-green-600');
+                
+                setTimeout(() => { 
+                    btn.innerHTML = originalContent; 
+                    btn.classList.add('bg-slate-800');
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
