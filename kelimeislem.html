@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelime ve İşlem Ustası</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        .certificate-font { font-family: 'Playfair Display', serif; }
+        .letter-box { transition: all 0.2s ease-in-out; }
+        .letter-box:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .hide { display: none !important; }
+        
+        /* Sertifika Şablonu CSS */
+        #certificateTemplate {
+            width: 800px;
+            height: 600px;
+            background: #fff;
+            border: 15px solid #1e3a8a;
+            padding: 40px;
+            position: relative;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .cert-inner { border: 2px solid #d1d5db; height: 100%; padding: 20px; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-blue-900 text-white shadow-lg p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold tracking-wider">Kelimİşlem</h1>
+            <div class="flex items-center gap-4">
+                <span class="font-semibold bg-blue-800 px-3 py-1 rounded-lg">Hedef: <span id="targetScoreDisplay">100</span></span>
+                <span class="font-semibold bg-green-600 px-3 py-1 rounded-lg">Puan: <span id="totalScore">0</span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto flex-grow p-4 md:p-8 max-w-4xl">
+        
+        <div id="gameArea" class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            
+            <div class="flex border-b text-center">
+                <button id="tabWord" onclick="switchTab('word')" class="flex-1 py-4 font-bold text-blue-900 bg-blue-50 transition-colors">BİR KELİME</button>
+                <button id="tabMath" onclick="switchTab('math')" class="flex-1 py-4 font-bold text-gray-500 hover:bg-gray-50 transition-colors">BİR İŞLEM</button>
+            </div>
+
+            <div id="wordSection" class="p-6 md:p-10">
+                <h2 class="text-2xl font-semibold mb-6 text-center">Harfleri Kullanarak En Uzun Kelimeyi Bul</h2>
+                
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="lettersContainer">
+                    </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="text" id="wordInput" class="flex-1 border-2 border-gray-300 rounded-xl px-4 py-3 text-lg focus:outline-none focus:border-blue-600 uppercase" placeholder="Bulduğunuz kelimeyi girin..." autocomplete="off">
+                    <button onclick="submitWord()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-md">Doğrula</button>
+                </div>
+                <p id="wordFeedback" class="mt-4 text-center font-medium h-6"></p>
+                <div class="mt-6 text-center">
+                    <button onclick="generateLetters()" class="text-sm text-gray-500 hover:text-gray-800 underline">Yeni Harfler Ver</button>
+                </div>
+            </div>
+
+            <div id="mathSection" class="p-6 md:p-10 hide">
+                <h2 class="text-2xl font-semibold mb-6 text-center">Hedef Sayıya Ulaş</h2>
+                
+                <div class="flex justify-center items-center mb-8">
+                    <div class="bg-blue-900 text-white text-4xl font-bold py-4 px-8 rounded-xl shadow-inner border-4 border-blue-200">
+                        Hedef: <span id="targetNumber">000</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8" id="numbersContainer">
+                    </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input type="number" id="mathInput" class="flex-1 border-2 border-gray-300 rounded-xl px-4 py-3 text-lg focus:outline-none focus:border-blue-600" placeholder="Bulduğunuz sonucu girin (örn: 345)" autocomplete="off">
+                    <button onclick="submitMath()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 shadow-md">Doğrula</button>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">* Gerçek uygulamada burası formül ayrıştırıcı (parser) içerecektir.</p>
+                <p id="mathFeedback" class="mt-4 text-center font-medium h-6"></p>
+                <div class="mt-6 text-center">
+                    <button onclick="generateNumbers()" class="text-sm text-gray-500 hover:text-gray-800 underline">Yeni Sayılar Ver</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="certificateAlert" class="mt-8 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md hide flex justify-between items-center">
+            <div>
+                <p class="font-bold">Tebrikler!</p>
+                <p>Hedef puana ulaştınız ve Başarı Sertifikası almaya hak kazandınız.</p>
+            </div>
+            <button onclick="openCertificateModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300">Sertifikayı Gör</button>
+        </div>
+
+    </main>
+
+    <div id="certificateModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[100] hide overflow-y-auto p-4">
+        <div class="bg-white rounded-xl shadow-2xl flex flex-col items-center p-4 max-w-full overflow-x-auto relative">
+            <button onclick="closeCertificateModal()" class="absolute top-2 right-4 text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            
+            <div id="certificateWrapper" class="overflow-hidden bg-white mb-4">
+                <div id="certificateTemplate">
+                    <div class="cert-inner flex flex-col items-center justify-center">
+                        <img src="https://cdn-icons-png.flaticon.com/512/5700/5700947.png" alt="Logo" class="w-24 h-24 mb-4 opacity-80">
+                        <h1 class="certificate-font text-5xl text-blue-900 mb-2">BAŞARI SERTİFİKASI</h1>
+                        <p class="text-gray-500 tracking-widest mb-8 uppercase text-sm">Kelime ve İşlem Ustası</p>
+                        
+                        <p class="text-lg italic text-gray-600 mb-2">Bu sertifika,</p>
+                        <h2 class="certificate-font text-4xl text-gray-800 mb-2 border-b-2 border-gray-300 pb-2 inline-block px-8" id="certName">Oyuncu Adı</h2>
+                        <p class="text-lg text-gray-600 mt-4 max-w-lg">
+                            Kelime ve işlem zekasını kullanarak üstün başarı göstermiş, hedeflenen puana ulaşarak bu belgeyi almaya hak kazanmıştır.
+                        </p>
+                        
+                        <div class="mt-12 w-full flex justify-around items-end">
+                            <div class="text-center">
+                                <p class="font-bold text-gray-800" id="certScore">0</p>
+                                <p class="text-xs text-gray-500 border-t border-gray-400 pt-1 w-32">Elde Edilen Puan</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-bold text-gray-800" id="certDate">01.01.2026</p>
+                                <p class="text-xs text-gray-500 border-t border-gray-400 pt-1 w-32">Tarih</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 w-full justify-center">
+                <button onclick="downloadCert('jpeg')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition">JPEG İndir</button>
+                <button onclick="downloadCert('pdf')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow transition">PDF İndir</button>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">* Sertifikaya yazılacak ismi oyun başında profilden veya prompt ile alabilirsiniz.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- DURUM YÖNETİMİ (State) ---
+        let state = {
+            score: 0,
+            targetScore: 100,
+            currentLetters: [],
+            currentNumbers: [],
+            targetNumber: 0,
+            isCertUnlocked: false,
+            playerName: "Ahmet Yasin" // Sisteme login olan kullanıcının adı buraya gelmeli
+        };
+
+        // --- UI YARDIMCILARI ---
+        function switchTab(tab) {
+            const wSec = document.getElementById('wordSection');
+            const mSec = document.getElementById('mathSection');
+            const wBtn = document.getElementById('tabWord');
+            const mBtn = document.getElementById('tabMath');
+
+            if(tab === 'word') {
+                wSec.classList.remove('hide'); mSec.classList.add('hide');
+                wBtn.classList.replace('text-gray-500', 'text-blue-900');
+                wBtn.classList.replace('hover:bg-gray-50', 'bg-blue-50');
+                mBtn.classList.replace('text-blue-900', 'text-gray-500');
+                mBtn.classList.replace('bg-blue-50', 'hover:bg-gray-50');
+            } else {
+                mSec.classList.remove('hide'); wSec.classList.add('hide');
+                mBtn.classList.replace('text-gray-500', 'text-blue-900');
+                mBtn.classList.replace('hover:bg-gray-50', 'bg-blue-50');
+                wBtn.classList.replace('text-blue-900', 'text-gray-500');
+                wBtn.classList.replace('bg-blue-50', 'hover:bg-gray-50');
+            }
+        }
+
+        function updateScore(points) {
+            state.score += points;
+            document.getElementById('totalScore').innerText = state.score;
+            
+            if(state.score >= state.targetScore && !state.isCertUnlocked) {
+                state.isCertUnlocked = true;
+                document.getElementById('certificateAlert').classList.remove('hide');
+            }
+        }
+
+        // --- KELİME OYUNU MANTIĞI ---
+        const consonants = "BCÇDFGĞHJKLMNPRSŞTVYZ";
+        const vowels = "AEIİOÖUÜ";
+
+        function generateLetters() {
+            state.currentLetters = [];
+            let container = document.getElementById('lettersContainer');
+            container.innerHTML = '';
+            
+            // 5 sessiz, 3 sesli, 1 joker (simülasyon)
+            for(let i=0; i<5; i++) state.currentLetters.push(consonants[Math.floor(Math.random()*consonants.length)]);
+            for(let i=0; i<3; i++) state.currentLetters.push(vowels[Math.floor(Math.random()*vowels.length)]);
+            state.currentLetters.push('?'); // Joker
+            
+            // Karıştır
+            state.currentLetters.sort(() => Math.random() - 0.5);
+
+            state.currentLetters.forEach(letter => {
+                let div = document.createElement('div');
+                div.className = "letter-box bg-white border-2 border-blue-200 text-blue-900 font-bold text-2xl md:text-3xl w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-lg shadow-sm";
+                div.innerText = letter;
+                container.appendChild(div);
+            });
+            document.getElementById('wordInput').value = '';
+            document.getElementById('wordFeedback').innerText = '';
+        }
+
+        function submitWord() {
+            const word = document.getElementById('wordInput').value.trim().toUpperCase();
+            const feedback = document.getElementById('wordFeedback');
+            
+            if(word.length < 3) {
+                feedback.innerText = "En az 3 harfli bir kelime girmelisiniz.";
+                feedback.className = "mt-4 text-center font-medium h-6 text-red-500";
+                return;
+            }
+
+            // BURADA BACKEND API ÇAĞRISI YAPILMALIDIR:
+            // fetch('/api/verify-word', { method: 'POST', body: JSON.stringify({word, letters: state.currentLetters}) })
+            
+            // Simülasyon: Girilen kelimeyi kabul et ve harf sayısına göre puan ver
+            const points = word.length * 10;
+            feedback.innerText = `Harika! "${word}" kelimesi kabul edildi. +${points} Puan!`;
+            feedback.className = "mt-4 text-center font-medium h-6 text-green-600";
+            updateScore(points);
+            
+            setTimeout(generateLetters, 2000); // 2 saniye sonra yeni harfler
+        }
+
+        // --- İŞLEM OYUNU MANTIĞI ---
+        function generateNumbers() {
+            const smallPool = [1,2,3,4,5,6,7,8,9];
+            const largePool = [10, 25, 50, 75, 100];
+            state.currentNumbers = [];
+            let container = document.getElementById('numbersContainer');
+            container.innerHTML = '';
+
+            for(let i=0; i<5; i++) state.currentNumbers.push(smallPool[Math.floor(Math.random()*smallPool.length)]);
+            state.currentNumbers.push(largePool[Math.floor(Math.random()*largePool.length)]);
+            
+            state.targetNumber = Math.floor(Math.random() * 899) + 100; // 100 - 999 arası
+            document.getElementById('targetNumber').innerText = state.targetNumber;
+
+            state.currentNumbers.forEach(num => {
+                let div = document.createElement('div');
+                div.className = "letter-box bg-white border-2 border-gray-300 text-gray-800 font-bold text-xl md:text-2xl w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-lg shadow-sm";
+                div.innerText = num;
+                container.appendChild(div);
+            });
+            document.getElementById('mathInput').value = '';
+            document.getElementById('mathFeedback').innerText = '';
+        }
+
+        function submitMath() {
+            const userResult = parseInt(document.getElementById('mathInput').value);
+            const feedback = document.getElementById('mathFeedback');
+
+            if(isNaN(userResult)) {
+                feedback.innerText = "Lütfen geçerli bir sonuç girin.";
+                feedback.className = "mt-4 text-center font-medium h-6 text-red-500";
+                return;
+            }
+
+            // Gerçek senaryoda kullanıcının formülü (örn: (25+5)*10) backend'e gönderilip doğrulanmalıdır.
+            const diff = Math.abs(state.targetNumber - userResult);
+            
+            if(diff === 0) {
+                feedback.innerText = "Tam İsabet! +100 Puan!";
+                feedback.className = "mt-4 text-center font-medium h-6 text-green-600";
+                updateScore(100);
+            } else if (diff <= 10) {
+                const points = 100 - (diff * 10);
+                feedback.innerText = `Yaklaştınız! (Fark: ${diff}) +${points} Puan!`;
+                feedback.className = "mt-4 text-center font-medium h-6 text-yellow-600";
+                updateScore(points);
+            } else {
+                feedback.innerText = `Çok uzaklaştınız. (Fark: ${diff}) Puan alamadınız.`;
+                feedback.className = "mt-4 text-center font-medium h-6 text-red-500";
+            }
+
+            setTimeout(generateNumbers, 2000);
+        }
+
+        // --- SERTİFİKA İŞLEMLERİ ---
+        function openCertificateModal() {
+            document.getElementById('certName').innerText = state.playerName;
+            document.getElementById('certScore').innerText = state.score;
+            
+            const today = new Date();
+            document.getElementById('certDate').innerText = today.toLocaleDateString('tr-TR');
+            
+            document.getElementById('certificateModal').classList.remove('hide');
+        }
+
+        function closeCertificateModal() {
+            document.getElementById('certificateModal').classList.add('hide');
+        }
+
+        async function downloadCert(type) {
+            const template = document.getElementById('certificateTemplate');
+            
+            // html2canvas ile div'i resme çevir
+            const canvas = await html2canvas(template, {
+                scale: 2, // Yüksek kalite
+                useCORS: true
+            });
+
+            if(type === 'jpeg') {
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                const link = document.createElement('a');
+                link.download = `Sertifika_${state.playerName.replace(' ','_')}.jpg`;
+                link.href = imgData;
+                link.click();
+            } else if (type === 'pdf') {
+                const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                // jsPDF - Landscape mod, A4 boyutları
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Sertifika_${state.playerName.replace(' ','_')}.pdf`);
+            }
+        }
+
+        // --- BAŞLANGIÇ ÇAĞRILARI ---
+        window.onload = () => {
+            generateLetters();
+            generateNumbers();
+        };
+
+    </script>
+</body>
+</html>
