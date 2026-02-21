@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Türkiye Şehir Bulmaca | Premium</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-color: #f8fafc;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-main: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Top HUD (Heads Up Display) */
+        .hud-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .target-box {
+            text-align: center;
+            flex: 1;
+        }
+
+        .target-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .target-city {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 1px 1px 2px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .score-box {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Map Container */
+        .map-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+        
+        .map-wrapper:active {
+            cursor: grabbing;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1));
+        }
+
+        .city-path {
+            fill: #cbd5e1;
+            stroke: #ffffff;
+            stroke-width: 1px;
+            transition: fill 0.2s, filter 0.2s;
+            cursor: pointer;
+        }
+
+        .city-path:hover {
+            fill: #93c5fd;
+        }
+
+        .city-path.correct {
+            fill: var(--success) !important;
+            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
+        }
+
+        .city-path.wrong {
+            fill: var(--danger) !important;
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Certificate Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .certificate-container {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            background-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            border: 8px solid #cbd5e1;
+            outline: 2px solid #94a3b8;
+            outline-offset: -12px;
+        }
+
+        .cert-logo {
+            font-size: 40px;
+            color: #d4af37; /* Gold */
+            margin-bottom: 10px;
+        }
+
+        .cert-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+
+        .cert-body {
+            font-size: 16px;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .cert-name-input {
+            width: 80%;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border: none;
+            border-bottom: 2px dashed #cbd5e1;
+            background: transparent;
+            padding: 5px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        
+        .cert-name-input:focus {
+            border-bottom-color: var(--primary);
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            font-family: 'Playfair Display', serif;
+            color: #64748b;
+        }
+
+        .modal-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 2px solid #cbd5e1; }
+        .btn-outline:hover { background: #f1f5f9; }
+
+        /* Loader */
+        #loader {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 600px) {
+            .hud-container { flex-direction: column; gap: 15px; padding: 15px; }
+            .target-city { font-size: 24px; }
+            .certificate-container { padding: 25px; }
+            .cert-title { font-size: 24px; }
+            .cert-name-input { font-size: 22px; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud-container">
+        <div style="font-weight: 800; color: #64748b;"><i class="fa-solid fa-map-location-dot"></i> TR Bulmaca</div>
+        <div class="target-box">
+            <div class="target-label">HEDEF ŞEHİR</div>
+            <div class="target-city" id="targetCityDisplay">-</div>
+        </div>
+        <div class="score-box">
+            <i class="fa-solid fa-star"></i> <span id="scoreDisplay">0</span> / 20
+        </div>
+    </div>
+
+    <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> Harita Yükleniyor...</div>
+    <div class="map-wrapper" id="mapWrapper"></div>
+
+    <div class="modal-overlay" id="certModal">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+            
+            <div class="certificate-container" id="certificateNode">
+                <i class="fa-solid fa-award cert-logo"></i>
+                <div class="cert-title">Üstün Başarı Sertifikası</div>
+                <div class="cert-body">
+                    Bu sertifika, Türkiye haritası üzerindeki şehirleri eksiksiz ve hızlı bir şekilde bularak yüksek coğrafya bilgisini kanıtlayan
+                </div>
+                <input type="text" class="cert-name-input" id="userNameInput" value="Dr. Öğr. Üyesi Ahmet Küçüktiryaki" spellcheck="false">
+                <div class="cert-body" style="margin-bottom: 0;">
+                    isimli katılımcıya takdim edilmiştir.
+                </div>
+                <div class="cert-footer">
+                    <div>Tarih: <span id="certDate"></span></div>
+                    <div>Skor: 20/20</div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="game.resetGame()"><i class="fa-solid fa-rotate-right"></i> Tekrar Oyna</button>
+                <button class="btn btn-primary" onclick="game.downloadCertificate()"><i class="fa-solid fa-download"></i> Sertifikayı İndir</button>
+            </div>
+            
+        </div>
+    </div>
+
+<script>
+const game = {
+    score: 0,
+    maxScore: 20,
+    currentCity: null,
+    citiesList: [],
+    askedCities: new Set(),
+    svg: null,
+    g: null,
+
+    init() {
+        document.getElementById('certDate').innerText = new Date().toLocaleDateString('tr-TR');
+        this.loadMap();
+    },
+
+    loadMap() {
+        // Güvenilir ve sadeleştirilmiş Türkiye GeoJSON verisi
+        const geojsonUrl = "https://raw.githubusercontent.com/cihadturhan/tr-geojson/master/geo/tr-cities-utf8.json";
+
+        const width = document.getElementById('mapWrapper').clientWidth;
+        const height = document.getElementById('mapWrapper').clientHeight;
+
+        // D3 Zoom Davranışı (Mobil için çok önemli)
+        const zoom = d3.zoom()
+            .scaleExtent([1, 8])
+            .on("zoom", (event) => {
+                this.g.attr("transform", event.transform);
+            });
+
+        this.svg = d3.select("#mapWrapper")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .call(zoom);
+
+        this.g = this.svg.append("g");
+
+        d3.json(geojsonUrl).then(data => {
+            document.getElementById('loader').style.display = 'none';
+
+            // Haritayı ekrana tam oturtma projeksiyonu
+            const projection = d3.geoMercator().fitSize([width * 0.95, height * 0.95], data);
+            const path = d3.geoPath().projection(projection);
+
+            // Şehir isimlerini diziye aktar
+            this.citiesList = data.features.map(f => f.properties.name);
+
+            // Pathleri çiz
+            this.g.selectAll("path")
+                .data(data.features)
+                .enter().append("path")
+                .attr("d", path)
+                .attr("class", "city-path")
+                .attr("id", d => "city-" + this.formatID(d.properties.name))
+                .on("click", (event, d) => this.handleCityClick(event, d.properties.name));
+
+            this.nextCity();
+        }).catch(err => {
+            document.getElementById('loader').innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Harita yüklenemedi. İnternet bağlantınızı kontrol edin.';
+        });
+    },
+
+    nextCity() {
+        // Zaten sorulanları filtrele, havuz bitince sıfırla
+        let availableCities = this.citiesList.filter(c => !this.askedCities.has(c));
+        if (availableCities.length === 0) {
+            this.askedCities.clear();
+            availableCities = this.citiesList;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableCities.length);
+        this.currentCity = availableCities[randomIndex];
+        this.askedCities.add(this.currentCity);
+
+        const display = document.getElementById('targetCityDisplay');
+        display.style.transform = 'scale(0.8)';
+        display.style.opacity = '0';
+        
+        setTimeout(() => {
+            display.innerText = this.currentCity;
+            display.style.transform = 'scale(1)';
+            display.style.opacity = '1';
+        }, 200);
+    },
+
+    handleCityClick(event, clickedCityName) {
+        const pathElement = event.target;
+        
+        if (pathElement.classList.contains('correct')) return; // Zaten bilinenleri yoksay
+
+        if (clickedCityName === this.currentCity) {
+            // Doğru Bildi
+            d3.select(pathElement).classed("correct", true);
+            this.score++;
+            document.getElementById('scoreDisplay').innerText = this.score;
+
+            if (this.score >= this.maxScore) {
+                setTimeout(() => this.showCertificate(), 500);
+            } else {
+                this.nextCity();
+            }
+        } else {
+            // Yanlış Bildi (Sadece görsel hata ver, puan kırma)
+            const el = d3.select(pathElement);
+            el.classed("wrong", true);
+            setTimeout(() => el.classed("wrong", false), 400); // 400ms sonra kırmızılığı kaldır
+        }
+    },
+
+    showCertificate() {
+        document.getElementById('certModal').classList.add('active');
+    },
+
+    resetGame() {
+        this.score = 0;
+        this.askedCities.clear();
+        document.getElementById('scoreDisplay').innerText = this.score;
+        d3.selectAll(".city-path").classed("correct", false).classed("wrong", false);
+        
+        // Zoom'u sıfırla
+        this.svg.transition().duration(750).call(
+            d3.zoom().transform, 
+            d3.zoomIdentity
+        );
+
+        document.getElementById('certModal').classList.remove('active');
+        this.nextCity();
+    },
+
+    downloadCertificate() {
+        const certNode = document.getElementById('certificateNode');
+        const inputField = document.getElementById('userNameInput');
+        
+        // Inputu geçici olarak düz metne çevir ki resimde input kutusu gibi görünmesin
+        const originalBg = inputField.style.background;
+        const originalBorder = inputField.style.borderBottom;
+        inputField.style.background = 'transparent';
+        inputField.style.borderBottom = 'none';
+
+        html2canvas(certNode, {
+            scale: 2, // Yüksek çözünürlük
+            backgroundColor: null
+        }).then(canvas => {
+            // Stilleri geri al
+            inputField.style.background = originalBg;
+            inputField.style.borderBottom = originalBorder;
+
+            // İndirme işlemi
+            const link = document.createElement('a');
+            link.download = `Turkiye_Cografya_Sertifikasi_${inputField.value.replace(/\s+/g, '_')}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    },
+
+    formatID(name) {
+        // Şehir isimlerindeki Türkçe karakterleri ve boşlukları temizleyerek ID oluşturur
+        return name.toLowerCase()
+            .replace(/ğ/g, 'g')
+            .replace(/ü/g, 'u')
+            .replace(/ş/g, 's')
+            .replace(/ı/g, 'i')
+            .replace(/ö/g, 'o')
+            .replace(/ç/g, 'c')
+            .replace(/\s+/g, '-');
+    }
+};
+
+// Başlat
+document.addEventListener('DOMContentLoaded', () => game.init());
+
+</script>
+</body>
+</html>
