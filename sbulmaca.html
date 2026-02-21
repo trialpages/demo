@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Türkiye Şehir Bulmaca | Premium</title>
+    <title>Şehir Bulmaca</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
     
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         :root {
@@ -18,367 +21,323 @@
             --success: #10b981;
             --danger: #ef4444;
             --bg-color: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.9);
             --text-main: #0f172a;
+            --gold: #d4af37;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Top HUD (Heads Up Display) */
-        .hud-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 25px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            z-index: 10;
-        }
-
-        .target-box {
-            text-align: center;
-            flex: 1;
-        }
-
-        .target-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        .target-city {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary);
-            text-shadow: 1px 1px 2px rgba(37, 99, 235, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .score-box {
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Map Container */
-        .map-wrapper {
-            flex: 1;
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: grab;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        .map-wrapper:active {
-            cursor: grabbing;
-        }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: var(--bg-color); color: var(--text-main); }
 
-        svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1));
-        }
-
-        .city-path {
-            fill: #cbd5e1;
-            stroke: #ffffff;
-            stroke-width: 1px;
-            transition: fill 0.2s, filter 0.2s;
-            cursor: pointer;
-        }
-
-        .city-path:hover {
-            fill: #93c5fd;
-        }
-
-        .city-path.correct {
-            fill: var(--success) !important;
-            filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.5));
-        }
-
-        .city-path.wrong {
-            fill: var(--danger) !important;
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        /* Certificate Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .certificate-container {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 15px;
-            position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            background-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            border: 8px solid #cbd5e1;
-            outline: 2px solid #94a3b8;
-            outline-offset: -12px;
-        }
-
-        .cert-logo {
-            font-size: 40px;
-            color: #d4af37; /* Gold */
-            margin-bottom: 10px;
-        }
-
-        .cert-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 32px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 20px;
-        }
-
-        .cert-body {
-            font-size: 16px;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .cert-name-input {
-            width: 80%;
-            text-align: center;
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--primary-dark);
-            border: none;
-            border-bottom: 2px dashed #cbd5e1;
-            background: transparent;
-            padding: 5px;
-            margin-bottom: 10px;
-            outline: none;
-        }
+        /* UI Utilities */
+        .hidden { display: none !important; }
         
-        .cert-name-input:focus {
-            border-bottom-color: var(--primary);
-        }
-
-        .cert-footer {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            font-family: 'Playfair Display', serif;
-            color: #64748b;
-        }
-
-        .modal-actions {
-            margin-top: 30px;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
         .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(37,99,235,0.2); }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-outline { background: white; color: var(--text-main); border: 1px solid #cbd5e1; }
+        .btn-outline:hover { background: #f1f5f9; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+
+        /* Intro Screen */
+        #intro-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;
+        }
+        .intro-title { font-family: 'Playfair Display', serif; font-size: 50px; font-weight: 700; color: var(--primary-dark); margin-bottom: 5px; }
+        .intro-subtitle { font-size: 14px; font-style: italic; color: #64748b; margin-bottom: 30px; }
+        .intro-subtitle a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .intro-desc { max-width: 500px; font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 40px; }
+        .intro-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+
+        /* Game Screen & Map */
+        #game-screen { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; }
+        #map { flex: 1; width: 100%; background: #cce4f7; } /* Ocean color fallback */
+        
+        /* HUD */
+        .hud-container {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000;
+        }
+        .hud-left { flex: 1; display: flex; flex-direction: column; }
+        .mode-badge { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--primary); background: #e0f2fe; padding: 4px 8px; border-radius: 4px; align-self: flex-start; margin-bottom: 4px; }
+        .target-city { font-size: 26px; font-weight: 800; color: var(--text-main); line-height: 1.1; transition: 0.2s; }
+        .score-box {
+            background: var(--text-main); color: white; padding: 8px 16px; border-radius: 30px;
+            font-weight: 600; font-size: 18px; display: flex; align-items: center; gap: 8px;
+        }
+        .streak-fire { color: #f59e0b; }
+
+        /* Generic Modal Overlay */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 3000; opacity: 0; pointer-events: none; transition: 0.3s; overflow-y: auto; padding: 20px;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        /* Modal Box */
+        .modal-box {
+            background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
         }
 
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-outline { background: transparent; color: var(--text-main); border: 2px solid #cbd5e1; }
-        .btn-outline:hover { background: #f1f5f9; }
+        /* Certificate Setup */
+        .cert-setup-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .cert-setup-form input { padding: 12px; font-size: 16px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; }
+
+        /* A4 Certificate (Rendered off-screen, scaled for preview) */
+        .cert-preview-container {
+            width: 100%; max-width: 600px; position: relative;
+            aspect-ratio: 1 / 1.4142; /* A4 Paper Ratio */
+            margin: 0 auto 20px auto;
+            border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: white;
+        }
+        
+        /* Actual A4 DOM Element */
+        #a4-certificate {
+            width: 794px; /* A4 width at 96 DPI */
+            height: 1123px; /* A4 height at 96 DPI */
+            background-image: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border: 20px solid #cbd5e1; /* Outer border */
+            position: absolute;
+            top: 0; left: 0;
+            transform-origin: top left;
+            padding: 60px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+        }
+        .cert-inner-border { border: 2px solid var(--gold); width: 100%; height: 100%; padding: 40px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .cert-medal { font-size: 70px; color: var(--gold); margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .cert-title { font-family: 'Playfair Display', serif; font-size: 55px; font-weight: 700; color: var(--primary-dark); margin-bottom: 40px; letter-spacing: 2px; }
+        .cert-salutation { font-family: 'Playfair Display', serif; font-size: 26px; color: #475569; margin-bottom: 15px; }
+        .cert-name { font-family: 'Playfair Display', serif; font-size: 45px; font-weight: 700; color: var(--text-main); margin-bottom: 30px; word-wrap: break-word; max-width: 100%; line-height: 1.2; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; }
+        .cert-body { font-size: 22px; color: #334155; line-height: 1.8; margin-bottom: 60px; max-width: 90%; }
+        
+        .cert-footer { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; position: absolute; bottom: 40px; padding: 0 40px; font-size: 18px; color: #64748b; }
+        .cert-signature-area { text-align: center; }
+        .cert-signature { font-family: 'Great Vibes', cursive; font-size: 38px; color: var(--primary-dark); margin-bottom: 5px; }
+
+        .cert-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
+        
+        /* Alerts */
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--danger); color: white; padding: 10px 20px; border-radius: 30px; font-weight: 600; z-index: 4000; opacity: 0; transition: 0.3s; pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
 
         /* Loader */
-        #loader {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 600px) {
-            .hud-container { flex-direction: column; gap: 15px; padding: 15px; }
-            .target-city { font-size: 24px; }
-            .certificate-container { padding: 25px; }
-            .cert-title { font-size: 24px; }
-            .cert-name-input { font-size: 22px; width: 100%; }
-        }
+        #loader { position: absolute; top:50%; left:50%; transform: translate(-50%, -50%); font-weight: 600; background: white; padding: 15px 25px; border-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); z-index: 2500; display: flex; align-items: center; gap: 10px;}
     </style>
 </head>
 <body>
 
-    <div class="hud-container">
-        <div style="font-weight: 800; color: #64748b;"><i class="fa-solid fa-map-location-dot"></i> TR Bulmaca</div>
-        <div class="target-box">
-            <div class="target-label">HEDEF ŞEHİR</div>
-            <div class="target-city" id="targetCityDisplay">-</div>
-        </div>
-        <div class="score-box">
-            <i class="fa-solid fa-star"></i> <span id="scoreDisplay">0</span> / 20
+    <div id="intro-screen">
+        <h1 class="intro-title">Şehir Bulmaca</h1>
+        <p class="intro-subtitle">designed by gemini & <a href="https://www.x.com/hmdysn" target="_blank">hmdysn</a></p>
+        <p class="intro-desc">Şehrin haritadaki yerini bulmaya çalış. İstersen <b>"Antrenman Yap"</b>, istersen <b>"Seri Oyna"</b> ve 30 seri doğru cevap vererek sertifika kazan.</p>
+        <div class="intro-buttons">
+            <button class="btn btn-outline" onclick="game.startGame('practice')"><i class="fa-solid fa-dumbbell"></i> Antrenman</button>
+            <button class="btn btn-primary" onclick="game.startGame('streak')"><i class="fa-solid fa-bolt"></i> Seri Oyna</button>
         </div>
     </div>
 
-    <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i> Harita Yükleniyor...</div>
-    <div class="map-wrapper" id="mapWrapper"></div>
+    <div id="game-screen" class="hidden">
+        <div class="hud-container">
+            <div class="hud-left">
+                <span class="mode-badge" id="modeBadge">Mod</span>
+                <div class="target-city" id="targetCityDisplay">-</div>
+            </div>
+            <div class="score-box">
+                <i class="fa-solid fa-fire streak-fire" id="scoreIcon"></i> 
+                <span id="scoreDisplay">0</span> <span id="maxScoreDisplay">/ 30</span>
+            </div>
+        </div>
+        <div id="loader"><i class="fa-solid fa-spinner fa-spin text-primary"></i> Harita Yükleniyor...</div>
+        <div id="map"></div>
+    </div>
+
+    <div id="toast" class="toast">Seri Bozuldu! Yeniden başlıyorsun.</div>
+
+    <div class="modal-overlay" id="nameModal">
+        <div class="modal-box">
+            <h2 style="color:var(--primary); margin-bottom:10px;"><i class="fa-solid fa-trophy"></i> Tebrikler!</h2>
+            <p style="color:#64748b; font-size:15px;">30 seri doğru cevap verdin. Sertifikanı oluşturmak için bilgilerini gir.</p>
+            <div class="cert-setup-form">
+                <input type="text" id="userNameInput" value="Dr. Öğr. Üyesi Ahmet Küçüktiryaki" placeholder="Ad Soyad">
+                <button class="btn btn-primary" onclick="game.generateCertificate()">Sertifika Oluştur</button>
+            </div>
+        </div>
+    </div>
 
     <div class="modal-overlay" id="certModal">
-        <div style="display:flex; flex-direction:column; align-items:center;">
-            
-            <div class="certificate-container" id="certificateNode">
-                <i class="fa-solid fa-award cert-logo"></i>
-                <div class="cert-title">Üstün Başarı Sertifikası</div>
-                <div class="cert-body">
-                    Bu sertifika, Türkiye haritası üzerindeki şehirleri eksiksiz ve hızlı bir şekilde bularak yüksek coğrafya bilgisini kanıtlayan
-                </div>
-                <input type="text" class="cert-name-input" id="userNameInput" value="Dr. Öğr. Üyesi Ahmet Küçüktiryaki" spellcheck="false">
-                <div class="cert-body" style="margin-bottom: 0;">
-                    isimli katılımcıya takdim edilmiştir.
-                </div>
-                <div class="cert-footer">
-                    <div>Tarih: <span id="certDate"></span></div>
-                    <div>Skor: 20/20</div>
+        
+        <div class="cert-preview-container" id="certPreviewBox">
+            <div id="a4-certificate">
+                <div class="cert-inner-border">
+                    <i class="fa-solid fa-medal cert-medal"></i>
+                    <div class="cert-title">BAŞARI SERTİFİKASI</div>
+                    <div class="cert-salutation">Sayın</div>
+                    <div class="cert-name" id="certNameDisplay">İsim Soyisim</div>
+                    <div class="cert-body">
+                        Türkiye'nin iller coğrafyası konusunda göstermiş olduğunuz başarı dolayısıyla bu belgeyi almaya hak kazandınız.
+                    </div>
+                    
+                    <div class="cert-footer">
+                        <div>
+                            <div><b>Sertifika No:</b> <span id="certNoDisplay">CPZ-0000</span></div>
+                            <div style="margin-top:5px;"><b>Tarih:</b> <span id="certDateDisplay">00.00.0000</span></div>
+                        </div>
+                        <div class="cert-signature-area">
+                            <div class="cert-signature">cpuzzle.web.app</div>
+                            <div style="font-size: 14px; border-top: 1px solid #cbd5e1; padding-top: 5px;">Sistem Onayı</div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="modal-actions">
-                <button class="btn btn-outline" onclick="game.resetGame()"><i class="fa-solid fa-rotate-right"></i> Tekrar Oyna</button>
-                <button class="btn btn-primary" onclick="game.downloadCertificate()"><i class="fa-solid fa-download"></i> Sertifikayı İndir</button>
-            </div>
-            
+        <div class="cert-actions">
+            <button class="btn btn-outline" onclick="game.resetGame()"><i class="fa-solid fa-rotate-right"></i> Yeni Oyun</button>
+            <button class="btn btn-primary" onclick="game.downloadCert('jpeg')"><i class="fa-regular fa-image"></i> JPEG İndir</button>
+            <button class="btn btn-success" onclick="game.downloadCert('pdf')"><i class="fa-solid fa-file-pdf"></i> PDF İndir</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="endModal">
+        <div class="modal-box">
+            <h2 style="color:var(--success); margin-bottom:10px;"><i class="fa-solid fa-check-circle"></i> Tamamlandı!</h2>
+            <p style="color:#64748b; font-size:15px; margin-bottom:20px;">Tüm Türkiye haritasını başarıyla tamamladın.</p>
+            <button class="btn btn-primary" style="width:100%;" onclick="game.resetGame()">Yeniden Oyna</button>
         </div>
     </div>
 
 <script>
 const game = {
+    mode: 'practice', // 'streak' or 'practice'
     score: 0,
-    maxScore: 20,
+    targetScore: 30, // for streak
+    totalCities: 81, // for practice
     currentCity: null,
     citiesList: [],
     askedCities: new Set(),
-    svg: null,
-    g: null,
+    mapInstance: null,
+    geoLayer: null,
+    featuresData: null,
+    isProcessingClick: false, // Prevent double rapid clicks
 
-    init() {
-        document.getElementById('certDate').innerText = new Date().toLocaleDateString('tr-TR');
-        this.loadMap();
+    initMap() {
+        if(this.mapInstance) return;
+
+        // Leaflet Harita Başlatma (Merkez: Türkiye)
+        this.mapInstance = L.map('map', {
+            center: [39.0, 35.0],
+            zoom: 6,
+            minZoom: 5,
+            maxBounds: [[35.0, 25.0], [43.0, 45.0]], // Türkiye Sınırları
+            doubleClickZoom: false // Oyun içi yanlışlıkla zoom yapmayı engelle
+        });
+
+        // Profesyonel Altlık Harita (Göller, nehirler, topoğrafya detaylı)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & CARTO',
+            subdomains: 'abcd',
+            maxZoom: 10
+        }).addTo(this.mapInstance);
+
+        // Şehir GeoJSON verisi çek
+        fetch('https://raw.githubusercontent.com/cihadturhan/tr-geojson/master/geo/tr-cities-utf8.json')
+            .then(res => res.json())
+            .then(data => {
+                this.featuresData = data;
+                document.getElementById('loader').style.display = 'none';
+                this.renderGeoJSON();
+                this.nextCity();
+            }).catch(err => {
+                document.getElementById('loader').innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Harita yüklenemedi.';
+            });
     },
 
-    loadMap() {
-        // Güvenilir ve sadeleştirilmiş Türkiye GeoJSON verisi
-        const geojsonUrl = "https://raw.githubusercontent.com/cihadturhan/tr-geojson/master/geo/tr-cities-utf8.json";
+    renderGeoJSON() {
+        if(this.geoLayer) this.mapInstance.removeLayer(this.geoLayer);
+        
+        this.geoLayer = L.geoJSON(this.featuresData, {
+            style: {
+                fillColor: '#3b82f6',
+                fillOpacity: 0.05, // Çok şeffaf ki alttaki Van Gölü, Tuz Gölü görünsün!
+                color: '#64748b',
+                weight: 1,
+                dashArray: '3'
+            },
+            onEachFeature: (feature, layer) => {
+                // Şehir ismini listeye ekle
+                if (!this.citiesList.includes(feature.properties.name)) {
+                    this.citiesList.push(feature.properties.name);
+                }
+                layer.on('click', () => this.handleCityClick(feature, layer));
+            }
+        }).addTo(this.mapInstance);
+    },
 
-        const width = document.getElementById('mapWrapper').clientWidth;
-        const height = document.getElementById('mapWrapper').clientHeight;
+    startGame(selectedMode) {
+        this.mode = selectedMode;
+        document.getElementById('intro-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        
+        // HUD Ayarları
+        const badge = document.getElementById('modeBadge');
+        const maxScoreDisp = document.getElementById('maxScoreDisplay');
+        const icon = document.getElementById('scoreIcon');
+        
+        if(this.mode === 'streak') {
+            badge.innerText = "Seri Oyna";
+            badge.style.background = "#fef3c7"; badge.style.color = "#d97706";
+            maxScoreDisp.innerText = " / 30";
+            icon.className = "fa-solid fa-fire streak-fire";
+        } else {
+            badge.innerText = "Antrenman";
+            badge.style.background = "#e0f2fe"; badge.style.color = "#0369a1";
+            maxScoreDisp.innerText = " / 81";
+            icon.className = "fa-solid fa-bullseye";
+            icon.style.color = "#0369a1";
+        }
 
-        // D3 Zoom Davranışı (Mobil için çok önemli)
-        const zoom = d3.zoom()
-            .scaleExtent([1, 8])
-            .on("zoom", (event) => {
-                this.g.attr("transform", event.transform);
+        this.resetGameData();
+        this.initMap();
+        
+        // Resize map if needed (Fix for leaflet display none bug)
+        setTimeout(() => { if(this.mapInstance) this.mapInstance.invalidateSize(); }, 200);
+    },
+
+    resetGameData() {
+        this.score = 0;
+        this.askedCities.clear();
+        this.updateScoreDisplay();
+        if(this.geoLayer) {
+            this.geoLayer.eachLayer(layer => {
+                layer.setStyle({ fillColor: '#3b82f6', fillOpacity: 0.05 });
+                layer.options.isCorrect = false;
             });
-
-        this.svg = d3.select("#mapWrapper")
-            .append("svg")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .call(zoom);
-
-        this.g = this.svg.append("g");
-
-        d3.json(geojsonUrl).then(data => {
-            document.getElementById('loader').style.display = 'none';
-
-            // Haritayı ekrana tam oturtma projeksiyonu
-            const projection = d3.geoMercator().fitSize([width * 0.95, height * 0.95], data);
-            const path = d3.geoPath().projection(projection);
-
-            // Şehir isimlerini diziye aktar
-            this.citiesList = data.features.map(f => f.properties.name);
-
-            // Pathleri çiz
-            this.g.selectAll("path")
-                .data(data.features)
-                .enter().append("path")
-                .attr("d", path)
-                .attr("class", "city-path")
-                .attr("id", d => "city-" + this.formatID(d.properties.name))
-                .on("click", (event, d) => this.handleCityClick(event, d.properties.name));
-
             this.nextCity();
-        }).catch(err => {
-            document.getElementById('loader').innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--danger)"></i> Harita yüklenemedi. İnternet bağlantınızı kontrol edin.';
-        });
+        }
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+    },
+
+    resetGame() {
+        this.resetGameData();
+        // Go back to intro
+        document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('intro-screen').classList.remove('hidden');
     },
 
     nextCity() {
-        // Zaten sorulanları filtrele, havuz bitince sıfırla
         let availableCities = this.citiesList.filter(c => !this.askedCities.has(c));
+        
+        // Havuz bittiyse ve antrenmansa bitir, seriyse havuzu sıfırla dön (gerçi 30'da bitiyor seri)
         if (availableCities.length === 0) {
+            if (this.mode === 'practice') return; // Should be handled by handleCityClick, but fallback
             this.askedCities.clear();
             availableCities = this.citiesList;
         }
@@ -388,101 +347,136 @@ const game = {
         this.askedCities.add(this.currentCity);
 
         const display = document.getElementById('targetCityDisplay');
-        display.style.transform = 'scale(0.8)';
         display.style.opacity = '0';
-        
-        setTimeout(() => {
-            display.innerText = this.currentCity;
-            display.style.transform = 'scale(1)';
-            display.style.opacity = '1';
-        }, 200);
+        setTimeout(() => { display.innerText = this.currentCity; display.style.opacity = '1'; }, 200);
     },
 
-    handleCityClick(event, clickedCityName) {
-        const pathElement = event.target;
-        
-        if (pathElement.classList.contains('correct')) return; // Zaten bilinenleri yoksay
+    handleCityClick(feature, layer) {
+        if(this.isProcessingClick) return;
+        if(layer.options.isCorrect) return; // Zaten bilindi
 
-        if (clickedCityName === this.currentCity) {
-            // Doğru Bildi
-            d3.select(pathElement).classed("correct", true);
+        this.isProcessingClick = true;
+        const clickedName = feature.properties.name;
+
+        if (clickedName === this.currentCity) {
+            // DOĞRU
+            layer.options.isCorrect = true;
+            layer.setStyle({ fillColor: 'var(--success)', fillOpacity: 0.6, color: 'white', weight: 2 });
             this.score++;
-            document.getElementById('scoreDisplay').innerText = this.score;
+            this.updateScoreDisplay();
 
-            if (this.score >= this.maxScore) {
-                setTimeout(() => this.showCertificate(), 500);
+            if (this.mode === 'streak' && this.score >= this.targetScore) {
+                setTimeout(() => document.getElementById('nameModal').classList.add('active'), 500);
+            } else if (this.mode === 'practice' && this.score >= this.totalCities) {
+                setTimeout(() => document.getElementById('endModal').classList.add('active'), 500);
             } else {
                 this.nextCity();
             }
         } else {
-            // Yanlış Bildi (Sadece görsel hata ver, puan kırma)
-            const el = d3.select(pathElement);
-            el.classed("wrong", true);
-            setTimeout(() => el.classed("wrong", false), 400); // 400ms sonra kırmızılığı kaldır
+            // YANLIŞ
+            layer.setStyle({ fillColor: 'var(--danger)', fillOpacity: 0.6 });
+            
+            if (this.mode === 'streak') {
+                this.showToast();
+                this.score = 0;
+                this.updateScoreDisplay();
+                // Haritayı temizle, sadece kırmızı olanı düzelt (tüm yeşiller de gitsin çünkü seri bozuldu)
+                setTimeout(() => {
+                    this.geoLayer.eachLayer(l => {
+                        l.setStyle({ fillColor: '#3b82f6', fillOpacity: 0.05, weight: 1 });
+                        l.options.isCorrect = false;
+                    });
+                    this.askedCities.clear(); // Sorulanları da sıfırla ki baştan başlasın
+                    this.nextCity();
+                }, 800);
+            } else {
+                // Antrenmansa sadece uyarı rengi verip geri al
+                setTimeout(() => layer.setStyle({ fillColor: '#3b82f6', fillOpacity: 0.05 }), 500);
+            }
         }
+        
+        setTimeout(() => this.isProcessingClick = false, 500);
     },
 
-    showCertificate() {
+    updateScoreDisplay() {
+        document.getElementById('scoreDisplay').innerText = this.score;
+    },
+
+    showToast() {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    },
+
+    // --- CERTIFICATE LOGIC ---
+
+    generateCertificate() {
+        const nameInput = document.getElementById('userNameInput').value.trim() || "Kullanıcı";
+        document.getElementById('nameModal').classList.remove('active');
+        
+        // Verileri Doldur
+        document.getElementById('certNameDisplay').innerText = nameInput;
+        document.getElementById('certNoDisplay').innerText = `CPZ-${Math.floor(1000 + Math.random() * 9000)}`;
+        
+        const today = new Date();
+        const dateStr = `${String(today.getDate()).padStart(2, '0')}.${String(today.getMonth() + 1).padStart(2, '0')}.${today.getFullYear()}`;
+        document.getElementById('certDateDisplay').innerText = dateStr;
+
+        // Scale setup for preview
+        this.scaleCertificatePreview();
+        window.addEventListener('resize', () => this.scaleCertificatePreview());
+
         document.getElementById('certModal').classList.add('active');
     },
 
-    resetGame() {
-        this.score = 0;
-        this.askedCities.clear();
-        document.getElementById('scoreDisplay').innerText = this.score;
-        d3.selectAll(".city-path").classed("correct", false).classed("wrong", false);
-        
-        // Zoom'u sıfırla
-        this.svg.transition().duration(750).call(
-            d3.zoom().transform, 
-            d3.zoomIdentity
-        );
-
-        document.getElementById('certModal').classList.remove('active');
-        this.nextCity();
+    scaleCertificatePreview() {
+        const certBox = document.getElementById('certPreviewBox');
+        const a4 = document.getElementById('a4-certificate');
+        // Container genişliğine göre A4 DOM elementini (794px) küçültüyoruz
+        const scaleFactor = certBox.clientWidth / 794; 
+        a4.style.transform = `scale(${scaleFactor})`;
     },
 
-    downloadCertificate() {
-        const certNode = document.getElementById('certificateNode');
-        const inputField = document.getElementById('userNameInput');
+    async downloadCert(type) {
+        const certElement = document.getElementById('a4-certificate');
         
-        // Inputu geçici olarak düz metne çevir ki resimde input kutusu gibi görünmesin
-        const originalBg = inputField.style.background;
-        const originalBorder = inputField.style.borderBottom;
-        inputField.style.background = 'transparent';
-        inputField.style.borderBottom = 'none';
+        // Geçici olarak transform'u kaldır ki html2canvas tam boyutta (794x1123) okusun
+        const currentTransform = certElement.style.transform;
+        certElement.style.transform = 'scale(1)';
 
-        html2canvas(certNode, {
-            scale: 2, // Yüksek çözünürlük
-            backgroundColor: null
-        }).then(canvas => {
-            // Stilleri geri al
-            inputField.style.background = originalBg;
-            inputField.style.borderBottom = originalBorder;
+        try {
+            const canvas = await html2canvas(certElement, {
+                scale: 2, // Retina kalitesi için 2 kat çözünürlük
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            });
 
-            // İndirme işlemi
-            const link = document.createElement('a');
-            link.download = `Turkiye_Cografya_Sertifikasi_${inputField.value.replace(/\s+/g, '_')}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        });
-    },
+            // Geri yükle
+            certElement.style.transform = currentTransform;
+            
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
 
-    formatID(name) {
-        // Şehir isimlerindeki Türkçe karakterleri ve boşlukları temizleyerek ID oluşturur
-        return name.toLowerCase()
-            .replace(/ğ/g, 'g')
-            .replace(/ü/g, 'u')
-            .replace(/ş/g, 's')
-            .replace(/ı/g, 'i')
-            .replace(/ö/g, 'o')
-            .replace(/ç/g, 'c')
-            .replace(/\s+/g, '-');
+            if (type === 'jpeg') {
+                const link = document.createElement('a');
+                link.download = `Sertifika_${document.getElementById('userNameInput').value.replace(/\s+/g, '_')}.jpg`;
+                link.href = imgData;
+                link.click();
+            } else if (type === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                // A4 boyutunda (210x297mm) portre PDF oluştur
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Sertifika_${document.getElementById('userNameInput').value.replace(/\s+/g, '_')}.pdf`);
+            }
+        } catch (error) {
+            console.error("Sertifika oluşturulurken hata oluştu:", error);
+            certElement.style.transform = currentTransform; // Hata olsa bile geri yükle
+            alert("Sertifika oluşturulurken bir hata oluştu.");
+        }
     }
 };
-
-// Başlat
-document.addEventListener('DOMContentLoaded', () => game.init());
 
 </script>
 </body>
