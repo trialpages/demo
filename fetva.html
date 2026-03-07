@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="İslam ve Hayat - Güncel meselelerde akademik ve güvenilir İslami fetvalar.">
+    <title>İslam ve Hayat | Fetva ve İslami Bilgilendirme Platformu</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --primary-color: #1a4331; /* Koyu Yeşil */
+            --secondary-color: #fdfbf7; /* Krem / Açık Bej */
+            --accent-color: #c5a059; /* Altın Tonları */
+            --text-dark: #2c3e50;
+            --text-light: #666666;
+            --white: #ffffff;
+            --border-color: #eaeaea;
+            
+            --font-heading: 'Lora', serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --transition: all 0.3s ease;
+        }
+
+        /* --- Reset & Base --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); background-color: var(--secondary-color); color: var(--text-dark); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+        .bg-light { background-color: var(--white); padding: 4rem 0; }
+        .text-center { text-align: center; }
+        .text-white { color: var(--white); }
+        h1, h2, h3, h4, .logo { font-family: var(--font-heading); }
+        .section-title { text-align: center; font-size: 2rem; color: var(--primary-color); margin-bottom: 2.5rem; }
+
+        /* --- Header & Nav --- */
+        .site-header { background-color: var(--white); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; height: 80px; }
+        .logo { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); }
+        .logo span { color: var(--accent-color); }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
+        .nav-links a:hover { color: var(--accent-color); }
+
+        /* Hamburger Menu (Mobile) */
+        .hamburger-menu { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
+        .hamburger-menu span { width: 25px; height: 3px; background-color: var(--primary-color); }
+
+        /* --- Hero Section --- */
+        .hero { background-color: var(--primary-color); color: var(--white); padding: 6rem 0; text-align: center; }
+        .hero h1 { font-size: 2.8rem; margin-bottom: 1rem; }
+        .hero .highlight { color: var(--accent-color); }
+        .hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; font-weight: 300; }
+        .search-box { display: flex; max-width: 600px; margin: 0 auto; gap: 10px; }
+        .search-box input { flex: 1; padding: 1rem 1.5rem; border: none; border-radius: 4px; font-family: var(--font-body); }
+        .btn-primary { background-color: var(--accent-color); color: var(--white); border: none; padding: 0 2rem; border-radius: 4px; font-weight: 500; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover { background-color: #b08d4b; }
+
+        /* --- Info Blocks --- */
+        .info-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: -3rem; position: relative; z-index: 10; padding-bottom: 4rem; }
+        .card { background: var(--white); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: var(--transition); border-top: 4px solid var(--primary-color); }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { color: var(--primary-color); margin-bottom: 1rem; }
+        .card p { color: var(--text-light); font-size: 0.95rem; }
+        .accent-card { border-top: 4px solid var(--accent-color); }
+
+        /* --- Fatwa Grid (Cards) --- */
+        .fatwa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .fatwa-card { background: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; display: flex; flex-direction: column; }
+        .fatwa-category { font-size: 0.8rem; color: var(--accent-color); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .fatwa-card h3 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--primary-color); }
+        .fatwa-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
+        .read-more { color: var(--primary-color); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--accent-color); padding-bottom: 2px; align-self: flex-start; }
+
+        /* --- Main Topics --- */
+        .main-topics { padding: 4rem 0; }
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+        .topic-item { background: var(--white); padding: 1.5rem; text-align: center; border-radius: 8px; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); transition: var(--transition); }
+        .topic-item:hover { background: var(--primary-color); color: var(--white); border-color: var(--primary-color); }
+
+        /* --- Trust Section --- */
+        .trust-section { background-color: var(--primary-color); color: var(--white); padding: 5rem 0; text-align: center; }
+        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 3rem; }
+        .trust-grid h4 { color: var(--accent-color); font-size: 1.2rem; margin-bottom: 1rem; }
+        .trust-grid p { font-size: 0.95rem; opacity: 0.8; }
+
+        /* --- Footer --- */
+        .site-footer { background: #112d21; color: var(--white); padding: 4rem 0 2rem; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2rem; margin-bottom: 2rem; }
+        .footer-brand p { color: #a0a0a0; margin-top: 1rem; font-size: 0.9rem; }
+        .footer-links h4 { color: var(--accent-color); margin-bottom: 1.5rem; }
+        .footer-links li { margin-bottom: 0.8rem; font-size: 0.9rem; color: #a0a0a0; }
+
+        /* --- Responsive (Mobile) --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger-menu { display: flex; }
+            .hero h1 { font-size: 2rem; }
+            .search-box { flex-direction: column; }
+            .btn-primary { padding: 1rem; }
+            .info-blocks { margin-top: 2rem; padding-bottom: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-container">
+            <a href="/" class="logo">İslam<span>ve</span>Hayat</a>
+            <nav class="main-nav">
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#">Ana Sayfa</a></li>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">Fetva Usulümüz</a></li>
+                    <li><a href="#">Ana Konular</a></li>
+                    <li><a href="#">Kategoriler</a></li>
+                    <li><a href="#">İletişim</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Menüyü Aç">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Güncel Meselelerde <br> <span class="highlight">Güvenilir Fetvalar</span></h1>
+            <p>Akademik ciddiyet ve usule uygun olarak hazırlanan İslami çözümler.</p>
+            <div class="search-box">
+                <input type="text" placeholder="Fetva, konu veya kelime arayın..." id="searchInput">
+                <button type="button" class="btn-primary">Ara</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-blocks container">
+        <div class="card info-card">
+            <h3>Fetva Usulümüz</h3>
+            <p>Kaynakların güvenilirliği ve İslami ilimler metodolojisine dayalı yaklaşımımız.</p>
+        </div>
+        <div class="card info-card">
+            <h3>Temel İslami Konular</h3>
+            <p>İnanç, ibadet ve ahlak ekseninde en çok merak edilen temel hususlar.</p>
+        </div>
+        <div class="card info-card">
+            <h3>Güncel Fetvalar</h3>
+            <p>Modern çağın getirdiği yeni meselelere dair güncel dini cevaplar.</p>
+        </div>
+        <div class="card info-card accent-card">
+            <h3>Soru Gönder</h3>
+            <p>Cevabını bulamadığınız soruları uzman heyetimize iletin.</p>
+        </div>
+    </section>
+
+    <section class="featured-fatwas bg-light">
+        <div class="container">
+            <h2 class="section-title">Öne Çıkan Fetvalar</h2>
+            <div class="fatwa-grid" id="fatwa-list">
+                </div>
+        </div>
+    </section>
+
+    <section class="main-topics container">
+        <h2 class="section-title">Ana Konular</h2>
+        <div class="topics-grid">
+            <div class="topic-item">📚 İbadet</div>
+            <div class="topic-item">👨‍👩‍👧‍👦 Aile</div>
+            <div class="topic-item">💼 Ticaret</div>
+            <div class="topic-item">🌍 Güncel Meseleler</div>
+            <div class="topic-item">🍏 Helal Gıda</div>
+            <div class="topic-item">🤝 Sosyal Hayat</div>
+        </div>
+    </section>
+
+    <section class="trust-section">
+        <div class="container trust-content">
+            <h2>Akademik ve Güvenilir Yaklaşım</h2>
+            <div class="trust-grid">
+                <div>
+                    <h4>Köklü Kaynaklar</h4>
+                    <p>Fetvalarımız, muteber fıkıh kitapları ve temel İslam bilimleri kaynaklarına dayandırılır.</p>
+                </div>
+                <div>
+                    <h4>İlmi Usul</h4>
+                    <p>Hüküm çıkarılırken nasların bütünlüğü ve İslam hukukunun genel maksatları (Makasıd) gözetilir.</p>
+                </div>
+                <div>
+                    <h4>Heyet Onayı</h4>
+                    <p>Özellikle karmaşık güncel meseleler, alanında uzman akademisyenler tarafından istişare ile karara bağlanır.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="/" class="logo text-white">İslam<span>ve</span>Hayat</a>
+                <p>Güvenilir, ilmi ve akademik fetva platformu.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Hızlı Erişim</h4>
+                <ul>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">Fetva Usulümüz</a></li>
+                    <li><a href="#">İletişim</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom text-center">
+            <p>&copy; 2026 İslam ve Hayat. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        // Firebase modüllerini import et
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase Ayarları (Kendi bilgilerini buraya gireceksin)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Firebase'i başlat (Config bilgilerini girmediğin sürece hata vermemesi için try-catch içine alıyoruz)
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+        } catch (error) {
+            console.log("Firebase henüz yapılandırılmadı. Mock veri kullanılacak.");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 1. Mobil Menü İşlevselliği
+            const hamburger = document.getElementById('hamburgerMenu');
+            const navLinks = document.getElementById('navLinks');
+
+            hamburger.addEventListener('click', () => {
+                if (navLinks.style.display === 'flex') {
+                    navLinks.style.display = 'none';
+                } else {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '80px';
+                    navLinks.style.left = '0';
+                    navLinks.style.width = '100%';
+                    navLinks.style.backgroundColor = '#ffffff';
+                    navLinks.style.padding = '1rem';
+                    navLinks.style.boxShadow = '0 10px 10px rgba(0,0,0,0.1)';
+                }
+            });
+
+            // 2. Örnek Fetva Verileri (Test için)
+            const mockFetvalar = [
+                {
+                    title: "Yapay zeka ile üretilen yazılımların telif hakkı nasıldır?",
+                    category: "Güncel Meseleler",
+                    summary: "Dijital çağda yapay zeka araçları kullanılarak üretilen ticari ürünlerin fikri mülkiyet hakları ve İslam hukukundaki yeri...",
+                    slug: "yapay-zeka-yazilim-telif"
+                },
+                {
+                    title: "Kripto paralar ile zekat verilebilir mi?",
+                    category: "İbadet & Ticaret",
+                    summary: "Sanal varlıkların malik olma şartlarını taşıyıp taşımadığı ve nisap miktarına dahil edilme kriterleri hakkında detaylı inceleme.",
+                    slug: "kripto-para-zekat"
+                },
+                {
+                    title: "Tıbbi tahliller orucu bozar mı?",
+                    category: "İbadet",
+                    summary: "Kan vermek veya rutin hastane tahlillerinin oruç ibadetine etkisi üzerine fıkhi değerlendirmeler.",
+                    slug: "tibbi-tahlil-oruc"
+                }
+            ];
+
+            // 3. Fetvaları Ekrana Basma
+            const fatwaListContainer = document.getElementById('fatwa-list');
+
+            function renderFatwas(fatwas) {
+                fatwaListContainer.innerHTML = '';
+                fatwas.forEach(fatwa => {
+                    const fatwaHTML = `
+                        <article class="fatwa-card">
+                            <span class="fatwa-category">${fatwa.category}</span>
+                            <h3>${fatwa.title}</h3>
+                            <p>${fatwa.summary}</p>
+                            <a href="/fetva/${fatwa.slug}.html" class="read-more">Devamını Oku &rarr;</a>
+                        </article>
+                    `;
+                    fatwaListContainer.insertAdjacentHTML('beforeend', fatwaHTML);
+                });
+            }
+
+            // Başlangıçta mock veriyi render et
+            renderFatwas(mockFetvalar);
+
+            // Gerçek Firebase verisini çekmek için fonksiyon (Config girildiğinde burayı aktif edebilirsin)
+            window.fetchFatwasFromFirebase = async function() {
+                if (!db) return alert("Firebase ayarları yapılmamış!");
+                try {
+                    const q = query(collection(db, "fetvalar"), orderBy("createdAt", "desc"), limit(6));
+                    const querySnapshot = await getDocs(q);
+                    const fetchedFatwas = [];
+                    querySnapshot.forEach((doc) => {
+                        fetchedFatwas.push({ id: doc.id, ...doc.data() });
+                    });
+                    if (fetchedFatwas.length > 0) renderFatwas(fetchedFatwas);
+                } catch (error) {
+                    console.error("Fetvalar çekilirken hata oluştu:", error);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
