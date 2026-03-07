@@ -6,104 +6,196 @@
     <meta name="description" content="İslam ve Hayat - Güncel meselelerde akademik ve güvenilir İslami fetvalar.">
     <title>İslam ve Hayat | Fetva ve İslami Bilgilendirme Platformu</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
     <style>
-        /* --- CSS Variables --- */
+        /* --- CSS Variables - Zengin & Göz Alıcı Set --- */
         :root {
-            --primary-color: #1a4331; /* Koyu Yeşil */
-            --secondary-color: #fdfbf7; /* Krem / Açık Bej */
-            --accent-color: #c5a059; /* Altın Tonları */
-            --text-dark: #2c3e50;
-            --text-light: #666666;
-            --white: #ffffff;
-            --border-color: #eaeaea;
+            /* Ana Renkler */
+            --primary-deep: #062c1d; /* Derin Zümrüt (Otorite) */
+            --primary-rich: #0a402c; /* Daha Açık Zümrüt (Yüzeyler İçin) */
+            --accent-gold: #dcae61; /* Parlak Bronz-Altın (Zenginlik) */
+            --accent-gold-dark: #b88a45; /* Buton Hover */
             
+            /* Nötr Renkler */
+            --bg-base: #fcf9f2; /* Fildişi Arka Plan (Ferahlık) */
+            --white: #ffffff;
+            --text-main: #111111; /* Odun Kömürü (Okunabilirlik) */
+            --text-light: #555555;
+            --border-color: #e5e0d5;
+            
+            /* Tipografi */
             --font-heading: 'Lora', serif;
             --font-body: 'Inter', sans-serif;
             
-            --transition: all 0.3s ease;
+            /* Efektler */
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 20px rgba(6, 44, 29, 0.08);
+            --shadow-lg: 0 15px 35px rgba(6, 44, 29, 0.12);
         }
 
         /* --- Reset & Base --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: var(--font-body); background-color: var(--secondary-color); color: var(--text-dark); line-height: 1.6; }
-        a { text-decoration: none; color: inherit; }
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body { font-family: var(--font-body); background-color: var(--bg-base); color: var(--text-main); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+        
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
         ul { list-style: none; }
-        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
-        .bg-light { background-color: var(--white); padding: 4rem 0; }
+        img { max-width: 100%; height: auto; }
+        
+        .container { width: 92%; max-width: 1280px; margin: 0 auto; }
+        .section-padding { padding: 6rem 0; }
+        .bg-white { background-color: var(--white); }
         .text-center { text-align: center; }
-        .text-white { color: var(--white); }
-        h1, h2, h3, h4, .logo { font-family: var(--font-heading); }
-        .section-title { text-align: center; font-size: 2rem; color: var(--primary-color); margin-bottom: 2.5rem; }
+        
+        h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--primary-deep); font-weight: 700; }
+        h2 { font-size: 2.5rem; margin-bottom: 1.5rem; line-height: 1.3; }
+        
+        .section-subtitle { color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.5rem; }
+
+        /* Butonlar */
+        .btn { display: inline-block; padding: 0.8rem 2rem; border-radius: 4px; font-weight: 600; font-size: 0.95rem; text-align: center; cursor: pointer; border: none; font-family: var(--font-body); }
+        .btn-gold { background-color: var(--accent-gold); color: var(--primary-deep); box-shadow: var(--shadow-sm); }
+        .btn-gold:hover { background-color: var(--accent-gold-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        
+        .btn-outline { border: 2px solid var(--accent-gold); color: var(--accent-gold); background: transparent; }
+        .btn-outline:hover { background-color: var(--accent-gold); color: var(--primary-deep); }
 
         /* --- Header & Nav --- */
-        .site-header { background-color: var(--white); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; }
-        .header-container { display: flex; justify-content: space-between; align-items: center; height: 80px; }
-        .logo { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); }
-        .logo span { color: var(--accent-color); }
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { font-weight: 500; font-size: 0.95rem; transition: var(--transition); }
-        .nav-links a:hover { color: var(--accent-color); }
+        .site-header { background-color: var(--white); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
+        .header-container { display: flex; justify-content: space-between; align-items: center; height: 90px; }
+        
+        /* Logo: Daha zengin görünüm */
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-deep); display: flex; align-items: center; gap: 8px; }
+        .logo::before { content: '🕌'; font-size: 1.6rem; } /* Basit bir ikon emojisi yerine SVG de kullanılabilir */
+        .logo span { color: var(--accent-gold); font-weight: 500; font-style: italic; font-size: 1.6rem; margin-left: 2px; }
+        
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a { font-weight: 500; font-size: 0.95rem; color: var(--primary-deep); }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-gold); }
+        
+        .header-action .btn { font-size: 0.85rem; padding: 0.6rem 1.5rem; }
 
         /* Hamburger Menu (Mobile) */
-        .hamburger-menu { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; }
-        .hamburger-menu span { width: 25px; height: 3px; background-color: var(--primary-color); }
+        .hamburger-menu { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; }
+        .hamburger-menu span { width: 28px; height: 3px; background-color: var(--primary-deep); border-radius: 2px; }
 
         /* --- Hero Section --- */
-        .hero { background-color: var(--primary-color); color: var(--white); padding: 6rem 0; text-align: center; }
-        .hero h1 { font-size: 2.8rem; margin-bottom: 1rem; }
-        .hero .highlight { color: var(--accent-color); }
-        .hero p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; font-weight: 300; }
-        .search-box { display: flex; max-width: 600px; margin: 0 auto; gap: 10px; }
-        .search-box input { flex: 1; padding: 1rem 1.5rem; border: none; border-radius: 4px; font-family: var(--font-body); }
-        .btn-primary { background-color: var(--accent-color); color: var(--white); border: none; padding: 0 2rem; border-radius: 4px; font-weight: 500; cursor: pointer; transition: var(--transition); }
-        .btn-primary:hover { background-color: #b08d4b; }
+        .hero { background-color: var(--primary-deep); color: var(--white); padding: 8rem 0; text-align: center; position: relative; overflow: hidden; }
+        
+        /* Hafif İslami Desen Arka Plan Overlay */
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNkY2FlNjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4='); opacity: 0.5; }
+
+        .hero-content { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; }
+        .hero h1 { color: var(--white); font-size: 3.5rem; margin-bottom: 1.5rem; line-height: 1.2; }
+        .hero h1 span { color: var(--accent-gold); }
+        .hero p { font-size: 1.25rem; opacity: 0.9; margin-bottom: 3rem; font-weight: 300; max-width: 600px; margin-left: auto; margin-right: auto; }
+        
+        .search-box { display: flex; background: var(--white); padding: 8px; border-radius: 50px; box-shadow: var(--shadow-lg); max-width: 650px; margin: 0 auto; border: 2px solid transparent; transition: var(--transition); }
+        .search-box:focus-within { border-color: var(--accent-gold); }
+        .search-box input { flex: 1; padding: 0 1.5rem; border: none; font-family: var(--font-body); font-size: 1.1rem; color: var(--text-main); background: transparent; }
+        .search-box .btn-primary { border-radius: 50px; }
 
         /* --- Info Blocks --- */
-        .info-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: -3rem; position: relative; z-index: 10; padding-bottom: 4rem; }
-        .card { background: var(--white); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: var(--transition); border-top: 4px solid var(--primary-color); }
-        .card:hover { transform: translateY(-5px); }
-        .card h3 { color: var(--primary-color); margin-bottom: 1rem; }
-        .card p { color: var(--text-light); font-size: 0.95rem; }
-        .accent-card { border-top: 4px solid var(--accent-color); }
+        .info-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-top: -5rem; position: relative; z-index: 10; padding-bottom: 4rem; }
+        .card { background: var(--white); padding: 3rem 2rem; border-radius: 8px; box-shadow: var(--shadow-md); transition: var(--transition); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
+        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--accent-gold); }
+        
+        /* Kart İkon Efekti */
+        .card-icon { font-size: 2.5rem; color: var(--accent-gold); margin-bottom: 1.5rem; display: block; }
+        
+        .card h3 { color: var(--primary-deep); margin-bottom: 1rem; font-size: 1.5rem; }
+        .card p { color: var(--text-light); font-size: 1rem; margin-bottom: 1.5rem; }
+        
+        .card-link { color: var(--primary-deep); font-weight: 600; font-size: 0.9rem; position: relative; display: inline-block; }
+        .card-link::after { content: '→'; margin-left: 5px; transition: var(--transition); }
+        .card-link:hover::after { transform: translateX(5px); }
+        .card-link:hover { color: var(--accent-gold); }
+        
+        .accent-card { background-color: var(--primary-deep); color: var(--white); border: none; }
+        .accent-card h3 { color: var(--white); }
+        .accent-card p { color: rgba(255,255,255,0.8); }
+        .accent-card .card-link { color: var(--accent-gold); }
 
         /* --- Fatwa Grid (Cards) --- */
-        .fatwa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .fatwa-card { background: var(--secondary-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; display: flex; flex-direction: column; }
-        .fatwa-category { font-size: 0.8rem; color: var(--accent-color); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
-        .fatwa-card h3 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--primary-color); }
-        .fatwa-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 1.5rem; flex-grow: 1; }
-        .read-more { color: var(--primary-color); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--accent-color); padding-bottom: 2px; align-self: flex-start; }
+        .featured-fatwas { background-color: var(--white); }
+        .fatwa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
+        .fatwa-card { background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; padding: 2.5rem; display: flex; flex-direction: column; transition: var(--transition); }
+        .fatwa-card:hover { border-color: var(--accent-gold); box-shadow: var(--shadow-md); background-color: var(--white); }
+        
+        .fatwa-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .fatwa-category { font-size: 0.8rem; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
+        .fatwa-date { font-size: 0.85rem; color: var(--text-light); }
+        
+        .fatwa-card h3 { font-size: 1.4rem; margin-bottom: 1.2rem; color: var(--primary-deep); line-height: 1.4; flex-grow: 1; }
+        .fatwa-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 2rem; opacity: 0.9; }
+        
+        .read-more-btn { background: transparent; border: 2px solid var(--primary-deep); color: var(--primary-deep); padding: 0.6rem 1.5rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; align-self: flex-start; }
+        .read-more-btn:hover { background-color: var(--primary-deep); color: var(--white); }
 
         /* --- Main Topics --- */
-        .main-topics { padding: 4rem 0; }
-        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
-        .topic-item { background: var(--white); padding: 1.5rem; text-align: center; border-radius: 8px; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); transition: var(--transition); }
-        .topic-item:hover { background: var(--primary-color); color: var(--white); border-color: var(--primary-color); }
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+        .topic-item { background: var(--white); padding: 2rem; text-align: center; border-radius: 8px; border: 1px solid var(--border-color); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .topic-item:hover { background-color: var(--primary-deep); color: var(--white); border-color: var(--primary-deep); transform: scale(1.05); box-shadow: var(--shadow-md); }
+        
+        .topic-icon { font-size: 2rem; margin-bottom: 10px; display: block; transition: var(--transition); }
+        .topic-item:hover .topic-icon { transform: scale(1.1); }
+        .topic-title { font-weight: 600; font-size: 1rem; color: inherit; }
 
         /* --- Trust Section --- */
-        .trust-section { background-color: var(--primary-color); color: var(--white); padding: 5rem 0; text-align: center; }
-        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 3rem; }
-        .trust-grid h4 { color: var(--accent-color); font-size: 1.2rem; margin-bottom: 1rem; }
-        .trust-grid p { font-size: 0.95rem; opacity: 0.8; }
+        .trust-section { background-color: var(--primary-deep); color: var(--white); position: relative; overflow: hidden; }
+        .trust-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNkY2FlNjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4='); opacity: 0.3; }
+
+        .trust-content { position: relative; z-index: 10; max-width: 1000px; margin: 0 auto; }
+        .trust-section h2 { color: var(--white); }
+        
+        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-top: 4rem; text-align: left; }
+        .trust-item { background: rgba(255,255,255,0.05); padding: 2.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        .trust-item h4 { color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 1rem; font-family: var(--font-body); font-weight: 600; }
+        .trust-item p { font-size: 0.95rem; opacity: 0.8; color: var(--white); }
 
         /* --- Footer --- */
-        .site-footer { background: #112d21; color: var(--white); padding: 4rem 0 2rem; }
-        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 2rem; margin-bottom: 2rem; }
-        .footer-brand p { color: #a0a0a0; margin-top: 1rem; font-size: 0.9rem; }
-        .footer-links h4 { color: var(--accent-color); margin-bottom: 1.5rem; }
-        .footer-links li { margin-bottom: 0.8rem; font-size: 0.9rem; color: #a0a0a0; }
+        .site-footer { background: #041d13; color: var(--white); padding: 5rem 0 2rem; border-top: 4px solid var(--accent-gold); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3rem; margin-bottom: 2rem; }
+        
+        .footer-brand .logo { color: var(--white); font-size: 2rem; margin-bottom: 1rem; }
+        .footer-brand p { color: rgba(255,255,255,0.7); font-size: 0.95rem; max-width: 350px; }
+        
+        .footer-links h4 { color: var(--accent-gold); margin-bottom: 1.5rem; font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; }
+        .footer-links li { margin-bottom: 1rem; }
+        .footer-links a { font-size: 0.95rem; color: rgba(255,255,255,0.8); }
+        .footer-links a:hover { color: var(--accent-gold); transform: translateX(5px); display: inline-block; }
+        
+        .footer-bottom { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
 
         /* --- Responsive (Mobile) --- */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hamburger-menu { display: flex; }
-            .hero h1 { font-size: 2rem; }
-            .search-box { flex-direction: column; }
-            .btn-primary { padding: 1rem; }
-            .info-blocks { margin-top: 2rem; padding-bottom: 2rem; }
+        @media (max-width: 1024px) {
+            h2 { font-size: 2rem; }
+            .hero h1 { font-size: 2.8rem; }
+            .footer-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
         }
+        
+        @media (max-width: 768px) {
+            .nav-links, .header-action { display: none; /* Mobilde gizle */ }
+            .hamburger-menu { display: flex; }
+            
+            .hero { padding: 6rem 0; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1.1rem; }
+            
+            .search-box { flex-direction: column; border-radius: 10px; padding: 10px; gap: 10px; }
+            .search-box input { padding: 1rem; font-size: 1rem; text-align: center; }
+            .search-box .btn { border-radius: 4px; padding: 1rem; width: 100%; }
+            
+            .info-blocks { margin-top: 2rem; padding-bottom: 2rem; gap: 1.5rem; }
+            .card { padding: 2rem; }
+            
+            .section-padding { padding: 4rem 0; }
+        }
+        
+        /* Mobil Menü Açık Hali (JS ile tetiklenecek) */
+        .nav-active { display: flex !important; flex-direction: column; position: absolute; top: 90px; left: 0; width: 100%; background: var(--white); padding: 2rem; box-shadow: var(--shadow-md); border-top: 1px solid var(--border-color); z-index: 999; gap: 1.5rem; text-align: center; }
     </style>
 </head>
 <body>
@@ -113,14 +205,16 @@
             <a href="/" class="logo">İslam<span>ve</span>Hayat</a>
             <nav class="main-nav">
                 <ul class="nav-links" id="navLinks">
-                    <li><a href="#">Ana Sayfa</a></li>
+                    <li><a href="#" class="active">Ana Sayfa</a></li>
                     <li><a href="#">Hakkımızda</a></li>
                     <li><a href="#">Fetva Usulümüz</a></li>
-                    <li><a href="#">Ana Konular</a></li>
                     <li><a href="#">Kategoriler</a></li>
                     <li><a href="#">İletişim</a></li>
                 </ul>
             </nav>
+            <div class="header-action">
+                <a href="#" class="btn btn-outline">Soru Sor</a>
+            </div>
             <button class="hamburger-menu" id="hamburgerMenu" aria-label="Menüyü Aç">
                 <span></span><span></span><span></span>
             </button>
@@ -129,69 +223,98 @@
 
     <section class="hero">
         <div class="container hero-content">
-            <h1>Güncel Meselelerde <br> <span class="highlight">Güvenilir Fetvalar</span></h1>
-            <p>Akademik ciddiyet ve usule uygun olarak hazırlanan İslami çözümler.</p>
+            <h1>Güncel Meselelerde <br> <span>Güvenilir Fetvalar</span></h1>
+            <p>Akademik ciddiyet, ilmi usul ve Ehl-i Sünnet akidesi ekseninde hazırlanan dini çözümler.</p>
             <div class="search-box">
-                <input type="text" placeholder="Fetva, konu veya kelime arayın..." id="searchInput">
-                <button type="button" class="btn-primary">Ara</button>
+                <input type="text" placeholder="Hangi konuda fetva arıyorsunuz? (Örn: Ticaret, Oruç)" id="searchInput">
+                <button type="button" class="btn btn-gold">Fetva Ara</button>
             </div>
         </div>
     </section>
 
     <section class="info-blocks container">
-        <div class="card info-card">
+        <div class="card">
+            <span class="card-icon">📖</span>
             <h3>Fetva Usulümüz</h3>
-            <p>Kaynakların güvenilirliği ve İslami ilimler metodolojisine dayalı yaklaşımımız.</p>
+            <p>Kararlarımızın dayandığı temel kaynaklar ve izlediğimiz fıkhi metodoloji.</p>
+            <a href="#" class="card-link">Detayları İncele</a>
         </div>
-        <div class="card info-card">
-            <h3>Temel İslami Konular</h3>
-            <p>İnanç, ibadet ve ahlak ekseninde en çok merak edilen temel hususlar.</p>
+        <div class="card">
+            <span class="card-icon">🕌</span>
+            <h3>Temel Konular</h3>
+            <p>İnanç, ibadet ve ahlak hayatına dair en çok merak edilen hususlar.</p>
+            <a href="#" class="card-link">Konulara Git</a>
         </div>
-        <div class="card info-card">
-            <h3>Güncel Fetvalar</h3>
-            <p>Modern çağın getirdiği yeni meselelere dair güncel dini cevaplar.</p>
-        </div>
-        <div class="card info-card accent-card">
-            <h3>Soru Gönder</h3>
-            <p>Cevabını bulamadığınız soruları uzman heyetimize iletin.</p>
+        <div class="card accent-card">
+            <span class="card-icon" style="color: var(--accent-gold);">💬</span>
+            <h3>Hızlı Soru Sor</h3>
+            <p>Cevabını bulamadığınız güncel meseleleri uzman heyetimize iletin.</p>
+            <a href="#" class="card-link">Soru Formu</a>
         </div>
     </section>
 
-    <section class="featured-fatwas bg-light">
+    <section class="featured-fatwas section-padding">
         <div class="container">
-            <h2 class="section-title">Öne Çıkan Fetvalar</h2>
+            <span class="section-subtitle text-center">Son Eklenenler</span>
+            <h2 class="text-center">Öne Çıkan Güncel Fetvalar</h2>
             <div class="fatwa-grid" id="fatwa-list">
                 </div>
+            <div class="text-center" style="margin-top: 4rem;">
+                <a href="#" class="btn btn-gold">Tüm Fetvaları Gör</a>
+            </div>
         </div>
     </section>
 
-    <section class="main-topics container">
-        <h2 class="section-title">Ana Konular</h2>
-        <div class="topics-grid">
-            <div class="topic-item">📚 İbadet</div>
-            <div class="topic-item">👨‍👩‍👧‍👦 Aile</div>
-            <div class="topic-item">💼 Ticaret</div>
-            <div class="topic-item">🌍 Güncel Meseleler</div>
-            <div class="topic-item">🍏 Helal Gıda</div>
-            <div class="topic-item">🤝 Sosyal Hayat</div>
+    <section class="main-topics section-padding bg-white">
+        <div class="container">
+            <span class="section-subtitle text-center">Kategoriler</span>
+            <h2 class="text-center">Ana Fıkıh Konuları</h2>
+            <div class="topics-grid">
+                <div class="topic-item">
+                    <span class="topic-icon">📿</span>
+                    <span class="topic-title">İbadet</span>
+                </div>
+                <div class="topic-item">
+                    <span class="topic-icon">👨‍👩‍👧</span>
+                    <span class="topic-title">Aile</span>
+                </div>
+                <div class="topic-item">
+                    <span class="topic-icon">💰</span>
+                    <span class="topic-title">Ticaret</span>
+                </div>
+                <div class="topic-item">
+                    <span class="topic-icon">🌐</span>
+                    <span class="topic-title">Güncel</span>
+                </div>
+                <div class="topic-item">
+                    <span class="topic-icon">🍽️</span>
+                    <span class="topic-title">Helal Gıda</span>
+                </div>
+                <div class="topic-item">
+                    <span class="topic-icon">🤝</span>
+                    <span class="topic-title">Sosyal Hayat</span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="trust-section">
-        <div class="container trust-content">
-            <h2>Akademik ve Güvenilir Yaklaşım</h2>
+    <section class="trust-section section-padding">
+        <div class="container trust-content text-center">
+            <span class="section-subtitle">Güven ve Otorigte</span>
+            <h2>İlmi ve Akademik Yaklaşım</h2>
+            <p style="color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 2rem;">Platformumuzda yayınlanan her fetva, titiz bir inceleme ve istişare sürecinden geçer.</p>
             <div class="trust-grid">
-                <div>
-                    <h4>Köklü Kaynaklar</h4>
-                    <p>Fetvalarımız, muteber fıkıh kitapları ve temel İslam bilimleri kaynaklarına dayandırılır.</p>
+                <div class="trust-item">
+                    <h4>Muteber Kaynaklar</h4>
+                    <p>Fetvalarımız, Kur'an, Sünnet ve dört hak mezhebin temel fıkıh kaynaklarına dayandırılır.</p>
                 </div>
-                <div>
-                    <h4>İlmi Usul</h4>
-                    <p>Hüküm çıkarılırken nasların bütünlüğü ve İslam hukukunun genel maksatları (Makasıd) gözetilir.</p>
+                <div class="trust-item">
+                    <h4>Uzman Heyet Onayı</h4>
+                    <p>Karmaşık ve güncel meseleler, alanında uzman akademisyenlerden oluşan ilmi heyetimizce karara bağlanır.</p>
                 </div>
-                <div>
-                    <h4>Heyet Onayı</h4>
-                    <p>Özellikle karmaşık güncel meseleler, alanında uzman akademisyenler tarafından istişare ile karara bağlanır.</p>
+                <div class="trust-item">
+                    <h4>Çağdaş Çözümler</h4>
+                    <p>Kadim fıkıh geleneğimizin ışığında, modern çağın getirdiği yeni sorunlara şer'i çözümler sunuyoruz.</p>
                 </div>
             </div>
         </div>
@@ -200,46 +323,44 @@
     <footer class="site-footer">
         <div class="container footer-grid">
             <div class="footer-brand">
-                <a href="/" class="logo text-white">İslam<span>ve</span>Hayat</a>
-                <p>Güvenilir, ilmi ve akademik fetva platformu.</p>
+                <a href="/" class="logo">İslam<span>ve</span>Hayat</a>
+                <p>Ehl-i Sünnet çizgisinde, güvenilir, ilmi ve akademik fetva platformu.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Kurumsal</h4>
+                <ul>
+                    <li><a href="#">Hakkımızda</a></li>
+                    <li><a href="#">İlmi Heyetimiz</a></li>
+                    <li><a href="#">Fetva Usulümüz</a></li>
+                    <li><a href="#">Gizlilik Politikası</a></li>
+                </ul>
             </div>
             <div class="footer-links">
                 <h4>Hızlı Erişim</h4>
                 <ul>
-                    <li><a href="#">Hakkımızda</a></li>
-                    <li><a href="#">Fetva Usulümüz</a></li>
+                    <li><a href="#">Sıkça Sorulanlar</a></li>
+                    <li><a href="#">Soru Sor</a></li>
                     <li><a href="#">İletişim</a></li>
+                    <li><a href="#">Kategoriler</a></li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom text-center">
-            <p>&copy; 2026 İslam ve Hayat. Tüm hakları saklıdır.</p>
+        <div class="container footer-bottom text-center">
+            <p>&copy; 2026 İslam ve Hayat Platformu. Tüm hakları saklıdır.</p>
         </div>
     </footer>
 
     <script type="module">
-        // Firebase modüllerini import et
+        // Firebase modüllerini import et (Placeholder)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Ayarları (Kendi bilgilerini buraya gireceksin)
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+        // Firebase Ayarları (TODO: Gerçek bilgileri buraya gir)
+        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID" };
 
-        // Firebase'i başlat (Config bilgilerini girmediğin sürece hata vermemesi için try-catch içine alıyoruz)
+        // Firebase'i başlat (Placeholder - Hata vermemesi için try-catch)
         let db;
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-        } catch (error) {
-            console.log("Firebase henüz yapılandırılmadı. Mock veri kullanılacak.");
-        }
+        try { if(firebaseConfig.apiKey !== "YOUR_API_KEY") { const app = initializeApp(firebaseConfig); db = getFirestore(app); } } catch (e) { console.log("Firebase config beklemede."); }
 
         document.addEventListener("DOMContentLoaded", () => {
             
@@ -248,44 +369,36 @@
             const navLinks = document.getElementById('navLinks');
 
             hamburger.addEventListener('click', () => {
-                if (navLinks.style.display === 'flex') {
-                    navLinks.style.display = 'none';
-                } else {
-                    navLinks.style.display = 'flex';
-                    navLinks.style.flexDirection = 'column';
-                    navLinks.style.position = 'absolute';
-                    navLinks.style.top = '80px';
-                    navLinks.style.left = '0';
-                    navLinks.style.width = '100%';
-                    navLinks.style.backgroundColor = '#ffffff';
-                    navLinks.style.padding = '1rem';
-                    navLinks.style.boxShadow = '0 10px 10px rgba(0,0,0,0.1)';
-                }
+                navLinks.classList.toggle('nav-active');
+                // Hamburger ikonunu 'X'e çevirme efekti eklenebilir
             });
 
-            // 2. Örnek Fetva Verileri (Test için)
+            // 2. Örnek Fetva Verileri (Demo İçin Zenginleştirilmiş İçerik)
             const mockFetvalar = [
                 {
-                    title: "Yapay zeka ile üretilen yazılımların telif hakkı nasıldır?",
+                    title: "Yapay Zeka Tarafından Üretilen Sanat Eserlerinin Ticari Kullanımı ve Telif Hakkı",
                     category: "Güncel Meseleler",
-                    summary: "Dijital çağda yapay zeka araçları kullanılarak üretilen ticari ürünlerin fikri mülkiyet hakları ve İslam hukukundaki yeri...",
-                    slug: "yapay-zeka-yazilim-telif"
+                    date: "12 May 2024",
+                    summary: "Algoritmalar aracılığıyla oluşturulan görsellerin İslam hukukundaki 'mal'iyeti, mülkiyet hakkı ve ticareti üzerine fıkhi bir inceleme.",
+                    slug: "yapay-zeka-sanat-telif"
                 },
                 {
-                    title: "Kripto paralar ile zekat verilebilir mi?",
-                    category: "İbadet & Ticaret",
-                    summary: "Sanal varlıkların malik olma şartlarını taşıyıp taşımadığı ve nisap miktarına dahil edilme kriterleri hakkında detaylı inceleme.",
-                    slug: "kripto-para-zekat"
+                    title: "Kripto Varlıkların Zekat Matrahına Dahil Edilmesi ve Hesaplama Metodolojisi",
+                    category: "Ticaret & İbadet",
+                    date: "05 May 2024",
+                    summary: "Dijital paraların 'Urûz-u Ticaret' (ticaret malı) kapsamında değerlendirilip değerlendirilmeyeceği ve nisap miktarı.",
+                    slug: "kripto-zekat-hesaplama"
                 },
                 {
-                    title: "Tıbbi tahliller orucu bozar mı?",
+                    title: "Akıllı Saat ve Giyilebilir Teknolojilerle Namaz Kılmanın Hükmü",
                     category: "İbadet",
-                    summary: "Kan vermek veya rutin hastane tahlillerinin oruç ibadetine etkisi üzerine fıkhi değerlendirmeler.",
-                    slug: "tibbi-tahlil-oruc"
+                    date: "28 Nis 2024",
+                    summary: "Cihazların metal/deri kısımlarının necaseti, bildirimlerin huşua etkisi ve namaz esnasında kullanımı.",
+                    slug: "akilli-saat-namaz"
                 }
             ];
 
-            // 3. Fetvaları Ekrana Basma
+            // 3. Fetvaları Ekrana Basma (Daha Zengin Kart Yapısı)
             const fatwaListContainer = document.getElementById('fatwa-list');
 
             function renderFatwas(fatwas) {
@@ -293,10 +406,13 @@
                 fatwas.forEach(fatwa => {
                     const fatwaHTML = `
                         <article class="fatwa-card">
-                            <span class="fatwa-category">${fatwa.category}</span>
+                            <div class="fatwa-meta">
+                                <span class="fatwa-category">${fatwa.category}</span>
+                                <span class="fatwa-date">${fatwa.date}</span>
+                            </div>
                             <h3>${fatwa.title}</h3>
                             <p>${fatwa.summary}</p>
-                            <a href="/fetva/${fatwa.slug}.html" class="read-more">Devamını Oku &rarr;</a>
+                            <a href="/fetva/${fatwa.slug}.html" class="read-more-btn">Devamını Oku</a>
                         </article>
                     `;
                     fatwaListContainer.insertAdjacentHTML('beforeend', fatwaHTML);
@@ -306,21 +422,23 @@
             // Başlangıçta mock veriyi render et
             renderFatwas(mockFetvalar);
 
-            // Gerçek Firebase verisini çekmek için fonksiyon (Config girildiğinde burayı aktif edebilirsin)
+            // Gerçek Firebase verisini çekmek için fonksiyon (Config girildiğinde aktif et)
             window.fetchFatwasFromFirebase = async function() {
-                if (!db) return alert("Firebase ayarları yapılmamış!");
+                if (!db) return console.log("Firebase aktif değil, demo veri kullanılıyor.");
                 try {
-                    const q = query(collection(db, "fetvalar"), orderBy("createdAt", "desc"), limit(6));
+                    const q = query(collection(db, "fetvalar"), orderBy("createdAt", "desc"), limit(3));
                     const querySnapshot = await getDocs(q);
                     const fetchedFatwas = [];
                     querySnapshot.forEach((doc) => {
+                        // Veri yapısının mock veriyle uyumlu olduğundan emin ol
                         fetchedFatwas.push({ id: doc.id, ...doc.data() });
                     });
                     if (fetchedFatwas.length > 0) renderFatwas(fetchedFatwas);
                 } catch (error) {
-                    console.error("Fetvalar çekilirken hata oluştu:", error);
+                    console.error("Firebase hata:", error);
                 }
             }
+            // fetchFatwasFromFirebase(); // Config girdikten sonra burayı aç
         });
     </script>
 </body>
