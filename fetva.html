@@ -3,443 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="İslam ve Hayat - Güncel meselelerde akademik ve güvenilir İslami fetvalar.">
-    <title>İslam ve Hayat | Fetva ve İslami Bilgilendirme Platformu</title>
+    <title>İslam ve Hayat | Güncel Fetvalar ve Çözümler</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0B4619', /* Derin Zümrüt Yeşili */
+                        secondary: '#D4AF37', /* Zengin Altın */
+                        darkBlue: '#0f172a', /* Lapis Mavisi (Gece) */
+                        lightBg: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        'serif': ['Amiri', 'serif'],
+                        'sans': ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        /* --- CSS Variables - Zengin & Göz Alıcı Set --- */
-        :root {
-            /* Ana Renkler */
-            --primary-deep: #062c1d; /* Derin Zümrüt (Otorite) */
-            --primary-rich: #0a402c; /* Daha Açık Zümrüt (Yüzeyler İçin) */
-            --accent-gold: #dcae61; /* Parlak Bronz-Altın (Zenginlik) */
-            --accent-gold-dark: #b88a45; /* Buton Hover */
-            
-            /* Nötr Renkler */
-            --bg-base: #fcf9f2; /* Fildişi Arka Plan (Ferahlık) */
-            --white: #ffffff;
-            --text-main: #111111; /* Odun Kömürü (Okunabilirlik) */
-            --text-light: #555555;
-            --border-color: #e5e0d5;
-            
-            /* Tipografi */
-            --font-heading: 'Lora', serif;
-            --font-body: 'Inter', sans-serif;
-            
-            /* Efektler */
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --shadow-sm: 0 2px 5px rgba(0,0,0,0.05);
-            --shadow-md: 0 10px 20px rgba(6, 44, 29, 0.08);
-            --shadow-lg: 0 15px 35px rgba(6, 44, 29, 0.12);
-        }
-
-        /* --- Reset & Base --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        html { scroll-behavior: smooth; font-size: 16px; }
-        body { font-family: var(--font-body); background-color: var(--bg-base); color: var(--text-main); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+        body { font-family: 'Poppins', sans-serif; background-color: #F8F9FA; }
+        h1, h2, h3, .brand-font { font-family: 'Amiri', serif; }
         
-        a { text-decoration: none; color: inherit; transition: var(--transition); }
-        ul { list-style: none; }
-        img { max-width: 100%; height: auto; }
-        
-        .container { width: 92%; max-width: 1280px; margin: 0 auto; }
-        .section-padding { padding: 6rem 0; }
-        .bg-white { background-color: var(--white); }
-        .text-center { text-align: center; }
-        
-        h1, h2, h3, h4 { font-family: var(--font-heading); color: var(--primary-deep); font-weight: 700; }
-        h2 { font-size: 2.5rem; margin-bottom: 1.5rem; line-height: 1.3; }
-        
-        .section-subtitle { color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.5rem; }
-
-        /* Butonlar */
-        .btn { display: inline-block; padding: 0.8rem 2rem; border-radius: 4px; font-weight: 600; font-size: 0.95rem; text-align: center; cursor: pointer; border: none; font-family: var(--font-body); }
-        .btn-gold { background-color: var(--accent-gold); color: var(--primary-deep); box-shadow: var(--shadow-sm); }
-        .btn-gold:hover { background-color: var(--accent-gold-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-        
-        .btn-outline { border: 2px solid var(--accent-gold); color: var(--accent-gold); background: transparent; }
-        .btn-outline:hover { background-color: var(--accent-gold); color: var(--primary-deep); }
-
-        /* --- Header & Nav --- */
-        .site-header { background-color: var(--white); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm); }
-        .header-container { display: flex; justify-content: space-between; align-items: center; height: 90px; }
-        
-        /* Logo: Daha zengin görünüm */
-        .logo { font-size: 1.8rem; font-weight: 700; color: var(--primary-deep); display: flex; align-items: center; gap: 8px; }
-        .logo::before { content: '🕌'; font-size: 1.6rem; } /* Basit bir ikon emojisi yerine SVG de kullanılabilir */
-        .logo span { color: var(--accent-gold); font-weight: 500; font-style: italic; font-size: 1.6rem; margin-left: 2px; }
-        
-        .nav-links { display: flex; gap: 2.5rem; }
-        .nav-links a { font-weight: 500; font-size: 0.95rem; color: var(--primary-deep); }
-        .nav-links a:hover, .nav-links a.active { color: var(--accent-gold); }
-        
-        .header-action .btn { font-size: 0.85rem; padding: 0.6rem 1.5rem; }
-
-        /* Hamburger Menu (Mobile) */
-        .hamburger-menu { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 6px; }
-        .hamburger-menu span { width: 28px; height: 3px; background-color: var(--primary-deep); border-radius: 2px; }
-
-        /* --- Hero Section --- */
-        .hero { background-color: var(--primary-deep); color: var(--white); padding: 8rem 0; text-align: center; position: relative; overflow: hidden; }
-        
-        /* Hafif İslami Desen Arka Plan Overlay */
-        .hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNkY2FlNjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4='); opacity: 0.5; }
-
-        .hero-content { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; }
-        .hero h1 { color: var(--white); font-size: 3.5rem; margin-bottom: 1.5rem; line-height: 1.2; }
-        .hero h1 span { color: var(--accent-gold); }
-        .hero p { font-size: 1.25rem; opacity: 0.9; margin-bottom: 3rem; font-weight: 300; max-width: 600px; margin-left: auto; margin-right: auto; }
-        
-        .search-box { display: flex; background: var(--white); padding: 8px; border-radius: 50px; box-shadow: var(--shadow-lg); max-width: 650px; margin: 0 auto; border: 2px solid transparent; transition: var(--transition); }
-        .search-box:focus-within { border-color: var(--accent-gold); }
-        .search-box input { flex: 1; padding: 0 1.5rem; border: none; font-family: var(--font-body); font-size: 1.1rem; color: var(--text-main); background: transparent; }
-        .search-box .btn-primary { border-radius: 50px; }
-
-        /* --- Info Blocks --- */
-        .info-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2.5rem; margin-top: -5rem; position: relative; z-index: 10; padding-bottom: 4rem; }
-        .card { background: var(--white); padding: 3rem 2rem; border-radius: 8px; box-shadow: var(--shadow-md); transition: var(--transition); border: 1px solid var(--border-color); position: relative; overflow: hidden; }
-        .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: var(--accent-gold); }
-        
-        /* Kart İkon Efekti */
-        .card-icon { font-size: 2.5rem; color: var(--accent-gold); margin-bottom: 1.5rem; display: block; }
-        
-        .card h3 { color: var(--primary-deep); margin-bottom: 1rem; font-size: 1.5rem; }
-        .card p { color: var(--text-light); font-size: 1rem; margin-bottom: 1.5rem; }
-        
-        .card-link { color: var(--primary-deep); font-weight: 600; font-size: 0.9rem; position: relative; display: inline-block; }
-        .card-link::after { content: '→'; margin-left: 5px; transition: var(--transition); }
-        .card-link:hover::after { transform: translateX(5px); }
-        .card-link:hover { color: var(--accent-gold); }
-        
-        .accent-card { background-color: var(--primary-deep); color: var(--white); border: none; }
-        .accent-card h3 { color: var(--white); }
-        .accent-card p { color: rgba(255,255,255,0.8); }
-        .accent-card .card-link { color: var(--accent-gold); }
-
-        /* --- Fatwa Grid (Cards) --- */
-        .featured-fatwas { background-color: var(--white); }
-        .fatwa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; }
-        .fatwa-card { background: var(--bg-base); border: 1px solid var(--border-color); border-radius: 8px; padding: 2.5rem; display: flex; flex-direction: column; transition: var(--transition); }
-        .fatwa-card:hover { border-color: var(--accent-gold); box-shadow: var(--shadow-md); background-color: var(--white); }
-        
-        .fatwa-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .fatwa-category { font-size: 0.8rem; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; }
-        .fatwa-date { font-size: 0.85rem; color: var(--text-light); }
-        
-        .fatwa-card h3 { font-size: 1.4rem; margin-bottom: 1.2rem; color: var(--primary-deep); line-height: 1.4; flex-grow: 1; }
-        .fatwa-card p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 2rem; opacity: 0.9; }
-        
-        .read-more-btn { background: transparent; border: 2px solid var(--primary-deep); color: var(--primary-deep); padding: 0.6rem 1.5rem; border-radius: 4px; font-weight: 600; font-size: 0.85rem; align-self: flex-start; }
-        .read-more-btn:hover { background-color: var(--primary-deep); color: var(--white); }
-
-        /* --- Main Topics --- */
-        .topics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
-        .topic-item { background: var(--white); padding: 2rem; text-align: center; border-radius: 8px; border: 1px solid var(--border-color); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .topic-item:hover { background-color: var(--primary-deep); color: var(--white); border-color: var(--primary-deep); transform: scale(1.05); box-shadow: var(--shadow-md); }
-        
-        .topic-icon { font-size: 2rem; margin-bottom: 10px; display: block; transition: var(--transition); }
-        .topic-item:hover .topic-icon { transform: scale(1.1); }
-        .topic-title { font-weight: 600; font-size: 1rem; color: inherit; }
-
-        /* --- Trust Section --- */
-        .trust-section { background-color: var(--primary-deep); color: var(--white); position: relative; overflow: hidden; }
-        .trust-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNkY2FlNjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTAgMGg0MHY0MEgwVjB6bTIwIDIwaDIwdjIwSDIWMjB6TTAgMjBoMjB2MjBIMFYyMHoyMCAwaDIwdjIwSDIwVjB6Ii8+PC9nPjwvZz48L3N2Zz4='); opacity: 0.3; }
-
-        .trust-content { position: relative; z-index: 10; max-width: 1000px; margin: 0 auto; }
-        .trust-section h2 { color: var(--white); }
-        
-        .trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; margin-top: 4rem; text-align: left; }
-        .trust-item { background: rgba(255,255,255,0.05); padding: 2.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        .trust-item h4 { color: var(--accent-gold); font-size: 1.3rem; margin-bottom: 1rem; font-family: var(--font-body); font-weight: 600; }
-        .trust-item p { font-size: 0.95rem; opacity: 0.8; color: var(--white); }
-
-        /* --- Footer --- */
-        .site-footer { background: #041d13; color: var(--white); padding: 5rem 0 2rem; border-top: 4px solid var(--accent-gold); }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3rem; margin-bottom: 2rem; }
-        
-        .footer-brand .logo { color: var(--white); font-size: 2rem; margin-bottom: 1rem; }
-        .footer-brand p { color: rgba(255,255,255,0.7); font-size: 0.95rem; max-width: 350px; }
-        
-        .footer-links h4 { color: var(--accent-gold); margin-bottom: 1.5rem; font-family: var(--font-body); font-weight: 600; font-size: 1.1rem; }
-        .footer-links li { margin-bottom: 1rem; }
-        .footer-links a { font-size: 0.95rem; color: rgba(255,255,255,0.8); }
-        .footer-links a:hover { color: var(--accent-gold); transform: translateX(5px); display: inline-block; }
-        
-        .footer-bottom { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
-
-        /* --- Responsive (Mobile) --- */
-        @media (max-width: 1024px) {
-            h2 { font-size: 2rem; }
-            .hero h1 { font-size: 2.8rem; }
-            .footer-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        /* Zenginleştirilmiş Gölgeler ve Efektler */
+        .glass-header {
+            background: rgba(11, 70, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #D4AF37;
         }
         
-        @media (max-width: 768px) {
-            .nav-links, .header-action { display: none; /* Mobilde gizle */ }
-            .hamburger-menu { display: flex; }
-            
-            .hero { padding: 6rem 0; }
-            .hero h1 { font-size: 2.2rem; }
-            .hero p { font-size: 1.1rem; }
-            
-            .search-box { flex-direction: column; border-radius: 10px; padding: 10px; gap: 10px; }
-            .search-box input { padding: 1rem; font-size: 1rem; text-align: center; }
-            .search-box .btn { border-radius: 4px; padding: 1rem; width: 100%; }
-            
-            .info-blocks { margin-top: 2rem; padding-bottom: 2rem; gap: 1.5rem; }
-            .card { padding: 2rem; }
-            
-            .section-padding { padding: 4rem 0; }
+        .fatwa-card {
+            transition: all 0.3s ease;
+            border-top: 3px solid transparent;
+        }
+        .fatwa-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-top: 3px solid #D4AF37;
+        }
+
+        .hero-pattern {
+            background-color: #0f172a;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         
-        /* Mobil Menü Açık Hali (JS ile tetiklenecek) */
-        .nav-active { display: flex !important; flex-direction: column; position: absolute; top: 90px; left: 0; width: 100%; background: var(--white); padding: 2rem; box-shadow: var(--shadow-md); border-top: 1px solid var(--border-color); z-index: 999; gap: 1.5rem; text-align: center; }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B5952F 100%);
+            color: #0f172a;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #B5952F 0%, #967A26 100%);
+            transform: scale(1.05);
+        }
     </style>
 </head>
-<body>
+<body class="text-gray-800 antialiased">
 
-    <header class="site-header">
-        <div class="container header-container">
-            <a href="/" class="logo">İslam<span>ve</span>Hayat</a>
-            <nav class="main-nav">
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="#" class="active">Ana Sayfa</a></li>
-                    <li><a href="#">Hakkımızda</a></li>
-                    <li><a href="#">Fetva Usulümüz</a></li>
-                    <li><a href="#">Kategoriler</a></li>
-                    <li><a href="#">İletişim</a></li>
-                </ul>
+    <header class="glass-header fixed w-full top-0 z-50 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-full border-2 border-secondary flex items-center justify-center bg-darkBlue group-hover:bg-secondary transition-colors duration-300">
+                    <i class="fa-solid fa-book-quran text-secondary group-hover:text-darkBlue text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold brand-font text-secondary tracking-wide">İslam ve Hayat</h1>
+                    <p class="text-xs text-gray-300 font-light tracking-widest uppercase">Güncel Fetva Portalı</p>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex gap-8 font-medium text-sm items-center">
+                <a href="#" class="hover:text-secondary transition-colors text-secondary">Anasayfa</a>
+                <a href="#kategoriler" class="hover:text-secondary transition-colors">Kategoriler</a>
+                <a href="#son-fetvalar" class="hover:text-secondary transition-colors">Son Eklenenler</a>
+                <a href="#" class="btn-gold px-5 py-2 rounded-full font-bold shadow-md"><i class="fa-solid fa-pen-nib mr-2"></i>Soru Sor</a>
             </nav>
-            <div class="header-action">
-                <a href="#" class="btn btn-outline">Soru Sor</a>
-            </div>
-            <button class="hamburger-menu" id="hamburgerMenu" aria-label="Menüyü Aç">
-                <span></span><span></span><span></span>
+
+            <button class="md:hidden text-secondary text-2xl">
+                <i class="fa-solid fa-bars"></i>
             </button>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="container hero-content">
-            <h1>Güncel Meselelerde <br> <span>Güvenilir Fetvalar</span></h1>
-            <p>Akademik ciddiyet, ilmi usul ve Ehl-i Sünnet akidesi ekseninde hazırlanan dini çözümler.</p>
-            <div class="search-box">
-                <input type="text" placeholder="Hangi konuda fetva arıyorsunuz? (Örn: Ticaret, Oruç)" id="searchInput">
-                <button type="button" class="btn btn-gold">Fetva Ara</button>
+    <section class="hero-pattern pt-32 pb-20 text-center relative border-b-4 border-secondary">
+        <div class="container mx-auto px-4 relative z-10">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-6 brand-font drop-shadow-lg">
+                Hayatın İçinden <span class="text-secondary italic">İslami Çözümler</span>
+            </h2>
+            <p class="text-gray-300 mb-10 text-lg md:text-xl max-w-2xl mx-auto font-light">
+                İbadet, ticaret, aile ve dijital yaşama dair karşılaştığınız meselelerin fıkhi boyutlarını güvenilir kaynaklarla öğrenin.
+            </p>
+            
+            <div class="max-w-3xl mx-auto relative group">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-5 pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 group-hover:text-secondary transition-colors"></i>
+                </div>
+                <input type="text" class="block w-full p-5 pl-14 text-lg text-gray-900 border-2 border-transparent rounded-full bg-white shadow-2xl focus:ring-4 focus:ring-secondary focus:border-secondary transition-all outline-none" placeholder="Hangi konuda fetva arıyorsunuz? (Örn: Dijital Telif, P2P Ağlar, Zekat...)">
+                <button class="absolute right-2 bottom-2 top-2 btn-gold font-medium rounded-full text-sm px-8 py-2">
+                    Ara
+                </button>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-lightBg to-transparent"></div>
+    </section>
+
+    <section id="kategoriler" class="py-16 bg-lightBg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-3xl font-bold brand-font text-primary border-l-4 border-secondary pl-4">İlgi Alanları</h3>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <a href="#" class="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-all border border-gray-100 group">
+                    <div class="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+                        <i class="fa-solid fa-hands-praying text-3xl text-secondary"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 group-hover:text-primary transition-colors">İbadet</h4>
+                </a>
+                <a href="#" class="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-all border border-gray-100 group">
+                    <div class="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+                        <i class="fa-solid fa-scale-balanced text-3xl text-secondary"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 group-hover:text-primary transition-colors">Ticaret & İktisat</h4>
+                </a>
+                <a href="#" class="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-all border border-gray-100 group">
+                    <div class="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+                        <i class="fa-solid fa-house-chimney-user text-3xl text-secondary"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 group-hover:text-primary transition-colors">Aile Hayatı</h4>
+                </a>
+                <a href="#" class="bg-white rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition-all border border-gray-100 group">
+                    <div class="w-16 h-16 mx-auto bg-gray-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary transition-colors">
+                        <i class="fa-solid fa-network-wired text-3xl text-secondary"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-800 group-hover:text-primary transition-colors">Dijital Hukuk</h4>
+                </a>
             </div>
         </div>
     </section>
 
-    <section class="info-blocks container">
-        <div class="card">
-            <span class="card-icon">📖</span>
-            <h3>Fetva Usulümüz</h3>
-            <p>Kararlarımızın dayandığı temel kaynaklar ve izlediğimiz fıkhi metodoloji.</p>
-            <a href="#" class="card-link">Detayları İncele</a>
-        </div>
-        <div class="card">
-            <span class="card-icon">🕌</span>
-            <h3>Temel Konular</h3>
-            <p>İnanç, ibadet ve ahlak hayatına dair en çok merak edilen hususlar.</p>
-            <a href="#" class="card-link">Konulara Git</a>
-        </div>
-        <div class="card accent-card">
-            <span class="card-icon" style="color: var(--accent-gold);">💬</span>
-            <h3>Hızlı Soru Sor</h3>
-            <p>Cevabını bulamadığınız güncel meseleleri uzman heyetimize iletin.</p>
-            <a href="#" class="card-link">Soru Formu</a>
-        </div>
-    </section>
+    <section id="son-fetvalar" class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold brand-font text-primary border-l-4 border-secondary pl-4 mb-10">Güncel Meseleler</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <article class="fatwa-card bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col h-full">
+                    <div class="absolute top-0 right-0 bg-secondary text-darkBlue text-xs font-bold px-3 py-1 rounded-bl-lg">Yeni</div>
+                    <div class="flex items-center gap-2 mb-4 text-sm text-gray-500">
+                        <span class="bg-gray-100 text-primary px-2 py-1 rounded"><i class="fa-solid fa-network-wired mr-1"></i> Dijital Hukuk</span>
+                        <span><i class="fa-regular fa-calendar ml-2 mr-1"></i> 10 Mart 2026</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3 brand-font leading-snug">Yapay zeka ile üretilen makale ve içeriklerin telif hakkı hükmü nedir?</h4>
+                    <p class="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">
+                        Otonom sistemler ve yapay zeka araçları kullanılarak elde edilen eserlerin mülkiyeti ve ticari kullanım hakları, emek-sermaye ilişkisi bağlamında değerlendirildiğinde...
+                    </p>
+                    <a href="#" class="text-primary font-semibold flex items-center group mt-auto">
+                        Cevabı Oku <i class="fa-solid fa-arrow-right-long ml-2 group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </article>
 
-    <section class="featured-fatwas section-padding">
-        <div class="container">
-            <span class="section-subtitle text-center">Son Eklenenler</span>
-            <h2 class="text-center">Öne Çıkan Güncel Fetvalar</h2>
-            <div class="fatwa-grid" id="fatwa-list">
-                </div>
-            <div class="text-center" style="margin-top: 4rem;">
-                <a href="#" class="btn btn-gold">Tüm Fetvaları Gör</a>
+                <article class="fatwa-card bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-4 text-sm text-gray-500">
+                        <span class="bg-gray-100 text-primary px-2 py-1 rounded"><i class="fa-solid fa-scale-balanced mr-1"></i> Ticaret</span>
+                        <span><i class="fa-regular fa-calendar ml-2 mr-1"></i> 08 Mart 2026</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3 brand-font leading-snug">Uçtan uca (P2P) dosya paylaşım ağları üzerinden indirilen yazılımların kullanımı caiz midir?</h4>
+                    <p class="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">
+                        Kul hakkı ve fikri mülkiyet ihlali çerçevesinde, kapalı kaynak (closed source) veya lisanslı ürünlerin eşler arası ağlar vasıtasıyla bedelsiz edinilmesi fıkhen...
+                    </p>
+                    <a href="#" class="text-primary font-semibold flex items-center group mt-auto">
+                        Cevabı Oku <i class="fa-solid fa-arrow-right-long ml-2 group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </article>
+
+                <article class="fatwa-card bg-white rounded-2xl p-8 border border-gray-100 shadow-sm relative overflow-hidden flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-4 text-sm text-gray-500">
+                        <span class="bg-gray-100 text-primary px-2 py-1 rounded"><i class="fa-solid fa-hands-praying mr-1"></i> İbadet</span>
+                        <span><i class="fa-regular fa-calendar ml-2 mr-1"></i> 05 Mart 2026</span>
+                    </div>
+                    <h4 class="text-xl font-bold text-gray-800 mb-3 brand-font leading-snug">Uygulamalar üzerinden belirlenen kıble yönü ile cami ekseni uyuşmadığında nasıl hareket edilmeli?</h4>
+                    <p class="text-gray-600 text-sm mb-6 flex-grow line-clamp-3">
+                        Akıllı telefonlardaki manyetik pusula ve GPS verilerine dayanan kıble bulucu (Qibla compass) araçlarının sapma payları göz önünde bulundurulduğunda, şayet sapma açısı...
+                    </p>
+                    <a href="#" class="text-primary font-semibold flex items-center group mt-auto">
+                        Cevabı Oku <i class="fa-solid fa-arrow-right-long ml-2 group-hover:translate-x-2 transition-transform"></i>
+                    </a>
+                </article>
+
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="inline-block border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-8 rounded-full transition-colors">
+                    Tüm Fetvaları Arşivi Görüntüle
+                </a>
             </div>
         </div>
     </section>
 
-    <section class="main-topics section-padding bg-white">
-        <div class="container">
-            <span class="section-subtitle text-center">Kategoriler</span>
-            <h2 class="text-center">Ana Fıkıh Konuları</h2>
-            <div class="topics-grid">
-                <div class="topic-item">
-                    <span class="topic-icon">📿</span>
-                    <span class="topic-title">İbadet</span>
-                </div>
-                <div class="topic-item">
-                    <span class="topic-icon">👨‍👩‍👧</span>
-                    <span class="topic-title">Aile</span>
-                </div>
-                <div class="topic-item">
-                    <span class="topic-icon">💰</span>
-                    <span class="topic-title">Ticaret</span>
-                </div>
-                <div class="topic-item">
-                    <span class="topic-icon">🌐</span>
-                    <span class="topic-title">Güncel</span>
-                </div>
-                <div class="topic-item">
-                    <span class="topic-icon">🍽️</span>
-                    <span class="topic-title">Helal Gıda</span>
-                </div>
-                <div class="topic-item">
-                    <span class="topic-icon">🤝</span>
-                    <span class="topic-title">Sosyal Hayat</span>
-                </div>
+    <footer class="bg-darkBlue text-gray-300 py-12 border-t-4 border-secondary">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <a href="#" class="flex items-center gap-3 mb-6">
+                    <i class="fa-solid fa-book-quran text-secondary text-3xl"></i>
+                    <h2 class="text-2xl font-bold brand-font text-white">İslam ve Hayat</h2>
+                </a>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    İslam hukukunun ve kelamının temel dinamiklerini, günümüz dünyasının karmaşık problemlerine ışık tutacak şekilde akademik bir titizlikle sunan referans portalı.
+                </p>
             </div>
-        </div>
-    </section>
-
-    <section class="trust-section section-padding">
-        <div class="container trust-content text-center">
-            <span class="section-subtitle">Güven ve Otorigte</span>
-            <h2>İlmi ve Akademik Yaklaşım</h2>
-            <p style="color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 2rem;">Platformumuzda yayınlanan her fetva, titiz bir inceleme ve istişare sürecinden geçer.</p>
-            <div class="trust-grid">
-                <div class="trust-item">
-                    <h4>Muteber Kaynaklar</h4>
-                    <p>Fetvalarımız, Kur'an, Sünnet ve dört hak mezhebin temel fıkıh kaynaklarına dayandırılır.</p>
-                </div>
-                <div class="trust-item">
-                    <h4>Uzman Heyet Onayı</h4>
-                    <p>Karmaşık ve güncel meseleler, alanında uzman akademisyenlerden oluşan ilmi heyetimizce karara bağlanır.</p>
-                </div>
-                <div class="trust-item">
-                    <h4>Çağdaş Çözümler</h4>
-                    <p>Kadim fıkıh geleneğimizin ışığında, modern çağın getirdiği yeni sorunlara şer'i çözümler sunuyoruz.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <a href="/" class="logo">İslam<span>ve</span>Hayat</a>
-                <p>Ehl-i Sünnet çizgisinde, güvenilir, ilmi ve akademik fetva platformu.</p>
-            </div>
-            <div class="footer-links">
-                <h4>Kurumsal</h4>
-                <ul>
-                    <li><a href="#">Hakkımızda</a></li>
-                    <li><a href="#">İlmi Heyetimiz</a></li>
-                    <li><a href="#">Fetva Usulümüz</a></li>
-                    <li><a href="#">Gizlilik Politikası</a></li>
+            <div>
+                <h4 class="text-white font-bold mb-6 brand-font text-lg border-b border-gray-700 pb-2 inline-block">Hızlı Bağlantılar</h4>
+                <ul class="space-y-3 text-sm">
+                    <li><a href="#" class="hover:text-secondary transition-colors"><i class="fa-solid fa-chevron-right text-secondary text-xs mr-2"></i>Hakkımızda</a></li>
+                    <li><a href="#" class="hover:text-secondary transition-colors"><i class="fa-solid fa-chevron-right text-secondary text-xs mr-2"></i>Fetva Kurulu</a></li>
+                    <li><a href="#" class="hover:text-secondary transition-colors"><i class="fa-solid fa-chevron-right text-secondary text-xs mr-2"></i>Sıkça Sorulan Sorular</a></li>
+                    <li><a href="#" class="hover:text-secondary transition-colors"><i class="fa-solid fa-chevron-right text-secondary text-xs mr-2"></i>İletişim</a></li>
                 </ul>
             </div>
-            <div class="footer-links">
-                <h4>Hızlı Erişim</h4>
-                <ul>
-                    <li><a href="#">Sıkça Sorulanlar</a></li>
-                    <li><a href="#">Soru Sor</a></li>
-                    <li><a href="#">İletişim</a></li>
-                    <li><a href="#">Kategoriler</a></li>
-                </ul>
+            <div>
+                <h4 class="text-white font-bold mb-6 brand-font text-lg border-b border-gray-700 pb-2 inline-block">Bültene Katılın</h4>
+                <p class="text-sm text-gray-400 mb-4">Yeni eklenen fetvalardan haftalık olarak haberdar olun.</p>
+                <div class="flex">
+                    <input type="email" placeholder="E-posta adresiniz" class="px-4 py-2 w-full rounded-l-lg outline-none text-gray-800">
+                    <button class="bg-secondary text-darkBlue font-bold px-4 py-2 rounded-r-lg hover:bg-white transition-colors">Kayıt</button>
+                </div>
             </div>
         </div>
-        <div class="container footer-bottom text-center">
-            <p>&copy; 2026 İslam ve Hayat Platformu. Tüm hakları saklıdır.</p>
+        <div class="container mx-auto px-4 mt-12 pt-6 border-t border-gray-800 text-sm text-center md:text-left flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; 2026 İslam ve Hayat Portalı. Tüm Hakları Saklıdır.</p>
+            <div class="flex space-x-4 mt-4 md:mt-0">
+                <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-secondary hover:text-darkBlue transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-secondary hover:text-darkBlue transition-colors"><i class="fa-brands fa-youtube"></i></a>
+            </div>
         </div>
     </footer>
 
-    <script type="module">
-        // Firebase modüllerini import et (Placeholder)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // Firebase Ayarları (TODO: Gerçek bilgileri buraya gir)
-        const firebaseConfig = { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID", storageBucket: "YOUR_STORAGE_BUCKET", messagingSenderId: "YOUR_MESSAGING_SENDER_ID", appId: "YOUR_APP_ID" };
-
-        // Firebase'i başlat (Placeholder - Hata vermemesi için try-catch)
-        let db;
-        try { if(firebaseConfig.apiKey !== "YOUR_API_KEY") { const app = initializeApp(firebaseConfig); db = getFirestore(app); } } catch (e) { console.log("Firebase config beklemede."); }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // 1. Mobil Menü İşlevselliği
-            const hamburger = document.getElementById('hamburgerMenu');
-            const navLinks = document.getElementById('navLinks');
-
-            hamburger.addEventListener('click', () => {
-                navLinks.classList.toggle('nav-active');
-                // Hamburger ikonunu 'X'e çevirme efekti eklenebilir
-            });
-
-            // 2. Örnek Fetva Verileri (Demo İçin Zenginleştirilmiş İçerik)
-            const mockFetvalar = [
-                {
-                    title: "Yapay Zeka Tarafından Üretilen Sanat Eserlerinin Ticari Kullanımı ve Telif Hakkı",
-                    category: "Güncel Meseleler",
-                    date: "12 May 2024",
-                    summary: "Algoritmalar aracılığıyla oluşturulan görsellerin İslam hukukundaki 'mal'iyeti, mülkiyet hakkı ve ticareti üzerine fıkhi bir inceleme.",
-                    slug: "yapay-zeka-sanat-telif"
-                },
-                {
-                    title: "Kripto Varlıkların Zekat Matrahına Dahil Edilmesi ve Hesaplama Metodolojisi",
-                    category: "Ticaret & İbadet",
-                    date: "05 May 2024",
-                    summary: "Dijital paraların 'Urûz-u Ticaret' (ticaret malı) kapsamında değerlendirilip değerlendirilmeyeceği ve nisap miktarı.",
-                    slug: "kripto-zekat-hesaplama"
-                },
-                {
-                    title: "Akıllı Saat ve Giyilebilir Teknolojilerle Namaz Kılmanın Hükmü",
-                    category: "İbadet",
-                    date: "28 Nis 2024",
-                    summary: "Cihazların metal/deri kısımlarının necaseti, bildirimlerin huşua etkisi ve namaz esnasında kullanımı.",
-                    slug: "akilli-saat-namaz"
-                }
-            ];
-
-            // 3. Fetvaları Ekrana Basma (Daha Zengin Kart Yapısı)
-            const fatwaListContainer = document.getElementById('fatwa-list');
-
-            function renderFatwas(fatwas) {
-                fatwaListContainer.innerHTML = '';
-                fatwas.forEach(fatwa => {
-                    const fatwaHTML = `
-                        <article class="fatwa-card">
-                            <div class="fatwa-meta">
-                                <span class="fatwa-category">${fatwa.category}</span>
-                                <span class="fatwa-date">${fatwa.date}</span>
-                            </div>
-                            <h3>${fatwa.title}</h3>
-                            <p>${fatwa.summary}</p>
-                            <a href="/fetva/${fatwa.slug}.html" class="read-more-btn">Devamını Oku</a>
-                        </article>
-                    `;
-                    fatwaListContainer.insertAdjacentHTML('beforeend', fatwaHTML);
-                });
-            }
-
-            // Başlangıçta mock veriyi render et
-            renderFatwas(mockFetvalar);
-
-            // Gerçek Firebase verisini çekmek için fonksiyon (Config girildiğinde aktif et)
-            window.fetchFatwasFromFirebase = async function() {
-                if (!db) return console.log("Firebase aktif değil, demo veri kullanılıyor.");
-                try {
-                    const q = query(collection(db, "fetvalar"), orderBy("createdAt", "desc"), limit(3));
-                    const querySnapshot = await getDocs(q);
-                    const fetchedFatwas = [];
-                    querySnapshot.forEach((doc) => {
-                        // Veri yapısının mock veriyle uyumlu olduğundan emin ol
-                        fetchedFatwas.push({ id: doc.id, ...doc.data() });
-                    });
-                    if (fetchedFatwas.length > 0) renderFatwas(fetchedFatwas);
-                } catch (error) {
-                    console.error("Firebase hata:", error);
-                }
-            }
-            // fetchFatwasFromFirebase(); // Config girdikten sonra burayı aç
-        });
-    </script>
 </body>
 </html>
