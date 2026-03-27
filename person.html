@@ -21,6 +21,11 @@
                         iosCard: 'rgba(28, 28, 30, 0.65)',
                         iosBlue: '#0A84FF',
                         iosGreen: '#30D158',
+                        iosRed: '#FF453A',
+                        iosTeal: '#64D2FF'
+                    },
+                    fontSize: {
+                        'xxs': '0.65rem'
                     }
                 }
             }
@@ -77,6 +82,14 @@
             opacity: 1;
         }
 
+        /* Sidebar Styles */
+        #sidebar {
+            background: rgba(28, 28, 30, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         /* Hide Scrollbar but keep functionality */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -109,14 +122,63 @@
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center pt-20 md:pt-8"> <button onclick="toggleSidebar()" class="fixed top-4 left-4 md:top-6 md:left-6 z-40 w-12 h-12 glass-card rounded-full flex items-center justify-center hover:bg-white/10 transition-colors shadow-lg">
+        <i class="fa-solid fa-bars text-xl"></i>
+    </button>
 
-    <div id="toast" class="toast fixed top-5 left-1/2 transform -translate-x-1/2 z-50 glass-card px-6 py-3 rounded-full flex items-center gap-3 text-sm font-medium">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/60 z-50 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSidebar()"></div>
+
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-72 z-50 transform -translate-x-full transition-transform duration-400 ease-in-out flex flex-col p-6">
+        <div class="flex justify-between items-center mb-8 mt-2">
+            <h2 class="font-bold text-xl tracking-wide">Menü</h2>
+            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <nav class="flex flex-col gap-2 flex-1 overflow-y-auto no-scrollbar">
+            <button onclick="openModalFromSidebar('cvModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue group-hover:scale-110 transition-transform"><i class="fa-solid fa-file-user"></i></div>
+                <span class="font-medium">Özgeçmiş (CV)</span>
+            </button>
+            
+            <button onclick="openModalFromSidebar('projectsModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><i class="fa-solid fa-laptop-code"></i></div>
+                <span class="font-medium">Projelerim</span>
+            </button>
+            
+            <button onclick="openModalFromSidebar('syllabusModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform"><i class="fa-solid fa-book-open"></i></div>
+                <span class="font-medium">Ders Syllabus'ları</span>
+            </button>
+
+            <div class="h-px bg-white/10 my-2"></div> <button onclick="openModalFromSidebar('newsModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed group-hover:scale-110 transition-transform"><i class="fa-solid fa-newspaper"></i></div>
+                <span class="font-medium">Haberler</span>
+            </button>
+
+            <button onclick="openModalFromSidebar('announcementsModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal group-hover:scale-110 transition-transform"><i class="fa-solid fa-bullhorn"></i></div>
+                <span class="font-medium">Duyurular</span>
+            </button>
+
+            <div class="h-px bg-white/10 my-2"></div> <button onclick="openModalFromSidebar('contactModal')" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-white/10 transition-colors text-left w-full group">
+                <div class="w-8 h-8 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen group-hover:scale-110 transition-transform"><i class="fa-solid fa-address-card"></i></div>
+                <span class="font-medium">İletişim</span>
+            </button>
+        </nav>
+        
+        <div class="mt-auto pt-4 flex gap-3 justify-center">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+    </div>
+    <div id="toast" class="toast fixed top-5 left-1/2 transform -translate-x-1/2 z-[60] glass-card px-6 py-3 rounded-full flex items-center gap-3 text-sm font-medium">
         <i class="fa-solid fa-circle-check text-iosGreen"></i>
         <span id="toastMessage">İşlem başarılı!</span>
     </div>
 
-    <div class="w-full max-w-4xl mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 auto-rows-min">
+    <div class="w-full max-w-4xl grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 auto-rows-min">
         
         <div class="col-span-2 row-span-2 glass-card rounded-3xl p-6 flex flex-col justify-end relative overflow-hidden group">
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
@@ -124,7 +186,7 @@
             <div class="relative z-20 mt-32">
                 <h1 class="text-lg font-bold tracking-tight mb-1">Dr. Ahmet Yasin KÜÇÜKTİRYAKİ</h1>
                 <p class="text-gray-300 text-xxs font-medium">Dokuz Eylül Üniversitesi İlahiyat Fakültesi İslam Hukuku Öğretim Üyesi</p>
-                <div class="mt-4 flex gap-2">
+                <div class="mt-4 flex gap-2 flex-wrap">
                     <span class="bg-white/20 px-3 py-1 rounded-full text-xs backdrop-blur-md border border-white/10"><i class="fa-solid fa-location-dot mr-1"></i> İzmir, TR</span>
                     <span class="bg-white/20 px-3 py-1 rounded-full text-xs backdrop-blur-md border border-white/10 flex items-center gap-1">
                         <span class="w-2 h-2 rounded-full bg-iosGreen pulse-green"></span> Ofiste (Müsait)
@@ -134,27 +196,27 @@
         </div>
 
         <button onclick="openModal('cvModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue">
+            <div class="w-12 h-12 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue shrink-0">
                 <i class="fa-solid fa-file-user text-xl"></i>
             </div>
             <div>
-                <h2 class="font-semibold text-lg">Özgeçmiş (CV)</h2>
-                <p class="text-xs text-gray-400">Deneyim & Yetkinlikler</p>
+                <h2 class="font-semibold text-lg md:text-base lg:text-lg">Özgeçmiş (CV)</h2>
+                <p class="text-xs text-gray-400 hidden md:block">Deneyim & Yetkinlikler</p>
             </div>
         </button>
 
         <button onclick="openModal('projectsModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400">
+            <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
                 <i class="fa-solid fa-laptop-code text-xl"></i>
             </div>
             <div>
-                <h2 class="font-semibold text-lg">Projelerim</h2>
-                <p class="text-xs text-gray-400">Web & Uygulama</p>
+                <h2 class="font-semibold text-lg md:text-base lg:text-lg">Projelerim</h2>
+                <p class="text-xs text-gray-400 hidden md:block">Web & Uygulama</p>
             </div>
         </button>
 
         <button onclick="openModal('syllabusModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400">
+            <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
                 <i class="fa-solid fa-book-open text-xl"></i>
             </div>
             <div>
@@ -163,8 +225,26 @@
             </div>
         </button>
 
-        <div class="col-span-2 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col justify-center">
-            <h2 class="font-semibold text-sm mb-3 text-gray-400">Faydalı Bağlantılar</h2>
+        <button onclick="openModal('newsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
+            <div class="w-12 h-12 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed">
+                <i class="fa-solid fa-newspaper text-xl"></i>
+            </div>
+            <div>
+                <h2 class="font-semibold text-sm md:text-base">Haberler</h2>
+            </div>
+        </button>
+
+        <button onclick="openModal('announcementsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
+            <div class="w-12 h-12 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal">
+                <i class="fa-solid fa-bullhorn text-xl"></i>
+            </div>
+            <div>
+                <h2 class="font-semibold text-sm md:text-base">Duyurular</h2>
+            </div>
+        </button>
+
+        <div class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h2 class="font-semibold text-sm text-gray-400">Faydalı Bağlantılar</h2>
             <div class="flex gap-3">
                 <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-brands fa-github"></i></a>
                 <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -172,12 +252,12 @@
             </div>
         </div>
 
-        <button onclick="openModal('contactModal')" class="col-span-2 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen">
+        <button onclick="openModal('contactModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+            <div class="w-12 h-12 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen shrink-0">
                 <i class="fa-solid fa-address-card text-xl"></i>
             </div>
             <div>
-                <h2 class="font-semibold text-lg">İletişim</h2>
+                <h2 class="font-semibold text-lg">İletişim & Konum</h2>
                 <p class="text-xs text-gray-400">Bana Ulaşın</p>
             </div>
         </button>
@@ -223,8 +303,6 @@
                         <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">JavaScript/TypeScript</span>
                         <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">React & Vue</span>
                         <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">Node.js</span>
-                        <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">Firebase</span>
-                        <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">UI/UX Tasarım</span>
                     </div>
                 </div>
             </div>
@@ -247,14 +325,6 @@
                             <a href="#" class="text-purple-400 text-sm font-semibold hover:text-purple-300">İncele <i class="fa-solid fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
-                    <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:bg-white/10 transition-colors">
-                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Proje 2" class="w-full h-32 object-cover opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div class="p-4">
-                            <h4 class="font-bold text-lg mb-1">Finans Dashboard UI</h4>
-                            <p class="text-sm text-gray-400 mb-3">Veri analitiği ve borsa takibi için geliştirilmiş Glassmorphism tasarımlı arayüz.</p>
-                            <a href="#" class="text-purple-400 text-sm font-semibold hover:text-purple-300">İncele <i class="fa-solid fa-arrow-right ml-1"></i></a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -269,32 +339,76 @@
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-3">
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
                     <div class="flex justify-between items-center cursor-pointer" onclick="toggleAccordion(this)">
-                        <h4 class="font-bold">İleri Seviye Web Mimarisi (Güz 2024)</h4>
+                        <h4 class="font-bold">İslam Hukukuna Giriş (Güz 2024)</h4>
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform"></i>
                     </div>
                     <div class="hidden mt-3 text-sm text-gray-300 border-t border-white/10 pt-3">
                         <ul class="list-disc pl-5 space-y-1">
-                            <li>Hafta 1-2: Monolitik vs Mikroservis Yaklaşımları</li>
-                            <li>Hafta 3-4: API Gateway ve Güvenlik</li>
-                            <li>Hafta 5-7: Serverless Teknolojiler (Firebase & AWS)</li>
+                            <li>Hafta 1-2: Temel Kavramlar</li>
+                            <li>Hafta 3-4: Kaynaklar ve Metodoloji</li>
                             <li>Hafta 8: Ara Sınav Projesi</li>
                         </ul>
                         <button class="mt-4 w-full bg-orange-500/20 text-orange-400 py-2 rounded-xl font-semibold hover:bg-orange-500/30 transition">PDF Olarak İndir</button>
                     </div>
                 </div>
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
-                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleAccordion(this)">
-                        <h4 class="font-bold">Modern UI/UX Prensipleri (Bahar 2025)</h4>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="newsModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay">
+        <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-newspaper mr-2 text-iosRed"></i>Basın & Haberler</h3>
+                <button onclick="closeModal('newsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
+                <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Uluslararası Sempozyum Katılımı</h4>
+                        <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">12 Ekim 2024</span>
                     </div>
-                    <div class="hidden mt-3 text-sm text-gray-300 border-t border-white/10 pt-3">
-                        <ul class="list-disc pl-5 space-y-1">
-                            <li>Kullanıcı Deneyimi Psikolojisi</li>
-                            <li>Wireframing ve Prototipleme (Figma)</li>
-                            <li>Erişilebilirlik (A11y) Standartları</li>
-                        </ul>
-                        <button class="mt-4 w-full bg-orange-500/20 text-orange-400 py-2 rounded-xl font-semibold hover:bg-orange-500/30 transition">PDF Olarak İndir</button>
+                    <p class="text-sm text-gray-400">Katar'da düzenlenen "Modern Çağda İslam Hukuku" başlıklı uluslararası sempozyumda sunum gerçekleştirildi.</p>
+                </a>
+                <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Yeni Makale Yayımlandı</h4>
+                        <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">28 Eylül 2024</span>
                     </div>
+                    <p class="text-sm text-gray-400">Akademik dergide yayımlanan son makalemiz online erişime açılmıştır.</p>
+                </a>
+                <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">TRT Haber Canlı Yayın</h4>
+                        <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">15 Ağustos 2024</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Gündeme dair hukuki değerlendirmelerde bulunmak üzere canlı yayın konuğu oldum.</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="announcementsModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay">
+        <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-bullhorn mr-2 text-iosTeal"></i>Duyurular</h3>
+                <button onclick="closeModal('announcementsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
+                <div class="bg-white/5 border border-iosTeal/30 rounded-2xl p-4 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-iosTeal"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-iosTeal/20 text-iosTeal text-xs font-bold px-2 py-1 rounded">ÖNEMLİ</span>
+                        <h4 class="font-bold text-md">Vize Sınavı Tarihi Değişikliği</h4>
+                    </div>
+                    <p class="text-sm text-gray-300">İslam Hukukuna Giriş dersi vize sınavı 15 Kasım Cuma günü saat 14:00'e ertelenmiştir. Sınıf bilgisi OBS üzerinden paylaşılacaktır.</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gray-500"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-gray-500/20 text-gray-300 text-xs font-bold px-2 py-1 rounded">BİLGİLENDİRME</span>
+                        <h4 class="font-bold text-md">Ofis Saatleri Güncellemesi</h4>
+                    </div>
+                    <p class="text-sm text-gray-300">Bu hafta için ofis görüşme saatlerim Çarşamba günü 10:00 - 12:00 arasına alınmıştır. Randevu için mesaj atabilirsiniz.</p>
                 </div>
             </div>
         </div>
@@ -310,12 +424,12 @@
                 <div class="md:w-1/2 p-6 border-b md:border-b-0 md:border-r border-white/10 flex flex-col gap-6">
                     <div>
                         <h4 class="text-sm text-gray-400 mb-1">Adres</h4>
-                        <p class="font-medium text-sm"><i class="fa-solid fa-map-pin text-iosGreen mr-2"></i>Teknopark İzmir, Urla, İzmir / Türkiye</p>
+                        <p class="font-medium text-sm"><i class="fa-solid fa-map-pin text-iosGreen mr-2"></i>Dokuz Eylül Üniversitesi, İzmir</p>
                     </div>
                     <div>
                         <h4 class="text-sm text-gray-400 mb-1">Telefon / E-posta</h4>
                         <p class="font-medium text-sm mb-1"><i class="fa-solid fa-phone text-iosGreen mr-2"></i>+90 555 123 45 67</p>
-                        <p class="font-medium text-sm"><i class="fa-solid fa-envelope text-iosGreen mr-2"></i>hello@alexvibe.com</p>
+                        <p class="font-medium text-sm"><i class="fa-solid fa-envelope text-iosGreen mr-2"></i>hello@ahmet.com</p>
                     </div>
                     <div class="flex-1 min-h-[150px] rounded-xl overflow-hidden border border-white/10">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3131.7928399589333!2d26.634129515647565!3d38.31885668375836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bb6f189e3a62d9%3A0xc6651b1f9b3b07!2zVGVrbm9wYXJrIMSwem1pcg!5e0!3m2!1str!2str!4v1680000000000!5m2!1str!2str" width="100%" height="100%" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -342,7 +456,7 @@
         </div>
     </div>
 
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
         
         <div id="chatWindow" class="glass-card w-80 h-96 rounded-3xl mb-4 flex flex-col overflow-hidden transition-all duration-300 transform scale-90 opacity-0 origin-bottom-right pointer-events-none">
             <div class="bg-white/10 p-4 border-b border-white/10 flex justify-between items-center">
@@ -376,6 +490,31 @@
     </div>
 
     <script>
+        // Sidebar Yönetimi
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            // Eğer sidebar kapalıysa (-translate-x-full sınıfı varsa)
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        // Sidebar'dan Modal Açma Köprüsü (Pürüzsüz geçiş için)
+        function openModalFromSidebar(modalId) {
+            toggleSidebar(); // Önce sidebar'ı kapat
+            setTimeout(() => {
+                openModal(modalId); // Kapanma animasyonu bitmeden veya hemen sonra modalı aç
+            }, 150); // Hafif gecikme daha şık bir hissiyat verir
+        }
+
         // Modal Yönetimi
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('modal-active');
@@ -423,22 +562,20 @@
             }, 3000);
         }
 
-        // İletişim Formu Gönderimi (Mocked - Firebase buraya bağlanacak)
+        // İletişim Formu Gönderimi
         function handleContactSubmit(event) {
-            event.preventDefault(); // Sayfanın yenilenmesini engelle
-            
+            event.preventDefault(); 
             const btn = event.target.querySelector('button[type="submit"]');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gönderiliyor...';
             btn.disabled = true;
 
-            // Simüle edilmiş ağ isteği (Gelecekte Firebase Firestore'a yazma işlemi burada olacak)
             setTimeout(() => {
                 showToast("Mesajınız başarıyla iletildi!");
-                event.target.reset(); // Formu temizle
+                event.target.reset(); 
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                setTimeout(() => closeModal('contactModal'), 1000); // 1 sn sonra modalı kapat
+                setTimeout(() => closeModal('contactModal'), 1000); 
             }, 1500);
         }
 
@@ -446,9 +583,6 @@
         let chatOpen = false;
         function toggleChat() {
             const chatWindow = document.getElementById('chatWindow');
-            const fabIconNormal = document.querySelector('.fa-comment-dots');
-            const fabIconClose = document.querySelector('.fa-xmark').parentElement.querySelector('.fa-xmark.hidden, .fa-xmark:not(.hidden)'); // CSS hover eziyor, JS ile düzeltme
-            
             chatOpen = !chatOpen;
             
             if (chatOpen) {
@@ -460,7 +594,7 @@
             }
         }
 
-        // Sohbet Mesaj Gönderimi (Mocked - Firebase Realtime DB buraya eklenecek)
+        // Sohbet Mesaj Gönderimi
         function handleChatSubmit(event) {
             event.preventDefault();
             const input = document.getElementById('chatInput');
@@ -470,7 +604,6 @@
 
             const chatMessages = document.getElementById('chatMessages');
             
-            // Kullanıcı Mesajı UI Ekleme
             const userMsgHtml = `
                 <div class="flex gap-2 justify-end">
                     <div class="bg-iosGreen text-black rounded-2xl rounded-tr-none p-3 text-sm max-w-[85%]">
@@ -481,10 +614,8 @@
             chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
             input.value = '';
             
-            // Scroll'u en alta çek
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Otomatik Yanıt Simülasyonu
             setTimeout(() => {
                 const replyHtml = `
                     <div class="flex gap-2">
