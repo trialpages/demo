@@ -125,29 +125,29 @@
 <body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
 
     <nav class="hidden md:flex fixed top-6 z-50 glass-card rounded-full px-2 py-2 items-center gap-1 shadow-2xl">
-        <button onclick="openModal('cvModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('cvModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-file-user text-iosBlue group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">CV</span>
         </button>
-        <button onclick="openModal('projectsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('projectsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-laptop-code text-purple-400 group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">Projeler</span>
         </button>
-        <button onclick="openModal('syllabusModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('syllabusModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-book-open text-orange-400 group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">Syllabus</span>
         </button>
         <div class="w-px h-5 bg-white/20 mx-1"></div>
-        <button onclick="openModal('newsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('newsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-newspaper text-iosRed group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">Haberler</span>
         </button>
-        <button onclick="openModal('announcementsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('announcementsModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-bullhorn text-iosTeal group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">Duyurular</span>
         </button>
         <div class="w-px h-5 bg-white/20 mx-1"></div>
-        <button onclick="openModal('contactModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
+        <button type="button" onclick="openModal('contactModal')" class="flex items-center gap-2 px-4 py-2 rounded-full hover:bg-white/10 transition-colors group">
             <i class="fa-solid fa-address-card text-iosGreen group-hover:scale-110 transition-transform"></i>
             <span class="text-sm font-medium">İletişim</span>
         </button>
@@ -156,44 +156,44 @@
     <div id="sidebarOverlay" class="md:hidden fixed inset-0 bg-black/60 z-40 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
     <div id="sidebar" class="md:hidden fixed top-0 left-0 h-full w-64 z-50 transform -translate-x-full transition-transform duration-400 ease-in-out flex flex-col p-5">
-        <div class="flex justify-between items-center mb-6 mt-2">
+        <div class="flex justify-between items-center mb-6 mt-2 shrink-0">
             <h2 class="font-bold text-lg tracking-wide">Menü</h2>
-            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                <i class="fa-solid fa-xmark"></i>
+            <button type="button" onclick="toggleSidebar()" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors relative z-50">
+                <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
             </button>
         </div>
         
-        <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto no-scrollbar">
-            <button onclick="openModalFromSidebar('cvModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+        <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto no-scrollbar pb-4">
+            <button type="button" onclick="openModalFromSidebar('cvModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue"><i class="fa-solid fa-file-user text-xs"></i></div>
                 <span class="font-medium text-sm">Özgeçmiş (CV)</span>
             </button>
             
-            <button onclick="openModalFromSidebar('projectsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+            <button type="button" onclick="openModalFromSidebar('projectsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-laptop-code text-xs"></i></div>
                 <span class="font-medium text-sm">Projelerim</span>
             </button>
             
-            <button onclick="openModalFromSidebar('syllabusModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+            <button type="button" onclick="openModalFromSidebar('syllabusModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400"><i class="fa-solid fa-book-open text-xs"></i></div>
                 <span class="font-medium text-sm">Ders Syllabus'ları</span>
             </button>
 
             <div class="h-px bg-white/10 my-1"></div>
 
-            <button onclick="openModalFromSidebar('newsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+            <button type="button" onclick="openModalFromSidebar('newsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed"><i class="fa-solid fa-newspaper text-xs"></i></div>
                 <span class="font-medium text-sm">Haberler</span>
             </button>
 
-            <button onclick="openModalFromSidebar('announcementsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+            <button type="button" onclick="openModalFromSidebar('announcementsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal"><i class="fa-solid fa-bullhorn text-xs"></i></div>
                 <span class="font-medium text-sm">Duyurular</span>
             </button>
 
             <div class="h-px bg-white/10 my-1"></div>
 
-            <button onclick="openModalFromSidebar('contactModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
+            <button type="button" onclick="openModalFromSidebar('contactModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen"><i class="fa-solid fa-address-card text-xs"></i></div>
                 <span class="font-medium text-sm">İletişim</span>
             </button>
@@ -208,8 +208,8 @@
         
         <div class="col-span-2 row-span-2 glass-card rounded-3xl p-6 flex flex-col justify-end relative overflow-hidden group">
             
-            <button onclick="toggleSidebar()" class="md:hidden absolute top-4 left-4 z-30 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-black/60 transition-colors shadow-lg">
-                <i class="fa-solid fa-bars text-sm"></i>
+            <button type="button" onclick="toggleSidebar()" class="md:hidden absolute top-4 left-4 z-30 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-black/60 transition-colors shadow-lg">
+                <i class="fa-solid fa-bars text-sm pointer-events-none"></i>
             </button>
 
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
@@ -226,9 +226,9 @@
             </div>
         </div>
 
-        <button onclick="openModal('cvModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+        <button type="button" onclick="openModal('cvModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
             <div class="w-12 h-12 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue shrink-0">
-                <i class="fa-solid fa-file-user text-xl"></i>
+                <i class="fa-solid fa-file-user text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-lg md:text-base lg:text-lg">Özgeçmiş (CV)</h2>
@@ -236,9 +236,9 @@
             </div>
         </button>
 
-        <button onclick="openModal('projectsModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+        <button type="button" onclick="openModal('projectsModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
             <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
-                <i class="fa-solid fa-laptop-code text-xl"></i>
+                <i class="fa-solid fa-laptop-code text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-lg md:text-base lg:text-lg">Projelerim</h2>
@@ -246,9 +246,9 @@
             </div>
         </button>
 
-        <button onclick="openModal('syllabusModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+        <button type="button" onclick="openModal('syllabusModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
             <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
-                <i class="fa-solid fa-book-open text-xl"></i>
+                <i class="fa-solid fa-book-open text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-lg">Ders Syllabus'ları</h2>
@@ -256,18 +256,18 @@
             </div>
         </button>
 
-        <button onclick="openModal('newsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
+        <button type="button" onclick="openModal('newsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
             <div class="w-12 h-12 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed">
-                <i class="fa-solid fa-newspaper text-xl"></i>
+                <i class="fa-solid fa-newspaper text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-sm md:text-base">Haberler</h2>
             </div>
         </button>
 
-        <button onclick="openModal('announcementsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
+        <button type="button" onclick="openModal('announcementsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
             <div class="w-12 h-12 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal">
-                <i class="fa-solid fa-bullhorn text-xl"></i>
+                <i class="fa-solid fa-bullhorn text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-sm md:text-base">Duyurular</h2>
@@ -283,9 +283,9 @@
             </div>
         </div>
 
-        <button onclick="openModal('contactModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+        <button type="button" onclick="openModal('contactModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
             <div class="w-12 h-12 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen shrink-0">
-                <i class="fa-solid fa-address-card text-xl"></i>
+                <i class="fa-solid fa-address-card text-xl pointer-events-none"></i>
             </div>
             <div>
                 <h2 class="font-semibold text-lg">İletişim & Konum</h2>
@@ -299,7 +299,7 @@
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-file-user mr-2 text-iosBlue"></i>Özgeçmiş</h3>
-                <button onclick="closeModal('cvModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('cvModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-6">
                 <div>
@@ -319,21 +319,7 @@
                             <div class="w-3 h-3 bg-iosBlue rounded-full -ml-[23px] absolute mt-1.5 shadow-[0_0_10px_#0A84FF]"></div>
                             <h5 class="font-bold">Kıdemli Yazılım Mimarı</h5>
                             <p class="text-sm text-gray-400">Tech Solutions A.Ş. | 2020 - Günümüz</p>
-                            <p class="text-sm mt-2 text-gray-300">Bulut tabanlı mimarilerin tasarlanması ve mikroservis dönüşümleri.</p>
                         </div>
-                        <div class="pt-4">
-                            <div class="w-3 h-3 bg-white/50 rounded-full -ml-[23px] absolute mt-1.5"></div>
-                            <h5 class="font-bold">Yazılım Geliştirici</h5>
-                            <p class="text-sm text-gray-400">Y Yazılım | 2016 - 2020</p>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-iosBlue font-semibold mb-3">Yetenekler</h4>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">JavaScript/TypeScript</span>
-                        <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">React & Vue</span>
-                        <span class="bg-white/10 px-3 py-1 rounded-lg text-sm">Node.js</span>
                     </div>
                 </div>
             </div>
@@ -344,7 +330,7 @@
         <div class="glass-card w-full max-w-3xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-laptop-code mr-2 text-purple-400"></i>Projelerim</h3>
-                <button onclick="closeModal('projectsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('projectsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -352,8 +338,7 @@
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Proje 1" class="w-full h-32 object-cover opacity-70 group-hover:opacity-100 transition-opacity">
                         <div class="p-4">
                             <h4 class="font-bold text-lg mb-1">E-Ticaret Platformu</h4>
-                            <p class="text-sm text-gray-400 mb-3">Modern, hızlı ve güvenli bir alışveriş deneyimi sunan tam donanımlı platform.</p>
-                            <a href="#" class="text-purple-400 text-sm font-semibold hover:text-purple-300">İncele <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                            <p class="text-sm text-gray-400 mb-3">Modern, hızlı ve güvenli bir alışveriş deneyimi sunan platform.</p>
                         </div>
                     </div>
                 </div>
@@ -365,21 +350,18 @@
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-book-open mr-2 text-orange-400"></i>Ders Syllabus'ları</h3>
-                <button onclick="closeModal('syllabusModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('syllabusModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-3">
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
                     <div class="flex justify-between items-center cursor-pointer" onclick="toggleAccordion(this)">
                         <h4 class="font-bold">İslam Hukukuna Giriş (Güz 2024)</h4>
-                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform"></i>
+                        <i class="fa-solid fa-chevron-down text-gray-400 transition-transform pointer-events-none"></i>
                     </div>
                     <div class="hidden mt-3 text-sm text-gray-300 border-t border-white/10 pt-3">
                         <ul class="list-disc pl-5 space-y-1">
                             <li>Hafta 1-2: Temel Kavramlar</li>
-                            <li>Hafta 3-4: Kaynaklar ve Metodoloji</li>
-                            <li>Hafta 8: Ara Sınav Projesi</li>
                         </ul>
-                        <button class="mt-4 w-full bg-orange-500/20 text-orange-400 py-2 rounded-xl font-semibold hover:bg-orange-500/30 transition">PDF Olarak İndir</button>
                     </div>
                 </div>
             </div>
@@ -390,22 +372,15 @@
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-newspaper mr-2 text-iosRed"></i>Basın & Haberler</h3>
-                <button onclick="closeModal('newsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('newsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
                 <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Uluslararası Sempozyum Katılımı</h4>
+                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Sempozyum Katılımı</h4>
                         <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">12 Ekim 2024</span>
                     </div>
-                    <p class="text-sm text-gray-400">Katar'da düzenlenen "Modern Çağda İslam Hukuku" başlıklı uluslararası sempozyumda sunum gerçekleştirildi.</p>
-                </a>
-                <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
-                    <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Yeni Makale Yayımlandı</h4>
-                        <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">28 Eylül 2024</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Akademik dergide yayımlanan son makalemiz online erişime açılmıştır.</p>
+                    <p class="text-sm text-gray-400">Uluslararası sempozyumda sunum gerçekleştirildi.</p>
                 </a>
             </div>
         </div>
@@ -415,16 +390,16 @@
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-bullhorn mr-2 text-iosTeal"></i>Duyurular</h3>
-                <button onclick="closeModal('announcementsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('announcementsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
                 <div class="bg-white/5 border border-iosTeal/30 rounded-2xl p-4 relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-iosTeal"></div>
                     <div class="flex items-center gap-2 mb-2">
                         <span class="bg-iosTeal/20 text-iosTeal text-xs font-bold px-2 py-1 rounded">ÖNEMLİ</span>
-                        <h4 class="font-bold text-md">Vize Sınavı Tarihi Değişikliği</h4>
+                        <h4 class="font-bold text-md">Sınav Tarihi Değişikliği</h4>
                     </div>
-                    <p class="text-sm text-gray-300">İslam Hukukuna Giriş dersi vize sınavı 15 Kasım Cuma günü saat 14:00'e ertelenmiştir. Sınıf bilgisi OBS üzerinden paylaşılacaktır.</p>
+                    <p class="text-sm text-gray-300">Sınav 15 Kasım Cuma gününe ertelenmiştir.</p>
                 </div>
             </div>
         </div>
@@ -434,7 +409,7 @@
         <div class="glass-card w-full max-w-3xl max-h-[90vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-address-card mr-2 text-iosGreen"></i>İletişim & Konum</h3>
-                <button onclick="closeModal('contactModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeModal('contactModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-0 overflow-y-auto no-scrollbar flex-1 md:flex">
                 <div class="md:w-1/2 p-6 border-b md:border-b-0 md:border-r border-white/10 flex flex-col gap-6">
@@ -442,26 +417,12 @@
                         <h4 class="text-sm text-gray-400 mb-1">Adres</h4>
                         <p class="font-medium text-sm"><i class="fa-solid fa-map-pin text-iosGreen mr-2"></i>Dokuz Eylül Üniversitesi, İzmir</p>
                     </div>
-                    <div>
-                        <h4 class="text-sm text-gray-400 mb-1">Telefon / E-posta</h4>
-                        <p class="font-medium text-sm mb-1"><i class="fa-solid fa-phone text-iosGreen mr-2"></i>+90 555 123 45 67</p>
-                        <p class="font-medium text-sm"><i class="fa-solid fa-envelope text-iosGreen mr-2"></i>hello@ahmet.com</p>
-                    </div>
-                    <div class="flex-1 min-h-[150px] rounded-xl overflow-hidden border border-white/10">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3131.7928399589333!2d26.634129515647565!3d38.31885668375836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bb6f189e3a62d9%3A0xc6651b1f9b3b07!2zVGVrbm9wYXJrIMSwem1pcg!5e0!3m2!1str!2str!4v1680000000000!5m2!1str!2str" width="100%" height="100%" style="border:0; filter: invert(90%) hue-rotate(180deg);" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    </div>
                 </div>
                 <div class="md:w-1/2 p-6">
                     <h4 class="font-bold text-lg mb-4">Mesaj Gönder</h4>
                     <form id="contactForm" onsubmit="handleContactSubmit(event)" class="space-y-4">
                         <div>
                             <input type="text" id="name" required placeholder="Adınız Soyadınız" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-iosGreen focus:bg-white/10 transition-colors">
-                        </div>
-                        <div>
-                            <input type="email" id="email" required placeholder="E-posta Adresiniz" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-iosGreen focus:bg-white/10 transition-colors">
-                        </div>
-                        <div>
-                            <textarea id="message" required placeholder="Mesajınız..." rows="4" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-iosGreen focus:bg-white/10 transition-colors resize-none"></textarea>
                         </div>
                         <button type="submit" class="w-full bg-iosGreen text-black font-bold py-3 rounded-xl hover:bg-[#28b34b] transition-colors shadow-[0_0_15px_rgba(48,209,88,0.4)]">
                             Gönder <i class="fa-solid fa-paper-plane ml-1"></i>
@@ -479,14 +440,14 @@
                     <div class="w-2.5 h-2.5 rounded-full bg-iosGreen pulse-green"></div>
                     <span class="font-semibold text-sm">Ofis Asistanı (Canlı)</span>
                 </div>
-                <button onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
+                <button type="button" onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             
             <div class="flex-1 p-4 overflow-y-auto no-scrollbar flex flex-col gap-3" id="chatMessages">
                 <div class="flex gap-2">
                     <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>
                     <div class="bg-white/10 rounded-2xl rounded-tl-none p-3 text-sm">
-                        Merhaba! Şu an sistemde "Müsait" görünüyorum. Bana hızlıca bir mesaj bırakabilirsiniz.
+                        Merhaba! Sistemde "Müsait" görünüyorum. Bana mesaj bırakabilirsiniz.
                     </div>
                 </div>
             </div>
@@ -497,7 +458,7 @@
             </form>
         </div>
 
-        <button onclick="toggleChat()" class="glass-card w-16 h-16 rounded-full flex items-center justify-center relative hover:scale-105 transition-transform shadow-2xl group">
+        <button type="button" onclick="toggleChat()" class="glass-card w-16 h-16 rounded-full flex items-center justify-center relative hover:scale-105 transition-transform shadow-2xl group">
             <div class="absolute top-0 right-0 w-4 h-4 rounded-full bg-iosGreen border-2 border-black pulse-green"></div>
             <i class="fa-solid fa-comment-dots text-2xl group-hover:hidden"></i>
             <i class="fa-solid fa-xmark text-2xl hidden group-hover:block"></i>
@@ -505,19 +466,23 @@
     </div>
 
     <script>
-        // Sidebar Yönetimi (Z-Index fix eklendi)
+        // DÜZELTME: Sidebar Kaydırma Kilidi (Scroll Lock) Yönetimi
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             
             if (sidebar.classList.contains('-translate-x-full')) {
+                // Menü açılıyor
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('opacity-0', 'pointer-events-none');
                 overlay.classList.add('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = 'hidden'; // Arka planın kaymasını (donmasını) engeller
             } else {
+                // Menü kapanıyor
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('opacity-0', 'pointer-events-none');
                 overlay.classList.remove('opacity-100', 'pointer-events-auto');
+                document.body.style.overflow = ''; // Scroll'u normale çevirir
             }
         }
 
@@ -525,10 +490,9 @@
             toggleSidebar(); 
             setTimeout(() => {
                 openModal(modalId); 
-            }, 250); // Menü tam kapanırken modal pürüzsüzce açılır
+            }, 250);
         }
 
-        // Modal Yönetimi
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('modal-active');
             document.body.style.overflow = 'hidden'; 
@@ -536,15 +500,16 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('modal-active');
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = ''; // Scroll kilidini boş string ile tamamen kaldırır
         }
 
+        // Overlay'e (arka plana) tıklanıldığında modal kapatma
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal-overlay');
             modals.forEach(modal => {
                 if (event.target === modal) {
                     modal.classList.remove('modal-active');
-                    document.body.style.overflow = 'auto';
+                    document.body.style.overflow = '';
                 }
             });
         }
@@ -624,7 +589,7 @@
                     <div class="flex gap-2">
                         <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>
                         <div class="bg-white/10 rounded-2xl rounded-tl-none p-3 text-sm max-w-[85%]">
-                            Mesajınızı aldım! Asistan olarak not ediyorum. En kısa sürede geri dönüş yapacağım.
+                            Notumu aldım, teşekkürler!
                         </div>
                     </div>
                 `;
