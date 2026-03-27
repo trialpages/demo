@@ -6,7 +6,6 @@
     <title>Kişisel Platform & Ofis Otomasyonu</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -33,7 +32,6 @@
     </script>
 
     <style>
-        /* iOS Glassmorphism & Animations */
         body {
             background-color: #000;
             background-image: radial-gradient(circle at top right, #1a1a2e, #000 40%),
@@ -53,10 +51,10 @@
         }
 
         .glass-card:active {
-            transform: scale(0.96);
+            transform: scale(0.98);
         }
 
-        /* Modal Styles */
+        /* Modals */
         .modal-overlay {
             opacity: 0;
             visibility: hidden;
@@ -65,24 +63,21 @@
             -webkit-backdrop-filter: blur(15px);
             background: rgba(0, 0, 0, 0.6);
         }
-
         .modal-content {
             transform: translateY(100%) scale(0.9);
             opacity: 0;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), opacity 0.3s ease;
         }
-
         .modal-active .modal-overlay {
             opacity: 1;
             visibility: visible;
         }
-
         .modal-active .modal-content {
             transform: translateY(0) scale(1);
             opacity: 1;
         }
 
-        /* Sidebar Styles */
+        /* Sidebar */
         #sidebar {
             background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(25px);
@@ -90,7 +85,7 @@
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Hide Scrollbar but keep functionality */
+        /* Scrollbar Gizleme */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -99,7 +94,7 @@
             scrollbar-width: none;
         }
 
-        /* Chat Widget Pulsing Dot */
+        /* Chat & Animations */
         .pulse-green {
             box-shadow: 0 0 0 0 rgba(48, 209, 88, 0.7);
             animation: pulse 2s infinite;
@@ -110,7 +105,6 @@
             100% { box-shadow: 0 0 0 0 rgba(48, 209, 88, 0); }
         }
 
-        /* Toast Notification */
         .toast {
             transform: translateY(-100%);
             opacity: 0;
@@ -155,12 +149,14 @@
 
     <div id="sidebarOverlay" class="md:hidden fixed inset-0 bg-black/60 z-40 opacity-0 pointer-events-none transition-opacity duration-300" onclick="toggleSidebar()"></div>
 
-    <div id="sidebar" class="md:hidden fixed top-0 left-0 h-full w-64 z-50 transform -translate-x-full transition-transform duration-400 ease-in-out flex flex-col p-5">
-        <div class="flex justify-between items-center mb-6 mt-2 shrink-0">
-            <h2 class="font-bold text-lg tracking-wide">Menü</h2>
-            <button type="button" onclick="toggleSidebar()" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 active:bg-white/30 transition-colors relative z-50">
-                <i class="fa-solid fa-xmark text-lg pointer-events-none"></i>
-            </button>
+    <div id="sidebar" class="md:hidden fixed top-0 left-0 h-full w-64 z-50 transform -translate-x-full transition-transform duration-400 ease-in-out flex flex-col pt-4 px-5">
+        <div class="flex justify-between items-center mb-6 shrink-0 relative">
+            <h2 class="font-bold text-lg tracking-wide pl-2">Menü</h2>
+            <div onclick="toggleSidebar()" class="absolute top-1/2 right-0 -translate-y-1/2 w-14 h-14 flex items-center justify-center cursor-pointer z-50">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center pointer-events-none">
+                    <i class="fa-solid fa-xmark text-lg text-white"></i>
+                </div>
+            </div>
         </div>
         
         <nav class="flex flex-col gap-1.5 flex-1 overflow-y-auto no-scrollbar pb-4">
@@ -168,12 +164,10 @@
                 <div class="w-7 h-7 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue"><i class="fa-solid fa-file-user text-xs"></i></div>
                 <span class="font-medium text-sm">Özgeçmiş (CV)</span>
             </button>
-            
             <button type="button" onclick="openModalFromSidebar('projectsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-laptop-code text-xs"></i></div>
                 <span class="font-medium text-sm">Projelerim</span>
             </button>
-            
             <button type="button" onclick="openModalFromSidebar('syllabusModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400"><i class="fa-solid fa-book-open text-xs"></i></div>
                 <span class="font-medium text-sm">Ders Syllabus'ları</span>
@@ -185,7 +179,6 @@
                 <div class="w-7 h-7 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed"><i class="fa-solid fa-newspaper text-xs"></i></div>
                 <span class="font-medium text-sm">Haberler</span>
             </button>
-
             <button type="button" onclick="openModalFromSidebar('announcementsModal')" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/10 transition-colors text-left w-full group">
                 <div class="w-7 h-7 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal"><i class="fa-solid fa-bullhorn text-xs"></i></div>
                 <span class="font-medium text-sm">Duyurular</span>
@@ -199,15 +192,15 @@
             </button>
         </nav>
     </div>
+
     <div id="toast" class="toast fixed top-5 left-1/2 transform -translate-x-1/2 z-[60] glass-card px-6 py-3 rounded-full flex items-center gap-3 text-sm font-medium">
         <i class="fa-solid fa-circle-check text-iosGreen"></i>
         <span id="toastMessage">İşlem başarılı!</span>
     </div>
 
-    <div class="w-full max-w-4xl mt-4 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 auto-rows-min">
+    <div class="w-full max-w-4xl mt-4 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 auto-rows-min pb-24">
         
         <div class="col-span-2 row-span-2 glass-card rounded-3xl p-6 flex flex-col justify-end relative overflow-hidden group">
-            
             <button type="button" onclick="toggleSidebar()" class="md:hidden absolute top-4 left-4 z-30 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-black/60 transition-colors shadow-lg">
                 <i class="fa-solid fa-bars text-sm pointer-events-none"></i>
             </button>
@@ -227,9 +220,7 @@
         </div>
 
         <button type="button" onclick="openModal('cvModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue shrink-0">
-                <i class="fa-solid fa-file-user text-xl pointer-events-none"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full bg-iosBlue/20 flex items-center justify-center text-iosBlue shrink-0"><i class="fa-solid fa-file-user text-xl pointer-events-none"></i></div>
             <div>
                 <h2 class="font-semibold text-lg md:text-base lg:text-lg">Özgeçmiş (CV)</h2>
                 <p class="text-xs text-gray-400 hidden md:block">Deneyim & Yetkinlikler</p>
@@ -237,42 +228,89 @@
         </button>
 
         <button type="button" onclick="openModal('projectsModal')" class="col-span-1 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
-                <i class="fa-solid fa-laptop-code text-xl pointer-events-none"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 shrink-0"><i class="fa-solid fa-laptop-code text-xl pointer-events-none"></i></div>
             <div>
                 <h2 class="font-semibold text-lg md:text-base lg:text-lg">Projelerim</h2>
                 <p class="text-xs text-gray-400 hidden md:block">Web & Uygulama</p>
             </div>
         </button>
 
-        <button type="button" onclick="openModal('syllabusModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 shrink-0">
-                <i class="fa-solid fa-book-open text-xl pointer-events-none"></i>
-            </div>
+        <button type="button" onclick="openModal('syllabusModal')" class="col-span-2 md:col-span-4 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
+            <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 shrink-0"><i class="fa-solid fa-book-open text-xl pointer-events-none"></i></div>
             <div>
                 <h2 class="font-semibold text-lg">Ders Syllabus'ları</h2>
                 <p class="text-xs text-gray-400">Eğitim İçerikleri & Programlar</p>
             </div>
         </button>
 
-        <button type="button" onclick="openModal('newsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
-            <div class="w-12 h-12 rounded-full bg-iosRed/20 flex items-center justify-center text-iosRed">
-                <i class="fa-solid fa-newspaper text-xl pointer-events-none"></i>
+        <div class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex flex-col gap-3 overflow-hidden">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="font-semibold text-base flex items-center gap-2"><i class="fa-solid fa-newspaper text-iosRed"></i> Haberler & Basın</h2>
+                <button onclick="openModal('newsModal')" class="text-xs text-gray-400 hover:text-white transition-colors">Tümünü Gör <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
             </div>
-            <div>
-                <h2 class="font-semibold text-sm md:text-base">Haberler</h2>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2">
+                <div onclick="openModal('newsModal')" class="min-w-[200px] w-[200px] bg-white/5 border border-white/10 rounded-2xl p-4 snap-start hover:bg-white/10 transition-colors cursor-pointer flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] text-iosRed bg-iosRed/10 px-2 py-0.5 rounded block mb-2 w-max">12 Eki 2024</span>
+                        <h4 class="font-bold text-sm text-white mb-1 line-clamp-2">Katar Uluslararası Sempozyumu</h4>
+                    </div>
+                    <p class="text-xs text-gray-400 line-clamp-2 mt-2">İslam Hukuku başlıklı sempozyumda sunum gerçekleştirildi.</p>
+                </div>
+                <div onclick="openModal('newsModal')" class="min-w-[200px] w-[200px] bg-white/5 border border-white/10 rounded-2xl p-4 snap-start hover:bg-white/10 transition-colors cursor-pointer flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] text-iosRed bg-iosRed/10 px-2 py-0.5 rounded block mb-2 w-max">28 Eyl 2024</span>
+                        <h4 class="font-bold text-sm text-white mb-1 line-clamp-2">Yeni Makale Yayımlandı</h4>
+                    </div>
+                    <p class="text-xs text-gray-400 line-clamp-2 mt-2">Son makalemiz akademik dergide online erişime açılmıştır.</p>
+                </div>
+                <div onclick="openModal('newsModal')" class="min-w-[200px] w-[200px] bg-white/5 border border-white/10 rounded-2xl p-4 snap-start hover:bg-white/10 transition-colors cursor-pointer flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] text-iosRed bg-iosRed/10 px-2 py-0.5 rounded block mb-2 w-max">15 Ağu 2024</span>
+                        <h4 class="font-bold text-sm text-white mb-1 line-clamp-2">TRT Haber Canlı Yayın</h4>
+                    </div>
+                    <p class="text-xs text-gray-400 line-clamp-2 mt-2">Gündeme dair hukuki değerlendirmelerde bulunduk.</p>
+                </div>
+                <div class="min-w-[50px] flex items-center justify-center snap-start">
+                    <button onclick="openModal('newsModal')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-solid fa-arrow-right text-gray-400"></i></button>
+                </div>
             </div>
-        </button>
+        </div>
 
-        <button type="button" onclick="openModal('announcementsModal')" class="col-span-1 md:col-span-1 row-span-1 glass-card rounded-3xl p-5 flex flex-col items-center justify-center gap-2 hover:bg-white/10 text-center">
-            <div class="w-12 h-12 rounded-full bg-iosTeal/20 flex items-center justify-center text-iosTeal">
-                <i class="fa-solid fa-bullhorn text-xl pointer-events-none"></i>
+        <div class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex flex-col gap-3 overflow-hidden">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="font-semibold text-base flex items-center gap-2"><i class="fa-solid fa-bullhorn text-iosTeal"></i> Duyurular</h2>
+                <button onclick="openModal('announcementsModal')" class="text-xs text-gray-400 hover:text-white transition-colors">Tümünü Gör <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i></button>
             </div>
-            <div>
-                <h2 class="font-semibold text-sm md:text-base">Duyurular</h2>
+            <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2">
+                <div onclick="openModal('announcementsModal')" class="min-w-[200px] w-[200px] bg-iosTeal/5 border border-iosTeal/20 rounded-2xl p-4 snap-start hover:bg-iosTeal/10 transition-colors cursor-pointer relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-iosTeal"></div>
+                    <div>
+                        <span class="text-[10px] font-bold text-iosTeal mb-1 block">ÖNEMLİ</span>
+                        <h4 class="font-bold text-sm text-white mb-1">Vize Sınavı Tarihi</h4>
+                    </div>
+                    <p class="text-xs text-gray-300 line-clamp-2 mt-2">Sınav 15 Kasım Cuma günü saat 14:00'e ertelenmiştir.</p>
+                </div>
+                <div onclick="openModal('announcementsModal')" class="min-w-[200px] w-[200px] bg-white/5 border border-white/10 rounded-2xl p-4 snap-start hover:bg-white/10 transition-colors cursor-pointer relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gray-500"></div>
+                    <div>
+                        <span class="text-[10px] font-bold text-gray-400 mb-1 block">BİLGİLENDİRME</span>
+                        <h4 class="font-bold text-sm text-white mb-1">Ofis Saatleri</h4>
+                    </div>
+                    <p class="text-xs text-gray-300 line-clamp-2 mt-2">Bu hafta için ofis görüşme saatleri güncellenmiştir.</p>
+                </div>
+                <div onclick="openModal('announcementsModal')" class="min-w-[200px] w-[200px] bg-white/5 border border-white/10 rounded-2xl p-4 snap-start hover:bg-white/10 transition-colors cursor-pointer relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-iosBlue"></div>
+                    <div>
+                        <span class="text-[10px] font-bold text-iosBlue mb-1 block">MATERYAL</span>
+                        <h4 class="font-bold text-sm text-white mb-1">Ders Notları Yüklendi</h4>
+                    </div>
+                    <p class="text-xs text-gray-300 line-clamp-2 mt-2">3. Hafta ders sunumlarına OBS üzerinden ulaşabilirsiniz.</p>
+                </div>
+                <div class="min-w-[50px] flex items-center justify-center snap-start">
+                    <button onclick="openModal('announcementsModal')" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/20 transition-colors"><i class="fa-solid fa-arrow-right text-gray-400"></i></button>
+                </div>
             </div>
-        </button>
+        </div>
 
         <div class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <h2 class="font-semibold text-sm text-gray-400">Faydalı Bağlantılar</h2>
@@ -284,9 +322,7 @@
         </div>
 
         <button type="button" onclick="openModal('contactModal')" class="col-span-2 md:col-span-2 row-span-1 glass-card rounded-3xl p-5 flex items-center gap-4 hover:bg-white/10 text-left">
-            <div class="w-12 h-12 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen shrink-0">
-                <i class="fa-solid fa-address-card text-xl pointer-events-none"></i>
-            </div>
+            <div class="w-12 h-12 rounded-full bg-iosGreen/20 flex items-center justify-center text-iosGreen shrink-0"><i class="fa-solid fa-address-card text-xl pointer-events-none"></i></div>
             <div>
                 <h2 class="font-semibold text-lg">İletişim & Konum</h2>
                 <p class="text-xs text-gray-400">Bana Ulaşın</p>
@@ -312,16 +348,6 @@
                         </div>
                     </div>
                 </div>
-                <div>
-                    <h4 class="text-iosBlue font-semibold mb-3">Deneyim</h4>
-                    <div class="border-l-2 border-white/10 pl-4 space-y-4 relative">
-                        <div>
-                            <div class="w-3 h-3 bg-iosBlue rounded-full -ml-[23px] absolute mt-1.5 shadow-[0_0_10px_#0A84FF]"></div>
-                            <h5 class="font-bold">Kıdemli Yazılım Mimarı</h5>
-                            <p class="text-sm text-gray-400">Tech Solutions A.Ş. | 2020 - Günümüz</p>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -333,15 +359,7 @@
                 <button type="button" onclick="closeModal('projectsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white/5 border border-white/10 rounded-2xl overflow-hidden group hover:bg-white/10 transition-colors">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60" alt="Proje 1" class="w-full h-32 object-cover opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div class="p-4">
-                            <h4 class="font-bold text-lg mb-1">E-Ticaret Platformu</h4>
-                            <p class="text-sm text-gray-400 mb-3">Modern, hızlı ve güvenli bir alışveriş deneyimi sunan platform.</p>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-gray-400 text-sm">Proje detayları buraya gelecek.</p>
             </div>
         </div>
     </div>
@@ -371,7 +389,7 @@
     <div id="newsModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay">
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <h3 class="font-bold text-lg"><i class="fa-solid fa-newspaper mr-2 text-iosRed"></i>Basın & Haberler</h3>
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-newspaper mr-2 text-iosRed"></i>Tüm Haberler</h3>
                 <button type="button" onclick="closeModal('newsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
@@ -380,7 +398,14 @@
                         <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Sempozyum Katılımı</h4>
                         <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">12 Ekim 2024</span>
                     </div>
-                    <p class="text-sm text-gray-400">Uluslararası sempozyumda sunum gerçekleştirildi.</p>
+                    <p class="text-sm text-gray-400">Katar'da düzenlenen uluslararası sempozyumda sunum gerçekleştirildi.</p>
+                </a>
+                <a href="#" class="block bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-colors group">
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-md text-white group-hover:text-iosRed transition-colors">Yeni Makale Yayımlandı</h4>
+                        <span class="text-xs text-gray-400 bg-white/10 px-2 py-1 rounded-md">28 Eylül 2024</span>
+                    </div>
+                    <p class="text-sm text-gray-400">Son makalemiz akademik dergide online erişime açılmıştır.</p>
                 </a>
             </div>
         </div>
@@ -389,7 +414,7 @@
     <div id="announcementsModal" class="fixed inset-0 z-40 flex items-center justify-center p-4 modal-overlay">
         <div class="glass-card w-full max-w-2xl max-h-[85vh] rounded-[2rem] overflow-hidden flex flex-col modal-content">
             <div class="p-4 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <h3 class="font-bold text-lg"><i class="fa-solid fa-bullhorn mr-2 text-iosTeal"></i>Duyurular</h3>
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-bullhorn mr-2 text-iosTeal"></i>Tüm Duyurular</h3>
                 <button type="button" onclick="closeModal('announcementsModal')" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto no-scrollbar flex-1 space-y-4">
@@ -400,6 +425,14 @@
                         <h4 class="font-bold text-md">Sınav Tarihi Değişikliği</h4>
                     </div>
                     <p class="text-sm text-gray-300">Sınav 15 Kasım Cuma gününe ertelenmiştir.</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-4 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gray-500"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="bg-gray-500/20 text-gray-300 text-xs font-bold px-2 py-1 rounded">BİLGİLENDİRME</span>
+                        <h4 class="font-bold text-md">Ofis Saatleri Güncellemesi</h4>
+                    </div>
+                    <p class="text-sm text-gray-300">Bu hafta ofis görüşme saatlerim değişmiştir.</p>
                 </div>
             </div>
         </div>
@@ -433,9 +466,9 @@
         </div>
     </div>
 
-    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none">
         <div id="chatWindow" class="glass-card w-80 h-96 rounded-3xl mb-4 flex flex-col overflow-hidden transition-all duration-300 transform scale-90 opacity-0 origin-bottom-right pointer-events-none">
-            <div class="bg-white/10 p-4 border-b border-white/10 flex justify-between items-center">
+            <div class="bg-white/10 p-4 border-b border-white/10 flex justify-between items-center pointer-events-auto">
                 <div class="flex items-center gap-2">
                     <div class="w-2.5 h-2.5 rounded-full bg-iosGreen pulse-green"></div>
                     <span class="font-semibold text-sm">Ofis Asistanı (Canlı)</span>
@@ -443,7 +476,7 @@
                 <button type="button" onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             
-            <div class="flex-1 p-4 overflow-y-auto no-scrollbar flex flex-col gap-3" id="chatMessages">
+            <div class="flex-1 p-4 overflow-y-auto no-scrollbar flex flex-col gap-3 pointer-events-auto" id="chatMessages">
                 <div class="flex gap-2">
                     <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>
                     <div class="bg-white/10 rounded-2xl rounded-tl-none p-3 text-sm">
@@ -452,13 +485,13 @@
                 </div>
             </div>
 
-            <form onsubmit="handleChatSubmit(event)" class="p-3 border-t border-white/10 bg-black/20 flex gap-2">
+            <form onsubmit="handleChatSubmit(event)" class="p-3 border-t border-white/10 bg-black/20 flex gap-2 pointer-events-auto">
                 <input type="text" id="chatInput" autocomplete="off" placeholder="Mesaj yazın..." class="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-iosGreen">
                 <button type="submit" class="w-10 h-10 rounded-full bg-iosGreen text-black flex items-center justify-center hover:bg-[#28b34b] transition-colors"><i class="fa-solid fa-arrow-up"></i></button>
             </form>
         </div>
 
-        <button type="button" onclick="toggleChat()" class="glass-card w-16 h-16 rounded-full flex items-center justify-center relative hover:scale-105 transition-transform shadow-2xl group">
+        <button type="button" onclick="toggleChat()" class="glass-card w-16 h-16 rounded-full flex items-center justify-center relative hover:scale-105 transition-transform shadow-2xl group pointer-events-auto">
             <div class="absolute top-0 right-0 w-4 h-4 rounded-full bg-iosGreen border-2 border-black pulse-green"></div>
             <i class="fa-solid fa-comment-dots text-2xl group-hover:hidden"></i>
             <i class="fa-solid fa-xmark text-2xl hidden group-hover:block"></i>
@@ -466,54 +499,71 @@
     </div>
 
     <script>
-        // DÜZELTME: Sidebar Kaydırma Kilidi (Scroll Lock) Yönetimi
+        // KESİN ÇÖZÜM: Durum Yöneticisi (State Manager)
+        let activeModalsCount = 0;
+        let isSidebarOpen = false;
+
+        // Sistemin donmamasını sağlayan ana fonksiyon
+        function updateBodyScroll() {
+            if (activeModalsCount > 0 || isSidebarOpen) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Sidebar Yönetimi
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             
-            if (sidebar.classList.contains('-translate-x-full')) {
-                // Menü açılıyor
+            isSidebarOpen = !isSidebarOpen;
+            
+            if (isSidebarOpen) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('opacity-0', 'pointer-events-none');
                 overlay.classList.add('opacity-100', 'pointer-events-auto');
-                document.body.style.overflow = 'hidden'; // Arka planın kaymasını (donmasını) engeller
             } else {
-                // Menü kapanıyor
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('opacity-0', 'pointer-events-none');
                 overlay.classList.remove('opacity-100', 'pointer-events-auto');
-                document.body.style.overflow = ''; // Scroll'u normale çevirir
             }
+            updateBodyScroll();
         }
 
+        // Kenar Çubuğundan Modal Açarken pürüzsüz geçiş
         function openModalFromSidebar(modalId) {
-            toggleSidebar(); 
+            toggleSidebar(); // Menüyü kapatır, isSidebarOpen false olur, scroll anlık açılır
             setTimeout(() => {
-                openModal(modalId); 
+                openModal(modalId); // 250ms sonra modal açılır, activeModalsCount artar, scroll kilitlenir
             }, 250);
         }
 
+        // Modal Yönetimi
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('modal-active');
-            document.body.style.overflow = 'hidden'; 
+            activeModalsCount++;
+            updateBodyScroll();
         }
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('modal-active');
-            document.body.style.overflow = ''; // Scroll kilidini boş string ile tamamen kaldırır
+            activeModalsCount--;
+            if (activeModalsCount < 0) activeModalsCount = 0; // Hata payı güvenlik ağı
+            updateBodyScroll();
         }
 
-        // Overlay'e (arka plana) tıklanıldığında modal kapatma
+        // Modal dışına (siyah ekrana) tıklayarak kapatma
         window.onclick = function(event) {
             const modals = document.querySelectorAll('.modal-overlay');
             modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.classList.remove('modal-active');
-                    document.body.style.overflow = '';
+                if (event.target === modal && modal.classList.contains('modal-active')) {
+                    closeModal(modal.id);
                 }
             });
         }
 
+        // Akordeon menüler için
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             const icon = element.querySelector('i');
@@ -527,13 +577,53 @@
             }
         }
 
+        // Sohbet Penceresi
+        let isChatOpen = false;
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            isChatOpen = !isChatOpen;
+            
+            if (isChatOpen) {
+                chatWindow.classList.remove('scale-90', 'opacity-0', 'pointer-events-none');
+                chatWindow.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
+            } else {
+                chatWindow.classList.add('scale-90', 'opacity-0', 'pointer-events-none');
+                chatWindow.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
+            }
+        }
+
+        // Sohbet ve Form İşlemleri
+        function handleChatSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            const userMsgHtml = `
+                <div class="flex gap-2 justify-end">
+                    <div class="bg-iosGreen text-black rounded-2xl rounded-tr-none p-3 text-sm max-w-[85%]">${message}</div>
+                </div>`;
+            chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                const replyHtml = `
+                    <div class="flex gap-2">
+                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>
+                        <div class="bg-white/10 rounded-2xl rounded-tl-none p-3 text-sm max-w-[85%]">Mesajınızı aldım!</div>
+                    </div>`;
+                chatMessages.insertAdjacentHTML('beforeend', replyHtml);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+        }
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').innerText = message;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function handleContactSubmit(event) {
@@ -544,58 +634,12 @@
             btn.disabled = true;
 
             setTimeout(() => {
-                showToast("Mesajınız başarıyla iletildi!");
+                showToast("Mesajınız iletildi!");
                 event.target.reset(); 
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 setTimeout(() => closeModal('contactModal'), 1000); 
             }, 1500);
-        }
-
-        let chatOpen = false;
-        function toggleChat() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatOpen = !chatOpen;
-            
-            if (chatOpen) {
-                chatWindow.classList.remove('scale-90', 'opacity-0', 'pointer-events-none');
-                chatWindow.classList.add('scale-100', 'opacity-100', 'pointer-events-auto');
-            } else {
-                chatWindow.classList.add('scale-90', 'opacity-0', 'pointer-events-none');
-                chatWindow.classList.remove('scale-100', 'opacity-100', 'pointer-events-auto');
-            }
-        }
-
-        function handleChatSubmit(event) {
-            event.preventDefault();
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message) return;
-
-            const chatMessages = document.getElementById('chatMessages');
-            const userMsgHtml = `
-                <div class="flex gap-2 justify-end">
-                    <div class="bg-iosGreen text-black rounded-2xl rounded-tr-none p-3 text-sm max-w-[85%]">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
-            input.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            setTimeout(() => {
-                const replyHtml = `
-                    <div class="flex gap-2">
-                        <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>
-                        <div class="bg-white/10 rounded-2xl rounded-tl-none p-3 text-sm max-w-[85%]">
-                            Notumu aldım, teşekkürler!
-                        </div>
-                    </div>
-                `;
-                chatMessages.insertAdjacentHTML('beforeend', replyHtml);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
         }
     </script>
 </body>
