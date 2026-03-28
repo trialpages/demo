@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- 1. CSS DEĞİŞKENLERİ (Tasarım Ayarları) --- */
+        /* --- 1. CSS DEĞİŞKENLERİ --- */
         :root {
             --bg-dark: #000;
             --glass-bg: rgba(28, 28, 30, 0.65);
@@ -17,7 +17,6 @@
             --text-main: #ffffff;
             --text-muted: #9ca3af;
             
-            /* iOS Renk Paleti */
             --ios-blue: #0A84FF;
             --ios-green: #30D158;
             --ios-red: #FF453A;
@@ -36,6 +35,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Mobildeki mavi tıklama efektini kaldırır */
         }
 
         body {
@@ -54,7 +54,6 @@
             overflow: hidden;
         }
 
-        /* Sabit ve Performanslı Arkaplan */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -64,11 +63,10 @@
             transform: translateZ(0);
         }
 
-        /* Scrollbar Gizleme */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- 3. ORTAK BİLEŞENLER (Glassmorphism) --- */
+        /* --- 3. ORTAK BİLEŞENLER --- */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(12px);
@@ -83,7 +81,7 @@
             transform: scale(0.98) translateZ(0);
         }
 
-        /* --- 4. NAVBAR (Üst Menü - Sadece Masaüstü) --- */
+        /* --- 4. NAVBAR (Masaüstü) --- */
         .top-nav {
             display: none;
             position: fixed;
@@ -124,7 +122,7 @@
         /* --- 5. ANA GRID DÜZENİ --- */
         .main-container {
             width: 100%;
-            max-width: 56rem; /* 896px */
+            max-width: 56rem;
             margin-top: 1rem;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -135,33 +133,16 @@
         }
 
         @media (min-width: 768px) {
-            .main-container {
-                margin-top: 5rem;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1.5rem;
-            }
+            .main-container { margin-top: 5rem; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
         }
 
-        /* Profil Kartı */
         .profile-card {
-            grid-column: span 2;
-            grid-row: span 2;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            position: relative;
-            overflow: hidden;
-            min-height: 250px;
+            grid-column: span 2; grid-row: span 2; padding: 1.5rem; display: flex;
+            flex-direction: column; justify-content: flex-end; position: relative; overflow: hidden; min-height: 250px;
         }
-        .profile-img {
-            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-            transition: transform 0.7s ease; z-index: 1;
-        }
+        .profile-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; z-index: 1; }
         .profile-card:hover .profile-img { transform: scale(1.05); }
-        .profile-overlay {
-            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 2;
-        }
+        .profile-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 2; }
         .profile-content { position: relative; z-index: 3; margin-top: 8rem; }
         .profile-title { font-size: 1.125rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.025em; }
         .profile-subtitle { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
@@ -172,29 +153,17 @@
             font-size: 0.75rem; display: flex; align-items: center; gap: 0.25rem;
         }
 
-        /* Standart Aksiyon Kartları (CV, Projeler, İletişim) */
         .action-card {
-            grid-column: span 1;
-            padding: var(--spacing-base);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            border: none;
-            color: var(--text-main);
-            text-align: left;
-            cursor: pointer;
-            width: 100%;
+            grid-column: span 1; padding: var(--spacing-base); display: flex; align-items: center; gap: 1rem;
+            border: none; color: var(--text-main); text-align: left; cursor: pointer; width: 100%;
         }
         @media (min-width: 768px) { .action-card { grid-column: span 2; } }
         .action-card:hover { background: var(--glass-hover); }
-        .icon-box {
-            width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem;
-        }
+        .icon-box { width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem; }
         .action-title { font-size: 1rem; font-weight: 600; }
         .action-desc { font-size: 0.75rem; color: var(--text-muted); display: none; margin-top: 0.25rem;}
         @media (min-width: 768px) { .action-desc { display: block; } }
 
-        /* Geniş Kartlar (Syllabus, Haberler) */
         .wide-card { grid-column: span 2; }
         @media (min-width: 768px) { .wide-card { grid-column: span 4; } }
 
@@ -203,7 +172,6 @@
         .view-all-btn { background: none; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; transition: color 0.2s; }
         .view-all-btn:hover { color: var(--text-main); }
 
-        /* İçerik Kartları (Haber, Duyuru içindeki küçük kutular) */
         .inner-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
         @media (min-width: 768px) { .inner-grid { grid-template-columns: repeat(4, 1fr); } }
         
@@ -220,7 +188,7 @@
         .box-title { font-size: 0.875rem; font-weight: 700; margin-bottom: 0.25rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .box-desc { font-size: 0.75rem; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 0.5rem; }
 
-        /* --- 6. YARDIMCI SINIFLAR VE RENKLER --- */
+        /* Renk Sınıfları */
         .text-blue { color: var(--ios-blue); } .bg-blue-light { background: rgba(10, 132, 255, 0.2); } .border-blue { border-left: 4px solid var(--ios-blue); }
         .text-purple { color: var(--color-purple); } .bg-purple-light { background: rgba(192, 132, 252, 0.2); }
         .text-orange { color: var(--color-orange); } .bg-orange-light { background: rgba(251, 146, 60, 0.2); }
@@ -228,7 +196,6 @@
         .text-teal { color: var(--ios-teal); } .bg-teal-light { background: rgba(100, 210, 255, 0.05); } .border-teal { border-left: 4px solid var(--ios-teal); border-color: rgba(100,210,255,0.2); }
         .text-green { color: var(--ios-green); } .bg-green-light { background: rgba(48, 209, 88, 0.2); }
         
-        /* Pulse Efekti (Performanslı) */
         .pulse-dot { position: relative; width: 0.5rem; height: 0.5rem; background: var(--ios-green); border-radius: 50%; }
         .pulse-dot::after {
             content: ''; position: absolute; inset: -4px; border-radius: 50%; background: rgba(48, 209, 88, 0.5);
@@ -236,7 +203,7 @@
         }
         @keyframes pulse-gpu { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.5); opacity: 0; } }
 
-        /* --- 7. MODALLAR (Açılır Pencereler) --- */
+        /* --- 6. MODALLAR --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 60;
             backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -264,19 +231,23 @@
         .close-btn:hover { background: rgba(255,255,255,0.2); }
         .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1rem;}
 
-        /* --- 8. SIDEBAR (Mobil Menü) --- */
+        /* --- 7. SIDEBAR (Mobil Menü) --- */
         .sidebar-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 40;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
+        .sidebar-overlay-active { opacity: 1; pointer-events: auto; }
+        
         .sidebar {
             position: fixed; top: 0; left: 0; width: 16rem; height: 100%; background: rgba(28, 28, 30, 0.85);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-right: 1px solid var(--glass-border);
             z-index: 50; transform: translateX(-100%); transition: transform 0.4s ease;
-            display: flex; flex-direction: column; padding: 1rem;
+            display: flex; flex-direction: column;
+            overscroll-behavior: contain; /* Arkadaki sayfanın kaymasını engeller */
         }
         .sidebar-active { transform: translateX(0); }
-        .sidebar-overlay-active { opacity: 1; pointer-events: auto; }
+        
+        .sidebar-inner { padding: 1.5rem 1rem; display: flex; flex-direction: column; height: 100%; }
         .sidebar h2 { font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 0.5rem;}
         .sidebar-btn {
             display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.75rem;
@@ -286,7 +257,18 @@
         .sidebar-btn:hover { background: rgba(255,255,255,0.1); }
         .sidebar-icon { width: 1.75rem; height: 1.75rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;}
 
-        /* --- 9. FORMLAR VE CHAT --- */
+        /* Sidebar Sosyal Linkler */
+        .sidebar-social {
+            margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around;
+        }
+        .sidebar-social a {
+            width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(255,255,255,0.05); color: #fff;
+            display: flex; align-items: center; justify-content: center; text-decoration: none; transition: background 0.2s;
+        }
+        .sidebar-social a:hover { background: rgba(255,255,255,0.2); }
+
+        /* --- 8. FORMLAR VE CHAT --- */
         .input-group input, .input-group textarea {
             width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
             border-radius: 0.75rem; padding: 0.75rem 1rem; color: #fff; font-size: 0.875rem;
@@ -300,14 +282,18 @@
         }
         .submit-btn:hover { background: #28b34b; }
 
-        /* Chat Widget */
-        .chat-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40; display: flex; flex-direction: column; align-items: flex-end; }
+        /* Chat Widget FIX: pointer-events: none ile görünmez bloklanmayı kaldırdık */
+        .chat-container {
+            position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40; 
+            display: flex; flex-direction: column; align-items: flex-end;
+            pointer-events: none; /* KRİTİK DÜZELTME: Kartlara tıklamayı engellemez */
+        }
         .chat-window {
             width: 20rem; height: 24rem; display: flex; flex-direction: column; overflow: hidden;
             margin-bottom: 1rem; transform: scale(0.9); opacity: 0; pointer-events: none;
             transition: all 0.3s ease; transform-origin: bottom right;
         }
-        .chat-window.active { transform: scale(1); opacity: 1; pointer-events: auto; }
+        .chat-window.active { transform: scale(1); opacity: 1; pointer-events: auto; } /* Sadece açıkken tıklanabilir */
         
         .chat-header { padding: 1rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); }
         .chat-body { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
@@ -323,6 +309,7 @@
             width: 4rem; height: 4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             border: none; color: #fff; cursor: pointer; position: relative; font-size: 1.5rem;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: transform 0.2s;
+            pointer-events: auto; /* Sadece ikon tıklanabilir */
         }
         .chat-toggle:hover { transform: scale(1.05); }
         .chat-indicator { position: absolute; top: 0; right: 0; border: 2px solid #000; z-index: 2; }
@@ -360,29 +347,38 @@
     </nav>
 
     <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-    <div id="sidebar" class="sidebar">
-        <h2>Menü</h2>
-        <div class="no-scrollbar" style="flex:1; overflow-y:auto;">
-            <button class="sidebar-btn" onclick="openModalFromSidebar('cvModal')">
-                <div class="sidebar-icon bg-blue-light text-blue"><i class="fa-solid fa-file-user"></i></div> Özgeçmiş (CV)
-            </button>
-            <button class="sidebar-btn" onclick="openModalFromSidebar('projectsModal')">
-                <div class="sidebar-icon bg-purple-light text-purple"><i class="fa-solid fa-laptop-code"></i></div> Projelerim
-            </button>
-            <button class="sidebar-btn" onclick="openModalFromSidebar('syllabusModal')">
-                <div class="sidebar-icon bg-orange-light text-orange"><i class="fa-solid fa-book-open"></i></div> Ders Syllabus'ları
-            </button>
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;">
-            <button class="sidebar-btn" onclick="openModalFromSidebar('newsModal')">
-                <div class="sidebar-icon bg-red-light text-red"><i class="fa-solid fa-newspaper"></i></div> Haberler
-            </button>
-            <button class="sidebar-btn" onclick="openModalFromSidebar('announcementsModal')">
-                <div class="sidebar-icon bg-teal-light text-teal"><i class="fa-solid fa-bullhorn"></i></div> Duyurular
-            </button>
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;">
-            <button class="sidebar-btn" onclick="openModalFromSidebar('contactModal')">
-                <div class="sidebar-icon bg-green-light text-green"><i class="fa-solid fa-address-card"></i></div> İletişim
-            </button>
+    
+    <div id="sidebar" class="sidebar" onclick="closeSidebar()">
+        <div class="sidebar-inner" onclick="event.stopPropagation()">
+            <h2>Menü</h2>
+            <div class="no-scrollbar" style="flex:1; overflow-y:auto; padding-bottom: 1rem;">
+                <button class="sidebar-btn" onclick="openModalFromSidebar('cvModal')">
+                    <div class="sidebar-icon bg-blue-light text-blue"><i class="fa-solid fa-file-user"></i></div> Özgeçmiş (CV)
+                </button>
+                <button class="sidebar-btn" onclick="openModalFromSidebar('projectsModal')">
+                    <div class="sidebar-icon bg-purple-light text-purple"><i class="fa-solid fa-laptop-code"></i></div> Projelerim
+                </button>
+                <button class="sidebar-btn" onclick="openModalFromSidebar('syllabusModal')">
+                    <div class="sidebar-icon bg-orange-light text-orange"><i class="fa-solid fa-book-open"></i></div> Ders Syllabus'ları
+                </button>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;">
+                <button class="sidebar-btn" onclick="openModalFromSidebar('newsModal')">
+                    <div class="sidebar-icon bg-red-light text-red"><i class="fa-solid fa-newspaper"></i></div> Haberler
+                </button>
+                <button class="sidebar-btn" onclick="openModalFromSidebar('announcementsModal')">
+                    <div class="sidebar-icon bg-teal-light text-teal"><i class="fa-solid fa-bullhorn"></i></div> Duyurular
+                </button>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 0.5rem 0;">
+                <button class="sidebar-btn" onclick="openModalFromSidebar('contactModal')">
+                    <div class="sidebar-icon bg-green-light text-green"><i class="fa-solid fa-address-card"></i></div> İletişim
+                </button>
+            </div>
+            
+            <div class="sidebar-social">
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+                <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#"><i class="fa-brands fa-medium"></i></a>
+            </div>
         </div>
     </div>
 
@@ -651,7 +647,6 @@
     </div>
 
     <script>
-        // Scroll Kilidi
         function checkScrollLock() {
             const isModalOpen = document.querySelectorAll('.modal-active').length > 0;
             const isSidebarOpen = document.getElementById('sidebar').classList.contains('sidebar-active');
@@ -659,7 +654,7 @@
             else document.body.classList.remove('overflow-hidden');
         }
 
-        // Sidebar Fonksiyonları
+        // Sidebar Fonksiyonları Güncellendi
         function openSidebar() {
             document.getElementById('sidebar').classList.add('sidebar-active');
             document.getElementById('sidebarOverlay').classList.add('sidebar-overlay-active');
@@ -688,7 +683,6 @@
             if (event.target === element) closeModal(element.id);
         }
 
-        // Accordion
         function toggleAccordion(element) {
             const content = element.nextElementSibling;
             const icon = element.querySelector('i');
@@ -701,7 +695,6 @@
             }
         }
 
-        // Chat Fonksiyonları
         function toggleChat() {
             const chatWindow = document.getElementById('chatWindow');
             const iconOpen = document.getElementById('chatIconOpen');
@@ -734,7 +727,6 @@
             }, 1000);
         }
 
-        // İletişim Formu
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMessage').innerText = message;
