@@ -35,7 +35,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent; /* Mobildeki mavi tıklama efektini kaldırır */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -243,7 +243,7 @@
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-right: 1px solid var(--glass-border);
             z-index: 50; transform: translateX(-100%); transition: transform 0.4s ease;
             display: flex; flex-direction: column;
-            overscroll-behavior: contain; /* Arkadaki sayfanın kaymasını engeller */
+            overscroll-behavior: contain;
         }
         .sidebar-active { transform: translateX(0); }
         
@@ -282,18 +282,17 @@
         }
         .submit-btn:hover { background: #28b34b; }
 
-        /* Chat Widget FIX: pointer-events: none ile görünmez bloklanmayı kaldırdık */
         .chat-container {
             position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 40; 
             display: flex; flex-direction: column; align-items: flex-end;
-            pointer-events: none; /* KRİTİK DÜZELTME: Kartlara tıklamayı engellemez */
+            pointer-events: none;
         }
         .chat-window {
             width: 20rem; height: 24rem; display: flex; flex-direction: column; overflow: hidden;
             margin-bottom: 1rem; transform: scale(0.9); opacity: 0; pointer-events: none;
             transition: all 0.3s ease; transform-origin: bottom right;
         }
-        .chat-window.active { transform: scale(1); opacity: 1; pointer-events: auto; } /* Sadece açıkken tıklanabilir */
+        .chat-window.active { transform: scale(1); opacity: 1; pointer-events: auto; }
         
         .chat-header { padding: 1rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); }
         .chat-body { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
@@ -309,7 +308,7 @@
             width: 4rem; height: 4rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             border: none; color: #fff; cursor: pointer; position: relative; font-size: 1.5rem;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: transform 0.2s;
-            pointer-events: auto; /* Sadece ikon tıklanabilir */
+            pointer-events: auto;
         }
         .chat-toggle:hover { transform: scale(1.05); }
         .chat-indicator { position: absolute; top: 0; right: 0; border: 2px solid #000; z-index: 2; }
@@ -516,53 +515,57 @@
         <div class="glass-card modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-file-user text-blue" style="margin-right: 0.5rem;"></i>Özgeçmiş</h3>
-                <button class="close-btn" onclick="closeModal('cvModal')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="close-btn" onclick="closeModal('cvModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body no-scrollbar">
                 <h4 class="text-blue" style="margin-bottom: 0.75rem;">Eğitim</h4>
-		<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+		        <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">Mehmet Akif Ersoy İlkokulu</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Çorum Merkez | 1989 - 1994</div>
                 </div>
-<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+                <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative; margin-top: 0.5rem;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">İmam Hatip Lisesi (Ortaokul - Lise)</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Çorum Merkez | 1994 - 2000</div>
                 </div>
-                <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+                <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative; margin-top: 0.5rem;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">İlahiyat Fakültesi (Lisans)</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Gazi Üniversitesi | 2001 - 2005</div>
                 </div>
-		<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+		        <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative; margin-top: 0.5rem;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">Sosyal Bilimler Enstitüsü (Yüksek Lisans)</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Gazi Üniversitesi | 2005 - 2009</div>
                 </div>
-<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+                <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative; margin-top: 0.5rem;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">Sosyal Bilimler Enstitüsü (Doktora)</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Atatürk Üniversitesi | 2010 - 2022</div>
                 </div>
-<h4 class="text-blue" style="margin-bottom: 0.75rem;">Akademik Görevler</h4>
-		<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+                
+                <h4 class="text-blue" style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Akademik Görevler</h4>
+		        <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">Öğretim Görevlisi</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Dokuz Eylül Üniversitesi İlahiyat Fakültesi | 2013 - 2025</div>
                 </div>
-<div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative;">
+                <div style="border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; position: relative; margin-top: 0.5rem;">
                     <div style="width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; left: -7px; top: 4px;"></div>
                     <div style="font-weight: bold;">Dr. Öğr. Üyesi</div>
                     <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 4px;">Dokuz Eylül Üniversitesi İlahiyat Fakültesi | 2025 - devam ediyor</div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <div id="projectsModal" class="modal-overlay" onclick="handleModalClick(event, this)">
         <div class="glass-card modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-laptop-code text-purple" style="margin-right: 0.5rem;"></i>Projelerim</h3>
+                <button type="button" class="close-btn" onclick="closeModal('projectsModal')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <div class="modal-body no-scrollbar">
                 <a href="https://ihtisasdergi.web.app" target="_blank" style="text-decoration: none; color: inherit; display: block; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
@@ -571,10 +574,8 @@
                     </div>
                     <div style="font-size: 0.875rem; color: var(--text-muted);">İhtisas e-Dergi sitemiz yayına girdi. Farklı konulardaki köşe yazılarına ulaşmak için tıklayınız.</div>
                 </a>
-            </div>
-<div class="glass-card modal-content">
-            <div class="modal-body no-scrollbar">
-                <a href="https://cpuzzle.web.app" style="text-decoration: none; color: inherit; display: block; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem;">
+
+                <a href="https://cpuzzle.web.app" target="_blank" style="text-decoration: none; color: inherit; display: block; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 1rem;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                         <span style="font-weight: bold;">Ülke & Şehir Bulmaca</span>
                         <span style="font-size: 0.75rem; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px; color: var(--text-muted);">12 Ekim 2024</span>
@@ -582,8 +583,6 @@
                     <div style="font-size: 0.875rem; color: var(--text-muted);">Harita bilginizi test etmek ve geliştirmek için web uygulamamızı ziyaret edebilirsiniz.</div>
                 </a>
             </div>
-
-
         </div>
     </div>
 
@@ -591,7 +590,7 @@
         <div class="glass-card modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-book-open text-orange" style="margin-right: 0.5rem;"></i>Ders Syllabus'ları</h3>
-                <button class="close-btn" onclick="closeModal('syllabusModal')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="close-btn" onclick="closeModal('syllabusModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body no-scrollbar">
                 <div style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 1rem;">
@@ -613,7 +612,7 @@
         <div class="glass-card modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-newspaper text-red" style="margin-right: 0.5rem;"></i>Tüm Haberler</h3>
-                <button class="close-btn" onclick="closeModal('newsModal')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="close-btn" onclick="closeModal('newsModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body no-scrollbar">
                 <a href="#" style="text-decoration: none; color: inherit; display: block; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 1rem; margin-bottom: 1rem;">
@@ -631,10 +630,10 @@
         <div class="glass-card modal-content">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-bullhorn text-teal" style="margin-right: 0.5rem;"></i>Tüm Duyurular</h3>
-                <button class="close-btn" onclick="closeModal('announcementsModal')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="close-btn" onclick="closeModal('announcementsModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body no-scrollbar">
-                <div style="background: var(--teal-light); border: 1px solid rgba(100,210,255,0.2); border-left: 4px solid var(--ios-teal); border-radius: 1rem; padding: 1rem;">
+                <div class="bg-teal-light" style="border: 1px solid rgba(100,210,255,0.2); border-left: 4px solid var(--ios-teal); border-radius: 1rem; padding: 1rem;">
                     <span style="font-size: 10px; font-weight: bold; color: var(--ios-teal); display: block; margin-bottom: 4px;">ÖNEMLİ</span>
                     <div style="font-weight: bold; margin-bottom: 0.5rem;">Sınav Tarihi Değişikliği</div>
                     <div style="font-size: 0.875rem; color: #d1d5db;">Sınav 15 Kasım Cuma gününe ertelenmiştir.</div>
@@ -647,7 +646,7 @@
         <div class="glass-card modal-content" style="max-width: 48rem;">
             <div class="modal-header">
                 <h3><i class="fa-solid fa-address-card text-green" style="margin-right: 0.5rem;"></i>İletişim & Konum</h3>
-                <button class="close-btn" onclick="closeModal('contactModal')"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" class="close-btn" onclick="closeModal('contactModal')"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body no-scrollbar" style="padding: 0; display: flex; flex-direction: row; flex-wrap: wrap;">
                 <div style="flex: 1 1 200px; padding: 1.5rem; border-right: 1px solid var(--glass-border);">
@@ -674,7 +673,7 @@
                     <div class="pulse-dot"></div>
                     <span style="font-weight: bold; font-size: 0.875rem;">Ofis Asistanı (Canlı)</span>
                 </div>
-                <button style="background: none; border: none; color: var(--text-muted); cursor: pointer;" onclick="toggleChat()"><i class="fa-solid fa-chevron-down"></i></button>
+                <button type="button" style="background: none; border: none; color: var(--text-muted); cursor: pointer;" onclick="toggleChat()"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
             <div class="chat-body no-scrollbar" id="chatMessages">
                 <div class="msg-bubble msg-bot">Merhaba! Sistemde "Müsait" görünüyorum. Bana mesaj bırakabilirsiniz.</div>
@@ -685,7 +684,7 @@
             </form>
         </div>
 
-        <button class="glass-card chat-toggle" onclick="toggleChat()">
+        <button type="button" class="glass-card chat-toggle" onclick="toggleChat()">
             <div class="pulse-dot chat-indicator"></div>
             <i id="chatIconOpen" class="fa-solid fa-comment-dots"></i>
             <i id="chatIconClose" class="fa-solid fa-xmark" style="display: none;"></i>
