@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kat Otomasyonu | Akıllı Ofis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <style>
+        /* --- Tema ve Renk Paleti --- */
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary: #4299e1;
+            --success: #48bb78;
+            --danger: #f56565;
+            --coffee: #8c6b5d;
+            --tea: #d97706;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 10px 0;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* --- Kontrol Paneli (Benim Durumum) --- */
+        .control-panel {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .segment-control {
+            display: flex;
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .segment-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .segment-btn:hover {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .segment-btn.active-success {
+            background: var(--card-bg);
+            color: var(--success);
+            box-shadow: var(--shadow);
+        }
+
+        .segment-btn.active-danger {
+            background: var(--card-bg);
+            color: var(--danger);
+            box-shadow: var(--shadow);
+        }
+
+        .segment-btn.active-treat {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .segment-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* --- Kat Planı (Izgara) --- */
+        .floor-plan-title {
+            width: 100%;
+            max-width: 1000px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        .grid-container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding-bottom: 40px;
+        }
+
+        .room-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .room-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: var(--text-muted);
+            border-radius: var(--radius) 0 0 var(--radius);
+            transition: var(--transition);
+        }
+
+        .room-card.status-available::before { background: var(--success); }
+        .room-card.status-busy::before { background: var(--danger); }
+
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-left: 10px;
+        }
+
+        .person-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .person-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-available .status-dot { background: var(--success); }
+        .status-available .status-text { color: var(--success); }
+        
+        .status-busy .status-dot { background: var(--danger); }
+        .status-busy .status-text { color: var(--danger); }
+
+        .treat-container {
+            padding-left: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 48px;
+        }
+
+        .treat-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .treat-badge.tea {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--tea);
+        }
+
+        .treat-badge.coffee {
+            background: rgba(140, 107, 93, 0.1);
+            color: var(--coffee);
+        }
+
+        .no-treat {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Mobil Optimizasyonları */
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .control-panel { padding: 16px; flex-direction: column; }
+            .control-group { width: 100%; min-width: auto; }
+            .segment-btn { padding: 10px 8px; font-size: 0.85rem; }
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span class="material-symbols-rounded">domain</span> Kat Planı</h1>
+        <div class="user-profile">
+            <span class="material-symbols-rounded">account_circle</span>
+            <span id="logged-in-user">Ahmet Yasin</span>
+        </div>
+    </header>
+
+    <section class="control-panel">
+        <div class="control-group">
+            <div class="control-label">Durumun</div>
+            <div class="segment-control">
+                <button class="segment-btn active-success" id="btn-available" onclick="updateMyStatus('available')">
+                    <span class="material-symbols-rounded">check_circle</span> Müsaitim
+                </button>
+                <button class="segment-btn" id="btn-busy" onclick="updateMyStatus('busy')">
+                    <span class="material-symbols-rounded">do_not_disturb_on</span> Meşgulüm
+                </button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">İkram (Sadece Müsaitken)</div>
+            <div class="segment-control">
+                <button class="segment-btn active-treat" id="btn-treat-none" onclick="updateMyTreat('none')">
+                    <span class="material-symbols-rounded">block</span> Yok
+                </button>
+                <button class="segment-btn" id="btn-treat-tea" onclick="updateMyTreat('tea')">
+                    <span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var
+                </button>
+                <button class="segment-btn" id="btn-treat-coffee" onclick="updateMyTreat('local_cafe')">
+                    <span class="material-symbols-rounded">local_cafe</span> Kahve Var
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <div class="floor-plan-title">Odalar & Kişiler</div>
+    
+    <div class="grid-container" id="rooms-container">
+        </div>
+
+    <script>
+        // MİMARİ NOT: Gerçek projede bu veriler Firebase Firestore'dan (onSnapshot ile) gelecektir.
+        // Şu an prototip olduğu için başlangıç verilerini bir dizi nesne olarak tutuyoruz.
+        
+        const MOCK_USERS = [
+            "Elif Hilal", "Halil", "Huzeyfe", 
+            "Ahmet Yasin", "Fatih", "İkbal", 
+            "Bekir", "Mustafa", "Hilmi"
+        ];
+
+        // Global State (Durum Yönetimi)
+        let roomStates = {};
+        const LOGGED_IN_USER = "Ahmet Yasin"; // Demo amaçlı giriş yapmış kullanıcı. Firebase Auth entegre olunca değişecek.
+
+        // Başlangıç durumlarını rastgele oluştur (Demoyu canlı göstermek için)
+        function initStates() {
+            MOCK_USERS.forEach(user => {
+                const isAvailable = Math.random() > 0.4;
+                const treats = ['none', 'tea', 'coffee'];
+                
+                roomStates[user] = {
+                    status: isAvailable ? 'available' : 'busy',
+                    treat: isAvailable ? treats[Math.floor(Math.random() * treats.length)] : 'none'
+                };
+            });
+            
+            // Bizim (Ahmet Yasin) başlangıç ayarımız paneldeki seçimle uyumlu olsun
+            roomStates[LOGGED_IN_USER] = { status: 'available', treat: 'none' };
+        }
+
+        // Arayüzü Çizme (Render) İşlemi
+        function renderRooms() {
+            const container = document.getElementById('rooms-container');
+            container.innerHTML = '';
+
+            MOCK_USERS.forEach(user => {
+                const data = roomStates[user];
+                
+                // İkram rozeti HTML'ini hazırla
+                let treatHtml = `<div class="no-treat">İkram yok</div>`;
+                if (data.status === 'available' && data.treat === 'tea') {
+                    treatHtml = `
+                        <div class="treat-badge tea">
+                            <span class="material-symbols-rounded">emoji_food_beverage</span> Taze Çay Var
+                        </div>`;
+                } else if (data.status === 'available' && data.treat === 'coffee') {
+                    treatHtml = `
+                        <div class="treat-badge coffee">
+                            <span class="material-symbols-rounded">local_cafe</span> Sıcak Kahve Var
+                        </div>`;
+                }
+
+                // Meşgulse ikram görünmez
+                if (data.status === 'busy') {
+                    treatHtml = `<div class="no-treat">Şu an rahatsız etmeyiniz</div>`;
+                }
+
+                // Kart Elemanını Oluştur
+                const card = document.createElement('div');
+                card.className = `room-card status-${data.status}`;
+                card.innerHTML = `
+                    <div class="room-header">
+                        <div class="person-info">
+                            <div class="person-name">${user} ${user === LOGGED_IN_USER ? '(Sen)' : ''}</div>
+                            <div class="status-badge">
+                                <div class="status-dot"></div>
+                                <span class="status-text">${data.status === 'available' ? 'Müsait' : 'Meşgul'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="treat-container">
+                        ${treatHtml}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- Kontrol Paneli Fonksiyonları ---
+        // MİMARİ NOT: Bu fonksiyonlar Firebase'e yazma işlemi (db.collection('rooms').doc(...).update()) yapacaktır.
+        
+        function updateMyStatus(newStatus) {
+            // UI Güncellemesi (Segment Butonları)
+            document.getElementById('btn-available').classList.remove('active-success');
+            document.getElementById('btn-busy').classList.remove('active-danger');
+            
+            if(newStatus === 'available') {
+                document.getElementById('btn-available').classList.add('active-success');
+                enableTreatButtons(true);
+            } else {
+                document.getElementById('btn-busy').classList.add('active-danger');
+                enableTreatButtons(false);
+                updateMyTreat('none'); // Meşgulse ikramı sıfırla
+            }
+
+            // State Güncellemesi ve Render
+            roomStates[LOGGED_IN_USER].status = newStatus;
+            renderRooms();
+        }
+
+        function updateMyTreat(newTreat) {
+            // Eğer meşgulse ikram seçilemez
+            if(roomStates[LOGGED_IN_USER].status === 'busy') return;
+
+            // UI Güncellemesi
+            document.getElementById('btn-treat-none').classList.remove('active-treat');
+            document.getElementById('btn-treat-tea').classList.remove('active-treat');
+            document.getElementById('btn-treat-coffee').classList.remove('active-treat');
+            
+            if(newTreat === 'none') document.getElementById('btn-treat-none').classList.add('active-treat');
+            if(newTreat === 'tea') document.getElementById('btn-treat-tea').classList.add('active-treat');
+            if(newTreat === 'coffee') document.getElementById('btn-treat-coffee').classList.add('active-treat'); // Değer olarak id uyumsuzluğu engellendi
+
+            // State Güncellemesi ve Render
+            roomStates[LOGGED_IN_USER].treat = newTreat;
+            renderRooms();
+        }
+
+        function enableTreatButtons(enable) {
+            document.getElementById('btn-treat-none').disabled = !enable;
+            document.getElementById('btn-treat-tea').disabled = !enable;
+            document.getElementById('btn-treat-coffee').disabled = !enable;
+        }
+
+        // Uygulamayı Başlat
+        initStates();
+        renderRooms();
+
+    </script>
+</body>
+</html>
