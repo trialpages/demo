@@ -88,7 +88,7 @@
             flex-wrap: wrap;
             gap: 24px;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .control-group {
@@ -159,6 +159,44 @@
             cursor: not-allowed;
         }
 
+        /* Yeni: Misafir Seçici (Chips) */
+        .guests-control {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .guest-chip {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .guest-chip:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .guest-chip.selected {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .guest-chip:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         /* --- Kat Planı (Izgara) --- */
         .floor-plan-title {
             width: 100%;
@@ -187,6 +225,9 @@
             border: 1px solid transparent;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .room-card:hover {
@@ -213,7 +254,6 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
             padding-left: 10px;
         }
 
@@ -254,18 +294,16 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            min-height: 48px;
         }
 
         .treat-badge {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 500;
-            animation: fadeIn 0.4s ease;
         }
 
         .treat-badge.tea {
@@ -284,13 +322,23 @@
             font-style: italic;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        /* Yeni: Misafir Gösterimi */
+        .guests-display {
+            padding-left: 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 500;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            line-height: 1.4;
         }
 
-        /* Mobil Optimizasyonları */
-        @media (max-width: 600px) {
+        .guests-display .material-symbols-rounded {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
             body { padding: 12px; }
             .control-panel { padding: 16px; flex-direction: column; }
             .control-group { width: 100%; min-width: auto; }
@@ -329,12 +377,18 @@
                     <span class="material-symbols-rounded">block</span> Yok
                 </button>
                 <button class="segment-btn" id="btn-treat-tea" onclick="updateMyTreat('tea')">
-                    <span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var
+                    <span class="material-symbols-rounded">emoji_food_beverage</span> Çay
                 </button>
-                <button class="segment-btn" id="btn-treat-coffee" onclick="updateMyTreat('local_cafe')">
-                    <span class="material-symbols-rounded">local_cafe</span> Kahve Var
+                <button class="segment-btn" id="btn-treat-coffee" onclick="updateMyTreat('coffee')">
+                    <span class="material-symbols-rounded">local_cafe</span> Kahve
                 </button>
             </div>
+        </div>
+
+        <div class="control-group" style="flex: 1.5;">
+            <div class="control-label">Odada Kimler Var? (İsteğe Bağlı)</div>
+            <div class="guests-control" id="guests-control-container">
+                </div>
         </div>
     </section>
 
@@ -344,36 +398,107 @@
         </div>
 
     <script>
-        // MİMARİ NOT: Gerçek projede bu veriler Firebase Firestore'dan (onSnapshot ile) gelecektir.
-        // Şu an prototip olduğu için başlangıç verilerini bir dizi nesne olarak tutuyoruz.
-        
+        // Veri Modeli
         const MOCK_USERS = [
             "Elif Hilal", "Halil", "Huzeyfe", 
             "Ahmet Yasin", "Fatih", "İkbal", 
             "Bekir", "Mustafa", "Hilmi"
         ];
 
-        // Global State (Durum Yönetimi)
         let roomStates = {};
-        const LOGGED_IN_USER = "Ahmet Yasin"; // Demo amaçlı giriş yapmış kullanıcı. Firebase Auth entegre olunca değişecek.
+        const LOGGED_IN_USER = "Ahmet Yasin"; 
 
-        // Başlangıç durumlarını rastgele oluştur (Demoyu canlı göstermek için)
+        // Başlangıç durumları
         function initStates() {
             MOCK_USERS.forEach(user => {
                 const isAvailable = Math.random() > 0.4;
                 const treats = ['none', 'tea', 'coffee'];
                 
+                // Demo için rastgele 1 misafir atayalım (Eğer müsaitse)
+                let randomGuests = [];
+                if(isAvailable && Math.random() > 0.7) {
+                    const otherUsers = MOCK_USERS.filter(u => u !== user);
+                    randomGuests.push(otherUsers[Math.floor(Math.random() * otherUsers.length)]);
+                }
+
                 roomStates[user] = {
                     status: isAvailable ? 'available' : 'busy',
-                    treat: isAvailable ? treats[Math.floor(Math.random() * treats.length)] : 'none'
+                    treat: isAvailable ? treats[Math.floor(Math.random() * treats.length)] : 'none',
+                    guests: isAvailable ? randomGuests : [] // YENİ: Misafir dizisi
                 };
             });
             
-            // Bizim (Ahmet Yasin) başlangıç ayarımız paneldeki seçimle uyumlu olsun
-            roomStates[LOGGED_IN_USER] = { status: 'available', treat: 'none' };
+            // Bizim başlangıç ayarımız
+            roomStates[LOGGED_IN_USER] = { status: 'available', treat: 'none', guests: [] };
         }
 
-        // Arayüzü Çizme (Render) İşlemi
+        // --- YENİ: Misafir Seçim Çiplerini (Chips) Oluşturma ---
+        function renderGuestControlUI() {
+            const container = document.getElementById('guests-control-container');
+            container.innerHTML = '';
+
+            MOCK_USERS.forEach(user => {
+                // Kendimizi misafir listesinde göstermiyoruz
+                if (user === LOGGED_IN_USER) return;
+
+                const btn = document.createElement('button');
+                btn.className = 'guest-chip';
+                btn.id = `guest-chip-${user.replace(/\s+/g, '')}`;
+                btn.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;">person_add</span> ${user}`;
+                btn.onclick = () => toggleMyGuest(user);
+                
+                container.appendChild(btn);
+            });
+            
+            updateGuestChipsState();
+        }
+
+        // Misafir Ekle/Çıkar Mantığı
+        function toggleMyGuest(guestName) {
+            // Meşgulken misafir eklenemez
+            if (roomStates[LOGGED_IN_USER].status === 'busy') return;
+
+            let myGuests = roomStates[LOGGED_IN_USER].guests || [];
+            
+            if (myGuests.includes(guestName)) {
+                // Varsa çıkar
+                myGuests = myGuests.filter(name => name !== guestName);
+            } else {
+                // Yoksa ekle
+                myGuests.push(guestName);
+            }
+
+            roomStates[LOGGED_IN_USER].guests = myGuests;
+            updateGuestChipsState();
+            renderRooms();
+        }
+
+        // Çiplerin Görsel Durumunu (Seçili/Pasif) Güncelleme
+        function updateGuestChipsState() {
+            const isBusy = roomStates[LOGGED_IN_USER].status === 'busy';
+            const myGuests = roomStates[LOGGED_IN_USER].guests || [];
+
+            MOCK_USERS.forEach(user => {
+                if (user === LOGGED_IN_USER) return;
+                
+                const chipId = `guest-chip-${user.replace(/\s+/g, '')}`;
+                const chip = document.getElementById(chipId);
+                
+                if (chip) {
+                    chip.disabled = isBusy;
+                    
+                    if (myGuests.includes(user) && !isBusy) {
+                        chip.classList.add('selected');
+                        chip.querySelector('span').innerText = 'check'; // İkonu tik yap
+                    } else {
+                        chip.classList.remove('selected');
+                        chip.querySelector('span').innerText = 'person_add'; // İkonu geri çevir
+                    }
+                }
+            });
+        }
+
+        // --- Arayüzü Çizme (Render) İşlemi ---
         function renderRooms() {
             const container = document.getElementById('rooms-container');
             container.innerHTML = '';
@@ -381,23 +506,34 @@
             MOCK_USERS.forEach(user => {
                 const data = roomStates[user];
                 
-                // İkram rozeti HTML'ini hazırla
+                // 1. İkram HTML'i
                 let treatHtml = `<div class="no-treat">İkram yok</div>`;
                 if (data.status === 'available' && data.treat === 'tea') {
                     treatHtml = `
                         <div class="treat-badge tea">
-                            <span class="material-symbols-rounded">emoji_food_beverage</span> Taze Çay Var
+                            <span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var
                         </div>`;
                 } else if (data.status === 'available' && data.treat === 'coffee') {
                     treatHtml = `
                         <div class="treat-badge coffee">
-                            <span class="material-symbols-rounded">local_cafe</span> Sıcak Kahve Var
+                            <span class="material-symbols-rounded">local_cafe</span> Kahve Var
                         </div>`;
                 }
-
-                // Meşgulse ikram görünmez
                 if (data.status === 'busy') {
-                    treatHtml = `<div class="no-treat">Şu an rahatsız etmeyiniz</div>`;
+                    treatHtml = `<div class="no-treat">Lütfen rahatsız etmeyiniz</div>`;
+                }
+
+                // 2. YENİ: Misafir HTML'i (... ile beraber)
+                let guestsHtml = '';
+                if (data.status === 'available' && data.guests && data.guests.length > 0) {
+                    // İsimleri virgülle birleştirir
+                    const guestNames = data.guests.join(', ');
+                    guestsHtml = `
+                        <div class="guests-display">
+                            <span class="material-symbols-rounded">groups</span>
+                            <span><b>${guestNames}</b> ile beraber</span>
+                        </div>
+                    `;
                 }
 
                 // Kart Elemanını Oluştur
@@ -416,59 +552,60 @@
                     <div class="treat-container">
                         ${treatHtml}
                     </div>
+                    ${guestsHtml}
                 `;
                 container.appendChild(card);
             });
         }
 
         // --- Kontrol Paneli Fonksiyonları ---
-        // MİMARİ NOT: Bu fonksiyonlar Firebase'e yazma işlemi (db.collection('rooms').doc(...).update()) yapacaktır.
-        
         function updateMyStatus(newStatus) {
-            // UI Güncellemesi (Segment Butonları)
             document.getElementById('btn-available').classList.remove('active-success');
             document.getElementById('btn-busy').classList.remove('active-danger');
             
             if(newStatus === 'available') {
                 document.getElementById('btn-available').classList.add('active-success');
-                enableTreatButtons(true);
+                enableSecondaryControls(true);
             } else {
                 document.getElementById('btn-busy').classList.add('active-danger');
-                enableTreatButtons(false);
-                updateMyTreat('none'); // Meşgulse ikramı sıfırla
+                enableSecondaryControls(false);
+                
+                // Meşgulse hem ikramı hem de misafirleri sıfırla
+                updateMyTreat('none');
+                roomStates[LOGGED_IN_USER].guests = [];
             }
 
-            // State Güncellemesi ve Render
             roomStates[LOGGED_IN_USER].status = newStatus;
+            updateGuestChipsState();
             renderRooms();
         }
 
         function updateMyTreat(newTreat) {
-            // Eğer meşgulse ikram seçilemez
             if(roomStates[LOGGED_IN_USER].status === 'busy') return;
 
-            // UI Güncellemesi
             document.getElementById('btn-treat-none').classList.remove('active-treat');
             document.getElementById('btn-treat-tea').classList.remove('active-treat');
             document.getElementById('btn-treat-coffee').classList.remove('active-treat');
             
             if(newTreat === 'none') document.getElementById('btn-treat-none').classList.add('active-treat');
             if(newTreat === 'tea') document.getElementById('btn-treat-tea').classList.add('active-treat');
-            if(newTreat === 'coffee') document.getElementById('btn-treat-coffee').classList.add('active-treat'); // Değer olarak id uyumsuzluğu engellendi
+            if(newTreat === 'coffee') document.getElementById('btn-treat-coffee').classList.add('active-treat');
 
-            // State Güncellemesi ve Render
             roomStates[LOGGED_IN_USER].treat = newTreat;
             renderRooms();
         }
 
-        function enableTreatButtons(enable) {
+        function enableSecondaryControls(enable) {
             document.getElementById('btn-treat-none').disabled = !enable;
             document.getElementById('btn-treat-tea').disabled = !enable;
             document.getElementById('btn-treat-coffee').disabled = !enable;
+            
+            // Misafir çiplerinin disable durumu updateGuestChipsState içinde yönetiliyor
         }
 
         // Uygulamayı Başlat
         initStates();
+        renderGuestControlUI();
         renderRooms();
 
     </script>
