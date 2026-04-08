@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     
     <style>
-        /* --- Tema ve Renk Paleti --- */
         :root {
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
@@ -17,9 +16,11 @@
             --primary: #4299e1;
             --success: #48bb78;
             --danger: #f56565;
+            --outside: #a0aec0; /* Dışarıda durumu için Slate rengi */
             --coffee: #8c6b5d;
             --tea: #d97706;
             --border: #e2e8f0;
+            --input-bg: #edf2f7;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --radius: 16px;
@@ -60,7 +61,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-main);
         }
 
         .user-profile {
@@ -75,7 +75,7 @@
             font-size: 0.9rem;
         }
 
-        /* --- Kontrol Paneli (Benim Durumum) --- */
+        /* --- Kontrol Paneli --- */
         .control-panel {
             width: 100%;
             max-width: 1000px;
@@ -84,19 +84,16 @@
             padding: 24px;
             box-shadow: var(--shadow);
             margin-bottom: 32px;
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
-            justify-content: space-between;
-            align-items: flex-start;
+            transition: var(--transition);
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            flex: 1;
-            min-width: 250px;
         }
 
         .control-label {
@@ -119,9 +116,9 @@
             flex: 1;
             border: none;
             background: transparent;
-            padding: 12px 16px;
+            padding: 10px 12px;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-muted);
             cursor: pointer;
@@ -129,45 +126,51 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .segment-btn:hover {
-            background: rgba(0,0,0,0.02);
-        }
+        .segment-btn:hover:not(:disabled) { background: rgba(0,0,0,0.02); }
 
-        .segment-btn.active-success {
-            background: var(--card-bg);
-            color: var(--success);
-            box-shadow: var(--shadow);
-        }
+        .segment-btn.active-success { background: var(--card-bg); color: var(--success); box-shadow: var(--shadow); }
+        .segment-btn.active-danger { background: var(--card-bg); color: var(--danger); box-shadow: var(--shadow); }
+        .segment-btn.active-outside { background: var(--card-bg); color: var(--outside); box-shadow: var(--shadow); }
+        .segment-btn.active-treat { background: var(--card-bg); color: var(--primary); box-shadow: var(--shadow); }
 
-        .segment-btn.active-danger {
-            background: var(--card-bg);
-            color: var(--danger);
-            box-shadow: var(--shadow);
-        }
-
-        .segment-btn.active-treat {
-            background: var(--card-bg);
-            color: var(--primary);
-            box-shadow: var(--shadow);
-        }
-
-        .segment-btn:disabled {
-            opacity: 0.5;
+        .segment-btn:disabled, .time-input:disabled, .text-input:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
         }
 
-        /* Yeni: Misafir Seçici (Chips) */
-        .guests-control {
+        /* Inputlar (Zaman ve Metin) */
+        .input-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 12px;
+            align-items: center;
         }
 
+        .time-input, .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 500;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .time-input:focus, .text-input:focus {
+            border-color: var(--primary);
+            background: var(--card-bg);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+        }
+
+        /* Çipler */
+        .guests-control { display: flex; flex-wrap: wrap; gap: 8px; }
         .guest-chip {
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 20px;
             border: 1px solid var(--border);
             background: var(--bg-color);
@@ -180,38 +183,24 @@
             align-items: center;
             gap: 4px;
         }
+        .guest-chip:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+        .guest-chip.selected { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+        .guest-chip:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        .guest-chip:hover:not(:disabled) {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .guest-chip.selected {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-        }
-
-        .guest-chip:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* --- Kat Planı (Izgara) --- */
+        /* --- Kat Planı --- */
         .floor-plan-title {
             width: 100%;
             max-width: 1000px;
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 16px;
-            color: var(--text-main);
         }
 
         .grid-container {
             width: 100%;
             max-width: 1000px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             padding-bottom: 40px;
         }
@@ -229,26 +218,16 @@
             flex-direction: column;
             gap: 12px;
         }
-
-        .room-card:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-2px);
-        }
-
+        .room-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
         .room-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            background: var(--text-muted);
-            border-radius: var(--radius) 0 0 var(--radius);
-            transition: var(--transition);
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 6px; background: var(--text-muted);
+            border-radius: var(--radius) 0 0 var(--radius); transition: var(--transition);
         }
 
         .room-card.status-available::before { background: var(--success); }
         .room-card.status-busy::before { background: var(--danger); }
+        .room-card.status-out::before { background: var(--outside); }
 
         .room-header {
             display: flex;
@@ -257,92 +236,61 @@
             padding-left: 10px;
         }
 
-        .person-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .person-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
+        .person-info { display: flex; flex-direction: column; gap: 4px;}
+        .person-name { font-size: 1.1rem; font-weight: 600; }
+        
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-top: 4px;
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--text-muted);
-        }
-
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); }
         .status-available .status-dot { background: var(--success); }
         .status-available .status-text { color: var(--success); }
-        
         .status-busy .status-dot { background: var(--danger); }
         .status-busy .status-text { color: var(--danger); }
+        .status-out .status-dot { background: var(--outside); }
+        .status-out .status-text { color: var(--outside); }
 
-        .treat-container {
-            padding-left: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .treat-badge {
+        .time-badge {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-color);
+            padding: 4px 8px;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            gap: 4px;
+            margin-top: 4px;
             font-weight: 500;
         }
 
-        .treat-badge.tea {
-            background: rgba(217, 119, 6, 0.1);
-            color: var(--tea);
+        .treat-container { padding-left: 10px; display: flex; align-items: center; gap: 12px; }
+        .treat-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
         }
+        .treat-badge.tea { background: rgba(217, 119, 6, 0.1); color: var(--tea); }
+        .treat-badge.coffee { background: rgba(140, 107, 93, 0.1); color: var(--coffee); }
+        .no-treat { color: var(--text-muted); font-size: 0.85rem; font-style: italic; }
 
-        .treat-badge.coffee {
-            background: rgba(140, 107, 93, 0.1);
-            color: var(--coffee);
-        }
-
-        .no-treat {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-style: italic;
-        }
-
-        /* Yeni: Misafir Gösterimi */
         .guests-display {
-            padding-left: 10px;
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 500;
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            line-height: 1.4;
+            padding-left: 10px; font-size: 0.85rem; color: var(--text-main);
+            display: flex; flex-direction: column; gap: 6px; line-height: 1.4;
         }
-
-        .guests-display .material-symbols-rounded {
-            font-size: 1.1rem;
+        .guest-item {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--bg-color); padding: 6px 10px; border-radius: 8px;
         }
+        .guest-item.external {
+            border: 1px dashed var(--border);
+            background: transparent;
+        }
+        .guest-item .material-symbols-rounded { font-size: 1rem; color: var(--primary); }
 
         @media (max-width: 768px) {
             body { padding: 12px; }
-            .control-panel { padding: 16px; flex-direction: column; }
-            .control-group { width: 100%; min-width: auto; }
-            .segment-btn { padding: 10px 8px; font-size: 0.85rem; }
+            .control-panel { padding: 16px; grid-template-columns: 1fr; gap: 20px; }
+            .segment-btn { padding: 10px 4px; font-size: 0.8rem; }
             .grid-container { grid-template-columns: 1fr; }
         }
     </style>
@@ -357,39 +305,64 @@
         </div>
     </header>
 
-    <section class="control-panel">
-        <div class="control-group">
-            <div class="control-label">Durumun</div>
-            <div class="segment-control">
-                <button class="segment-btn active-success" id="btn-available" onclick="updateMyStatus('available')">
-                    <span class="material-symbols-rounded">check_circle</span> Müsaitim
-                </button>
-                <button class="segment-btn" id="btn-busy" onclick="updateMyStatus('busy')">
-                    <span class="material-symbols-rounded">do_not_disturb_on</span> Meşgulüm
-                </button>
-            </div>
-        </div>
-
-        <div class="control-group">
-            <div class="control-label">İkram (Sadece Müsaitken)</div>
-            <div class="segment-control">
-                <button class="segment-btn active-treat" id="btn-treat-none" onclick="updateMyTreat('none')">
-                    <span class="material-symbols-rounded">block</span> Yok
-                </button>
-                <button class="segment-btn" id="btn-treat-tea" onclick="updateMyTreat('tea')">
-                    <span class="material-symbols-rounded">emoji_food_beverage</span> Çay
-                </button>
-                <button class="segment-btn" id="btn-treat-coffee" onclick="updateMyTreat('coffee')">
-                    <span class="material-symbols-rounded">local_cafe</span> Kahve
-                </button>
-            </div>
-        </div>
-
-        <div class="control-group" style="flex: 1.5;">
-            <div class="control-label">Odada Kimler Var? (İsteğe Bağlı)</div>
-            <div class="guests-control" id="guests-control-container">
+    <section class="control-panel" id="main-control-panel">
+        
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="control-group">
+                <div class="control-label">Mevcut Durumun</div>
+                <div class="segment-control">
+                    <button class="segment-btn active-success" id="btn-available" onclick="updateMyStatus('available')">
+                        <span class="material-symbols-rounded">check_circle</span> Müsait
+                    </button>
+                    <button class="segment-btn" id="btn-busy" onclick="updateMyStatus('busy')">
+                        <span class="material-symbols-rounded">do_not_disturb_on</span> Meşgul
+                    </button>
+                    <button class="segment-btn" id="btn-out" onclick="updateMyStatus('out')">
+                        <span class="material-symbols-rounded">directions_run</span> Dışarıda
+                    </button>
                 </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">İkram (Müsaitken)</div>
+                <div class="segment-control">
+                    <button class="segment-btn active-treat" id="btn-treat-none" onclick="updateMyTreat('none')">
+                        <span class="material-symbols-rounded">block</span> Yok
+                    </button>
+                    <button class="segment-btn" id="btn-treat-tea" onclick="updateMyTreat('tea')">
+                        <span class="material-symbols-rounded">emoji_food_beverage</span> Çay
+                    </button>
+                    <button class="segment-btn" id="btn-treat-coffee" onclick="updateMyTreat('coffee')">
+                        <span class="material-symbols-rounded">local_cafe</span> Kahve
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <div class="control-label">Kaça Kadar Müsaitsin? (İsteğe Bağlı)</div>
+                <div class="input-row">
+                    <span class="material-symbols-rounded" style="color:var(--text-muted)">schedule</span>
+                    <input type="time" id="input-time-until" class="time-input" onchange="updateMyTimeUntil(this.value)">
+                </div>
+            </div>
         </div>
+
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+            <div class="control-group">
+                <div class="control-label">Ekip İçi Misafir</div>
+                <div class="guests-control" id="guests-control-container">
+                    </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">Dışarıdan Misafir Var Mı?</div>
+                <div class="input-row">
+                    <span class="material-symbols-rounded" style="color:var(--text-muted)">badge</span>
+                    <input type="text" id="input-external-guest" class="text-input" placeholder="Örn: Müşteri, Kurye, Ali Bey..." onblur="updateMyExternalGuest(this.value)">
+                </div>
+            </div>
+        </div>
+
     </section>
 
     <div class="floor-plan-title">Odalar & Kişiler</div>
@@ -398,7 +371,6 @@
         </div>
 
     <script>
-        // Veri Modeli
         const MOCK_USERS = [
             "Elif Hilal", "Halil", "Huzeyfe", 
             "Ahmet Yasin", "Fatih", "İkbal", 
@@ -408,180 +380,88 @@
         let roomStates = {};
         const LOGGED_IN_USER = "Ahmet Yasin"; 
 
-        // Başlangıç durumları
+        // Yardımcı Fonksiyon: O anki saati "HH:MM" formatında verir
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Başlangıç Demoları
         function initStates() {
             MOCK_USERS.forEach(user => {
-                const isAvailable = Math.random() > 0.4;
+                const statuses = ['available', 'busy', 'out'];
+                const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
                 const treats = ['none', 'tea', 'coffee'];
                 
-                // Demo için rastgele 1 misafir atayalım (Eğer müsaitse)
-                let randomGuests = [];
-                if(isAvailable && Math.random() > 0.7) {
-                    const otherUsers = MOCK_USERS.filter(u => u !== user);
-                    randomGuests.push(otherUsers[Math.floor(Math.random() * otherUsers.length)]);
-                }
-
                 roomStates[user] = {
-                    status: isAvailable ? 'available' : 'busy',
-                    treat: isAvailable ? treats[Math.floor(Math.random() * treats.length)] : 'none',
-                    guests: isAvailable ? randomGuests : [] // YENİ: Misafir dizisi
+                    status: randomStatus,
+                    treat: randomStatus === 'available' ? treats[Math.floor(Math.random() * treats.length)] : 'none',
+                    guests: [],
+                    externalGuest: '',
+                    availableSince: randomStatus === 'available' ? '09:00' : '',
+                    availableUntil: ''
                 };
             });
             
-            // Bizim başlangıç ayarımız
-            roomStates[LOGGED_IN_USER] = { status: 'available', treat: 'none', guests: [] };
+            // Bizim başlangıç ayarımız (Müsait ve temiz)
+            roomStates[LOGGED_IN_USER] = { 
+                status: 'available', 
+                treat: 'none', 
+                guests: [],
+                externalGuest: '',
+                availableSince: getCurrentTime(),
+                availableUntil: ''
+            };
         }
 
-        // --- YENİ: Misafir Seçim Çiplerini (Chips) Oluşturma ---
-        function renderGuestControlUI() {
-            const container = document.getElementById('guests-control-container');
-            container.innerHTML = '';
-
-            MOCK_USERS.forEach(user => {
-                // Kendimizi misafir listesinde göstermiyoruz
-                if (user === LOGGED_IN_USER) return;
-
-                const btn = document.createElement('button');
-                btn.className = 'guest-chip';
-                btn.id = `guest-chip-${user.replace(/\s+/g, '')}`;
-                btn.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;">person_add</span> ${user}`;
-                btn.onclick = () => toggleMyGuest(user);
-                
-                container.appendChild(btn);
-            });
-            
-            updateGuestChipsState();
-        }
-
-        // Misafir Ekle/Çıkar Mantığı
-        function toggleMyGuest(guestName) {
-            // Meşgulken misafir eklenemez
-            if (roomStates[LOGGED_IN_USER].status === 'busy') return;
-
-            let myGuests = roomStates[LOGGED_IN_USER].guests || [];
-            
-            if (myGuests.includes(guestName)) {
-                // Varsa çıkar
-                myGuests = myGuests.filter(name => name !== guestName);
-            } else {
-                // Yoksa ekle
-                myGuests.push(guestName);
-            }
-
-            roomStates[LOGGED_IN_USER].guests = myGuests;
-            updateGuestChipsState();
-            renderRooms();
-        }
-
-        // Çiplerin Görsel Durumunu (Seçili/Pasif) Güncelleme
-        function updateGuestChipsState() {
-            const isBusy = roomStates[LOGGED_IN_USER].status === 'busy';
-            const myGuests = roomStates[LOGGED_IN_USER].guests || [];
-
-            MOCK_USERS.forEach(user => {
-                if (user === LOGGED_IN_USER) return;
-                
-                const chipId = `guest-chip-${user.replace(/\s+/g, '')}`;
-                const chip = document.getElementById(chipId);
-                
-                if (chip) {
-                    chip.disabled = isBusy;
-                    
-                    if (myGuests.includes(user) && !isBusy) {
-                        chip.classList.add('selected');
-                        chip.querySelector('span').innerText = 'check'; // İkonu tik yap
-                    } else {
-                        chip.classList.remove('selected');
-                        chip.querySelector('span').innerText = 'person_add'; // İkonu geri çevir
-                    }
-                }
-            });
-        }
-
-        // --- Arayüzü Çizme (Render) İşlemi ---
-        function renderRooms() {
-            const container = document.getElementById('rooms-container');
-            container.innerHTML = '';
-
-            MOCK_USERS.forEach(user => {
-                const data = roomStates[user];
-                
-                // 1. İkram HTML'i
-                let treatHtml = `<div class="no-treat">İkram yok</div>`;
-                if (data.status === 'available' && data.treat === 'tea') {
-                    treatHtml = `
-                        <div class="treat-badge tea">
-                            <span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var
-                        </div>`;
-                } else if (data.status === 'available' && data.treat === 'coffee') {
-                    treatHtml = `
-                        <div class="treat-badge coffee">
-                            <span class="material-symbols-rounded">local_cafe</span> Kahve Var
-                        </div>`;
-                }
-                if (data.status === 'busy') {
-                    treatHtml = `<div class="no-treat">Lütfen rahatsız etmeyiniz</div>`;
-                }
-
-                // 2. YENİ: Misafir HTML'i (... ile beraber)
-                let guestsHtml = '';
-                if (data.status === 'available' && data.guests && data.guests.length > 0) {
-                    // İsimleri virgülle birleştirir
-                    const guestNames = data.guests.join(', ');
-                    guestsHtml = `
-                        <div class="guests-display">
-                            <span class="material-symbols-rounded">groups</span>
-                            <span><b>${guestNames}</b> ile beraber</span>
-                        </div>
-                    `;
-                }
-
-                // Kart Elemanını Oluştur
-                const card = document.createElement('div');
-                card.className = `room-card status-${data.status}`;
-                card.innerHTML = `
-                    <div class="room-header">
-                        <div class="person-info">
-                            <div class="person-name">${user} ${user === LOGGED_IN_USER ? '(Sen)' : ''}</div>
-                            <div class="status-badge">
-                                <div class="status-dot"></div>
-                                <span class="status-text">${data.status === 'available' ? 'Müsait' : 'Meşgul'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="treat-container">
-                        ${treatHtml}
-                    </div>
-                    ${guestsHtml}
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        // --- Kontrol Paneli Fonksiyonları ---
+        // --- Kontrol Paneli Olayları ---
         function updateMyStatus(newStatus) {
+            const state = roomStates[LOGGED_IN_USER];
+            const oldStatus = state.status;
+            
+            // UI Renkleri Güncelle
             document.getElementById('btn-available').classList.remove('active-success');
             document.getElementById('btn-busy').classList.remove('active-danger');
+            document.getElementById('btn-out').classList.remove('active-outside');
             
             if(newStatus === 'available') {
                 document.getElementById('btn-available').classList.add('active-success');
                 enableSecondaryControls(true);
-            } else {
+                // Eğer farklı bir durumdan müsaite geçiyorsa başlangıç saatini kaydet
+                if (oldStatus !== 'available') {
+                    state.availableSince = getCurrentTime();
+                }
+            } else if (newStatus === 'busy') {
                 document.getElementById('btn-busy').classList.add('active-danger');
-                enableSecondaryControls(false);
-                
-                // Meşgulse hem ikramı hem de misafirleri sıfırla
-                updateMyTreat('none');
-                roomStates[LOGGED_IN_USER].guests = [];
+                clearAndDisableSecondaryControls();
+            } else if (newStatus === 'out') {
+                document.getElementById('btn-out').classList.add('active-outside');
+                clearAndDisableSecondaryControls();
             }
 
-            roomStates[LOGGED_IN_USER].status = newStatus;
+            state.status = newStatus;
             updateGuestChipsState();
             renderRooms();
         }
 
+        function clearAndDisableSecondaryControls() {
+            enableSecondaryControls(false);
+            const state = roomStates[LOGGED_IN_USER];
+            
+            // İkramı temizle
+            updateMyTreat('none');
+            // Misafirleri temizle
+            state.guests = [];
+            state.externalGuest = '';
+            document.getElementById('input-external-guest').value = '';
+            // Zamanları temizle
+            state.availableSince = '';
+            state.availableUntil = '';
+            document.getElementById('input-time-until').value = '';
+        }
+
         function updateMyTreat(newTreat) {
-            if(roomStates[LOGGED_IN_USER].status === 'busy') return;
+            if(roomStates[LOGGED_IN_USER].status !== 'available') return;
 
             document.getElementById('btn-treat-none').classList.remove('active-treat');
             document.getElementById('btn-treat-tea').classList.remove('active-treat');
@@ -595,15 +475,155 @@
             renderRooms();
         }
 
+        function updateMyTimeUntil(timeValue) {
+            if(roomStates[LOGGED_IN_USER].status !== 'available') return;
+            roomStates[LOGGED_IN_USER].availableUntil = timeValue;
+            renderRooms();
+        }
+
+        function updateMyExternalGuest(guestText) {
+            if(roomStates[LOGGED_IN_USER].status !== 'available') return;
+            roomStates[LOGGED_IN_USER].externalGuest = guestText.trim();
+            renderRooms();
+        }
+
         function enableSecondaryControls(enable) {
+            // İkram butonları
             document.getElementById('btn-treat-none').disabled = !enable;
             document.getElementById('btn-treat-tea').disabled = !enable;
             document.getElementById('btn-treat-coffee').disabled = !enable;
-            
-            // Misafir çiplerinin disable durumu updateGuestChipsState içinde yönetiliyor
+            // Inputlar
+            document.getElementById('input-time-until').disabled = !enable;
+            document.getElementById('input-external-guest').disabled = !enable;
+            // Panel Opaklığı
+            document.getElementById('main-control-panel').style.opacity = enable ? '1' : '0.8';
         }
 
-        // Uygulamayı Başlat
+        // --- İç Misafir (Chip) İşlemleri ---
+        function renderGuestControlUI() {
+            const container = document.getElementById('guests-control-container');
+            container.innerHTML = '';
+            MOCK_USERS.forEach(user => {
+                if (user === LOGGED_IN_USER) return;
+                const btn = document.createElement('button');
+                btn.className = 'guest-chip';
+                btn.id = `guest-chip-${user.replace(/\s+/g, '')}`;
+                btn.innerHTML = `<span class="material-symbols-rounded" style="font-size: 16px;">person_add</span> ${user}`;
+                btn.onclick = () => toggleMyGuest(user);
+                container.appendChild(btn);
+            });
+            updateGuestChipsState();
+        }
+
+        function toggleMyGuest(guestName) {
+            if (roomStates[LOGGED_IN_USER].status !== 'available') return;
+            let myGuests = roomStates[LOGGED_IN_USER].guests || [];
+            if (myGuests.includes(guestName)) {
+                myGuests = myGuests.filter(name => name !== guestName);
+            } else {
+                myGuests.push(guestName);
+            }
+            roomStates[LOGGED_IN_USER].guests = myGuests;
+            updateGuestChipsState();
+            renderRooms();
+        }
+
+        function updateGuestChipsState() {
+            const isAvailable = roomStates[LOGGED_IN_USER].status === 'available';
+            const myGuests = roomStates[LOGGED_IN_USER].guests || [];
+
+            MOCK_USERS.forEach(user => {
+                if (user === LOGGED_IN_USER) return;
+                const chip = document.getElementById(`guest-chip-${user.replace(/\s+/g, '')}`);
+                if (chip) {
+                    chip.disabled = !isAvailable;
+                    if (myGuests.includes(user) && isAvailable) {
+                        chip.classList.add('selected');
+                        chip.querySelector('span').innerText = 'check';
+                    } else {
+                        chip.classList.remove('selected');
+                        chip.querySelector('span').innerText = 'person_add';
+                    }
+                }
+            });
+        }
+
+        // --- Kartları Çizme (Render) ---
+        function renderRooms() {
+            const container = document.getElementById('rooms-container');
+            container.innerHTML = '';
+
+            MOCK_USERS.forEach(user => {
+                const data = roomStates[user];
+                
+                // 1. Durum ve Zaman Etiketleri
+                let statusText = 'Meşgul';
+                if (data.status === 'available') statusText = 'Müsait';
+                if (data.status === 'out') statusText = 'Dışarıda';
+
+                let timeHtml = '';
+                if (data.status === 'available' && data.availableSince) {
+                    timeHtml += `<span class="material-symbols-rounded" style="font-size:14px">login</span> ${data.availableSince}'ten beri`;
+                    if (data.availableUntil) {
+                        timeHtml += ` &bull; <span class="material-symbols-rounded" style="font-size:14px">update</span> ${data.availableUntil}'e kadar`;
+                    }
+                }
+
+                // 2. İkram Etiketleri
+                let treatHtml = '';
+                if (data.status === 'available') {
+                    if (data.treat === 'tea') treatHtml = `<div class="treat-badge tea"><span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var</div>`;
+                    else if (data.treat === 'coffee') treatHtml = `<div class="treat-badge coffee"><span class="material-symbols-rounded">local_cafe</span> Kahve Var</div>`;
+                    else treatHtml = `<div class="no-treat">İkram yok</div>`;
+                } else if (data.status === 'busy') {
+                    treatHtml = `<div class="no-treat">Lütfen rahatsız etmeyiniz</div>`;
+                } else if (data.status === 'out') {
+                    treatHtml = `<div class="no-treat">Ofis dışında</div>`;
+                }
+
+                // 3. Misafir Listesi (İç ve Dış)
+                let guestsHtml = '';
+                let guestItems = [];
+                
+                if (data.status === 'available') {
+                    if (data.guests && data.guests.length > 0) {
+                        data.guests.forEach(g => {
+                            guestItems.push(`<div class="guest-item"><span class="material-symbols-rounded">person</span> ${g} ile beraber</div>`);
+                        });
+                    }
+                    if (data.externalGuest && data.externalGuest.trim() !== '') {
+                        guestItems.push(`<div class="guest-item external"><span class="material-symbols-rounded">badge</span> ${data.externalGuest} (Misafir)</div>`);
+                    }
+                }
+
+                if (guestItems.length > 0) {
+                    guestsHtml = `<div class="guests-display">${guestItems.join('')}</div>`;
+                }
+
+                // Kartı Oluştur
+                const card = document.createElement('div');
+                card.className = `room-card status-${data.status}`;
+                card.innerHTML = `
+                    <div class="room-header">
+                        <div class="person-info">
+                            <div class="person-name">${user} ${user === LOGGED_IN_USER ? '(Sen)' : ''}</div>
+                            <div class="status-badge">
+                                <div class="status-dot"></div>
+                                <span class="status-text">${statusText}</span>
+                            </div>
+                            ${timeHtml ? `<div class="time-badge">${timeHtml}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="treat-container">
+                        ${treatHtml}
+                    </div>
+                    ${guestsHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Başlat
         initStates();
         renderGuestControlUI();
         renderRooms();
