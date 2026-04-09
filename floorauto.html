@@ -19,6 +19,7 @@
             --outside: #a0aec0;
             --other-office: #9f7aea;
             --offline: #cbd5e0;
+            --open-treat: #0d9488; /* Yeni: Çay/Kahve bekleyen durumu için Teal rengi */
             --coffee: #8c6b5d;
             --tea: #d97706;
             --action-bg: #f7fafc;
@@ -60,6 +61,7 @@
         .segment-btn.active-danger { background: var(--card-bg); color: var(--danger); box-shadow: var(--shadow); }
         .segment-btn.active-outside { background: var(--card-bg); color: var(--outside); box-shadow: var(--shadow); }
         .segment-btn.active-other-office { background: var(--card-bg); color: var(--other-office); box-shadow: var(--shadow); }
+        .segment-btn.active-open-treat { background: var(--card-bg); color: var(--open-treat); box-shadow: var(--shadow); } /* YENİ: 6. Durum rengi */
         .segment-btn.active-treat { background: var(--card-bg); color: var(--primary); box-shadow: var(--shadow); flex-direction: row; }
 
         .segment-btn:disabled, .time-input:disabled, .text-input:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
@@ -91,7 +93,6 @@
 
         .room-card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); transition: var(--transition); border: 1px solid transparent; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 12px; }
         
-        /* Tıklanabilir (Etkileşimli) Kart Stili */
         .room-card.interactive { cursor: pointer; }
         .room-card.interactive:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); border-color: var(--border); }
         
@@ -102,6 +103,7 @@
         .room-card.status-busy::before { background: var(--danger); }
         .room-card.status-out::before { background: var(--outside); }
         .room-card.status-other-office::before { background: var(--other-office); }
+        .room-card.status-open_to_treat::before { background: var(--open-treat); } /* YENİ */
 
         .room-header { display: flex; justify-content: space-between; align-items: flex-start; padding-left: 10px; }
         .person-info { display: flex; flex-direction: column; gap: 4px; width: 100%;}
@@ -114,6 +116,7 @@
         .status-busy .status-dot { background: var(--danger); } .status-busy .status-text { color: var(--danger); }
         .status-out .status-dot { background: var(--outside); } .status-out .status-text { color: var(--outside); }
         .status-other-office .status-dot { background: var(--other-office); } .status-other-office .status-text { color: var(--other-office); }
+        .status-open_to_treat .status-dot { background: var(--open-treat); } .status-open_to_treat .status-text { color: var(--open-treat); } /* YENİ */
 
         .host-office-badge { font-size: 0.8rem; color: var(--other-office); background: rgba(159, 122, 234, 0.1); padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; margin-top: 4px; }
         .time-badge { font-size: 0.75rem; color: var(--text-muted); background: var(--bg-color); padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-weight: 500; }
@@ -129,26 +132,14 @@
         .guests-text-content { flex: 1; }
         .guests-text-content strong { color: var(--primary); font-weight: 600; }
 
-        /* YENİ: Etkileşim Menüsü (Afiyet olsun / Uğrarım) */
-        .card-action-menu {
-            display: flex; gap: 8px; margin-top: 8px; padding-left: 10px;
-            animation: slideDown 0.2s ease-out forwards;
-        }
-        .card-action-btn {
-            flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-            border: none; transition: var(--transition);
-        }
+        .card-action-menu { display: flex; gap: 8px; margin-top: 8px; padding-left: 10px; animation: slideDown 0.2s ease-out forwards; }
+        .card-action-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); }
         .btn-join { background: rgba(72, 187, 120, 0.1); color: var(--success); }
         .btn-join:hover { background: var(--success); color: white; }
         .btn-decline { background: var(--input-bg); color: var(--text-muted); }
         .btn-decline:hover { background: #e2e8f0; color: var(--text-main); }
 
-        /* YENİ: Uğrayacaklar Gösterimi */
-        .joining-display {
-            padding-left: 10px; font-size: 0.8rem; color: var(--other-office);
-            display: flex; align-items: center; gap: 6px; margin-top: 4px; font-weight: 500;
-        }
+        .joining-display { padding-left: 10px; font-size: 0.8rem; color: var(--other-office); display: flex; align-items: center; gap: 6px; margin-top: 4px; font-weight: 500; }
         .joining-display .material-symbols-rounded { font-size: 1rem; }
 
         @media (max-width: 768px) { body { padding: 12px; } .control-panel { padding: 16px; grid-template-columns: 1fr; gap: 20px; } .grid-container { grid-template-columns: 1fr; } }
@@ -175,6 +166,9 @@
                     </button>
                     <button class="segment-btn active-success" id="btn-available" onclick="updateMyStatus('available')">
                         <span class="material-symbols-rounded">check_circle</span> Müsait
+                    </button>
+                    <button class="segment-btn" id="btn-open-treat" onclick="updateMyStatus('open_to_treat')">
+                        <span class="material-symbols-rounded">local_cafe</span> İkrama Açık
                     </button>
                     <button class="segment-btn" id="btn-busy" onclick="updateMyStatus('busy')">
                         <span class="material-symbols-rounded">do_not_disturb_on</span> Meşgul
@@ -249,7 +243,7 @@
         const MOCK_USERS = ["Elif Hilal", "Halil", "Huzeyfe", "Ahmet Yasin", "Fatih", "İkbal", "Bekir", "Mustafa", "Hilmi"];
         let roomStates = {};
         const LOGGED_IN_USER = "Ahmet Yasin"; 
-        let activeActionCard = null; // Tıklanan kartın menüsünü açık tutmak için
+        let activeActionCard = null;
 
         function getCurrentTime() {
             const now = new Date();
@@ -258,30 +252,25 @@
 
         function initStates() {
             MOCK_USERS.forEach(user => {
-                const statuses = ['offline', 'available', 'busy', 'out', 'other_office'];
+                const statuses = ['offline', 'available', 'busy', 'out', 'other_office', 'open_to_treat'];
                 let randomStatus = 'available';
                 if(Math.random() > 0.6) randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
                 const treats = ['none', 'tea', 'coffee'];
                 
-                let host = '';
-                let customHost = '';
+                let host = ''; let customHost = '';
                 if(randomStatus === 'other_office') {
                     if (Math.random() > 0.5) {
                         const others = MOCK_USERS.filter(u => u !== user);
                         host = others[Math.floor(Math.random() * others.length)];
-                    } else {
-                        host = 'other'; customHost = 'A Toplantı Odası';
-                    }
+                    } else { host = 'other'; customHost = 'A Toplantı Odası'; }
                 }
 
                 roomStates[user] = {
                     status: randomStatus,
                     hostOffice: host, customHostOffice: customHost,
                     treat: (randomStatus === 'available' || randomStatus === 'other_office') ? treats[Math.floor(Math.random() * treats.length)] : 'none',
-                    guests: [],
-                    externalGuest: '',
-                    joining: [], // YENİ: Uğramayı düşünenler listesi
-                    availableSince: (randomStatus === 'available' || randomStatus === 'other_office') ? '09:00' : '',
+                    guests: [], externalGuest: '', joining: [],
+                    availableSince: (randomStatus === 'available' || randomStatus === 'other_office' || randomStatus === 'open_to_treat') ? '09:00' : '',
                     availableUntil: ''
                 };
             });
@@ -294,44 +283,41 @@
 
         // --- Kart Etkileşim (Sosyal) İşlemleri ---
         function toggleActionMenu(targetUser) {
-            // Eğer aynı karta tıklandıysa menüyü kapat, farklıysa onu aç
-            if (activeActionCard === targetUser) {
-                activeActionCard = null;
-            } else {
-                activeActionCard = targetUser;
-            }
+            if (activeActionCard === targetUser) activeActionCard = null;
+            else activeActionCard = targetUser;
             renderRooms();
         }
 
         function handleJoinAction(event, targetUser, action) {
-            event.stopPropagation(); // Kartın kendi onclick olayını durdurur, menünün kapanmasını engeller
-            
+            event.stopPropagation();
             const targetState = roomStates[targetUser];
             let currentJoiners = targetState.joining || [];
 
             if (action === 'join') {
-                if (!currentJoiners.includes(LOGGED_IN_USER)) {
-                    currentJoiners.push(LOGGED_IN_USER);
-                }
+                if (!currentJoiners.includes(LOGGED_IN_USER)) currentJoiners.push(LOGGED_IN_USER);
             } else if (action === 'decline') {
                 currentJoiners = currentJoiners.filter(u => u !== LOGGED_IN_USER);
             }
 
             targetState.joining = currentJoiners;
-            activeActionCard = null; // İşlem bitince menüyü kapat
+            activeActionCard = null; 
             renderRooms();
         }
 
-        // --- Kontrol Paneli İşlemleri (Öncekiyle Aynı) ---
+        // --- Kontrol Paneli İşlemleri ---
         function updateMyStatus(newStatus) {
             const state = roomStates[LOGGED_IN_USER];
             const oldStatus = state.status;
             
-            document.querySelectorAll('.segment-btn').forEach(btn => btn.classList.remove('active-offline', 'active-success', 'active-danger', 'active-outside', 'active-other-office'));
+            document.querySelectorAll('.segment-btn').forEach(btn => btn.classList.remove('active-offline', 'active-success', 'active-danger', 'active-outside', 'active-other-office', 'active-open-treat'));
             
-            if(newStatus === 'available' || newStatus === 'other_office') {
-                if (newStatus === 'available') {
-                    document.getElementById('btn-available').classList.add('active-success');
+            if(newStatus === 'available' || newStatus === 'other_office' || newStatus === 'open_to_treat') {
+                
+                // Müsait veya Çay/Kahve Arıyor ise ofis kendi ofisidir
+                if (newStatus === 'available' || newStatus === 'open_to_treat') {
+                    if(newStatus === 'available') document.getElementById('btn-available').classList.add('active-success');
+                    if(newStatus === 'open_to_treat') document.getElementById('btn-open-treat').classList.add('active-open-treat');
+                    
                     document.getElementById('select-host-office').disabled = true;
                     state.hostOffice = ''; state.customHostOffice = '';
                     document.getElementById('select-host-office').value = '';
@@ -340,8 +326,11 @@
                     document.getElementById('btn-other-office').classList.add('active-other-office');
                     document.getElementById('select-host-office').disabled = false;
                 }
-                enableAllControls(true);
-                if (oldStatus !== 'available' && oldStatus !== 'other_office') state.availableSince = getCurrentTime();
+                
+                // Kontrolleri aç/kapat
+                enableSecondaryControlsForStatus(newStatus);
+
+                if (oldStatus !== 'available' && oldStatus !== 'other_office' && oldStatus !== 'open_to_treat') state.availableSince = getCurrentTime();
             } else {
                 if(newStatus === 'offline') document.getElementById('btn-offline').classList.add('active-offline');
                 if(newStatus === 'busy') document.getElementById('btn-busy').classList.add('active-danger');
@@ -349,11 +338,27 @@
                 clearAndDisableAllSecondary();
             }
 
-            // Durum değiştiğinde başkalarına gideceğim bilgisini de temizlemek mantıklı olabilir
-            // Bu kısım Firebase'e geçince Cloud Functions ile daha sağlıklı yapılabilir.
             state.status = newStatus;
             updateGuestChipsState();
             renderRooms();
+        }
+
+        function enableSecondaryControlsForStatus(status) {
+            // Zaman ve misafir inputları 3 aktif durumda da açıktır
+            document.getElementById('input-time-until').disabled = false;
+            document.getElementById('input-external-guest').disabled = false;
+
+            // Ancak ikram verme butonları "Çay/Kahve varsa içerim" durumunda KAPANIR
+            if (status === 'open_to_treat') {
+                document.getElementById('btn-treat-none').disabled = true;
+                document.getElementById('btn-treat-tea').disabled = true;
+                document.getElementById('btn-treat-coffee').disabled = true;
+                updateMyTreat('none'); // Otomatik olarak ikramı yoka çek (çünkü arayan kişi)
+            } else {
+                document.getElementById('btn-treat-none').disabled = false;
+                document.getElementById('btn-treat-tea').disabled = false;
+                document.getElementById('btn-treat-coffee').disabled = false;
+            }
         }
 
         function updateMyHostOffice(hostValue) {
@@ -371,7 +376,9 @@
         }
 
         function clearAndDisableAllSecondary() {
-            enableAllControls(false);
+            ['btn-treat-none', 'btn-treat-tea', 'btn-treat-coffee', 'input-time-until', 'input-external-guest'].forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
             const state = roomStates[LOGGED_IN_USER];
             updateMyTreat('none');
             state.guests = []; state.externalGuest = ''; state.hostOffice = ''; state.customHostOffice = ''; state.availableSince = ''; state.availableUntil = '';
@@ -381,7 +388,9 @@
         }
 
         function updateMyTreat(newTreat) {
+            if(roomStates[LOGGED_IN_USER].status === 'open_to_treat') return; // Bu durumdayken değişemez
             if(roomStates[LOGGED_IN_USER].status !== 'available' && roomStates[LOGGED_IN_USER].status !== 'other_office') return;
+            
             document.querySelectorAll('#btn-treat-none, #btn-treat-tea, #btn-treat-coffee').forEach(el => el.classList.remove('active-treat'));
             if(newTreat === 'none') document.getElementById('btn-treat-none').classList.add('active-treat');
             if(newTreat === 'tea') document.getElementById('btn-treat-tea').classList.add('active-treat');
@@ -389,14 +398,8 @@
             roomStates[LOGGED_IN_USER].treat = newTreat; renderRooms();
         }
 
-        function updateMyTimeUntil(timeValue) { if(roomStates[LOGGED_IN_USER].status !== 'available' && roomStates[LOGGED_IN_USER].status !== 'other_office') return; roomStates[LOGGED_IN_USER].availableUntil = timeValue; renderRooms(); }
-        function updateMyExternalGuest(guestText) { if(roomStates[LOGGED_IN_USER].status !== 'available' && roomStates[LOGGED_IN_USER].status !== 'other_office') return; roomStates[LOGGED_IN_USER].externalGuest = guestText.trim(); renderRooms(); }
-
-        function enableAllControls(enable) {
-            ['btn-treat-none', 'btn-treat-tea', 'btn-treat-coffee', 'input-time-until', 'input-external-guest'].forEach(id => {
-                document.getElementById(id).disabled = !enable;
-            });
-        }
+        function updateMyTimeUntil(timeValue) { if(roomStates[LOGGED_IN_USER].status !== 'available' && roomStates[LOGGED_IN_USER].status !== 'other_office' && roomStates[LOGGED_IN_USER].status !== 'open_to_treat') return; roomStates[LOGGED_IN_USER].availableUntil = timeValue; renderRooms(); }
+        function updateMyExternalGuest(guestText) { if(roomStates[LOGGED_IN_USER].status !== 'available' && roomStates[LOGGED_IN_USER].status !== 'other_office' && roomStates[LOGGED_IN_USER].status !== 'open_to_treat') return; roomStates[LOGGED_IN_USER].externalGuest = guestText.trim(); renderRooms(); }
 
         function renderDropdownsAndChips() {
             const chipContainer = document.getElementById('guests-control-container');
@@ -422,7 +425,7 @@
 
         function toggleMyGuest(guestName) {
             const state = roomStates[LOGGED_IN_USER];
-            if (state.status !== 'available' && state.status !== 'other_office') return;
+            if (state.status !== 'available' && state.status !== 'other_office' && state.status !== 'open_to_treat') return;
             let myGuests = state.guests || [];
             if (myGuests.includes(guestName)) myGuests = myGuests.filter(name => name !== guestName);
             else myGuests.push(guestName);
@@ -431,7 +434,7 @@
 
         function updateGuestChipsState() {
             const state = roomStates[LOGGED_IN_USER];
-            const canHaveGuests = (state.status === 'available' || state.status === 'other_office');
+            const canHaveGuests = (state.status === 'available' || state.status === 'other_office' || state.status === 'open_to_treat');
             MOCK_USERS.forEach(user => {
                 if (user === LOGGED_IN_USER) return;
                 const chip = document.getElementById(`guest-chip-${user.replace(/\s+/g, '')}`);
@@ -454,8 +457,8 @@
             MOCK_USERS.forEach(user => {
                 const data = roomStates[user];
                 
-                // Karta tıklanabilirlik mantığı (Sen değilsen VE müsait/başka ofisteyse tıklanabilir)
-                const isInteractive = (user !== LOGGED_IN_USER) && (data.status === 'available' || data.status === 'other_office');
+                // 6. Durum için etkileşim izni de aktif
+                const isInteractive = (user !== LOGGED_IN_USER) && (data.status === 'available' || data.status === 'other_office' || data.status === 'open_to_treat');
                 const cardClass = `room-card status-${data.status} ${isInteractive ? 'interactive' : ''}`;
                 
                 // 1. Durumlar ve Zaman
@@ -464,9 +467,10 @@
                 if (data.status === 'busy') statusText = 'Meşgul';
                 if (data.status === 'out') statusText = 'Dışarıda';
                 if (data.status === 'other_office') statusText = 'Başka Ofiste';
+                if (data.status === 'open_to_treat') statusText = 'Çay/Kahve Varsa İçerim'; // YENİ 6. DURUM METNİ
 
                 let timeHtml = '';
-                if ((data.status === 'available' || data.status === 'other_office') && data.availableSince) {
+                if ((data.status === 'available' || data.status === 'other_office' || data.status === 'open_to_treat') && data.availableSince) {
                     timeHtml += `<span class="material-symbols-rounded" style="font-size:14px">login</span> ${data.availableSince}'ten beri`;
                     if (data.availableUntil) timeHtml += ` &bull; <span class="material-symbols-rounded" style="font-size:14px">update</span> ${data.availableUntil}'e kadar`;
                 }
@@ -487,6 +491,8 @@
                     if (data.treat === 'tea') treatHtml = `<div class="treat-badge tea"><span class="material-symbols-rounded">emoji_food_beverage</span> Çay Var</div>`;
                     else if (data.treat === 'coffee') treatHtml = `<div class="treat-badge coffee"><span class="material-symbols-rounded">local_cafe</span> Kahve Var</div>`;
                     else treatHtml = `<div class="no-treat">İkram yok</div>`;
+                } else if (data.status === 'open_to_treat') {
+                    treatHtml = `<div class="no-treat" style="color: var(--open-treat); font-weight: 500;">İkram davetine açık 👀</div>`;
                 } else if (data.status === 'busy') treatHtml = `<div class="no-treat">Lütfen rahatsız etmeyiniz</div>`;
                 else if (data.status === 'out') treatHtml = `<div class="no-treat">Ofis dışında</div>`;
                 else if (data.status === 'offline') treatHtml = `<div class="no-treat">Sistemde aktif değil</div>`;
@@ -494,7 +500,7 @@
                 // 3. Mevcut Misafirler
                 let guestsHtml = '';
                 let allGuests = [];
-                if (data.status === 'available' || data.status === 'other_office') {
+                if (data.status === 'available' || data.status === 'other_office' || data.status === 'open_to_treat') {
                     if (data.guests && data.guests.length > 0) allGuests.push(...data.guests);
                     if (data.externalGuest && data.externalGuest.trim() !== '') allGuests.push(`${data.externalGuest} (Misafir)`);
                 }
@@ -507,9 +513,9 @@
                     `;
                 }
 
-                // 4. YENİ: Uğrayacaklar (Katılmayı Düşünenler) Listesi
+                // 4. Uğrayacaklar Listesi
                 let joiningHtml = '';
-                if (data.joining && data.joining.length > 0 && (data.status === 'available' || data.status === 'other_office')) {
+                if (data.joining && data.joining.length > 0 && (data.status === 'available' || data.status === 'other_office' || data.status === 'open_to_treat')) {
                     joiningHtml = `
                         <div class="joining-display">
                             <span class="material-symbols-rounded">directions_walk</span>
@@ -518,7 +524,7 @@
                     `;
                 }
 
-                // 5. YENİ: Etkileşim Menüsü (Sadece tıklanan kartta açılır)
+                // 5. Etkileşim Menüsü
                 let actionMenuHtml = '';
                 if (isInteractive && activeActionCard === user) {
                     actionMenuHtml = `
@@ -537,7 +543,6 @@
 
                 const card = document.createElement('div');
                 card.className = cardClass;
-                // Kartın HTML'ine onclick olayını bağlıyoruz
                 card.innerHTML = `
                     <div ${onclickAction} style="width: 100%; height: 100%; display: flex; flex-direction: column; gap: 12px;">
                         <div class="room-header">
