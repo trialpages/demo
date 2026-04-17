@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Çay Ocağı Otomasyonu</title>
+<style>
+body {font-family: Arial; background:#111; color:#fff; margin:0; text-align:center;}
+header {padding:15px; background:#222; font-size:20px;}
+.container {padding:20px;}
+button {padding:15px; margin:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer;}
+.start {background:#2ecc71;}
+.stop {background:#e74c3c;}
+.reset {background:#3498db;}
+.status {font-size:24px; margin-top:20px;}
+.timer {font-size:48px; margin-top:10px;}
+.log {margin-top:20px; font-size:14px; text-align:left; max-width:400px; margin-left:auto; margin-right:auto;}
+.green {color:#2ecc71;} .yellow {color:#f1c40f;} .red {color:#e74c3c;}
+</style>
+</head>
+<body>
+<header>☕ Çay Ocağı Otomasyonu</header>
+<div class="container"><div class="timer" id="timer">00:00</div>
+<div class="status" id="status">Hazır</div><button class="start" onclick="startTea()">Demlemeyi Başlat</button> <button class="stop" onclick="stopTea()">Durdur</button> <button class="reset" onclick="resetTea()">Sıfırla</button>
+
+<div class="log" id="log"></div></div><script>
+let startTime = null;
+let interval = null;
+
+function formatTime(sec) {
+  let m = Math.floor(sec / 60);
+  let s = sec % 60;
+  return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
+
+function updateStatus(sec) {
+  let status = document.getElementById("status");
+
+  if (sec < 300) {
+    status.textContent = "Taze Çay";
+    status.className = "status green";
+  } else if (sec < 900) {
+    status.textContent = "Orta";
+    status.className = "status yellow";
+  } else {
+    status.textContent = "Bayat!";
+    status.className = "status red";
+    notifyUser();
+  }
+}
+
+function startTea() {
+  if (interval) return;
+  startTime = Date.now();
+  log("Demleme başladı");
+  interval = setInterval(() => {
+    let sec = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById("timer").textContent = formatTime(sec);
+    updateStatus(sec);
+  }, 1000);
+}
+
+function stopTea() {
+  clearInterval(interval);
+  interval = null;
+  log("Durduruldu");
+}
+
+function resetTea() {
+  stopTea();
+  document.getElementById("timer").textContent = "00:00";
+  document.getElementById("status").textContent = "Hazır";
+  log("Sıfırlandı");
+}
+
+function log(msg) {
+  let logDiv = document.getElementById("log");
+  let time = new Date().toLocaleTimeString();
+  logDiv.innerHTML = `<div>[${time}] ${msg}</div>` + logDiv.innerHTML;
+}
+
+function notifyUser() {
+  if (Notification.permission === "granted") {
+    new Notification("Çay bayat oldu!");
+  }
+}
+
+if ("Notification" in window) {
+  Notification.requestPermission();
+}
+
+</script></body>
+</html>
