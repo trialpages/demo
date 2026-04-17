@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akıllı Çay Ocağı Otomasyonu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <style>
+        /* --- TAILWIND VIBE CSS DEĞİŞKENLERİ --- */
+        :root {
+            --bg-color: #f3f4f6; /* gray-100 */
+            --surface: #ffffff;
+            --text-main: #1f2937; /* gray-800 */
+            --text-muted: #6b7280; /* gray-500 */
+            --border: #e5e7eb; /* gray-200 */
+            
+            /* Durum Renkleri */
+            --empty: #9ca3af; /* gray-500 */
+            --empty-bg: #f3f4f6;
+            
+            --brewing: #f59e0b; /* amber-500 */
+            --brewing-bg: #fffbeb; /* amber-50 */
+            
+            --fresh: #10b981; /* emerald-500 */
+            --fresh-bg: #ecfdf5; /* emerald-50 */
+            
+            --stale: #ef4444; /* red-500 */
+            --stale-bg: #fef2f2; /* red-50 */
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; padding: 2rem 1rem; }
+
+        .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--surface); padding: 1rem 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+        h1 { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; color: var(--text-main); }
+        .header-actions { display: flex; gap: 1rem; align-items: center; }
+        
+        button { cursor: pointer; border: none; background: none; outline: none; font-weight: 500; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-icon { color: var(--text-muted); padding: 0.5rem; border-radius: 50%; }
+        .btn-icon:hover { background: var(--bg-color); color: var(--text-main); }
+        .btn-icon.active-mute { color: var(--stale); background: var(--stale-bg); }
+
+        /* Dev Tools (Zamanı İleri Sarma) */
+        .dev-tools { display: flex; gap: 0.5rem; background: #e0e7ff; padding: 0.5rem 1rem; border-radius: 8px; border: 1px dashed #a5b4fc; font-size: 0.85rem; color: #4338ca; align-items: center;}
+        .btn-dev { background: #4f46e5; color: white; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; }
+        .btn-dev:hover { background: #4338ca; }
+
+        /* Grid */
+        .teapot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+
+        /* Teapot Card */
+        .card { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-md); position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 1.25rem; border: 1px solid var(--border); transition: var(--transition); }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; transition: var(--transition); }
+        
+        /* State Modifiers */
+        .card.state-empty::before { background: var(--empty); }
+        .card.state-brewing::before { background: var(--brewing); }
+        .card.state-fresh::before { background: var(--fresh); }
+        .card.state-stale::before { background: var(--stale); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; padding-left: 0.5rem; }
+        .teapot-title { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        
+        .status-badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem; }
+        .state-empty .status-badge { background: var(--empty-bg); color: var(--empty); }
+        .state-brewing .status-badge { background: var(--brewing-bg); color: var(--brewing); }
+        .state-fresh .status-badge { background: var(--fresh-bg); color: var(--fresh); }
+        .state-stale .status-badge { background: var(--stale-bg); color: var(--stale); }
+
+        .time-info { padding-left: 0.5rem; font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem; }
+        .time-row { display: flex; align-items: center; gap: 0.5rem; }
+        .time-row strong { color: var(--text-main); }
+
+        /* Progress Bar */
+        .progress-container { width: 100%; height: 8px; background: var(--bg-color); border-radius: 9999px; overflow: hidden; margin-top: 0.5rem; }
+        .progress-bar { height: 100%; border-radius: 9999px; transition: width 1s linear; }
+        .state-brewing .progress-bar { background: var(--brewing); }
+        .state-fresh .progress-bar { background: var(--fresh); }
+        .state-stale .progress-bar { background: var(--stale); width: 100% !important; }
+
+        /* Actions */
+        .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: auto; padding-left: 0.5rem; }
+        .btn-action { padding: 0.75rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; width: 100%; }
+        
+        .btn-brew { background: var(--text-main); color: white; }
+        .btn-brew:hover { background: #000; }
+        
+        .btn-empty { background: var(--empty-bg); color: var(--text-main); border: 1px solid var(--border); }
+        .btn-empty:hover { background: var(--border); }
+
+        /* Kalıcı Popup (Toast) Sistemi */
+        .popup-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; max-width: 350px; width: calc(100% - 48px); }
+        
+        .popup { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden; display: flex; transform: translateX(120%); animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideIn { to { transform: translateX(0); } }
+        
+        .popup.closing { animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
+
+        .popup-indicator { width: 6px; flex-shrink: 0; }
+        .popup.type-fresh .popup-indicator { background: var(--fresh); }
+        .popup.type-stale .popup-indicator { background: var(--stale); }
+        
+        .popup-content { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
+        .popup-title { font-weight: 700; font-size: 0.95rem; color: var(--text-main); display: flex; align-items: center; gap: 0.35rem; }
+        .popup.type-fresh .popup-title { color: var(--fresh); }
+        .popup.type-stale .popup-title { color: var(--stale); }
+        
+        .popup-message { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+        
+        .popup-close { padding: 1rem; color: var(--text-muted); display: flex; align-items: flex-start; }
+        .popup-close:hover { color: var(--text-main); background: var(--bg-color); }
+
+        @media (max-width: 640px) {
+            .popup-container { top: 24px; bottom: auto; }
+            .teapot-grid { grid-template-columns: 1fr; }
+            .dev-tools { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1><span class="material-symbols-rounded">emoji_food_beverage</span> Akıllı Çay Ocağı</h1>
+            
+            <div class="header-actions">
+                <div class="dev-tools">
+                    <span class="material-symbols-rounded" style="font-size: 18px;">science</span> Test Modu: 
+                    <button class="btn-dev" onclick="fastForward(15)">+15 Dk (Demle)</button>
+                    <button class="btn-dev" onclick="fastForward(60)">+60 Dk (Bayatlat)</button>
+                </div>
+                <button id="btn-mute" class="btn-icon" title="Sesi Kapat/Aç">
+                    <span class="material-symbols-rounded">volume_up</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="teapot-grid" id="teapot-grid">
+            </div>
+    </div>
+
+    <div class="popup-container" id="popup-container"></div>
+
+    <script>
+        // --- SES MOTORU (Web Audio API) ---
+        let audioCtx = null;
+        let isMuted = false;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        document.addEventListener('click', initAudio, { once: true });
+
+        function playSound(type) {
+            if (isMuted) return;
+            try {
+                if (!audioCtx) initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                if (type === 'fresh') {
+                    // Taze çay sesi: Çift tatlı zil sesi
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.5);
+                } else if (type === 'stale') {
+                    // Bayat çay sesi: Kalın ve uyarıcı
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime); 
+                    osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.2); 
+                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.6);
+                }
+            } catch (e) { console.error("Ses çalınamadı", e); }
+        }
+
+        document.getElementById('btn-mute').addEventListener('click', (e) => {
+            isMuted = !isMuted;
+            const icon = e.currentTarget.querySelector('.material-symbols-rounded');
+            icon.innerText = isMuted ? 'volume_off' : 'volume_up';
+            e.currentTarget.classList.toggle('active-mute', isMuted);
+        });
+
+        // --- BİLDİRİM (POPUP) SİSTEMİ ---
+        function showPersistentPopup(teapotId, teapotName, type) {
+            const container = document.getElementById('popup-container');
+            const popupId = `popup-${teapotId}-${type}`;
+            
+            // Eğer aynı demlik için aynı uyarı zaten açıksa tekrar açma
+            if(document.getElementById(popupId)) return;
+
+            const popup = document.createElement('div');
+            popup.className = `popup type-${type}`;
+            popup.id = popupId;
+
+            const isFresh = type === 'fresh';
+            const icon = isFresh ? 'check_circle' : 'warning';
+            const title = isFresh ? 'Taze Çay Hazır!' : 'Çay Bayatladı!';
+            const message = isFresh 
+                ? `<strong>${teapotName}</strong> demini aldı ve içilmeye hazır. Afiyet olsun!` 
+                : `<strong>${teapotName}</strong> demleneli 75 dakikayı geçti. Çayı tazeleme vakti gelmiş olabilir.`;
+
+            popup.innerHTML = `
+                <div class="popup-indicator"></div>
+                <div class="popup-content">
+                    <div class="popup-title"><span class="material-symbols-rounded" style="font-size:18px">${icon}</span> ${title}</div>
+                    <div class="popup-message">${message}</div>
+                </div>
+                <button class="popup-close" onclick="closePopup('${popupId}')">
+                    <span class="material-symbols-rounded">close</span>
+                </button>
+            `;
+
+            // Yeni bildirimi en üste ekle
+            container.prepend(popup);
+            playSound(type);
+        }
+
+        window.closePopup = (popupId) => {
+            const popup = document.getElementById(popupId);
+            if(popup) {
+                popup.classList.add('closing');
+                setTimeout(() => popup.remove(), 300);
+            }
+        };
+
+        // Biten demliğe ait popupları otomatik temizle
+        function clearPopupsForTeapot(teapotId) {
+            ['fresh', 'stale'].forEach(type => {
+                const popupId = `popup-${teapotId}-${type}`;
+                closePopup(popupId);
+            });
+        }
+
+        // --- STATE YÖNETİMİ ---
+        const BREW_DURATION_MS = 15 * 60 * 1000; // 15 dakika
+        const STALE_DURATION_MS = 75 * 60 * 1000; // 75 dakika
+
+        let teapots = [
+            { id: 1, name: "1 Nolu Demlik", status: 'empty', brewTimestamp: null, notifiedFresh: false, notifiedStale: false },
+            { id: 2, name: "2 Nolu Demlik", status: 'empty', brewTimestamp: null, notifiedFresh: false, notifiedStale: false },
+            { id: 3, name: "Bitki Çayı", status: 'empty', brewTimestamp: null, notifiedFresh: false, notifiedStale: false }
+        ];
+
+        function formatTime(date) {
+            if(!date) return "--:--";
+            return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatCountdown(ms) {
+            if(ms <= 0) return "00:00";
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${minutes}:${seconds}`;
+        }
+
+        // --- AKSİYONLAR ---
+        window.brewTea = (id) => {
+            const tp = teapots.find(t => t.id === id);
+            if(tp) {
+                tp.status = 'brewing';
+                tp.brewTimestamp = Date.now();
+                tp.notifiedFresh = false;
+                tp.notifiedStale = false;
+                clearPopupsForTeapot(id);
+                renderGrid();
+            }
+        };
+
+        window.emptyTea = (id) => {
+            const tp = teapots.find(t => t.id === id);
+            if(tp) {
+                tp.status = 'empty';
+                tp.brewTimestamp = null;
+                tp.notifiedFresh = false;
+                tp.notifiedStale = false;
+                clearPopupsForTeapot(id);
+                renderGrid();
+            }
+        };
+
+        // --- VIBECODER ZAMAN MAKİNESİ (TEST İÇİN) ---
+        window.fastForward = (minutes) => {
+            const msToAdd = minutes * 60 * 1000;
+            teapots.forEach(tp => {
+                if (tp.brewTimestamp) {
+                    // Geçmişe atıyoruz ki süre geçmiş gibi olsun
+                    tp.brewTimestamp -= msToAdd; 
+                }
+            });
+            checkTimersAndRender(); // Anında tetikle
+        };
+
+        // --- DÖNGÜ VE ARAYÜZ ÇİZİMİ ---
+        function checkTimersAndRender() {
+            const now = Date.now();
+            let needsRender = false;
+
+            teapots.forEach(tp => {
+                if (tp.status === 'empty' || !tp.brewTimestamp) return;
+
+                const elapsed = now - tp.brewTimestamp;
+
+                // 15 Dakika Kontrolü (Taze)
+                if (elapsed >= BREW_DURATION_MS && tp.status === 'brewing') {
+                    tp.status = 'fresh';
+                    needsRender = true;
+                }
+                
+                // Taze Çay Bildirimi Tetikleyici
+                if (elapsed >= BREW_DURATION_MS && !tp.notifiedFresh) {
+                    showPersistentPopup(tp.id, tp.name, 'fresh');
+                    tp.notifiedFresh = true;
+                }
+
+                // 75 Dakika Kontrolü (Bayat)
+                if (elapsed >= STALE_DURATION_MS && tp.status === 'fresh') {
+                    tp.status = 'stale';
+                    needsRender = true;
+                }
+
+                // Bayat Çay Bildirimi Tetikleyici
+                if (elapsed >= STALE_DURATION_MS && !tp.notifiedStale) {
+                    showPersistentPopup(tp.id, tp.name, 'stale');
+                    tp.notifiedStale = true;
+                }
+            });
+
+            // Saniyede bir geri sayımlar için her halükarda çiziyoruz
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('teapot-grid');
+            container.innerHTML = '';
+            const now = Date.now();
+
+            teapots.forEach(tp => {
+                const isBrewing = tp.status === 'brewing';
+                const isFresh = tp.status === 'fresh';
+                const isStale = tp.status === 'stale';
+                const isEmpty = tp.status === 'empty';
+
+                let statusText = "Çay Yok";
+                let statusIcon = "block";
+                if(isBrewing) { statusText = "Demleniyor"; statusIcon = "hourglass_empty"; }
+                if(isFresh) { statusText = "Taze Çay"; statusIcon = "done_all"; }
+                if(isStale) { statusText = "Bayatladı"; statusIcon = "warning"; }
+
+                let timeDisplayHtml = '';
+                let progressHtml = '';
+
+                if (!isEmpty && tp.brewTimestamp) {
+                    const elapsed = now - tp.brewTimestamp;
+                    const brewDate = new Date(tp.brewTimestamp);
+                    
+                    timeDisplayHtml += `
+                        <div class="time-row">
+                            <span class="material-symbols-rounded" style="font-size:16px">water_drop</span>
+                            <span>Demlenme: <strong>${formatTime(brewDate)}</strong></span>
+                        </div>
+                    `;
+
+                    if (isBrewing) {
+                        const remaining = BREW_DURATION_MS - elapsed;
+                        const percentage = (elapsed / BREW_DURATION_MS) * 100;
+                        timeDisplayHtml += `
+                            <div class="time-row" style="color:var(--brewing)">
+                                <span class="material-symbols-rounded" style="font-size:16px">timer</span>
+                                <span>Hazır olmasına: <strong>${formatCountdown(remaining)}</strong></span>
+                            </div>
+                        `;
+                        progressHtml = `<div class="progress-container"><div class="progress-bar" style="width: ${percentage}%"></div></div>`;
+                    } 
+                    else if (isFresh) {
+                        const timeSinceBrew = elapsed - BREW_DURATION_MS;
+                        const remainingToStale = STALE_DURATION_MS - elapsed;
+                        const percentage = (timeSinceBrew / (STALE_DURATION_MS - BREW_DURATION_MS)) * 100;
+                        timeDisplayHtml += `
+                            <div class="time-row" style="color:var(--fresh)">
+                                <span class="material-symbols-rounded" style="font-size:16px">check_circle</span>
+                                <span>Saat <strong>${formatTime(new Date(tp.brewTimestamp + BREW_DURATION_MS))}</strong>'den beri hazır</span>
+                            </div>
+                            <div class="time-row" style="color:var(--text-muted)">
+                                <span class="material-symbols-rounded" style="font-size:16px">history</span>
+                                <span>Bayatlamasına: <strong>${formatCountdown(remainingToStale)}</strong></span>
+                            </div>
+                        `;
+                        progressHtml = `<div class="progress-container"><div class="progress-bar" style="width: ${percentage}%"></div></div>`;
+                    }
+                    else if (isStale) {
+                        timeDisplayHtml += `
+                            <div class="time-row" style="color:var(--stale)">
+                                <span class="material-symbols-rounded" style="font-size:16px">error</span>
+                                <span><strong>75 dakikayı geçti, çay acımış olabilir.</strong></span>
+                            </div>
+                        `;
+                        progressHtml = `<div class="progress-container"><div class="progress-bar"></div></div>`;
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = `card state-${tp.status}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="teapot-title">
+                            <span class="material-symbols-rounded" style="font-size:28px">coffee_maker</span>
+                            ${tp.name}
+                        </div>
+                        <div class="status-badge">
+                            <span class="material-symbols-rounded" style="font-size:14px">${statusIcon}</span>
+                            ${statusText}
+                        </div>
+                    </div>
+                    
+                    <div class="time-info">
+                        ${isEmpty ? '<div style="font-style:italic">Şu an bu demlikte çay bulunmuyor.</div>' : timeDisplayHtml}
+                        ${progressHtml}
+                    </div>
+
+                    <div class="card-actions">
+                        ${isEmpty 
+                            ? `<button class="btn-action btn-brew" onclick="brewTea(${tp.id})" style="grid-column: span 2"><span class="material-symbols-rounded">power</span> Yeni Çay Demle</button>`
+                            : `<button class="btn-action btn-empty" onclick="emptyTea(${tp.id})"><span class="material-symbols-rounded">delete</span> Bitti / Boşalt</button>
+                               <button class="btn-action btn-brew" onclick="brewTea(${tp.id})"><span class="material-symbols-rounded">refresh</span> Tazele (Yeniden Demle)</button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Başlangıç çizimi ve Saniyelik Döngü (Canlı sayaçlar için)
+        renderGrid();
+        setInterval(checkTimersAndRender, 1000);
+
+    </script>
+</body>
+</html>
