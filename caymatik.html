@@ -90,7 +90,7 @@
         
         .messages-header { padding: 1rem 1.5rem; border-bottom: 1px solid transparent; background: var(--empty-bg); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background-color 0.3s, color 0.3s; }
         .messages-card.has-new-message .messages-header { animation: pulseAlertRed 2s infinite; border-bottom: 1px solid var(--stale); }
-        .messages-card.open .messages-header { border-bottom: 1px solid var(--border); } /* Açıkken border koy */
+        .messages-card.open .messages-header { border-bottom: 1px solid var(--border); } 
 
         .messages-header-left { display: flex; align-items: center; gap: 0.5rem; }
         .messages-header h2 { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem; color: inherit; }
@@ -98,7 +98,7 @@
         .messages-card.open .toggle-icon { transform: rotate(180deg); }
 
         .messages-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; display: flex; flex-direction: column; }
-        .messages-card.open .messages-content { max-height: 400px; } /* Açık halde max 400px yer kaplar */
+        .messages-card.open .messages-content { max-height: 400px; } 
 
         .messages-list { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-height: 250px; overflow-y: auto; background: #fcfcfd; scroll-behavior: smooth; }
         .message-item { display: flex; flex-direction: column; gap: 0.25rem; background: white; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm); width: fit-content; max-width: 85%; }
@@ -191,7 +191,7 @@
         .res-count { font-size: 2rem; }
         .btn-reset-poll { font-size: 0.8rem; color: var(--text-muted); text-decoration: underline; margin-top: 0.5rem; }
 
-        /* Kalıcı Popup Sistemi */
+        /* Kalıcı Popup Sistemi (Zaman Damgalı) */
         .popup-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 350px; width: calc(100% - 40px); pointer-events: none; }
         
         .popup { background: var(--surface); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); border: 1px solid var(--border); overflow: hidden; display: flex; transform: translateX(120%); animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; pointer-events: auto; }
@@ -207,6 +207,11 @@
         .popup.type-msg .popup-indicator { background: var(--text-main); }
         
         .popup-content { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.35rem; }
+        
+        /* ZAMAN DAMGASI (TIMESTAMP) İÇİN YENİ HEADER SATIRI */
+        .popup-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+        .popup-time { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; margin-top: 0.15rem;}
+
         .popup-title { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 0.35rem; }
         .popup.type-fresh .popup-title { color: var(--fresh); }
         .popup.type-warning .popup-title { color: var(--warning); }
@@ -395,7 +400,7 @@
             e.currentTarget.classList.toggle('active-mute', isMuted);
         });
 
-        // --- BİLDİRİM (POPUP) SİSTEMİ ---
+        // --- BİLDİRİM (POPUP) SİSTEMİ (ZAMAN DAMGALI) ---
         function showPersistentPopup(uniqueId, title, message, type, icon) {
             const container = document.getElementById('popup-container');
             const popupId = `popup-${uniqueId}`;
@@ -406,10 +411,15 @@
             popup.className = `popup type-${type}`;
             popup.id = popupId;
 
+            const timeStr = formatTime(new Date());
+
             popup.innerHTML = `
                 <div class="popup-indicator"></div>
                 <div class="popup-content">
-                    <div class="popup-title"><span class="material-symbols-rounded" style="font-size:18px">${icon}</span> ${title}</div>
+                    <div class="popup-header-row">
+                        <div class="popup-title"><span class="material-symbols-rounded" style="font-size:18px">${icon}</span> ${title}</div>
+                        <div class="popup-time">${timeStr}</div>
+                    </div>
                     <div class="popup-message">${message}</div>
                 </div>
                 <button class="popup-close" onclick="closePopup('${popupId}')">
@@ -450,19 +460,17 @@
             const text = input.value.trim();
             if(!text) return;
             
-            const senderName = "Kullanıcı"; // Gerçekte db/auth'tan gelir
+            const senderName = "Kullanıcı"; 
             chatMessages.push({ sender: senderName, text: text, time: formatTime(new Date()) });
             input.value = '';
             renderMessages();
             
             const card = document.getElementById('messages-card');
             
-            // Eğer kart kapalıysa (Kullanıcı mesajları görmüyorsa) kırmızı uyarısı ver
             if (!card.classList.contains('open')) {
                 card.classList.add('has-new-message');
             }
             
-            // Standart popup uyarıyı gönder
             showPersistentPopup('msg-'+Date.now(), 'Yeni Ofis Mesajı', `<strong>${senderName}:</strong> ${text}`, 'msg', 'chat');
         };
 
@@ -544,7 +552,7 @@
                 tp.isRunningOut = false;
                 ['fresh', 'warning', 'stale', 'empty'].forEach(t => closePopup(`popup-${id}-${t}`));
                 renderGrid();
-                showPersistentPopup(`${id}-manual-fresh`, "Çay Hazır/Taze Olarak İşaretlendi", `Biri otomasyonu başlatmayı unutmuş! <strong>${tp.name}</strong> manuel olarak taze işaretlendi.`, 'fresh', 'check_circle');
+                showPersistentPopup(`${id}-manual-fresh`, "Çay Hazır/Taze", `Biri otomasyonu başlatmayı unutmuş! <strong>${tp.name}</strong> manuel olarak taze işaretlendi.`, 'fresh', 'check_circle');
             }
         };
 
