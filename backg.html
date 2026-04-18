@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VibeTavla | P2P Profesyonel Tavla</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+    <style>
+        /* --- TAILWIND VIBE & NEUMORPHIC WOOD THEME --- */
+        :root {
+            --bg-color: #1c1917; /* slate-900 */
+            --board-outer: #452912; /* Dark Walnut */
+            --board-inner: #f1e4c3; /* Light Wood/Cream */
+            --point-dark: #8b3a3a; /* Deep Red */
+            --point-light: #2f4f4f; /* Slate Gray */
+            
+            --checker-black: #2d2d2d;
+            --checker-white: #f8f8f8;
+            
+            --primary: #c28b5a; 
+            --primary-hover: #b07a4a;
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-color); color: var(--text-main); 
+            height: 100vh; display: flex; flex-direction: column; align-items: center; 
+            overflow: hidden; /* Prevent scrolling on mobile */
+        }
+
+        /* --- BAĞLANTI EKRANI --- */
+        #connection-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 2rem; gap: 2rem;
+        }
+
+        .logo { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        
+        .conn-card {
+            background: #292524; padding: 2rem; border-radius: var(--radius-lg);
+            border: 1px solid #444; width: 100%; max-width: 400px;
+            display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        
+        .id-display { font-size: 2rem; font-weight: 800; color: var(--primary); text-align: center; background: #1c1917; padding: 1rem; border-radius: var(--radius-md); letter-spacing: 2px; }
+        
+        input[type="text"] { 
+            padding: 1rem; border-radius: var(--radius-md); border: 2px solid #444; background: #1c1917; color: white; font-size: 1.2rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; outline: none; transition: var(--transition);
+        }
+        input[type="text"]:focus { border-color: var(--primary); }
+
+        button {
+            background: var(--primary); color: #1c1917; border: none; padding: 1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem;
+        }
+        button:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        /* --- OYUN EKRANI --- */
+        #game-screen {
+            display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px;
+        }
+
+        /* Üst Bar (Zarlar ve Durum) */
+        .game-header {
+            padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #292524; border-bottom: 1px solid #444; flex-shrink: 0;
+        }
+        .player-info { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem;}
+        .checker-icon { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #000; }
+        
+        .dice-area { display: flex; gap: 0.5rem; align-items: center; }
+        .die { width: 40px; height: 40px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); }
+        .die.empty { background: #444; box-shadow: none; color: transparent; }
+        
+        .btn-roll { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+        /* TAVLA TAHTASI (VIBECODER MOBİL MİMARİSİ) */
+        .board-container {
+            flex: 1; padding: 1rem 0.5rem; display: flex; justify-content: center; align-items: center;
+        }
+
+        .backgammon-board {
+            background: var(--board-outer); width: 100%; height: 100%; max-height: 700px; border-radius: 8px; padding: 10px; display: flex; gap: 10px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* Ortadaki Bar */
+        .board-bar { width: 30px; background: #2c1a0c; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; }
+
+        .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 4px; overflow: hidden; }
+
+        .points-row { flex: 1; display: flex; position: relative; }
+        .points-row.bottom { transform: scaleY(-1); /* Alt sırayı ters çevir */ }
+
+        .point { flex: 1; position: relative; display: flex; justify-content: center; cursor: pointer; transition: var(--transition); }
+        .point:hover { background: rgba(0,0,0,0.05); }
+        .point.selected { background: rgba(194, 139, 90, 0.4); }
+        
+        /* Hane (Üçgen) Çizimleri */
+        .point::before {
+            content: ''; position: absolute; top: 0; width: 0; height: 0; 
+            border-left: 14vw solid transparent; border-right: 14vw solid transparent; border-top: 150px solid var(--point-dark);
+        }
+        @media (min-width: 500px) { .point::before { border-left: 20px solid transparent; border-right: 20px solid transparent; } }
+        .point:nth-child(even)::before { border-top-color: var(--point-light); }
+
+        /* Pullar (Checkers) */
+        .checker {
+            width: 8vw; max-width: 32px; height: 8vw; max-height: 32px; border-radius: 50%; position: absolute;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 -3px 0 rgba(0,0,0,0.3);
+            display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
+            transition: transform 0.2s;
+        }
+        .checker.black { background: var(--checker-black); border: 2px solid #555; color: white; }
+        .checker.white { background: var(--checker-white); border: 2px solid #ccc; color: black; }
+        
+        /* VibeCoder İstifleme Zırhı: Pul Konumları */
+        .checker:nth-child(1) { top: 2px; }
+        .checker:nth-child(2) { top: 25px; }
+        .checker:nth-child(3) { top: 48px; }
+        .checker:nth-child(4) { top: 71px; }
+        .checker:nth-child(5) { top: 94px; }
+        /* 5'ten fazlası çizilmez, JS ile rozet eklenir */
+
+        /* Kırık Pullar ve Toplama Alanı */
+        .broken-area { display: flex; flex-direction: column; gap: -10px; align-items: center; }
+
+        /* --- AKORDEON SOHBET --- */
+        .chat-container {
+            background: #292524; border-top: 1px solid #444; flex-shrink: 0; display: flex; flex-direction: column; transition: var(--transition); height: 60px; overflow: hidden;
+        }
+        .chat-container.open { height: 300px; }
+
+        .chat-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; color: var(--primary); }
+        .chat-header .badge { background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
+        .chat-header.has-new .badge { display: inline-block; }
+
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; background: #1c1917; }
+        .msg { font-size: 0.9rem; padding: 0.5rem 0.75rem; border-radius: 8px; width: fit-content; max-width: 85%; line-height: 1.4; }
+        .msg.me { background: var(--primary); color: #1c1917; align-self: flex-end; border-bottom-right-radius: 0; font-weight: 600;}
+        .msg.peer { background: #444; color: white; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.8rem; font-style: italic; }
+
+        .chat-input { display: flex; padding: 0.5rem; background: #292524; gap: 0.5rem; }
+        .chat-input input { flex: 1; padding: 0.75rem; border-radius: 20px; border: none; background: #1c1917; color: white; outline: none; }
+        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; }
+
+        /* Toast */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+    </style>
+</head>
+<body>
+
+    <div id="connection-screen">
+        <div class="logo"><span class="material-symbols-rounded" style="font-size: 3rem;">casino</span> VibeTavla</div>
+        <p style="text-align: center; color: var(--text-muted);">P2P Sunucusuz Tavla Deneyimi</p>
+        
+        <div class="conn-card">
+            <div class="input-group">
+                <label>Sizin Kodunuz (SİYAH)</label>
+                <div class="id-display" id="my-id">...</div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap: 1rem; color: #444;">
+                <hr style="flex:1; border-color:#444;"><span style="font-size:0.8rem; font-weight:700;">VEYA BAĞLAN</span><hr style="flex:1; border-color:#444;">
+            </div>
+
+            <div class="input-group">
+                <label>Rakibin Kodu (BEYAZ)</label>
+                <input type="text" id="target-id" placeholder="KOD GİR">
+                <button onclick="connectToPeer()" id="btn-connect" style="margin-top: 0.5rem;">Oyuna Katıl</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-screen">
+        
+        <div class="game-header">
+            <div class="player-info">
+                <div class="checker-icon" id="my-color-icon" style="background: var(--checker-black);"></div>
+                <span id="my-role-text">Siyah (Host)</span>
+            </div>
+            
+            <div class="dice-area">
+                <div class="die empty" id="die1"></div>
+                <div class="die empty" id="die2"></div>
+                <button class="btn-roll" onclick="rollDice()"><span class="material-symbols-rounded" style="font-size: 18px;">casino</span> Zar At</button>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div class="backgammon-board">
+                
+                <div class="board-half">
+                    <div class="points-row top" id="quad-2">
+                        </div>
+                    <div class="points-row bottom" id="quad-3">
+                        </div>
+                </div>
+
+                <div class="board-bar" id="bar-area" onclick="handlePointClick('bar')">
+                    </div>
+
+                <div class="board-half">
+                    <div class="points-row top" id="quad-1">
+                        </div>
+                    <div class="points-row bottom" id="quad-4">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="chat-container" id="chat-container">
+            <div class="chat-header" onclick="toggleChat()">
+                <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-rounded">chat</span> Sohbet & Kayıtlar <span class="badge" id="chat-badge">Yeni</span></span>
+                <span class="material-symbols-rounded" id="chat-toggle-icon">expand_less</span>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg system">Serbest masaya (Sandbox) hoş geldiniz. Kurallar esnektir.</div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
+                <button onclick="sendChatMessage()"><span class="material-symbols-rounded">send</span></button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- 1. PEERJS & BAĞLANTI YÖNETİMİ ---
+        let peer = null;
+        let conn = null;
+        let myPeerId = '';
+        let myColor = 'black'; // Host is Black, Guest is White
+
+        function generateShortId() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let result = '';
+            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            return result;
+        }
+
+        function initPeer() {
+            myPeerId = generateShortId();
+            peer = new Peer(myPeerId);
+
+            peer.on('open', (id) => {
+                document.getElementById('my-id').innerText = id;
+            });
+
+            // Birisi bana bağlanırsa (Ben HOST isem)
+            peer.on('connection', (connection) => {
+                if (conn) return; // Zaten biri bağlı
+                conn = connection;
+                myColor = 'black'; // Oyunu kuran siyahtır
+                setupConnection();
+            });
+        }
+
+        window.connectToPeer = () => {
+            const targetId = document.getElementById('target-id').value.trim().toUpperCase();
+            if (!targetId) return;
+
+            document.getElementById('btn-connect').innerText = "Bağlanıyor...";
+            conn = peer.connect(targetId, { reliable: true });
+            myColor = 'white'; // Bağlanan beyazdır
+            setupConnection();
+        };
+
+        function setupConnection() {
+            conn.on('open', () => {
+                showToast("Rakip bağlandı! Oyun başlıyor.");
+                document.getElementById('connection-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                
+                // UI Renk Ayarları
+                document.getElementById('my-color-icon').style.background = myColor === 'black' ? 'var(--checker-black)' : 'var(--checker-white)';
+                document.getElementById('my-role-text').innerText = myColor === 'black' ? 'Siyah (Sen)' : 'Beyaz (Sen)';
+
+                if(myColor === 'black') {
+                    // Host isek tahtayı kur ve gönder
+                    initBoard();
+                    sendSync();
+                }
+            });
+
+            conn.on('data', (data) => {
+                if(data.type === 'sync') {
+                    board = data.board;
+                    bar = data.bar;
+                    renderBoard();
+                } else if(data.type === 'chat') {
+                    addMessage(data.text, 'peer');
+                    if(!document.getElementById('chat-container').classList.contains('open')) {
+                        document.getElementById('chat-badge').style.display = 'inline-block';
+                    }
+                } else if(data.type === 'dice') {
+                    displayDice(data.d1, data.d2);
+                    addMessage("Rakip zar attı: " + data.d1 + " - " + data.d2, 'system');
+                }
+            });
+
+            conn.on('close', () => {
+                showToast("Rakip oyundan ayrıldı.");
+                setTimeout(() => location.reload(), 2000);
+            });
+        }
+
+        // --- 2. OYUN MOTORU (STATE) ---
+        // 24 hane (0-23). 
+        // Geleneksel dizilim:
+        // Black: 2 on 24(idx 23), 5 on 13(idx 12), 3 on 8(idx 7), 5 on 6(idx 5)
+        // White: 2 on 1(idx 0), 5 on 12(idx 11), 3 on 17(idx 16), 5 on 19(idx 18)
+
+        let board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
+        let bar = { black: 0, white: 0 };
+        let selectedPoint = null;
+
+        function initBoard() {
+            board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
+            bar = { black: 0, white: 0 };
+            
+            // Siyah (Host) Dizilimi
+            board[23] = { color: 'black', count: 2 };
+            board[12] = { color: 'black', count: 5 };
+            board[7]  = { color: 'black', count: 3 };
+            board[5]  = { color: 'black', count: 5 };
+
+            // Beyaz (Guest) Dizilimi
+            board[0]  = { color: 'white', count: 2 };
+            board[11] = { color: 'white', count: 5 };
+            board[16] = { color: 'white', count: 3 };
+            board[18] = { color: 'white', count: 5 };
+
+            renderBoard();
+        }
+
+        // --- 3. GÖRSELLEŞTİRME (RENDER) ---
+        function renderBoard() {
+            const quad1 = document.getElementById('quad-1'); // 19-24 (Index 18-23)
+            const quad2 = document.getElementById('quad-2'); // 13-18 (Index 12-17)
+            const quad3 = document.getElementById('quad-3'); // 7-12 (Index 6-11)
+            const quad4 = document.getElementById('quad-4'); // 1-6 (Index 0-5)
+            
+            quad1.innerHTML = ''; quad2.innerHTML = ''; quad3.innerHTML = ''; quad4.innerHTML = '';
+
+            // Haneleri Çiz
+            for(let i=0; i<24; i++) {
+                const pointDiv = document.createElement('div');
+                pointDiv.className = 'point';
+                if(selectedPoint === i) pointDiv.classList.add('selected');
+                pointDiv.onclick = () => handlePointClick(i);
+
+                const data = board[i];
+                if(data.count > 0) {
+                    // VIBECODER: Akıllı İstifleme Algoritması (Mobil taşma koruması)
+                    const drawCount = Math.min(data.count, 5); // Max 5 pul çiz
+                    for(let c=0; c<drawCount; c++) {
+                        const checker = document.createElement('div');
+                        checker.className = `checker ${data.color}`;
+                        
+                        // Eğer 5. pultaysak ve toplam 5'ten fazlaysa sayıyı yaz
+                        if(c === 4 && data.count > 5) {
+                            checker.innerText = "+" + (data.count - 4);
+                        }
+                        pointDiv.appendChild(checker);
+                    }
+                }
+
+                // Çeyreklere dağıt
+                if(i >= 0 && i <= 5) quad4.prepend(pointDiv); // 6'dan 1'e ters dizilir
+                else if(i >= 6 && i <= 11) quad3.prepend(pointDiv); // 12'den 7'ye ters
+                else if(i >= 12 && i <= 17) quad2.appendChild(pointDiv); // 13'ten 18'e düz
+                else if(i >= 18 && i <= 23) quad1.appendChild(pointDiv); // 19'dan 24'e düz
+            }
+
+            // Kırık Pulları (Bar) Çiz
+            const barArea = document.getElementById('bar-area');
+            barArea.innerHTML = '';
+            if(selectedPoint === 'bar') barArea.style.background = 'rgba(194, 139, 90, 0.4)';
+            else barArea.style.background = '#2c1a0c';
+
+            if(bar.black > 0) {
+                const c = document.createElement('div'); c.className = 'checker black'; 
+                if(bar.black>1) c.innerText = bar.black; barArea.appendChild(c);
+            }
+            if(bar.white > 0) {
+                const c = document.createElement('div'); c.className = 'checker white'; 
+                if(bar.white>1) c.innerText = bar.white; barArea.appendChild(c);
+            }
+        }
+
+        // --- 4. ETKİLEŞİM VE HAMLE (SANDBOX) ---
+        window.handlePointClick = (index) => {
+            // Seçim İptali
+            if(selectedPoint === index) {
+                selectedPoint = null;
+                renderBoard();
+                return;
+            }
+
+            // Yeni Seçim Yapma (Sadece kendi rengini seçebilir)
+            if(selectedPoint === null) {
+                if(index === 'bar') {
+                    if(bar[myColor] > 0) selectedPoint = 'bar';
+                } else {
+                    if(board[index].count > 0 && board[index].color === myColor) {
+                        selectedPoint = index;
+                    }
+                }
+                renderBoard();
+                return;
+            }
+
+            // Hedefe Taşıma Aşaması
+            const from = selectedPoint;
+            const to = index;
+
+            if(to === 'bar') return; // Bar'a kendi kendine gidemez
+
+            // Kırma Durumu (Hit)
+            if(board[to].count === 1 && board[to].color !== myColor && board[to].color !== null) {
+                bar[board[to].color]++; // Rakibi bar'a gönder
+                board[to].count = 0; // Hane boşaldı
+                addMessage("Pul kırıldı!", "system");
+            }
+
+            // Güvenlik: Hanede rakibin 1'den fazla pulu varsa (Kapı) gidemezsin
+            if(board[to].count > 1 && board[to].color !== myColor) {
+                showToast("Burası rakip kapısı, hamle yapılamaz!");
+                selectedPoint = null;
+                renderBoard();
+                return;
+            }
+
+            // Pulu Kaldır
+            if(from === 'bar') {
+                bar[myColor]--;
+            } else {
+                board[from].count--;
+                if(board[from].count === 0) board[from].color = null;
+            }
+
+            // Pulu Hedefe Koy
+            board[to].color = myColor;
+            board[to].count++;
+
+            // İşlemi Bitir ve Senkronize Et
+            selectedPoint = null;
+            renderBoard();
+            sendSync();
+        };
+
+        window.rollDice = () => {
+            const d1 = Math.floor(Math.random() * 6) + 1;
+            const d2 = Math.floor(Math.random() * 6) + 1;
+            displayDice(d1, d2);
+            addMessage("Zar attın: " + d1 + " - " + d2, 'system');
+            
+            if(conn && conn.open) {
+                conn.send({ type: 'dice', d1, d2 });
+            }
+        };
+
+        function displayDice(d1, d2) {
+            const el1 = document.getElementById('die1');
+            const el2 = document.getElementById('die2');
+            el1.className = 'die'; el1.innerText = d1;
+            el2.className = 'die'; el2.innerText = d2;
+            
+            // Minik animasyon
+            el1.style.transform = "scale(1.2)"; el2.style.transform = "scale(1.2)";
+            setTimeout(() => { el1.style.transform = "scale(1)"; el2.style.transform = "scale(1)"; }, 200);
+        }
+
+        function sendSync() {
+            if(conn && conn.open) {
+                conn.send({ type: 'sync', board: board, bar: bar });
+            }
+        }
+
+        // --- 5. SOHBET VE ARAYÜZ (UX) ---
+        window.toggleChat = () => {
+            const chat = document.getElementById('chat-container');
+            const icon = document.getElementById('chat-toggle-icon');
+            chat.classList.toggle('open');
+            icon.innerText = chat.classList.contains('open') ? 'expand_more' : 'expand_less';
+            
+            if(chat.classList.contains('open')) {
+                document.getElementById('chat-badge').style.display = 'none';
+                const msgBox = document.getElementById('chat-messages');
+                msgBox.scrollTop = msgBox.scrollHeight;
+            }
+        };
+
+        window.sendChatMessage = () => {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            if(!text || !conn) return;
+
+            addMessage(text, 'me');
+            conn.send({ type: 'chat', text: text });
+            input.value = '';
+        };
+
+        window.handleKeypress = (e) => { if (e.key === 'Enter') sendChatMessage(); };
+
+        function addMessage(text, sender) {
+            const box = document.getElementById('chat-messages');
+            const msg = document.createElement('div');
+            msg.className = `msg ${sender}`;
+            msg.innerText = text;
+            box.appendChild(msg);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = msg;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // Başlangıç
+        window.onload = initPeer;
+
+    </script>
+</body>
+</html>
