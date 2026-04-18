@@ -15,8 +15,8 @@
             --bg-color: #1c1917; 
             --board-outer: #38220f; 
             --board-inner: #e6d5b8; 
-            --point-dark: #7f1d1d; /* Elegant Dark Red */
-            --point-light: #1e293b; /* Slate Gray */
+            --point-dark: #7f1d1d; 
+            --point-light: #1e293b; 
             
             --checker-black: #171717;
             --checker-white: #f8fafc;
@@ -84,9 +84,8 @@
         .dice-area { display: flex; gap: 0.5rem; align-items: center; }
         .die { width: 36px; height: 36px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: opacity 0.3s; }
         .die.empty { background: #444; box-shadow: none; color: transparent; }
-        .die.used { opacity: 0.3; } /* Harcanmış zar efekti */
+        .die.used { opacity: 0.3; } 
 
-        /* Zar Atma Animasyonu */
         @keyframes rollAnim {
             0% { transform: rotate(0deg) scale(1) translateY(0); }
             25% { transform: rotate(90deg) scale(1.1) translateY(-10px); }
@@ -96,9 +95,21 @@
         }
         .rolling { animation: rollAnim 0.4s ease-out; }
 
-        .btn-small { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 8px; background: #444; color: white; }
+        .btn-small { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 8px; background: #444; color: white; border: none; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.25rem;}
         .btn-small:hover:not(:disabled) { background: #555; }
-        .btn-action-group { display: flex; gap: 0.5rem; width: 100%; justify-content: flex-end; }
+        
+        /* Oynayacak yer yoksa butonu patlat (Pulse Effect) */
+        @keyframes pulseAttention {
+            0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(217, 119, 6, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+        }
+        .needs-attention { animation: pulseAttention 1.5s infinite; border: 1px solid var(--primary); color: var(--primary); background: rgba(217, 119, 6, 0.1); }
+
+        .btn-icon { background: transparent; border: 1px solid #555; padding: 0.4rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .btn-icon:hover { background: #333; color: white; }
+
+        .btn-action-group { display: flex; gap: 0.5rem; width: 100%; justify-content: flex-end; align-items: center; }
 
         /* TAVLA TAHTASI (VIBECODER DİKDÖRTGEN MİMARİSİ) */
         .board-container { flex: 1; padding: 0.75rem 0.5rem; display: flex; justify-content: center; align-items: center; }
@@ -112,11 +123,10 @@
         .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
 
         .points-row { flex: 1; display: flex; position: relative; }
-        .points-row.bottom { transform: scaleY(-1); /* Alt sırayı yön olarak ters çevirir, görselliği bozar o yüzden pulları içeride düzelteceğiz */ }
+        .points-row.bottom { transform: scaleY(-1); }
 
         .point { flex: 1; position: relative; display: flex; justify-content: center; cursor: pointer; }
         
-        /* Modern Dikdörtgen Slot Tasarımı (Üçgen Yerine) */
         .point-bg {
             position: absolute; top: 0; width: 75%; height: 95%; border-radius: 4px;
             background: var(--point-dark); transition: var(--transition);
@@ -125,19 +135,18 @@
         .point:hover .point-bg { filter: brightness(1.3); }
         .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
-        /* Pullar (Checkers) */
+        /* Pullar */
         .checker {
             width: 8vw; max-width: 32px; height: 8vw; max-height: 32px; border-radius: 50%; position: absolute;
             box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
         }
-        /* Alt sıradaki pulların yazısı ters dönmesin diye */
         .points-row.bottom .checker { transform: scaleY(-1); } 
 
         .checker.black { background: var(--checker-black); border: 2px solid #444; color: white; }
         .checker.white { background: var(--checker-white); border: 2px solid #cbd5e1; color: black; }
         
-        /* VibeCoder İstifleme Zırhı */
+        /* İstifleme */
         .checker:nth-child(2) { top: 2px; }
         .checker:nth-child(3) { top: 25px; }
         .checker:nth-child(4) { top: 48px; }
@@ -166,11 +175,11 @@
 
         .chat-input { display: flex; padding: 0.5rem; background: #292524; gap: 0.5rem; }
         .chat-input input { flex: 1; padding: 0.5rem 0.75rem; border-radius: 20px; border: none; background: #1c1917; color: white; outline: none; font-size: 0.9rem;}
-        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 36px; height: 36px; }
+        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 36px; height: 36px; background: var(--primary); border: none; color: #000; cursor: pointer;}
 
         /* Toast */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; }
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
+        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; text-align: center; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
     </style>
@@ -231,6 +240,7 @@
             </div>
 
             <div class="btn-action-group">
+                <button class="btn-icon" id="btn-mute" title="Sesi Kapat/Aç"><span class="material-symbols-rounded" style="font-size:18px;">volume_up</span></button>
                 <button class="btn-small" id="btn-undo" onclick="undoTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">undo</span> Geri Al</button>
                 <button class="btn-small" id="btn-end" onclick="endTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Turu Bitir</button>
             </div>
@@ -253,7 +263,7 @@
         </div>
         
         <div class="bear-off-area" onclick="handlePointClick('bearoff')">
-            <span class="material-symbols-rounded">exit_to_app</span> Seçili Pulu Topla / Oyundan Çıkar
+            <span class="material-symbols-rounded" style="font-size: 18px;">exit_to_app</span> Seçili Pulu Topla / Oyundan Çıkar
         </div>
 
         <div class="chat-container" id="chat-container">
@@ -266,7 +276,7 @@
             </div>
             <div class="chat-input">
                 <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
-                <button onclick="sendChatMessage()"><span class="material-symbols-rounded" style="font-size:18px">send</span></button>
+                <button onclick="sendChatMessage()"><span class="material-symbols-rounded">send</span></button>
             </div>
         </div>
 
@@ -277,16 +287,26 @@
     <script>
         // --- SES VE ANİMASYON MOTORU ---
         let audioCtx = null;
+        let isMuted = false;
+        
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
         document.addEventListener('click', initAudio, { once: true });
 
+        document.getElementById('btn-mute').addEventListener('click', (e) => {
+            isMuted = !isMuted;
+            const icon = e.currentTarget.querySelector('.material-symbols-rounded');
+            icon.innerText = isMuted ? 'volume_off' : 'volume_up';
+            e.currentTarget.style.color = isMuted ? 'var(--primary)' : 'var(--text-muted)';
+        });
+
         function playDiceSound() {
+            if (isMuted) return;
             try {
                 if (!audioCtx) initAudio();
-                // Zar çarpma sesini simüle eden hızlı gürültü serisi
+                // 3D Zar Çarpma Simülasyonu
                 for(let i=0; i<3; i++) {
                     setTimeout(() => {
                         const osc = audioCtx.createOscillator();
@@ -294,7 +314,7 @@
                         osc.connect(gain); gain.connect(audioCtx.destination);
                         osc.type = 'square';
                         osc.frequency.setValueAtTime(300 + Math.random()*200, audioCtx.currentTime);
-                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
                         osc.start(); osc.stop(audioCtx.currentTime + 0.1);
                     }, i * 80);
@@ -309,15 +329,16 @@
         let gameState = {
             board: Array(24).fill(null).map(() => ({ color: null, count: 0 })),
             bar: { black: 0, white: 0 },
-            off: { black: 0, white: 0 }, // Toplanan pullar
+            off: { black: 0, white: 0 }, 
             scores: { black: 0, white: 0 },
             targetScore: 3,
-            currentTurn: 'black', // Oyunu siyah başlatır
-            dice: [] // Örn: [3, 1] veya [4,4,4,4]
+            currentTurn: 'black', 
+            dice: [] 
         };
 
-        let turnSnapshot = null; // Geri Al (Undo) için
+        let turnSnapshot = null; 
         let selectedPoint = null;
+        let autoPassTimer = null; // Otomatik Geçiş Zamanlayıcısı
 
         // Kriptografik Güçlü Zar
         function getSecureRandomDice() {
@@ -424,21 +445,15 @@
         }
 
         window.rollDice = () => {
-            if(gameState.currentTurn !== myColor) {
-                showToast("Şu an sıra sizde değil!"); return;
-            }
-            if(gameState.dice.length > 0) {
-                showToast("Önce mevcut zarlarınızı oynamalısınız."); return;
-            }
+            if(gameState.currentTurn !== myColor) { showToast("Sıra rakipte."); return; }
+            if(gameState.dice.length > 0) { showToast("Önce mevcut zarlarınızı oynamalısınız."); return; }
 
             const [d1, d2] = getSecureRandomDice();
             
-            // Çift atılırsa 4 tane zar verilir
             if(d1 === d2) gameState.dice = [d1, d1, d1, d1];
             else gameState.dice = [d1, d2];
 
-            createSnapshot(); // Zarı attığı an durumu kaydet (Geri alabilmek için)
-            
+            createSnapshot(); 
             animateDice(d1, d2);
             addMessage(`Zar attın: ${d1} - ${d2}`, 'system');
             
@@ -450,6 +465,12 @@
         };
 
         window.undoTurn = () => {
+            // Eğer otomatik geçiş başladıysa iptal et
+            if(autoPassTimer) {
+                clearTimeout(autoPassTimer);
+                autoPassTimer = null;
+            }
+
             if(turnSnapshot && gameState.currentTurn === myColor) {
                 gameState = JSON.parse(JSON.stringify(turnSnapshot));
                 selectedPoint = null;
@@ -461,9 +482,10 @@
         window.endTurn = () => {
             if(gameState.currentTurn !== myColor) return;
             
-            // Sırayı karşı tarafa geçir
+            if(autoPassTimer) { clearTimeout(autoPassTimer); autoPassTimer = null; }
+
             gameState.currentTurn = (myColor === 'black') ? 'white' : 'black';
-            gameState.dice = []; // Kalan zarları temizle
+            gameState.dice = []; 
             turnSnapshot = null;
             selectedPoint = null;
             
@@ -472,12 +494,10 @@
             addMessage("Sıranızı bitirdiniz.", 'system');
         };
 
-        // Mesafe Hesaplama Zırhı
         function getDistance(from, to) {
-            // Black moves down (23 to 0). White moves up (0 to 23).
             if(from === 'bar') {
-                if(myColor === 'black') return 24 - to; // Black enters at 23,22.. -> (24 - 23 = 1)
-                else return to + 1; // White enters at 0,1.. -> (0 + 1 = 1)
+                if(myColor === 'black') return 24 - to; 
+                else return to + 1; 
             }
             if(myColor === 'black') return from - to;
             else return to - from;
@@ -487,18 +507,15 @@
             if(gameState.currentTurn !== myColor) { showToast("Sıra rakipte."); return; }
             if(gameState.dice.length === 0) { showToast("Önce zar atmalısınız."); return; }
 
-            // Seçim İptali
-            if(selectedPoint === index) {
-                selectedPoint = null; renderAll(); return;
-            }
+            if(autoPassTimer) { clearTimeout(autoPassTimer); autoPassTimer = null; }
 
-            // Yeni Seçim Yapma
+            if(selectedPoint === index) { selectedPoint = null; renderAll(); return; }
+
             if(selectedPoint === null) {
                 if(index === 'bar') {
                     if(gameState.bar[myColor] > 0) selectedPoint = 'bar';
                 } else if(index !== 'bearoff') {
                     if(gameState.board[index].count > 0 && gameState.board[index].color === myColor) {
-                        // KURAL: Eğer kırık pulu varsa mecburen bardan çıkmalı
                         if(gameState.bar[myColor] > 0) {
                             showToast("Önce kırık pulunuzu oyuna sokmalısınız!"); return;
                         }
@@ -508,37 +525,30 @@
                 renderAll(); return;
             }
 
-            // --- TAŞIMA (MOVE) AŞAMASI ---
             const from = selectedPoint;
             const to = index;
 
             if(to === 'bar') return; 
 
-            // Toplama (Bear Off)
             if(to === 'bearoff') {
-                // (Basit Sandbox Toplama: Oyuncu mesafeyi kendisi bilir, onaylayınca taşı sileriz)
-                // Profesyonel motorda tüm pulların içeride olduğu kontrol edilir ama mobil sandbox'ta
-                // oyuncuya inisiyatif verip 1 zar eksiltiyoruz.
                 if(gameState.dice.length > 0) {
-                    gameState.dice.sort((a,b) => b-a); // En büyük zarı harca
+                    gameState.dice.sort((a,b) => b-a); 
                     gameState.dice.shift(); 
                     gameState.board[from].count--;
                     if(gameState.board[from].count === 0) gameState.board[from].color = null;
                     gameState.off[myColor]++;
                     selectedPoint = null;
                     
-                    // Oyun Bitti mi?
                     if(gameState.off[myColor] === 15) {
                         gameState.scores[myColor]++;
                         showToast("TEBRİKLER! OYUNU KAZANDINIZ!", "success");
                         setTimeout(() => { initBoard(); sendSync(); }, 3000);
                         return;
                     }
-                    renderAll(); sendSync(); return;
+                    finalizeMove(); return;
                 }
             }
 
-            // Zar Kontrolü
             const dist = getDistance(from, to);
             const dieIndex = gameState.dice.indexOf(dist);
 
@@ -547,20 +557,17 @@
                 selectedPoint = null; renderAll(); return;
             }
 
-            // Hedef Nokta Kontrolü (Kapı)
             if(gameState.board[to].count > 1 && gameState.board[to].color !== myColor) {
                 showToast("Burası rakip kapısı!");
                 selectedPoint = null; renderAll(); return;
             }
 
-            // Kırma (Hit)
             if(gameState.board[to].count === 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null) {
                 gameState.bar[gameState.board[to].color]++;
                 gameState.board[to].count = 0;
                 addMessage("Pul kırıldı!", "system");
             }
 
-            // Zar Harcama ve Pulu Taşıma
             gameState.dice.splice(dieIndex, 1);
 
             if(from === 'bar') gameState.bar[myColor]--;
@@ -573,12 +580,23 @@
             gameState.board[to].count++;
 
             selectedPoint = null;
-            renderAll();
-            sendSync();
+            finalizeMove();
         };
 
-        function sendSync() {
-            if(conn && conn.open) conn.send({ type: 'sync', state: gameState });
+        // Her hamle sonrası çalışan Zırhlı Kontrol Sistemi
+        function finalizeMove() {
+            renderAll();
+            sendSync();
+
+            // VIBECODER: Akıllı Otomatik Geçiş (Auto Turn-Pass)
+            if(gameState.dice.length === 0 && gameState.currentTurn === myColor) {
+                showToast("Zarlar bitti. Sıra rakibe geçiyor...");
+                autoPassTimer = setTimeout(() => {
+                    if(gameState.currentTurn === myColor && gameState.dice.length === 0) {
+                        endTurn();
+                    }
+                }, 2000); // Kullanıcıya geri alması için 2 saniye düşünme payı ver
+            }
         }
 
         // --- 6. GÖRSELLEŞTİRME (RENDER) ---
@@ -598,40 +616,44 @@
         }
 
         function renderHeader() {
-            // Skor
             document.getElementById('score-black').innerText = gameState.scores.black;
             document.getElementById('score-white').innerText = gameState.scores.white;
             document.getElementById('target-score-display').innerText = gameState.targetScore;
 
-            // Sıra Kimde
             const turnDisplay = document.getElementById('turn-display');
+            const btnEnd = document.getElementById('btn-end');
+
             if(gameState.currentTurn === myColor) {
                 turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${myColor})"></div> SIRA SİZDE`;
                 turnDisplay.className = "player-turn";
+                
                 document.getElementById('btn-roll').disabled = (gameState.dice.length > 0);
-                document.getElementById('btn-end').disabled = false;
+                btnEnd.disabled = false;
                 document.getElementById('btn-undo').disabled = (turnSnapshot === null);
+
+                // Zar var ama hamle yapamıyorsa butonu patlat (Pulse)
+                if(gameState.dice.length > 0) btnEnd.classList.add('needs-attention');
+                else btnEnd.classList.remove('needs-attention');
+
             } else {
                 const oppColor = myColor === 'black' ? 'white' : 'black';
                 turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${oppColor})"></div> SIRA RAKİPTE`;
                 turnDisplay.className = "player-turn wait";
+                
                 document.getElementById('btn-roll').disabled = true;
-                document.getElementById('btn-end').disabled = true;
+                btnEnd.disabled = true;
                 document.getElementById('btn-undo').disabled = true;
+                btnEnd.classList.remove('needs-attention');
             }
 
-            // Zar Gösterimi (Harcanan zarları saydam yap)
             const d1El = document.getElementById('die1');
             const d2El = document.getElementById('die2');
             
-            // Snapshot'tan orijinal atılan zarları bul
             if(turnSnapshot && turnSnapshot.dice && turnSnapshot.dice.length >= 2) {
                 const orig = turnSnapshot.dice;
-                // Çift atıldıysa 4 zar gösterimi için basit bir UI, yoksa 2 zar.
                 d1El.innerText = orig[0]; d1El.className = 'die';
                 d2El.innerText = orig[1]; d2El.className = 'die';
 
-                // Eğer gameState.dice içinde bu zar yoksa "used" class'ı ekle
                 if(!gameState.dice.includes(orig[0])) d1El.classList.add('used');
                 if(!gameState.dice.includes(orig[1])) d2El.classList.add('used');
             } else {
@@ -651,14 +673,13 @@
                 if(selectedPoint === i) pointDiv.classList.add('selected');
                 pointDiv.onclick = () => handlePointClick(i);
 
-                // VIBECODER: Dikdörtgen Slot
                 const pointBg = document.createElement('div');
                 pointBg.className = 'point-bg';
                 pointDiv.appendChild(pointBg);
 
                 const data = gameState.board[i];
                 if(data.count > 0) {
-                    const drawCount = Math.min(data.count, 6); // Max 6 pul
+                    const drawCount = Math.min(data.count, 6); 
                     for(let c=0; c<drawCount; c++) {
                         const checker = document.createElement('div');
                         checker.className = `checker ${data.color}`;
@@ -728,7 +749,7 @@
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerText = msg;
-            if(type === 'success') { toast.style.background = 'var(--success)'; toast.style.color = '#fff'; }
+            if(type === 'success') { toast.style.background = 'var(--primary)'; toast.style.color = '#1c1917'; }
             container.appendChild(toast);
             
             setTimeout(() => toast.classList.add('show'), 10);
