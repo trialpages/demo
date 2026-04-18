@@ -78,11 +78,28 @@
         .guide-list li { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.85rem; color: #1e3a8a; line-height: 1.4; }
         .guide-list li::before { counter-increment: custom-counter; content: counter(custom-counter); background: #3b82f6; color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
 
-        /* KULLANICI MESAJLARI (CHAT PANOSU) */
-        .messages-card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-        .messages-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--empty-bg); display: flex; align-items: center; gap: 0.5rem; }
-        .messages-header h2 { font-size: 1rem; font-weight: 700; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+        /* KULLANICI MESAJLARI (AKORDEON CHAT PANOSU) */
+        .messages-card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; transition: var(--transition); }
         
+        /* Yanıp Sönen Kırmızı Yeni Mesaj Uyarısı */
+        @keyframes pulseAlertRed {
+            0% { background-color: var(--empty-bg); color: var(--text-main); }
+            50% { background-color: var(--stale); color: white; }
+            100% { background-color: var(--empty-bg); color: var(--text-main); }
+        }
+        
+        .messages-header { padding: 1rem 1.5rem; border-bottom: 1px solid transparent; background: var(--empty-bg); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background-color 0.3s, color 0.3s; }
+        .messages-card.has-new-message .messages-header { animation: pulseAlertRed 2s infinite; border-bottom: 1px solid var(--stale); }
+        .messages-card.open .messages-header { border-bottom: 1px solid var(--border); } /* Açıkken border koy */
+
+        .messages-header-left { display: flex; align-items: center; gap: 0.5rem; }
+        .messages-header h2 { font-size: 1rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.5rem; color: inherit; }
+        .messages-header .toggle-icon { color: inherit; transition: transform 0.3s ease; }
+        .messages-card.open .toggle-icon { transform: rotate(180deg); }
+
+        .messages-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; display: flex; flex-direction: column; }
+        .messages-card.open .messages-content { max-height: 400px; } /* Açık halde max 400px yer kaplar */
+
         .messages-list { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; max-height: 250px; overflow-y: auto; background: #fcfcfd; scroll-behavior: smooth; }
         .message-item { display: flex; flex-direction: column; gap: 0.25rem; background: white; padding: 0.75rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm); width: fit-content; max-width: 85%; }
         .message-sender { font-size: 0.75rem; font-weight: 700; color: var(--primary); display: flex; justify-content: space-between; gap: 1rem; }
@@ -110,7 +127,6 @@
 
         /* DİBİ GÖRÜNDÜ AFİŞİ (Banner) */
         .out-of-tea-banner { background: var(--stale); color: white; padding: 0.4rem; text-align: center; font-size: 0.8rem; font-weight: 700; display: flex; justify-content: center; align-items: center; gap: 0.3rem; margin: -1.5rem -1.5rem 1rem -1.5rem; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; padding-left: 0.5rem; gap: 0.5rem; flex-wrap: wrap;}
         .teapot-title { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
@@ -147,7 +163,7 @@
         .btn-almost-empty { grid-column: span 2; background: var(--stale-bg); color: var(--stale); border: 1px dashed var(--stale); }
         .btn-almost-empty:hover { background: var(--stale); color: white; }
 
-        /* Yeni Zaten Hazır Butonu */
+        /* Hazır Butonu */
         .btn-ready { background: var(--fresh-bg); color: var(--fresh); border: 1px solid var(--fresh); }
         .btn-ready:hover { background: var(--fresh); color: white; }
 
@@ -248,15 +264,21 @@
             </div>
         </div>
 
-        <div class="messages-card">
-            <div class="messages-header">
-                <h2><span class="material-symbols-rounded">chat</span> Kullanıcı Mesajları</h2>
-            </div>
-            <div class="messages-list" id="messages-list">
+        <div class="messages-card" id="messages-card">
+            <div class="messages-header" onclick="toggleMessages()">
+                <div class="messages-header-left">
+                    <span class="material-symbols-rounded">chat</span>
+                    <h2>Kullanıcı Mesajları</h2>
                 </div>
-            <div class="message-input-area">
-                <input type="text" id="message-input" placeholder="Bir mesaj yazın... (Örn: Odama sıcak su aldım, çay yok)" onkeypress="handleKeypress(event)">
-                <button class="btn-send" onclick="sendMessage()"><span class="material-symbols-rounded" style="font-size:20px;">send</span></button>
+                <span class="material-symbols-rounded toggle-icon">expand_more</span>
+            </div>
+            <div class="messages-content">
+                <div class="messages-list" id="messages-list">
+                    </div>
+                <div class="message-input-area">
+                    <input type="text" id="message-input" placeholder="Bir mesaj yazın... (Örn: Odama sıcak su aldım, çay yok)" onkeypress="handleKeypress(event)">
+                    <button class="btn-send" onclick="sendMessage()"><span class="material-symbols-rounded" style="font-size:20px;">send</span></button>
+                </div>
             </div>
         </div>
 
@@ -299,9 +321,21 @@
     <div class="popup-container" id="popup-container"></div>
 
     <script>
-        // --- REHBER AKORDEON MANTIĞI ---
+        // --- AKORDEON MANTIKLARI ---
         function toggleGuide() {
             document.getElementById('guide-box').classList.toggle('open');
+        }
+
+        function toggleMessages() {
+            const card = document.getElementById('messages-card');
+            card.classList.toggle('open');
+            
+            // Eğer kart açıldıysa, kırmızı yanıp sönme uyarısını kapat ve en alta kaydır
+            if (card.classList.contains('open')) {
+                card.classList.remove('has-new-message');
+                const list = document.getElementById('messages-list');
+                list.scrollTop = list.scrollHeight;
+            }
         }
 
         // --- SES MOTORU (Web Audio API) ---
@@ -416,12 +450,19 @@
             const text = input.value.trim();
             if(!text) return;
             
-            const senderName = "Kullanıcı"; // Gerçek sistemde Firebase'den auth ismi gelecek
+            const senderName = "Kullanıcı"; // Gerçekte db/auth'tan gelir
             chatMessages.push({ sender: senderName, text: text, time: formatTime(new Date()) });
             input.value = '';
             renderMessages();
             
-            // Simüle edilmiş diğer kullanıcılara giden bildirim
+            const card = document.getElementById('messages-card');
+            
+            // Eğer kart kapalıysa (Kullanıcı mesajları görmüyorsa) kırmızı uyarısı ver
+            if (!card.classList.contains('open')) {
+                card.classList.add('has-new-message');
+            }
+            
+            // Standart popup uyarıyı gönder
             showPersistentPopup('msg-'+Date.now(), 'Yeni Ofis Mesajı', `<strong>${senderName}:</strong> ${text}`, 'msg', 'chat');
         };
 
@@ -492,14 +533,12 @@
             }
         };
 
-        // YENİ: Zaten Hazır İşaretleme
         window.setTeaFresh = (id) => {
             const tp = teapots.find(t => t.id === id);
             if(tp) {
                 tp.status = 'fresh';
-                // Sanki 15 dk önce demlenmiş gibi zamanı ayarla (Bayatlama saati doğru çalışsın)
                 tp.brewTimestamp = Date.now() - BREW_DURATION_MS; 
-                tp.notifiedFresh = true; // Tekrar taze bildirimi atmasın
+                tp.notifiedFresh = true; 
                 tp.notifiedWarning = false; 
                 tp.notifiedStale = false; 
                 tp.isRunningOut = false;
@@ -654,7 +693,6 @@
                     }
                 }
 
-                // DİNAMİK BUTON GRUBU YÖNETİMİ (Zırhlı Grid)
                 let buttonsHtml = '';
                 if(isEmpty || isBrewing) {
                     buttonsHtml = `
