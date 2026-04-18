@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VibeTavla | P2P Profesyonel Tavla</title>
+    <title>VibeTavla | Profesyonel P2P</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
@@ -23,13 +23,14 @@
             
             --primary: #d97706; 
             --primary-hover: #b45309;
+            --highlight: #10b981; /* Olası Hamle Vurgu Rengi */
             
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
             --radius-md: 12px;
             --radius-lg: 20px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -64,14 +65,12 @@
         button { background: var(--primary); color: #1c1917; border: none; padding: 1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
         button:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        
         .btn-secondary { background: #444; color: white; }
         .btn-secondary:hover:not(:disabled) { background: #555; }
 
         /* --- OYUN EKRANI --- */
-        #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px; }
+        #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px; position: relative;}
 
-        /* Skor ve İsim Bilgisi */
         .scoreboard {
             background: #171717; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid #333;
         }
@@ -79,7 +78,6 @@
         .score-display span { display: inline-flex; align-items: center; gap: 0.25rem; }
         .player-name-badge { font-size: 0.8rem; color: var(--text-muted); max-width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Üst Bar (Zarlar ve Kontroller) */
         .game-header { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: #292524; border-bottom: 1px solid #444; flex-shrink: 0; flex-wrap: wrap; gap: 0.5rem; }
         .player-turn { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 0.95rem; color: var(--primary); }
         .player-turn.wait { color: var(--text-muted); }
@@ -90,31 +88,15 @@
         .die.empty { background: #444; box-shadow: none; color: transparent; }
         .die.used { opacity: 0.2; } 
 
-        @keyframes rollAnim {
-            0% { transform: rotate(0deg) scale(1) translateY(0); }
-            25% { transform: rotate(90deg) scale(1.1) translateY(-10px); }
-            50% { transform: rotate(180deg) scale(1.2) translateY(0); }
-            75% { transform: rotate(270deg) scale(1.1) translateY(-5px); }
-            100% { transform: rotate(360deg) scale(1) translateY(0); }
-        }
+        @keyframes rollAnim { 0% { transform: rotate(0deg) scale(1) translateY(0); } 25% { transform: rotate(90deg) scale(1.1) translateY(-10px); } 50% { transform: rotate(180deg) scale(1.2) translateY(0); } 75% { transform: rotate(270deg) scale(1.1) translateY(-5px); } 100% { transform: rotate(360deg) scale(1) translateY(0); } }
         .rolling { animation: rollAnim 0.4s ease-out; }
 
         .btn-small { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 8px; background: #444; color: white; border: none; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.25rem;}
         .btn-small:hover:not(:disabled) { background: #555; }
-        
-        @keyframes pulseAttention {
-            0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(217, 119, 6, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
-        }
-        .needs-attention { animation: pulseAttention 1.5s infinite; border: 1px solid var(--primary); color: var(--primary); background: rgba(217, 119, 6, 0.1); }
-
         .btn-icon { background: transparent; border: 1px solid #555; padding: 0.4rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .btn-icon:hover { background: #333; color: white; }
-
         .btn-action-group { display: flex; gap: 0.5rem; width: 100%; justify-content: flex-end; align-items: center; }
 
-        /* TAVLA TAHTASI (DİKDÖRTGEN YAPI) */
+        /* TAVLA TAHTASI */
         .board-container { flex: 1; padding: 0.75rem 0.5rem; display: flex; justify-content: center; align-items: center; min-height: 0; }
 
         .backgammon-board {
@@ -137,8 +119,10 @@
         .points-row.bottom .point-bg { bottom: 0; }
 
         .point:nth-child(even) .point-bg { background: var(--point-light); }
-        .point:hover .point-bg { filter: brightness(1.3); }
-        .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 10px var(--primary); z-index: 2;}
+        
+        /* Renklendirme Durumları */
+        .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 15px var(--primary); z-index: 2;}
+        .point.highlight-move .point-bg { border: 2px solid var(--highlight); box-shadow: 0 0 15px var(--highlight); filter: brightness(1.5); z-index: 2;}
 
         /* Pullar */
         .checker {
@@ -146,54 +130,43 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
         }
-        
         .checker.black { background: var(--checker-black); border: 2px solid #444; color: white; }
         .checker.white { background: var(--checker-white); border: 2px solid #cbd5e1; color: black; }
         
-        /* İstifleme */
-        .points-row.top .checker:nth-child(2) { top: 4px; }
-        .points-row.top .checker:nth-child(3) { top: 30px; }
-        .points-row.top .checker:nth-child(4) { top: 56px; }
-        .points-row.top .checker:nth-child(5) { top: 82px; }
-        .points-row.top .checker:nth-child(6) { top: 108px; }
+        .points-row.top .checker:nth-child(2) { top: 4px; } .points-row.top .checker:nth-child(3) { top: 30px; } .points-row.top .checker:nth-child(4) { top: 56px; } .points-row.top .checker:nth-child(5) { top: 82px; } .points-row.top .checker:nth-child(6) { top: 108px; }
+        .points-row.bottom .checker:nth-child(2) { bottom: 4px; } .points-row.bottom .checker:nth-child(3) { bottom: 30px; } .points-row.bottom .checker:nth-child(4) { bottom: 56px; } .points-row.bottom .checker:nth-child(5) { bottom: 82px; } .points-row.bottom .checker:nth-child(6) { bottom: 108px; }
 
-        .points-row.bottom .checker:nth-child(2) { bottom: 4px; }
-        .points-row.bottom .checker:nth-child(3) { bottom: 30px; }
-        .points-row.bottom .checker:nth-child(4) { bottom: 56px; }
-        .points-row.bottom .checker:nth-child(5) { bottom: 82px; }
-        .points-row.bottom .checker:nth-child(6) { bottom: 108px; }
+        .bear-off-area { display: flex; justify-content: center; align-items: center; padding: 0.5rem; background: #292524; font-size: 0.8rem; font-weight: 700; color: var(--primary); cursor: pointer; border-top: 1px solid #444; transition: var(--transition);}
+        .bear-off-area.highlight-move { background: rgba(16, 185, 129, 0.2); border: 2px dashed var(--highlight); color: var(--highlight); }
 
-        .broken-area { display: flex; flex-direction: column; gap: -5px; align-items: center; width: 100%; height: 100%; justify-content: center;}
+        /* --- SOHBET OVERLAY (FAB BUTONLU) --- */
+        .chat-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 200; display: none; flex-direction: column; justify-content: flex-end;
+        }
+        .chat-box { background: #1c1917; height: 70%; border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1); }
+        .chat-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; }
+        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+        .msg { font-size: 0.9rem; padding: 0.6rem 1rem; border-radius: 12px; width: fit-content; max-width: 85%; line-height: 1.4; color: white;}
+        .msg.me { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 0; }
+        .msg.peer { background: #334155; align-self: flex-start; border-bottom-left-radius: 0; }
+        .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.8rem; font-style: italic; }
+        .chat-input { display: flex; padding: 1rem; gap: 0.5rem; background: #292524; }
+        .chat-input input { flex: 1; padding: 0.75rem 1rem; border-radius: 20px; border: none; background: #171717; color: white; outline: none; }
+        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 44px; height: 44px; }
 
-        .bear-off-area { display: flex; justify-content: center; align-items: center; padding: 0.5rem; background: #292524; font-size: 0.8rem; font-weight: 700; color: var(--primary); cursor: pointer; border-top: 1px solid #444;}
-        .bear-off-area:hover { background: #333; }
+        /* Yüzen Sohbet Butonu */
+        .fab-chat { position: absolute; bottom: 60px; left: 10px; background: var(--primary); color: #000; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; z-index: 50; border: none; transition: var(--transition);}
+        .fab-chat:hover { transform: scale(1.1); }
+        .fab-chat.has-new { animation: pulseChat 1s infinite; background: #ef4444; color: white;}
+        @keyframes pulseChat { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
-        /* --- AKORDEON SOHBET --- */
-        .chat-container { background: #292524; border-top: 1px solid #444; flex-shrink: 0; display: flex; flex-direction: column; transition: var(--transition); height: 50px; overflow: hidden; z-index: 20;}
-        .chat-container.open { height: 250px; }
-
-        .chat-header { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; color: var(--primary); font-size: 0.9rem;}
-        .chat-header .badge { background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
-        .chat-header.has-new .badge { display: inline-block; }
-
-        .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; background: #1c1917; }
-        .msg { font-size: 0.85rem; padding: 0.5rem 0.75rem; border-radius: 8px; width: fit-content; max-width: 85%; line-height: 1.4; }
-        .msg.me { background: var(--primary); color: #1c1917; align-self: flex-end; border-bottom-right-radius: 0; font-weight: 600;}
-        .msg.peer { background: #444; color: white; align-self: flex-start; border-bottom-left-radius: 0; }
-        .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.75rem; font-style: italic; }
-        .msg-sender { font-size: 0.7rem; opacity: 0.7; margin-bottom: 2px; }
-
-        .chat-input { display: flex; padding: 0.5rem; background: #292524; gap: 0.5rem; }
-        .chat-input input { flex: 1; padding: 0.5rem 0.75rem; border-radius: 20px; border: none; background: #1c1917; color: white; outline: none; font-size: 0.9rem;}
-        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 36px; height: 36px; background: var(--primary); border: none; color: #000; cursor: pointer;}
-
-        /* TOAST BİLDİRİMİ */
+        /* Toast */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
         .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;}
         .toast.chat-toast { background: #334155; color: white; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
-        /* Spectator Banner */
         .spectator-banner { background: #ef4444; color: white; text-align: center; font-size: 0.8rem; font-weight: 700; padding: 0.2rem; display: none; }
 
     </style>
@@ -265,7 +238,6 @@
             <div class="btn-action-group" id="controls-group">
                 <button class="btn-icon" id="btn-mute" title="Sesi Kapat/Aç"><span class="material-symbols-rounded" style="font-size:18px;">volume_up</span></button>
                 <button class="btn-small" id="btn-undo" onclick="undoTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">undo</span> Geri Al</button>
-                <button class="btn-small" id="btn-end" onclick="endTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Turu Bitir</button>
             </div>
         </div>
 
@@ -275,9 +247,7 @@
                     <div class="points-row top" id="quad-2"></div>
                     <div class="points-row bottom" id="quad-3"></div>
                 </div>
-
                 <div class="board-bar" id="bar-area" onclick="handlePointClick('bar')"></div>
-
                 <div class="board-half">
                     <div class="points-row top" id="quad-1"></div>
                     <div class="points-row bottom" id="quad-4"></div>
@@ -289,17 +259,21 @@
             <span class="material-symbols-rounded" style="font-size: 18px;">exit_to_app</span> Seçili Pulu Topla / Oyundan Çıkar
         </div>
 
-        <div class="chat-container" id="chat-container">
-            <div class="chat-header" onclick="toggleChat()">
-                <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-rounded" style="font-size:18px;">chat</span> Masa Sohbeti <span class="badge" id="chat-badge">Yeni</span></span>
-                <span class="material-symbols-rounded" id="chat-toggle-icon">expand_less</span>
-            </div>
-            <div class="chat-messages" id="chat-messages">
-                <div class="msg system">VibeTavla Sunucusuna Bağlanıldı.</div>
-            </div>
-            <div class="chat-input">
-                <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
-                <button onclick="sendChatMessage()"><span class="material-symbols-rounded" style="font-size:18px">send</span></button>
+        <button class="fab-chat" id="btn-open-chat" onclick="toggleChat()"><span class="material-symbols-rounded">chat</span></button>
+
+        <div class="chat-overlay" id="chat-overlay">
+            <div class="chat-box">
+                <div class="chat-header">
+                    <span>Masa Sohbeti</span>
+                    <button onclick="toggleChat()" style="background:transparent; color:white; padding:0; box-shadow:none;"><span class="material-symbols-rounded">close</span></button>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="msg system">VibeTavla'ya Hoş Geldiniz.</div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
+                    <button onclick="sendChatMessage()"><span class="material-symbols-rounded">send</span></button>
+                </div>
             </div>
         </div>
 
@@ -349,45 +323,46 @@
             } catch (e) {}
         }
 
-        // --- 2. YILDIZ TOPOLOJİSİ (HOST/GUEST/SPECTATOR) STATE YÖNETİMİ ---
-        let peer = null; 
-        let myPeerId = '';
-        let myRole = 'host'; // 'host', 'guest', 'spectator'
-        let myColor = 'black'; // host=black, guest=white, spectator=null
-        let myName = '';
-        let oppName = 'Bekleniyor...';
+        function showToast(msg, type='normal') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = type === 'chat' ? 'toast chat-toast' : 'toast';
+            toast.innerHTML = type === 'chat' ? `<span class="material-symbols-rounded">chat</span> ${msg}` : msg;
+            
+            if(type === 'success') { toast.style.background = 'var(--primary)'; toast.style.color = '#1c1917'; }
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
 
-        // SADECE HOST KULLANIR
-        let connectedPeers = new Map(); // peerId => { conn, role, name }
-        
-        // SADECE GUEST/SPECTATOR KULLANIR
-        let hostConnection = null;
+        // --- 2. STATE YÖNETİMİ ---
+        let peer = null; let myPeerId = '';
+        let myRole = 'host'; let myColor = 'black'; 
+        let myName = ''; let oppName = 'Bekleniyor...';
+
+        let connectedPeers = new Map(); // Sadece Host kullanır
+        let hostConn = null; // Guest/Spectator kullanır
 
         let gameState = {
-            status: 'waiting',
             board: Array(24).fill(null).map(() => ({ color: null, count: 0 })),
             bar: { black: 0, white: 0 },
             off: { black: 0, white: 0 }, 
             scores: { black: 0, white: 0 },
-            targetScore: 3,
-            currentTurn: 'black', 
-            originalDice: [], 
-            dice: [], 
-            rollId: 0 
+            targetScore: 3, currentTurn: 'black', originalDice: [], dice: [], rollId: 0 
         };
 
         let turnSnapshot = null; 
         let selectedPoint = null;
+        let possibleMoves = []; // Renklendirme için
         let autoPassTimer = null; 
 
         function getSecureRandomDice() {
-            const array = new Uint32Array(2);
-            window.crypto.getRandomValues(array);
+            const array = new Uint32Array(2); window.crypto.getRandomValues(array);
             return [(array[0] % 6) + 1, (array[1] % 6) + 1];
         }
         function generateShortId() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let result = '';
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let result = '';
             for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
             return result;
         }
@@ -399,7 +374,7 @@
 
             peer.on('open', (id) => { 
                 document.getElementById('my-id').innerText = id; 
-                initBoard(); // Host tahtayı hazır eder
+                initBoard(); 
             });
 
             peer.on('connection', (conn) => {
@@ -408,7 +383,6 @@
             });
         }
 
-        // Host'un veri işleyicisi
         function handleHostData(conn, data) {
             if (data.type === 'handshake') {
                 myName = document.getElementById('player-name').value.trim() || "Siyah";
@@ -417,10 +391,7 @@
                 let requestedRole = data.role;
                 const hasGuest = Array.from(connectedPeers.values()).some(p => p.role === 'guest');
                 
-                // Eğer masada zaten beyaz (guest) varsa, sonrakileri mecburen izleyici yaparız
-                if (requestedRole === 'guest' && hasGuest) {
-                    requestedRole = 'spectator';
-                }
+                if (requestedRole === 'guest' && hasGuest) requestedRole = 'spectator';
 
                 if(requestedRole === 'guest') {
                     oppName = data.name;
@@ -430,41 +401,26 @@
 
                 connectedPeers.set(conn.peer, { conn, role: requestedRole, name: data.name });
 
-                // Yeni bağlanana mevcut oyun durumunu garanti paketle gönder
-                conn.send({
-                    type: 'init_state',
-                    state: gameState,
-                    assignedRole: requestedRole,
-                    hostName: myName,
-                    guestName: oppName
-                });
-
+                conn.send({ type: 'init_state', state: gameState, assignedRole: requestedRole, hostName: myName, guestName: oppName });
                 broadcastChat(`Sistem`, `${data.name} (${requestedRole === 'guest' ? 'Beyaz' : 'İzleyici'}) katıldı.`);
             }
             else if (data.type === 'sync_from_guest') {
-                // Misafir hamle yaptı ve kendi doğruluğundan emin. Senkronize et.
-                gameState = data.state;
-                renderAll();
+                gameState = data.state; renderAll();
                 broadcastExcept({ type: 'sync', state: gameState }, conn.peer);
             }
             else if (data.type === 'dice_roll') {
-                // Misafir zar attı. Herkese bildir.
-                gameState.dice = data.dice;
-                gameState.originalDice = data.originalDice;
-                gameState.currentTurn = data.turn;
-                gameState.rollId = data.rollId;
+                gameState.dice = data.dice; gameState.originalDice = data.originalDice;
+                gameState.currentTurn = data.turn; gameState.rollId = data.rollId;
                 
                 animateDice(data.d1, data.d2);
-                addMessage(`Rakip zar attı: ${data.d1} - ${data.d2}`, 'system');
+                addMessage(`Zar atıldı: ${data.d1} - ${data.d2}`, 'system');
                 renderAll();
-                
                 broadcastExcept({ type: 'sync', state: gameState }, conn.peer);
             }
             else if (data.type === 'chat') {
                 const senderName = connectedPeers.get(conn.peer)?.name || 'Biri';
                 addMessage(data.text, 'peer', senderName);
                 notifyChat(senderName, data.text);
-                // Diğer herkese dağıt
                 broadcastExcept({ type: 'chat', text: data.text, sender: senderName }, conn.peer);
             }
         }
@@ -472,28 +428,16 @@
         function handleHostClose(conn) {
             const peerInfo = connectedPeers.get(conn.peer);
             if(peerInfo) {
-                if(peerInfo.role === 'guest') {
-                    showToast("Beyaz oyuncu ayrıldı!", "error");
-                    document.getElementById('name-white').innerText = "Ayrıldı";
-                }
+                if(peerInfo.role === 'guest') document.getElementById('name-white').innerText = "Ayrıldı";
                 broadcastChat('Sistem', `${peerInfo.name} ayrıldı.`);
                 connectedPeers.delete(conn.peer);
             }
         }
 
-        function broadcast(data) {
-            connectedPeers.forEach(p => { if(p.conn.open) p.conn.send(data); });
-        }
-        function broadcastExcept(data, excludeId) {
-            connectedPeers.forEach((p, id) => { if(id !== excludeId && p.conn.open) p.conn.send(data); });
-        }
+        function broadcast(data) { connectedPeers.forEach(p => { if(p.conn.open) p.conn.send(data); }); }
+        function broadcastExcept(data, excludeId) { connectedPeers.forEach((p, id) => { if(id !== excludeId && p.conn.open) p.conn.send(data); }); }
+        function broadcastChat(sender, text) { addMessage(text, 'system'); broadcast({ type: 'chat', text: text, sender: sender }); }
 
-        function broadcastChat(sender, text) {
-            addMessage(text, 'system');
-            broadcast({ type: 'chat', text: text, sender: sender });
-        }
-
-        // Misafir / İzleyici Olarak Katıl
         window.connectToPeer = (roleParam) => {
             myName = document.getElementById('player-name').value.trim() || "Misafir";
             const targetId = document.getElementById('target-id').value.trim().toUpperCase();
@@ -501,50 +445,40 @@
 
             document.getElementById('btn-connect-guest').disabled = true;
             document.getElementById('btn-connect-spectator').disabled = true;
-            
             myRole = roleParam;
 
-            if(!peer) {
-                peer = new Peer();
-                peer.on('open', () => { connectToHost(targetId); });
-            } else {
-                connectToHost(targetId);
-            }
+            if(!peer) { peer = new Peer(); peer.on('open', () => { connectToHost(targetId); }); } 
+            else { connectToHost(targetId); }
         };
 
         function connectToHost(targetId) {
             hostConn = peer.connect(targetId, { reliable: true });
             
-            hostConn.on('open', () => {
-                hostConn.send({ type: 'handshake', name: myName, role: myRole });
-            });
+            hostConn.on('open', () => { hostConn.send({ type: 'handshake', name: myName, role: myRole }); });
 
             hostConn.on('data', (data) => {
                 if(data.type === 'init_state') {
                     gameState = data.state;
-                    myRole = data.assignedRole; // Host izleyiciye düşürmüş olabilir
+                    myRole = data.assignedRole; 
                     myColor = (myRole === 'host') ? 'black' : (myRole === 'guest' ? 'white' : null);
                     
                     document.getElementById('name-black').innerText = data.hostName;
                     document.getElementById('name-white').innerText = data.guestName;
                     oppName = data.hostName;
 
-                    startGameUI();
-                    renderAll();
+                    startGameUI(); renderAll();
                     
                     if(myRole === 'spectator') {
                         document.getElementById('spectator-banner').style.display = 'block';
                         document.getElementById('controls-group').style.display = 'none';
                         document.getElementById('bear-off-area').style.display = 'none';
                         showToast("İzleyici olarak katıldınız.");
-                    } else {
-                        showToast("Oyuna katıldınız!", "success");
-                    }
+                    } else { showToast("Oyuna katıldınız!", "success"); }
                 }
                 else if(data.type === 'sync') {
                     const oldRollId = gameState.rollId;
                     gameState = data.state;
-                    selectedPoint = null;
+                    selectedPoint = null; possibleMoves = [];
 
                     if (gameState.rollId !== oldRollId && gameState.originalDice.length > 0) {
                         animateDice(gameState.originalDice[0], gameState.originalDice[1]);
@@ -558,10 +492,7 @@
                 }
             });
 
-            hostConn.on('close', () => {
-                showToast("Sunucu kapandı. Sayfa yenileniyor...", "error");
-                setTimeout(()=> location.reload(), 2000);
-            });
+            hostConn.on('close', () => { showToast("Sunucu kapandı.", "error"); setTimeout(()=> location.reload(), 2000); });
         }
 
         function startGameUI() {
@@ -573,11 +504,9 @@
             gameState.board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
             gameState.bar = { black: 0, white: 0 };
             gameState.off = { black: 0, white: 0 };
-            gameState.originalDice = [];
-            gameState.dice = [];
-            gameState.currentTurn = 'black';
-            gameState.rollId = 0;
-            turnSnapshot = null;
+            gameState.originalDice = []; gameState.dice = [];
+            gameState.currentTurn = 'black'; gameState.rollId = 0;
+            turnSnapshot = null; possibleMoves = [];
             
             gameState.board[23] = { color: 'black', count: 2 };
             gameState.board[12] = { color: 'black', count: 5 };
@@ -592,7 +521,7 @@
             renderAll();
         }
 
-        // --- 4. OYUN MOTORU (STATE) ---
+        // --- 4. OYUN MOTORU & KURALLARI ---
         function createSnapshot() {
             turnSnapshot = JSON.parse(JSON.stringify(gameState));
             document.getElementById('btn-undo').disabled = false;
@@ -601,7 +530,7 @@
         window.rollDice = () => {
             if(myRole === 'spectator') return;
             if(gameState.currentTurn !== myColor) { showToast("Sıra rakipte."); return; }
-            if(gameState.dice.length > 0) { showToast("Önce mevcut zarlarınızı oynamalısınız."); return; }
+            if(gameState.dice.length > 0) { showToast("Mevcut zarlarınızı oynamalısınız."); return; }
 
             const [d1, d2] = getSecureRandomDice();
             
@@ -617,12 +546,8 @@
             
             renderAll();
             
-            // Senkronize Et
-            if(myRole === 'host') {
-                broadcast({ type: 'sync', state: gameState });
-            } else if(myRole === 'guest') {
-                hostConn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, originalDice: gameState.originalDice, turn: myColor, rollId: gameState.rollId });
-            }
+            if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
+            else if(myRole === 'guest') hostConn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, originalDice: gameState.originalDice, turn: myColor, rollId: gameState.rollId });
         };
 
         window.undoTurn = () => {
@@ -631,9 +556,8 @@
 
             if(turnSnapshot && gameState.currentTurn === myColor) {
                 gameState = JSON.parse(JSON.stringify(turnSnapshot));
-                selectedPoint = null;
+                selectedPoint = null; possibleMoves = [];
                 renderAll();
-                
                 if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
                 else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
             }
@@ -642,100 +566,121 @@
         window.endTurn = () => {
             if(myRole === 'spectator') return;
             if(gameState.currentTurn !== myColor) return;
-            
             if(autoPassTimer) { clearTimeout(autoPassTimer); autoPassTimer = null; }
 
             gameState.currentTurn = (myColor === 'black') ? 'white' : 'black';
-            gameState.dice = []; 
-            gameState.originalDice = []; 
-            turnSnapshot = null;
-            selectedPoint = null;
+            gameState.dice = []; gameState.originalDice = []; 
+            turnSnapshot = null; selectedPoint = null; possibleMoves = [];
             
             renderAll();
-            
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
-            
-            addMessage("Sıranızı bitirdiniz.", 'system');
         };
 
         function getDistance(from, to) {
-            if(from === 'bar') {
-                if(myColor === 'black') return 24 - to; 
-                else return to + 1; 
+            if(from === 'bar') return (myColor === 'black') ? 24 - to : to + 1; 
+            return (myColor === 'black') ? from - to : to - from;
+        }
+
+        // --- GİDEBİLECEĞİ ALANLARI HESAPLAMA (HIGHLIGHT ZIRHI) ---
+        function canBearOff() {
+            if(gameState.bar[myColor] > 0) return false;
+            for(let i=0; i<24; i++) {
+                if(gameState.board[i].color === myColor) {
+                    if(myColor === 'black' && i > 5) return false;
+                    if(myColor === 'white' && i < 18) return false;
+                }
             }
-            if(myColor === 'black') return from - to;
-            else return to - from;
+            return true;
+        }
+
+        function calculatePossibleMoves() {
+            possibleMoves = [];
+            if(selectedPoint === null || gameState.dice.length === 0) return;
+
+            const from = selectedPoint;
+            const uniqueDice = [...new Set(gameState.dice)]; // Tekrar eden zarları ele
+            const bearOffAllowed = canBearOff();
+
+            uniqueDice.forEach(die => {
+                let to = (from === 'bar')
+                    ? ((myColor === 'black') ? 24 - die : die - 1)
+                    : ((myColor === 'black') ? from - die : from + die);
+
+                if (to >= 0 && to <= 23) {
+                    // Normal hamle (Kapı kontrolü)
+                    if (!(gameState.board[to].count > 1 && gameState.board[to].color !== myColor)) {
+                        possibleMoves.push(to);
+                    }
+                }
+            });
+
+            // Toplama işlemi sandbox modunda oyuncuya bırakıldığı için açık tutuyoruz
+            if (bearOffAllowed && from !== 'bar') possibleMoves.push('bearoff');
         }
 
         window.handlePointClick = (index) => {
             if(myRole === 'spectator') return;
             if(gameState.currentTurn !== myColor) { showToast("Sıra rakipte."); return; }
             if(gameState.dice.length === 0) { showToast("Önce zar atmalısınız."); return; }
-
             if(autoPassTimer) { clearTimeout(autoPassTimer); autoPassTimer = null; }
 
-            if(selectedPoint === index) { selectedPoint = null; renderAll(); return; }
+            // Seçim İptali
+            if(selectedPoint === index) { 
+                selectedPoint = null; possibleMoves = []; renderAll(); return; 
+            }
 
+            // Yeni Seçim
             if(selectedPoint === null) {
                 if(index === 'bar') {
-                    if(gameState.bar[myColor] > 0) selectedPoint = 'bar';
+                    if(gameState.bar[myColor] > 0) { selectedPoint = 'bar'; calculatePossibleMoves(); }
                 } else if(index !== 'bearoff') {
                     if(gameState.board[index].count > 0 && gameState.board[index].color === myColor) {
-                        if(gameState.bar[myColor] > 0) {
-                            showToast("Önce kırık pulunuzu oyuna sokmalısınız!"); return;
-                        }
-                        selectedPoint = index;
+                        if(gameState.bar[myColor] > 0) { showToast("Önce kırık pulunuzu oyuna sokmalısınız!"); return; }
+                        selectedPoint = index; calculatePossibleMoves();
                     }
                 }
                 renderAll(); return;
             }
 
-            const from = selectedPoint;
-            const to = index;
+            // --- TAŞIMA ---
+            const from = selectedPoint; const to = index;
 
             if(to === 'bar') return; 
 
             if(to === 'bearoff') {
-                if(gameState.dice.length > 0) {
-                    gameState.dice.sort((a,b) => b-a); 
-                    gameState.dice.shift(); 
-                    
-                    if(from !== 'bar') {
-                        gameState.board[from].count--;
-                        if(gameState.board[from].count === 0) gameState.board[from].color = null;
-                    }
-                    
-                    gameState.off[myColor]++;
-                    selectedPoint = null;
-                    
-                    if(gameState.off[myColor] === 15) {
-                        gameState.scores[myColor]++;
-                        showToast("TEBRİKLER! OYUNU KAZANDINIZ!", "success");
-                        if(myRole === 'host') setTimeout(() => { initBoard(); broadcast({ type: 'sync', state: gameState }); }, 3000);
-                        return;
-                    }
-                    finalizeMove(); return;
+                if(!possibleMoves.includes('bearoff')) { showToast("Geçersiz Hamle"); return; }
+                
+                gameState.dice.sort((a,b) => b-a); gameState.dice.shift(); 
+                if(from !== 'bar') {
+                    gameState.board[from].count--;
+                    if(gameState.board[from].count === 0) gameState.board[from].color = null;
                 }
+                gameState.off[myColor]++;
+                selectedPoint = null; possibleMoves = [];
+                
+                if(gameState.off[myColor] === 15) {
+                    gameState.scores[myColor]++;
+                    showToast("TEBRİKLER! OYUNU KAZANDINIZ!", "success");
+                    if(myRole === 'host') setTimeout(() => { initBoard(); broadcast({ type: 'sync', state: gameState }); }, 3000);
+                    return;
+                }
+                finalizeMove(); return;
+            }
+
+            // Hedef kontrolü
+            if(!possibleMoves.includes(to)) {
+                showToast("Bu zarlarla oraya gidemezsiniz.");
+                selectedPoint = null; possibleMoves = []; renderAll(); return;
             }
 
             const dist = getDistance(from, to);
             const dieIndex = gameState.dice.indexOf(dist);
-
-            if(dieIndex === -1) {
-                showToast("Zarlarınız bu hamleye uygun değil. Mesafe: " + dist);
-                selectedPoint = null; renderAll(); return;
-            }
-
-            if(gameState.board[to].count > 1 && gameState.board[to].color !== myColor) {
-                showToast("Burası rakip kapısı!");
-                selectedPoint = null; renderAll(); return;
-            }
-
+            
+            // Kırma (Hit)
             if(gameState.board[to].count === 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null) {
                 gameState.bar[gameState.board[to].color]++;
                 gameState.board[to].count = 0;
-                addMessage("Pul kırıldı!", "system");
             }
 
             gameState.dice.splice(dieIndex, 1);
@@ -746,10 +691,9 @@
                 if(gameState.board[from].count === 0) gameState.board[from].color = null;
             }
 
-            gameState.board[to].color = myColor;
-            gameState.board[to].count++;
-
-            selectedPoint = null;
+            gameState.board[to].color = myColor; gameState.board[to].count++;
+            
+            selectedPoint = null; possibleMoves = [];
             finalizeMove();
         };
 
@@ -759,14 +703,14 @@
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
 
-            // VIBECODER OTOMATİK GEÇİŞ (AUTO-PASS) ZIRHI
+            // VIBECODER KUSURSUZ OTOMATİK GEÇİŞ
             if(gameState.dice.length === 0 && gameState.currentTurn === myColor) {
-                showToast("Zarlar bitti. Sıra devrediliyor...");
+                if(autoPassTimer) clearTimeout(autoPassTimer);
                 autoPassTimer = setTimeout(() => {
                     if(gameState.currentTurn === myColor && gameState.dice.length === 0) {
                         endTurn();
                     }
-                }, 2000); 
+                }, 1500); // 1.5 Saniye düşünme/geri alma payı
             }
         }
 
@@ -775,9 +719,7 @@
             playSound('dice');
             const el1 = document.getElementById('die1'); const el2 = document.getElementById('die2');
             el1.classList.add('rolling'); el2.classList.add('rolling');
-            setTimeout(() => {
-                el1.classList.remove('rolling'); el2.classList.remove('rolling');
-            }, 400);
+            setTimeout(() => { el1.classList.remove('rolling'); el2.classList.remove('rolling'); }, 400);
         }
 
         function renderAll() {
@@ -790,32 +732,22 @@
             document.getElementById('score-white').innerText = gameState.scores.white;
 
             const turnDisplay = document.getElementById('turn-display');
-            const btnEnd = document.getElementById('btn-end');
+            const btnUndo = document.getElementById('btn-undo');
 
             if(gameState.currentTurn === myColor) {
-                turnDisplay.innerHTML = `<span class="material-symbols-rounded" style="color:var(--primary)">play_circle</span> SIRA SİZDE`;
+                turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${myColor})"></div> SIRA SİZDE`;
                 turnDisplay.className = "player-turn";
-                
                 document.getElementById('btn-roll').disabled = (gameState.dice.length > 0);
-                btnEnd.disabled = false;
-                document.getElementById('btn-undo').disabled = (turnSnapshot === null);
-
-                if(gameState.dice.length > 0) btnEnd.classList.add('needs-attention');
-                else btnEnd.classList.remove('needs-attention');
-
+                btnUndo.disabled = (turnSnapshot === null);
             } else {
                 const oppColor = gameState.currentTurn === 'black' ? 'Siyah' : 'Beyaz';
-                turnDisplay.innerHTML = `<span class="material-symbols-rounded">hourglass_empty</span> SIRA RAKİPTE`;
+                turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${oppColor})"></div> SIRA RAKİPTE`;
                 turnDisplay.className = "player-turn wait";
-                
                 document.getElementById('btn-roll').disabled = true;
-                btnEnd.disabled = true;
-                document.getElementById('btn-undo').disabled = true;
-                btnEnd.classList.remove('needs-attention');
+                btnUndo.disabled = true;
             }
 
-            const d1El = document.getElementById('die1');
-            const d2El = document.getElementById('die2');
+            const d1El = document.getElementById('die1'); const d2El = document.getElementById('die2');
             
             if(gameState.originalDice && gameState.originalDice.length >= 2) {
                 const orig = gameState.originalDice;
@@ -846,6 +778,8 @@
                 const pointDiv = document.createElement('div');
                 pointDiv.className = 'point';
                 if(selectedPoint === i) pointDiv.classList.add('selected');
+                if(possibleMoves.includes(i)) pointDiv.classList.add('highlight-move');
+                
                 pointDiv.onclick = () => handlePointClick(i);
 
                 const pointBg = document.createElement('div');
@@ -882,17 +816,22 @@
                 const c = document.createElement('div'); c.className = 'checker white'; 
                 if(gameState.bar.white>1) c.innerText = gameState.bar.white; barArea.appendChild(c);
             }
+
+            const bearOff = document.getElementById('bear-off-area');
+            if(possibleMoves.includes('bearoff')) bearOff.classList.add('highlight-move');
+            else bearOff.classList.remove('highlight-move');
         }
 
-        // --- 6. SOHBET (UX) ---
+        // --- 6. SOHBET OVERLAY (FAB) ---
         window.toggleChat = () => {
-            const chat = document.getElementById('chat-container');
-            const badge = document.getElementById('chat-badge');
-            chat.classList.toggle('open');
-            document.getElementById('chat-toggle-icon').innerText = chat.classList.contains('open') ? 'expand_more' : 'expand_less';
+            const overlay = document.getElementById('chat-overlay');
+            const btn = document.getElementById('btn-open-chat');
             
-            if(chat.classList.contains('open')) {
-                badge.style.display = 'none';
+            if(overlay.style.display === 'flex') {
+                overlay.style.display = 'none';
+            } else {
+                overlay.style.display = 'flex';
+                btn.classList.remove('has-new');
                 const msgBox = document.getElementById('chat-messages');
                 msgBox.scrollTop = msgBox.scrollHeight;
             }
@@ -905,11 +844,8 @@
 
             addMessage(text, 'me', 'Sen');
             
-            if(myRole === 'host') {
-                broadcastExcept({ type: 'chat', text: text, sender: myName }, null);
-            } else {
-                hostConn.send({ type: 'chat', text: text });
-            }
+            if(myRole === 'host') broadcastExcept({ type: 'chat', text: text, sender: myName }, null);
+            else hostConn.send({ type: 'chat', text: text });
             
             input.value = '';
         };
@@ -921,15 +857,15 @@
             const msg = document.createElement('div');
             msg.className = `msg ${type}`;
             if(type === 'system') msg.innerText = text;
-            else msg.innerHTML = `<div class="msg-sender">${senderName}</div>${text}`;
+            else msg.innerHTML = `<div style="font-size:0.7rem; opacity:0.7; margin-bottom:4px;">${senderName}</div>${text}`;
             box.appendChild(msg);
             box.scrollTop = box.scrollHeight;
         }
 
         function notifyChat(sender, text) {
-            const chat = document.getElementById('chat-container');
-            if(!chat.classList.contains('open')) {
-                document.getElementById('chat-badge').style.display = 'inline-block';
+            const overlay = document.getElementById('chat-overlay');
+            if(overlay.style.display !== 'flex') {
+                document.getElementById('btn-open-chat').classList.add('has-new');
                 playSound('msg');
                 showToast(`<strong>${sender}:</strong> ${text}`, 'chat');
             }
