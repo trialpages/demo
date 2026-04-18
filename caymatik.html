@@ -64,6 +64,17 @@
         .btn-dev { background: white; color: var(--text-main); padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border); }
         .btn-dev:hover { background: var(--border); }
 
+        /* YENİ: ONLINE İSTATİSTİK ROZETLERİ (STATS BAR) */
+        .stats-bar { display: flex; gap: 1rem; padding: 0 0.5rem; margin-top: -0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .stat-badge { display: flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; box-shadow: var(--shadow-sm); }
+        .stat-badge.registered { background: #e0f2fe; color: #1e40af; border: 1px solid #bfdbfe; }
+        .stat-badge.online { background: #dcfce7; color: #065f46; border: 1px solid #a7f3d0; }
+        .stat-badge .material-symbols-rounded { font-size: 18px; }
+        
+        /* Online simgesine nefes alma efekti */
+        @keyframes wifiPulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+        .stat-badge.online .material-symbols-rounded { animation: wifiPulse 2s infinite ease-in-out; }
+
         /* AKORDEON REHBER (GUIDE) */
         .guide-box { background: linear-gradient(145deg, #eff6ff, #e0e7ff); border: 1px solid #bfdbfe; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
         .guide-header { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
@@ -81,7 +92,6 @@
         /* KULLANICI MESAJLARI (AKORDEON CHAT PANOSU) */
         .messages-card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; transition: var(--transition); }
         
-        /* Yanıp Sönen Kırmızı Yeni Mesaj Uyarısı */
         @keyframes pulseAlertRed {
             0% { background-color: var(--empty-bg); color: var(--text-main); }
             50% { background-color: var(--stale); color: white; }
@@ -163,7 +173,6 @@
         .btn-almost-empty { grid-column: span 2; background: var(--stale-bg); color: var(--stale); border: 1px dashed var(--stale); }
         .btn-almost-empty:hover { background: var(--stale); color: white; }
 
-        /* Hazır Butonu */
         .btn-ready { background: var(--fresh-bg); color: var(--fresh); border: 1px solid var(--fresh); }
         .btn-ready:hover { background: var(--fresh); color: white; }
 
@@ -208,7 +217,6 @@
         
         .popup-content { padding: 1rem; flex: 1; display: flex; flex-direction: column; gap: 0.35rem; }
         
-        /* ZAMAN DAMGASI (TIMESTAMP) İÇİN YENİ HEADER SATIRI */
         .popup-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
         .popup-time { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; margin-top: 0.15rem;}
 
@@ -253,6 +261,17 @@
                 </button>
             </div>
         </header>
+
+        <div class="stats-bar">
+            <div class="stat-badge registered">
+                <span class="material-symbols-rounded">group</span>
+                Kayıtlı: <strong id="registered-count">0</strong>
+            </div>
+            <div class="stat-badge online">
+                <span class="material-symbols-rounded">wifi</span>
+                Aktif (Online): <strong id="online-count">1</strong>
+            </div>
+        </div>
 
         <div class="guide-box" id="guide-box">
             <div class="guide-header" onclick="toggleGuide()">
@@ -325,17 +344,58 @@
 
     <div class="popup-container" id="popup-container"></div>
 
-    <script>
+    <script type="module">
+        // VIBECODER MİMARİSİ: Firebase kütüphaneleri burada yer alıyor varsayılmıştır (Bir önceki koduna göre).
+        // Arayüzün Vanilla HTML halini kusursuzlaştırmak için mevcut JS değişkenlerini burada tanımlıyoruz.
+
+        const USERS_MAP = [
+            { name: "Elif Hilal", email: "elifhilal@mola.com" },
+            { name: "Halil", email: "halil@mola.com" },
+            { name: "Huzeyfe", email: "huzeyfe@mola.com" },
+            { name: "Ahmet Yasin", email: "ahmetyasin@mola.com" },
+            { name: "Fatih", email: "fatih@mola.com" },
+            { name: "İkbal", email: "ikbal@mola.com" },
+            { name: "Bekir", email: "bekir@mola.com" },
+            { name: "Mustafa", email: "mustafa@mola.com" },
+            { name: "Hilmi", email: "hilmi@mola.com" }
+        ];
+
+        // Kayıtlı Kullanıcı Sayısını Yazdır
+        document.getElementById('registered-count').innerText = USERS_MAP.length;
+
+        // Gerçekte Firebase'den gelecek verinin simülasyonu
+        // Sisteme Firebase bağlandığında `roomStates` içindeki `lastOnline` verisine göre bu sayı dinamik güncellenecektir.
+        let roomStates = {
+            "test1@mola.com": { lastOnline: Date.now() - 10000 },
+            "test2@mola.com": { lastOnline: Date.now() - 5000 },
+            "test3@mola.com": { lastOnline: Date.now() - 80000 } // Offline sayılır
+        };
+
+        // --- ONLINE (HEARTBEAT) TAKİBİ YÖNETİMİ ---
+        function updateOnlineCount() {
+            const now = Date.now();
+            let online = 0; // Kendi tarayıcımız her halükarda en az 1 kişidir.
+            
+            // Firebase eklendiğinde roomStates taranarak aktif tarayıcılar sayılır
+            Object.values(roomStates).forEach(state => {
+                // Eğer son 60 saniye içinde ping atılmışsa (Tarayıcı açıksa)
+                if (state.lastOnline && (now - state.lastOnline < 60000)) {
+                    online++;
+                }
+            });
+            
+            document.getElementById('online-count').innerText = online === 0 ? 1 : online; // En az 1
+        }
+
         // --- AKORDEON MANTIKLARI ---
-        function toggleGuide() {
+        window.toggleGuide = () => {
             document.getElementById('guide-box').classList.toggle('open');
         }
 
-        function toggleMessages() {
+        window.toggleMessages = () => {
             const card = document.getElementById('messages-card');
             card.classList.toggle('open');
             
-            // Eğer kart açıldıysa, kırmızı yanıp sönme uyarısını kapat ve en alta kaydır
             if (card.classList.contains('open')) {
                 card.classList.remove('has-new-message');
                 const list = document.getElementById('messages-list');
@@ -353,7 +413,7 @@
         }
         document.addEventListener('click', initAudio, { once: true });
 
-        function playSound(type) {
+        window.playSound = (type) => {
             if (isMuted) return;
             try {
                 if (!audioCtx) initAudio();
@@ -401,7 +461,7 @@
         });
 
         // --- BİLDİRİM (POPUP) SİSTEMİ (ZAMAN DAMGALI) ---
-        function showPersistentPopup(uniqueId, title, message, type, icon) {
+        window.showPersistentPopup = (uniqueId, title, message, type, icon) => {
             const container = document.getElementById('popup-container');
             const popupId = `popup-${uniqueId}`;
             
@@ -466,7 +526,6 @@
             renderMessages();
             
             const card = document.getElementById('messages-card');
-            
             if (!card.classList.contains('open')) {
                 card.classList.add('has-new-message');
             }
@@ -480,7 +539,6 @@
             }
         };
         
-        // İlk render
         renderMessages();
 
 
@@ -628,6 +686,7 @@
             });
 
             renderGrid();
+            updateOnlineCount(); // Canlı online sayısını güncelle
         }
 
         function renderGrid() {
