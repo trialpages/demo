@@ -2,24 +2,41 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VibeChat | Pure P2P Workspace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VibeChat | Pro P2P</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a', // slate-900 (Koyu Mavi Taban)
+                        darkpanel: '#1e293b', // slate-800
+                        darkborder: '#334155', // slate-700
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overscroll-behavior: none; }
         .hide { display: none !important; }
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); }
+        /* Mobil sorunları çözen dvh (Dynamic Viewport Height) */
+        .h-dvh { height: 100vh; height: 100dvh; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .pulse-green { animation: pulse 2s infinite; }
+        
+        .glass-panel { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); }
         .recording-pulse { animation: recPulse 1.5s infinite; color: #ef4444; }
+        .online-dot { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); animation: pulse 2s infinite; }
+        
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            70% { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
         @keyframes recPulse {
@@ -27,100 +44,120 @@
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
-        /* Dosya inputunu gizle */
         #file-input { display: none; }
     </style>
 </head>
-<body class="text-slate-800 h-screen w-screen overflow-hidden flex items-center justify-center">
+<body class="h-dvh w-screen overflow-hidden flex items-center justify-center">
 
-    <div id="login-screen" class="w-full max-w-md p-8 glass-panel rounded-3xl shadow-sm border border-slate-200 transition-all duration-500">
+    <div id="login-screen" class="w-full max-w-sm p-8 glass-panel rounded-3xl shadow-2xl border border-darkborder mx-4 transition-all duration-500">
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-semibold tracking-tight text-slate-900">VibeChat</h1>
-            <p class="text-sm text-slate-500 mt-2">Sıfır Sunucu, %100 P2P</p>
+            <h1 class="text-3xl font-semibold tracking-tight text-white">VibeChat</h1>
+            <p class="text-xs text-slate-400 mt-2">Uçtan Uca Şifreli Ağa Katılın</p>
         </div>
         
-        <div class="space-y-5">
+        <div class="space-y-4">
             <div>
-                <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Adınız</label>
-                <input type="text" id="username-input" placeholder="Örn: VibeCoder" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                <input type="text" id="username-input" placeholder="Kullanıcı Adınız" class="w-full px-4 py-3 bg-darkbg border border-darkborder rounded-xl focus:outline-none focus:border-blue-500 text-white transition-colors text-sm">
             </div>
             <div>
-                <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Oda Kodu (5 Haneli)</label>
-                <input type="text" id="room-input" maxlength="5" placeholder="AB12C" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors uppercase font-mono tracking-widest text-center text-lg">
+                <input type="text" id="room-input" maxlength="5" placeholder="ODA KODU (5 Hane)" class="w-full px-4 py-3 bg-darkbg border border-darkborder rounded-xl focus:outline-none focus:border-blue-500 text-white transition-colors uppercase font-mono tracking-widest text-center text-sm">
             </div>
-            <button id="join-btn" class="w-full bg-slate-900 text-white font-medium py-3 rounded-xl hover:bg-slate-800 transition-colors flex justify-center items-center gap-2">
-                Bağlan <i class="ph ph-arrow-right"></i>
+            <button id="join-btn" class="w-full bg-blue-600 text-white font-medium py-3 rounded-xl hover:bg-blue-500 transition-colors flex justify-center items-center gap-2 text-sm mt-2 shadow-lg shadow-blue-900/50">
+                Bağlantı Kur <i class="ph ph-arrow-right"></i>
             </button>
-            <p id="status-text" class="text-center text-xs text-slate-400 mt-2 h-4"></p>
+            <p id="status-text" class="text-center text-xs text-slate-500 h-4"></p>
         </div>
     </div>
 
-    <div id="chat-screen" class="hide w-full h-full max-w-5xl md:py-6 md:px-4 flex flex-col transition-all duration-500">
-        <div class="flex-1 glass-panel md:rounded-3xl shadow-sm border border-slate-200 flex flex-col overflow-hidden relative">
+    <div id="chat-screen" class="hide w-full h-full max-w-4xl md:py-4 md:px-4 flex flex-col transition-all duration-500 relative">
+        
+        <div id="voice-banner" class="hide absolute top-4 left-1/2 transform -translate-x-1/2 bg-darkpanel border border-blue-500/30 px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-4 z-50 text-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span id="voice-timer" class="font-mono text-blue-400">00:00</span>
+            </div>
+            <div class="w-px h-4 bg-darkborder"></div>
+            <button id="mute-mic-btn" class="text-slate-300 hover:text-white transition-colors" title="Mikrofonu Kapat">
+                <i class="ph ph-microphone text-lg" id="mute-icon"></i>
+            </button>
+            <button id="end-voice-btn" class="text-red-400 hover:text-red-500 transition-colors bg-red-400/10 p-1.5 rounded-full" title="Çağrıyı Sonlandır">
+                <i class="ph ph-phone-disconnect text-lg"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 glass-panel md:rounded-3xl border-0 md:border md:border-darkborder flex flex-col overflow-hidden relative">
             
-            <div class="h-20 border-b border-slate-100 px-6 flex justify-between items-center bg-white/50 z-10">
-                <div class="flex items-center gap-4">
+            <div class="h-16 md:h-20 border-b border-darkborder px-4 md:px-6 flex justify-between items-center bg-darkpanel/80 z-10 shrink-0">
+                <div class="flex items-center gap-3">
                     <div class="relative">
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold" id="header-avatar">?</div>
-                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-slate-400 rounded-full border-2 border-white" id="online-status" title="Bağlanıyor..."></div>
+                        <div class="w-10 h-10 bg-blue-900/50 rounded-full flex items-center justify-center text-blue-400 font-semibold text-lg border border-blue-800/50" id="header-avatar">?</div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-slate-500 rounded-full border-2 border-darkpanel" id="online-status"></div>
                     </div>
-                    <div>
-                        <h2 class="font-semibold text-slate-800 text-lg" id="header-room-display">Oda: -----</h2>
-                        <p class="text-xs text-slate-500 flex items-center gap-1" id="peer-status-text">
-                            <i class="ph ph-spinner animate-spin"></i> Karşı taraf bekleniyor...
+                    <div class="flex flex-col">
+                        <h2 class="font-medium text-white text-base md:text-lg leading-tight" id="header-room-display">-----</h2>
+                        <p class="text-[11px] text-slate-400 flex items-center gap-1" id="peer-status-text">
+                            Bekleniyor...
                         </p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 text-slate-400">
-                    <button id="voice-call-btn" class="p-2 hover:bg-slate-100 hover:text-slate-800 rounded-full transition-colors" title="Sesli Arama">
+                <div class="flex items-center gap-2 md:gap-3 text-slate-300">
+                    <button id="voice-call-btn" class="p-2 hover:bg-darkborder rounded-full transition-colors">
                         <i class="ph ph-phone text-xl"></i>
                     </button>
-                    <button id="video-call-btn" class="p-2 hover:bg-slate-100 hover:text-slate-800 rounded-full transition-colors" title="Görüntülü Arama">
+                    <button id="video-call-btn" class="p-2 hover:bg-darkborder rounded-full transition-colors">
                         <i class="ph ph-video-camera text-xl"></i>
                     </button>
-                    <div class="w-px h-6 bg-slate-200 mx-1"></div>
-                    <button id="leave-btn" class="p-2 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors" title="Odadan Çık">
+                    <button id="leave-btn" class="p-2 hover:bg-red-900/30 hover:text-red-400 rounded-full transition-colors ml-1">
                         <i class="ph ph-sign-out text-xl"></i>
                     </button>
                 </div>
             </div>
 
-            <div id="video-overlay" class="hide w-full h-48 bg-slate-900 border-b border-slate-700 flex relative overflow-hidden transition-all duration-300">
-                <div class="flex-1 relative border-r border-slate-800">
-                    <p class="absolute inset-0 flex items-center justify-center text-slate-500 text-xs">Karşı Taraf</p>
-                    <video id="remote-video" autoplay playsinline class="w-full h-full object-cover relative z-10"></video>
+            <div id="video-overlay" class="hide absolute inset-0 bg-black z-40 flex flex-col">
+                <div class="flex-1 relative">
+                    <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    
+                    <div class="absolute bottom-6 right-4 w-28 md:w-40 aspect-[3/4] bg-darkpanel rounded-2xl overflow-hidden shadow-2xl border-2 border-darkborder z-50">
+                        <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
+                    </div>
+
+                    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-darkpanel/80 backdrop-blur px-6 py-3 rounded-full border border-darkborder z-50">
+                        <button id="switch-cam-btn" class="p-3 bg-darkbg text-white rounded-full hover:bg-darkborder transition-colors">
+                            <i class="ph ph-camera-rotate text-xl"></i>
+                        </button>
+                        <button id="video-mute-btn" class="p-3 bg-darkbg text-white rounded-full hover:bg-darkborder transition-colors">
+                            <i class="ph ph-microphone text-xl" id="video-mute-icon"></i>
+                        </button>
+                        <button id="end-video-btn" class="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30">
+                            <i class="ph ph-phone-disconnect text-xl"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="w-1/3 relative bg-slate-800 shadow-lg">
-                    <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-                </div>
-                <button id="end-call-btn" class="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg z-20">
-                    <i class="ph ph-phone-disconnect text-xl"></i>
-                </button>
             </div>
 
-            <div id="messages-container" class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-slate-50/50">
+            <div id="messages-container" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 scrollbar-hide bg-darkbg">
                 <div class="flex justify-center">
-                    <span class="text-xs bg-slate-100 text-slate-400 px-3 py-1 rounded-full">Sistem başlatıldı. Bağlantı bekleniyor...</span>
+                    <span class="text-[10px] uppercase tracking-wider bg-darkborder text-slate-400 px-3 py-1 rounded-full">Sistem Başlatıldı</span>
                 </div>
             </div>
 
-            <div class="p-4 bg-white border-t border-slate-100 pointer-events-none opacity-50 transition-opacity" id="input-area">
-                <div class="flex items-end gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200 focus-within:border-blue-300 focus-within:ring-1 focus-within:ring-blue-300 transition-all">
+            <div class="p-2 md:p-4 bg-darkpanel border-t border-darkborder shrink-0 pointer-events-none opacity-50 transition-opacity" id="input-area">
+                <div class="flex items-end gap-1 md:gap-2 bg-darkbg p-1.5 md:p-2 rounded-2xl border border-darkborder focus-within:border-blue-500/50 transition-colors">
                     
                     <input type="file" id="file-input">
-                    <button id="attachment-btn" class="p-3 text-slate-400 hover:text-blue-500 transition-colors" title="Dosya Gönder">
-                        <i class="ph ph-paperclip text-xl"></i>
+                    <button id="attachment-btn" class="p-2.5 text-slate-400 hover:text-blue-400 transition-colors">
+                        <i class="ph ph-paperclip text-xl md:text-2xl"></i>
                     </button>
                     
-                    <textarea id="message-input" rows="1" placeholder="Bir mesaj yazın..." class="flex-1 bg-transparent resize-none outline-none text-slate-700 py-3 max-h-32 scrollbar-hide" style="min-height: 48px;"></textarea>
+                    <textarea id="message-input" rows="1" placeholder="Mesaj yaz..." class="flex-1 bg-transparent resize-none outline-none text-slate-100 py-2.5 text-sm md:text-base max-h-24 scrollbar-hide" style="min-height: 40px;"></textarea>
                     
-                    <button id="record-audio-btn" class="p-3 text-slate-400 hover:text-red-500 transition-colors" title="Basılı tutarak ses kaydet">
-                        <i class="ph ph-microphone text-xl" id="mic-icon"></i>
+                    <button id="record-audio-btn" class="p-2.5 text-slate-400 hover:text-red-400 transition-colors">
+                        <i class="ph ph-microphone text-xl md:text-2xl" id="mic-icon"></i>
                     </button>
 
-                    <button id="send-btn" class="p-3 text-white bg-blue-500 hover:bg-blue-600 rounded-xl transition-colors shadow-sm mb-0.5">
-                        <i class="ph ph-paper-plane-right text-xl"></i>
+                    <button id="send-btn" class="p-2.5 text-white bg-blue-600 hover:bg-blue-500 rounded-xl transition-colors shadow-sm mb-0.5 ml-1">
+                        <i class="ph ph-paper-plane-right text-lg md:text-xl"></i>
                     </button>
                 </div>
             </div>
@@ -129,57 +166,44 @@
     </div>
 
     <script>
-        // --- UI Elementleri ---
+        // UI Elementleri
         const loginScreen = document.getElementById('login-screen');
         const chatScreen = document.getElementById('chat-screen');
         const usernameInput = document.getElementById('username-input');
         const roomInput = document.getElementById('room-input');
-        const joinBtn = document.getElementById('join-btn');
-        const leaveBtn = document.getElementById('leave-btn');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
         const messagesContainer = document.getElementById('messages-container');
         const headerRoomDisplay = document.getElementById('header-room-display');
         const headerAvatar = document.getElementById('header-avatar');
         const onlineStatus = document.getElementById('online-status');
         const peerStatusText = document.getElementById('peer-status-text');
         const inputArea = document.getElementById('input-area');
-        const statusText = document.getElementById('status-text');
+        const messageInput = document.getElementById('message-input');
         
-        // Medya Elementleri
-        const attachmentBtn = document.getElementById('attachment-btn');
-        const fileInput = document.getElementById('file-input');
-        const recordAudioBtn = document.getElementById('record-audio-btn');
-        const micIcon = document.getElementById('mic-icon');
-        const videoCallBtn = document.getElementById('video-call-btn');
-        const voiceCallBtn = document.getElementById('voice-call-btn');
-        const endCallBtn = document.getElementById('end-call-btn');
+        // Arama UI Elementleri
+        const voiceBanner = document.getElementById('voice-banner');
+        const voiceTimerDisplay = document.getElementById('voice-timer');
         const videoOverlay = document.getElementById('video-overlay');
         const localVideo = document.getElementById('local-video');
         const remoteVideo = document.getElementById('remote-video');
-
-        // --- P2P Değişkenleri ---
-        let peer = null;
-        let conn = null;
-        let currentCall = null;
-        let localStream = null;
-        let currentUser = "";
-        let currentRoom = "";
         
-        // Ses Kayıt Değişkenleri
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
+        // P2P Değişkenleri
+        let peer = null, conn = null, currentCall = null, localStream = null;
+        let currentUser = "", currentRoom = "";
+        
+        // Medya/Kayıt Değişkenleri
+        let mediaRecorder, audioChunks = [];
+        let isMuted = false, isFrontCam = true;
+        let callInterval = null, callSeconds = 0;
 
-        // --- Yardımcı Fonksiyonlar ---
+        // --- UI Yardımcı Fonksiyonlar ---
         const scrollToBottom = () => {
-            messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         };
 
         const sysMsg = (text) => {
             const div = document.createElement('div');
-            div.className = 'flex justify-center';
-            div.innerHTML = `<span class="text-xs bg-slate-100 text-slate-500 px-3 py-1 rounded-full border border-slate-200">${text}</span>`;
+            div.className = 'flex justify-center my-2';
+            div.innerHTML = `<span class="text-[10px] uppercase tracking-wider bg-darkborder text-slate-400 px-3 py-1 rounded-full">${text}</span>`;
             messagesContainer.appendChild(div);
             scrollToBottom();
         };
@@ -188,322 +212,304 @@
             const wrapper = document.createElement('div');
             wrapper.className = `flex w-full flex-col ${isMine ? 'items-end' : 'items-start'}`;
             
-            // İsim etiketi (Sadece karşı taraf için)
-            if(!isMine) {
-                const nameLabel = document.createElement('span');
-                nameLabel.className = 'text-[10px] text-slate-400 ml-1 mb-1 font-medium';
-                nameLabel.textContent = data.name;
-                wrapper.appendChild(nameLabel);
-            }
-
+            // Toast tarzı minimal balon
             const bubble = document.createElement('div');
-            bubble.className = `max-w-[85%] md:max-w-[60%] rounded-2xl px-5 py-3 shadow-sm flex flex-col gap-1 ${
+            bubble.className = `px-3 py-2 md:px-4 md:py-2.5 rounded-2xl w-fit max-w-[80%] md:max-w-[65%] shadow-sm flex flex-col ${
                 isMine 
-                ? 'bg-blue-500 text-white rounded-tr-sm' 
-                : 'bg-white text-slate-800 border border-slate-100 rounded-tl-sm'
+                ? 'bg-blue-600 text-white rounded-tr-sm' 
+                : 'bg-darkpanel border border-darkborder text-slate-100 rounded-tl-sm'
             }`;
             
-            // Veri tipine göre içerik oluştur
             if(data.type === 'text') {
                 const textEl = document.createElement('p');
-                textEl.className = 'text-sm leading-relaxed whitespace-pre-wrap';
+                textEl.className = 'text-[13px] md:text-sm leading-snug whitespace-pre-wrap break-words';
                 textEl.textContent = data.content;
                 bubble.appendChild(textEl);
             } 
             else if(data.type === 'file') {
                 const fileLink = document.createElement('a');
-                fileLink.href = data.content; // Base64 veya Blob URL
+                fileLink.href = data.content;
                 fileLink.download = data.fileName;
-                fileLink.className = `flex items-center gap-2 text-sm font-medium ${isMine ? 'text-white underline' : 'text-blue-500 underline'}`;
-                fileLink.innerHTML = `<i class="ph ph-file-arrow-down text-lg"></i> ${data.fileName}`;
+                fileLink.className = `flex items-center gap-2 text-sm font-medium ${isMine ? 'text-white' : 'text-blue-400'} hover:underline`;
+                fileLink.innerHTML = `<i class="ph ph-file-arrow-down text-lg"></i> <span class="truncate max-w-[150px]">${data.fileName}</span>`;
                 bubble.appendChild(fileLink);
             }
             else if(data.type === 'audio') {
                 const audioEl = document.createElement('audio');
                 audioEl.controls = true;
                 audioEl.src = data.content;
-                audioEl.className = 'h-10 w-48';
+                audioEl.className = 'h-8 w-40 md:w-48'; // Minimal boyut
                 bubble.appendChild(audioEl);
             }
 
+            // Kompakt zaman etiketi
             const timeStamp = document.createElement('span');
-            timeStamp.className = `text-[10px] block mt-1 text-right ${isMine ? 'text-blue-200' : 'text-slate-400'}`;
+            timeStamp.className = `text-[9px] block mt-1 text-right ${isMine ? 'text-blue-200/80' : 'text-slate-500'}`;
             timeStamp.textContent = data.time;
-
             bubble.appendChild(timeStamp);
+
             wrapper.appendChild(bubble);
             messagesContainer.appendChild(wrapper);
             scrollToBottom();
         };
 
-        // --- P2P Mimari Algoritması (Zeki Oda Sistemi) ---
-        const initP2P = (room, name) => {
-            const hostId = `vibechat-room-${room}-host`;
+        // --- P2P Motoru ---
+        const initP2P = (room) => {
+            const hostId = `vbc-${room}-host`;
+            document.getElementById('status-text').textContent = "Ağa bağlanılıyor...";
             
-            statusText.textContent = "Bağlantı kuruluyor...";
-            
-            // 1. Önce Host olmayı dene
             peer = new Peer(hostId);
 
-            peer.on('open', (id) => {
-                // Başarılı! Demek ki odada kimse yok. Host biziz.
-                sysMsg("Oda oluşturuldu. Bekleniyor...");
+            peer.on('open', () => {
+                sysMsg("Oda açıldı. Bekleniyor...");
                 setupPeerEvents();
             });
 
             peer.on('error', (err) => {
                 if (err.type === 'unavailable-id') {
-                    // ID dolu! Demek ki Host zaten var. Biz Guest (Misafir) olmalıyız.
-                    peer.destroy(); // Hatalı peer'ı yok et
-                    
-                    peer = new Peer(); // Rastgele ID ile yeni peer
-                    peer.on('open', (id) => {
-                        // Host'a doğrudan bağlan
-                        statusText.textContent = "Oda bulundu, bağlanılıyor...";
+                    peer.destroy();
+                    peer = new Peer();
+                    peer.on('open', () => {
+                        document.getElementById('status-text').textContent = "Oda bulundu, eşleşiliyor...";
                         conn = peer.connect(hostId);
                         setupConnectionEvents(conn);
                         setupPeerEvents();
                     });
                 } else {
                     alert("Ağ hatası: " + err.message);
-                    resetUI();
+                    location.reload();
                 }
             });
         };
 
         const setupPeerEvents = () => {
-            // Arayüze geç
             loginScreen.classList.add('hide');
             chatScreen.classList.remove('hide');
             
-            // Eğer bize bir bağlantı gelirse (Host isek bu çalışır)
             peer.on('connection', (connection) => {
-                if(conn) {
-                    // Üçüncü bir kişi gelirse reddet (Sadece 2 kişi)
-                    connection.on('open', () => { connection.send({ type: 'sys', content: 'Oda dolu!' }); setTimeout(()=>connection.close(), 500); });
-                    return;
-                }
+                if(conn) { setTimeout(()=>connection.close(), 500); return; }
                 conn = connection;
                 setupConnectionEvents(conn);
             });
 
-            // Gelen Medya Çağrılarını Dinle
+            // Gelen Arama
             peer.on('call', (call) => {
-                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                // Video izi var mı kontrol et (Görüntülü mü Sesli mi?)
+                const isVideo = confirm("Gelen bir arama var. Görüntülü yanıtlamak ister misiniz? (İptal = Sadece Ses)");
+                
+                navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true })
                 .then((stream) => {
                     localStream = stream;
-                    localVideo.srcObject = stream;
-                    call.answer(stream); // Çağrıyı yanıtla
-                    setupCallEvents(call);
+                    if(isVideo) localVideo.srcObject = stream;
+                    call.answer(stream);
+                    setupCallEvents(call, isVideo);
                 })
-                .catch(err => {
-                    alert("Kamera/Mikrofon izni reddedildi.");
-                    call.close();
-                });
+                .catch(() => call.close());
             });
         };
 
         const setupConnectionEvents = (connection) => {
             connection.on('open', () => {
-                // Bağlantı Kuruldu! Arayüzü aktifleştir.
-                onlineStatus.classList.replace('bg-slate-400', 'bg-green-500');
-                onlineStatus.classList.add('pulse-green');
-                peerStatusText.innerHTML = `<i class="ph ph-lock-key text-green-500"></i> P2P Güvenli Bağlantı Aktif`;
+                onlineStatus.classList.replace('bg-slate-500', 'bg-green-500');
+                onlineStatus.classList.add('online-dot');
+                peerStatusText.innerHTML = `<i class="ph ph-lock-key text-green-400"></i> P2P Aktif`;
                 inputArea.classList.remove('pointer-events-none', 'opacity-50');
                 
-                sysMsg("Karşı taraf bağlandı. Sohbet uçtan uca şifrelidir.");
-
-                // Tanışma mesajı gönder (İsmimizi karşıya iletelim)
+                sysMsg("Bağlantı kuruldu.");
                 connection.send({ type: 'sys_name', name: currentUser });
             });
 
             connection.on('data', (data) => {
-                // Gelen Veriyi İşle
                 if(data.type === 'sys_name') {
-                    // Karşı tarafın adını başlıkta göster
-                    document.getElementById('header-room-display').textContent = data.name;
+                    headerRoomDisplay.textContent = data.name;
                     headerAvatar.textContent = data.name.charAt(0).toUpperCase();
                 } 
-                else if (data.type === 'text' || data.type === 'file' || data.type === 'audio') {
+                else if (['text', 'file', 'audio'].includes(data.type)) {
                     createMessageBubble(data, false);
                 }
             });
 
             connection.on('close', () => {
-                sysMsg("Karşı taraf ayrıldı.");
-                resetConnectionUI();
-                conn = null;
+                sysMsg("Bağlantı koptu.");
+                location.reload(); // Güvenlik için odayı sıfırla
             });
         };
 
-        // --- Veri Gönderme Fonksiyonu ---
         const sendData = (type, content, fileName = "") => {
-            if(!conn || !conn.open) return alert("Bağlantı koptu veya henüz kurulamadı.");
-            
-            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const payload = { type, content, fileName, name: currentUser, time };
-            
-            conn.send(payload); // Karşıya gönder
-            createMessageBubble(payload, true); // Kendimizde göster
+            if(!conn || !conn.open) return;
+            const payload = { type, content, fileName, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+            conn.send(payload);
+            createMessageBubble(payload, true);
         };
 
-        // --- Arayüz ve UI Olayları ---
-        
-        // 1. Odaya Bağlan
-        joinBtn.addEventListener('click', () => {
+        // --- Event Listeners: Mesajlaşma ---
+        document.getElementById('join-btn').addEventListener('click', () => {
             currentUser = usernameInput.value.trim();
             currentRoom = roomInput.value.trim().toUpperCase();
-
-            if(currentUser.length < 2) return alert("Lütfen geçerli bir isim girin.");
-            if(currentRoom.length !== 5) return alert("Oda kodu 5 haneli olmalıdır.");
-
-            headerRoomDisplay.textContent = `Oda: ${currentRoom}`;
-            headerAvatar.textContent = currentUser.charAt(0).toUpperCase();
-            
-            initP2P(currentRoom, currentUser);
+            if(currentUser.length < 2 || currentRoom.length !== 5) return alert("Geçerli isim ve 5 haneli kod girin.");
+            initP2P(currentRoom);
         });
 
-        // 2. Metin Gönder
-        const handleSendText = () => {
+        const handleSend = () => {
             const text = messageInput.value.trim();
             if(!text) return;
             sendData('text', text);
             messageInput.value = '';
-            messageInput.style.height = '48px';
+            messageInput.style.height = '40px';
         };
 
-        sendBtn.addEventListener('click', handleSendText);
+        document.getElementById('send-btn').addEventListener('click', handleSend);
         messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendText(); }
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
         });
         messageInput.addEventListener('input', function() {
-            this.style.height = '48px';
+            this.style.height = '40px';
             this.style.height = (this.scrollHeight) + 'px';
         });
 
-        // 3. Dosya Gönder
-        attachmentBtn.addEventListener('click', () => fileInput.click());
+        // Dosya
+        const fileInput = document.getElementById('file-input');
+        document.getElementById('attachment-btn').addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            
-            // Dosyayı Base64'e çevirip yolla (P2P kanalı ArrayBuffer veya Base64 destekler)
             const reader = new FileReader();
-            reader.onload = (event) => {
-                sendData('file', event.target.result, file.name);
-            };
+            reader.onload = (ev) => sendData('file', ev.target.result, file.name);
             reader.readAsDataURL(file);
-            fileInput.value = ''; // Reset
         });
 
-        // 4. Ses Kaydı Gönder
-        recordAudioBtn.addEventListener('mousedown', async () => {
+        // Ses Kaydı
+        const micBtn = document.getElementById('record-audio-btn');
+        const micIcon = document.getElementById('mic-icon');
+        micBtn.addEventListener('mousedown', async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
-                
                 mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     const reader = new FileReader();
-                    reader.onload = (event) => sendData('audio', event.target.result);
-                    reader.readAsDataURL(audioBlob);
-                    
-                    // Mikrofonu kapat
-                    stream.getTracks().forEach(track => track.stop());
+                    reader.onload = (ev) => sendData('audio', ev.target.result);
+                    reader.readAsDataURL(new Blob(audioChunks));
+                    stream.getTracks().forEach(t => t.stop());
                 };
-                
                 mediaRecorder.start();
                 micIcon.classList.add('recording-pulse');
-            } catch (err) {
-                alert("Mikrofon erişimi sağlanamadı.");
-            }
+            } catch (e) {}
         });
-
-        recordAudioBtn.addEventListener('mouseup', () => {
+        const stopRec = () => {
             if(mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.stop();
                 micIcon.classList.remove('recording-pulse');
             }
-        });
-        recordAudioBtn.addEventListener('mouseleave', () => {
-            if(mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                micIcon.classList.remove('recording-pulse');
-            }
-        });
+        };
+        micBtn.addEventListener('mouseup', stopRec);
+        micBtn.addEventListener('mouseleave', stopRec);
+        micBtn.addEventListener('touchstart', (e) => { e.preventDefault(); micBtn.dispatchEvent(new Event('mousedown')); });
+        micBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopRec(); });
 
-        // 5. Medya Aramaları (Video/Ses)
-        const startCall = (videoEnabled) => {
-            if(!conn || !conn.open) return alert("Bağlantı yok.");
-            
-            navigator.mediaDevices.getUserMedia({ video: videoEnabled, audio: true })
+        // --- Event Listeners: Medya (Arama) ---
+        const formatTime = (sec) => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
+        
+        const startTimer = () => {
+            callSeconds = 0;
+            voiceTimerDisplay.textContent = "00:00";
+            callInterval = setInterval(() => {
+                callSeconds++;
+                voiceTimerDisplay.textContent = formatTime(callSeconds);
+            }, 1000);
+        };
+
+        const toggleMute = (btnIconId) => {
+            if(!localStream) return;
+            isMuted = !isMuted;
+            localStream.getAudioTracks()[0].enabled = !isMuted;
+            const icon = document.getElementById(btnIconId);
+            icon.className = isMuted ? "ph ph-microphone-slash text-xl text-red-400" : "ph ph-microphone text-xl";
+        };
+
+        // Ön/Arka Kamera Değiştirme (Zarif Track Değişimi)
+        const switchCamera = async () => {
+            if (!localStream) return;
+            isFrontCam = !isFrontCam;
+            try {
+                const newStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: isFrontCam ? "user" : "environment" }
+                });
+                const newVideoTrack = newStream.getVideoTracks()[0];
+                
+                // Kendi arayüzümüzde değiştir
+                localStream.removeTrack(localStream.getVideoTracks()[0]);
+                localStream.addTrack(newVideoTrack);
+                localVideo.srcObject = localStream;
+                localVideo.classList.toggle('scale-x-[-1]', isFrontCam); // Arka kamerada aynalamayı kaldır
+                
+                // Karşı tarafa giden izi (Track) yayını kesmeden değiştir
+                if(currentCall && currentCall.peerConnection) {
+                    const sender = currentCall.peerConnection.getSenders().find(s => s.track.kind === 'video');
+                    if(sender) sender.replaceTrack(newVideoTrack);
+                }
+            } catch (e) {
+                isFrontCam = !isFrontCam; // Hata olursa durumu geri al
+            }
+        };
+
+        const startCall = (isVideo) => {
+            if(!conn || !conn.open) return;
+            navigator.mediaDevices.getUserMedia({ video: isVideo ? { facingMode: "user" } : false, audio: true })
             .then((stream) => {
                 localStream = stream;
-                localVideo.srcObject = stream;
-                
-                // Karşı tarafı ara (Bağlandığımız conn.peer ID'sini kullanarak)
+                if(isVideo) localVideo.srcObject = stream;
                 currentCall = peer.call(conn.peer, stream);
-                setupCallEvents(currentCall);
+                setupCallEvents(currentCall, isVideo);
             })
-            .catch(err => alert("Kamera/Mikrofon izni gerekli."));
+            .catch(e => alert("Kamera/Mikrofon izni gerekli."));
         };
 
-        const setupCallEvents = (call) => {
-            videoOverlay.classList.remove('hide');
+        const setupCallEvents = (call, isVideo) => {
             currentCall = call;
+            isMuted = false;
             
-            call.on('stream', (remoteStream) => {
-                remoteVideo.srcObject = remoteStream;
-            });
+            if(isVideo) {
+                videoOverlay.classList.remove('hide');
+                document.getElementById('video-mute-icon').className = "ph ph-microphone text-xl";
+            } else {
+                voiceBanner.classList.remove('hide');
+                document.getElementById('mute-icon').className = "ph ph-microphone text-lg";
+                startTimer();
+            }
             
-            call.on('close', () => {
-                endMediaSession();
+            call.on('stream', (rStream) => {
+                if(isVideo) remoteVideo.srcObject = rStream;
+                else {
+                    const audio = new Audio();
+                    audio.srcObject = rStream;
+                    audio.play();
+                }
             });
+            call.on('close', endMediaSession);
         };
-
-        videoCallBtn.addEventListener('click', () => startCall(true));
-        voiceCallBtn.addEventListener('click', () => startCall(false));
-
-        endCallBtn.addEventListener('click', () => {
-            if(currentCall) currentCall.close();
-            endMediaSession();
-        });
 
         const endMediaSession = () => {
             videoOverlay.classList.add('hide');
-            if(localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
+            voiceBanner.classList.add('hide');
+            clearInterval(callInterval);
+            if(localStream) localStream.getTracks().forEach(t => t.stop());
             localVideo.srcObject = null;
             remoteVideo.srcObject = null;
             currentCall = null;
+            localStream = null;
         };
 
-        // 6. Çıkış ve Temizlik
-        const resetConnectionUI = () => {
-            onlineStatus.classList.replace('bg-green-500', 'bg-slate-400');
-            onlineStatus.classList.remove('pulse-green');
-            peerStatusText.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Karşı taraf bekleniyor...`;
-            inputArea.classList.add('pointer-events-none', 'opacity-50');
-            document.getElementById('header-room-display').textContent = `Oda: ${currentRoom}`;
-            headerAvatar.textContent = "?";
-            endMediaSession();
-        };
-
-        const resetUI = () => {
-            if(conn) conn.close();
-            if(peer) peer.destroy();
-            resetConnectionUI();
-            chatScreen.classList.add('hide');
-            loginScreen.classList.remove('hide');
-            messagesContainer.innerHTML = '';
-            statusText.textContent = "";
-        };
-
-        leaveBtn.addEventListener('click', resetUI);
+        // Arama Butonları
+        document.getElementById('video-call-btn').onclick = () => startCall(true);
+        document.getElementById('voice-call-btn').onclick = () => startCall(false);
+        document.getElementById('end-video-btn').onclick = () => { if(currentCall) currentCall.close(); endMediaSession(); };
+        document.getElementById('end-voice-btn').onclick = () => { if(currentCall) currentCall.close(); endMediaSession(); };
+        document.getElementById('switch-cam-btn').onclick = switchCamera;
+        document.getElementById('video-mute-btn').onclick = () => toggleMute('video-mute-icon');
+        document.getElementById('mute-mic-btn').onclick = () => toggleMute('mute-icon');
+        document.getElementById('leave-btn').onclick = () => location.reload();
 
     </script>
 </body>
