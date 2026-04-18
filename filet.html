@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VibeShare | P2P Ağ Transferi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+    <style>
+        /* --- TAILWIND VIBE CSS DEĞİŞKENLERİ --- */
+        :root {
+            --bg-color: #f1f5f9; /* slate-100 */
+            --surface: #ffffff;
+            --text-main: #0f172a; /* slate-900 */
+            --text-muted: #64748b; /* slate-500 */
+            --border: #e2e8f0; /* slate-200 */
+            
+            --primary: #6366f1; /* indigo-500 */
+            --primary-hover: #4f46e5; /* indigo-600 */
+            --primary-light: #e0e7ff; /* indigo-100 */
+            
+            --success: #10b981; /* emerald-500 */
+            --success-light: #d1fae5;
+            
+            --danger: #ef4444; /* red-500 */
+            --danger-light: #fee2e2;
+
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            min-height: 100vh; 
+            padding: 1.5rem 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background-image: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(241, 245, 249) 90%);
+        }
+
+        .container { max-width: 800px; width: 100%; display: flex; flex-direction: column; gap: 1.5rem; }
+
+        /* Header */
+        header { 
+            display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; margin-bottom: 0.5rem;
+        }
+        .logo-icon { font-size: 48px; color: var(--primary); background: var(--surface); padding: 1rem; border-radius: 24px; box-shadow: var(--shadow-md); margin-bottom: 0.5rem;}
+        h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.5px; }
+        p.subtitle { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Kartlar Genel */
+        .card { 
+            background: var(--surface); 
+            border-radius: var(--radius-lg); 
+            padding: 1.5rem; 
+            box-shadow: var(--shadow-md); 
+            border: 1px solid rgba(255,255,255,0.5);
+            display: flex; flex-direction: column; gap: 1rem;
+            transition: var(--transition);
+        }
+        .card-title { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 0.5rem;}
+
+        /* Form Elemanları */
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        input[type="text"], textarea { 
+            width: 100%; padding: 0.8rem 1rem; border-radius: var(--radius-md); border: 2px solid var(--border); background: var(--bg-color); font-size: 1rem; outline: none; transition: var(--transition); 
+        }
+        input[type="text"]:focus, textarea:focus { border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-light); }
+        textarea { resize: vertical; min-height: 80px; }
+
+        button { 
+            cursor: pointer; border: none; background: var(--primary); color: white; padding: 0.8rem 1.5rem; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;
+        }
+        button:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover:not(:disabled) { background: var(--primary-light); color: var(--primary-hover); }
+
+        /* Dosya Yükleme Alanı */
+        .file-drop-area {
+            border: 2px dashed var(--primary); background: var(--primary-light); border-radius: var(--radius-md); padding: 2rem 1rem; text-align: center; cursor: pointer; transition: var(--transition); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: var(--primary-hover);
+        }
+        .file-drop-area:hover { background: #c7d2fe; }
+        .file-drop-area .material-symbols-rounded { font-size: 40px; }
+        input[type="file"] { display: none; }
+
+        /* Bağlantı Durumu */
+        .status-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; margin: 0 auto; background: var(--border); color: var(--text-muted); }
+        .status-badge.connected { background: var(--success-light); color: var(--success); }
+        .status-indicator { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+        .connected .status-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+
+        /* ID Gösterimi */
+        .my-id-display { font-size: 2rem; font-weight: 800; letter-spacing: 2px; color: var(--primary); text-align: center; background: var(--primary-light); padding: 1rem; border-radius: var(--radius-md); user-select: all; }
+
+        /* Transfer Alanları (Başlangıçta Gizli) */
+        #transfer-section { display: none; flex-direction: column; gap: 1.5rem; }
+
+        /* Geçmiş (History) Listesi */
+        .history-list { display: flex; flex-direction: column; gap: 1rem; max-height: 400px; overflow-y: auto; padding-right: 0.5rem; }
+        .history-item { background: var(--bg-color); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; border-left: 4px solid var(--primary); }
+        .history-item.received { border-left-color: var(--success); }
+        .history-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .history-content { font-size: 0.95rem; word-break: break-word; }
+        .history-action { margin-top: 0.5rem; display: flex; justify-content: flex-end; }
+        .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; border-radius: 8px;}
+
+        /* Toast Bildirimi */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+        .toast { background: var(--text-main); color: white; padding: 1rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 0.75rem; transform: translateX(120%); animation: slideIn 0.3s forwards; }
+        @keyframes slideIn { to { transform: translateX(0); } }
+
+        /* Grid Layout for Desktop */
+        @media (min-width: 768px) {
+            .transfer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <div class="logo-icon"><span class="material-symbols-rounded" style="font-size: inherit;">offline_share</span></div>
+            <h1>VibeShare</h1>
+            <p class="subtitle">Aynı Wi-Fi ağındaki cihazlar arası anında veri transferi</p>
+            <div class="status-badge" id="connection-status">
+                <div class="status-indicator"></div>
+                <span id="status-text">Bağlantı Bekleniyor...</span>
+            </div>
+        </header>
+
+        <div class="card" id="connection-section">
+            <div class="card-title">
+                <span class="material-symbols-rounded">devices</span> Cihaz Eşleştirme
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; align-items: center;">
+                <div class="input-group">
+                    <label>Bu Cihazın Kodu</label>
+                    <div class="my-id-display" id="my-id-display">...</div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">Diğer cihazdan bağlanmak için bu kodu girin.</p>
+                </div>
+
+                <div class="input-group">
+                    <label>Diğer Cihaza Bağlan</label>
+                    <input type="text" id="target-id-input" placeholder="Örn: X7B9K2" autocomplete="off" style="text-transform: uppercase; font-size: 1.2rem; letter-spacing: 2px; text-align: center; font-weight: 700;">
+                    <button onclick="connectToPeer()" id="btn-connect" style="margin-top: 0.5rem;">
+                        <span class="material-symbols-rounded">link</span> Bağlan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="transfer-section">
+            
+            <div class="transfer-grid">
+                <div class="card">
+                    <div class="card-title"><span class="material-symbols-rounded">notes</span> Metin / Link Gönder</div>
+                    <div class="input-group">
+                        <textarea id="text-input" placeholder="Panodaki metni veya linki buraya yapıştırın..."></textarea>
+                        <button onclick="sendText()">
+                            <span class="material-symbols-rounded">send</span> Gönder
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="material-symbols-rounded">folder_open</span> Medya / Dosya Gönder</div>
+                    <label for="file-input" class="file-drop-area" id="drop-area">
+                        <span class="material-symbols-rounded">cloud_upload</span>
+                        <span id="file-name-display" style="font-weight: 600;">Dosya Seçmek İçin Tıklayın</span>
+                        <span style="font-size: 0.8rem;">(PDF, Görsel, Video, Zip)</span>
+                    </label>
+                    <input type="file" id="file-input" onchange="handleFileSelect(event)">
+                    <button onclick="sendFile()" id="btn-send-file" disabled class="btn-outline">
+                        <span class="material-symbols-rounded">upload_file</span> Dosyayı Gönder
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="material-symbols-rounded">history</span> Transfer Geçmişi</div>
+                <div class="history-list" id="history-list">
+                    <div style="text-align:center; color:var(--text-muted); padding: 1rem; font-style: italic;">Henüz bir transfer yapılmadı.</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- VIBECODER MİMARİSİ: STATE YÖNETİMİ ---
+        let peer = null;
+        let conn = null;
+        let myPeerId = '';
+
+        // Rastgele 6 haneli kolay okunur kod üretici
+        function generateShortId() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // O, 0, 1, I gibi karışan karakterler çıkarıldı
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // --- 1. PEERJS BAŞLATMA ---
+        function initPeer() {
+            myPeerId = generateShortId();
+            
+            // Ücretsiz genel sunucuyu kullanıyoruz.
+            peer = new Peer(myPeerId, {
+                debug: 2
+            });
+
+            peer.on('open', (id) => {
+                document.getElementById('my-id-display').innerText = id;
+            });
+
+            // Gelen bağlantı isteğini karşılama
+            peer.on('connection', (connection) => {
+                if (conn && conn.open) {
+                    // Zaten bağlıyız, ikinciyi reddet (İsteğe bağlı)
+                    connection.on('open', () => {
+                        connection.send({ type: 'system', content: 'Cihaz zaten başka birine bağlı.' });
+                        setTimeout(() => connection.close(), 500);
+                    });
+                    return;
+                }
+                
+                conn = connection;
+                setupConnectionHandlers();
+            });
+
+            peer.on('error', (err) => {
+                console.error("PeerJS Hatası:", err);
+                showToast("Bağlantı hatası: " + err.type, "error");
+                resetUI();
+            });
+        }
+
+        // --- 2. BAĞLANTIYI KURMA ---
+        window.connectToPeer = () => {
+            const targetId = document.getElementById('target-id-input').value.trim().toUpperCase();
+            if (!targetId || targetId === myPeerId) {
+                showToast("Geçerli bir cihaz kodu giriniz.", "error");
+                return;
+            }
+
+            document.getElementById('btn-connect').disabled = true;
+            document.getElementById('btn-connect').innerHTML = '<span class="material-symbols-rounded">sync</span> Bağlanıyor...';
+
+            conn = peer.connect(targetId, {
+                reliable: true
+            });
+
+            setupConnectionHandlers();
+        };
+
+        // --- 3. BAĞLANTI OLAYLARI YÖNETİMİ ---
+        function setupConnectionHandlers() {
+            conn.on('open', () => {
+                showToast("Cihazlar başarıyla eşleşti!", "success");
+                
+                // UI Güncellemeleri
+                document.getElementById('connection-status').classList.add('connected');
+                document.getElementById('status-text').innerText = "Bağlı: " + conn.peer;
+                document.getElementById('connection-section').style.display = 'none';
+                document.getElementById('transfer-section').style.display = 'flex';
+                document.getElementById('history-list').innerHTML = ''; // Temizle
+            });
+
+            conn.on('data', (data) => {
+                handleIncomingData(data);
+            });
+
+            conn.on('close', () => {
+                showToast("Bağlantı koptu.", "error");
+                resetUI();
+            });
+        }
+
+        function resetUI() {
+            conn = null;
+            document.getElementById('connection-status').classList.remove('connected');
+            document.getElementById('status-text').innerText = "Bağlantı Bekleniyor...";
+            document.getElementById('connection-section').style.display = 'flex';
+            document.getElementById('transfer-section').style.display = 'none';
+            document.getElementById('btn-connect').disabled = false;
+            document.getElementById('btn-connect').innerHTML = '<span class="material-symbols-rounded">link</span> Bağlan';
+        }
+
+        // --- 4. VERİ GÖNDERME ---
+        window.sendText = () => {
+            const textarea = document.getElementById('text-input');
+            const text = textarea.value.trim();
+            if (!text || !conn || !conn.open) return;
+
+            const payload = { type: 'text', content: text, timestamp: new Date().toLocaleTimeString() };
+            conn.send(payload);
+            
+            addHistoryItem(payload, 'sent');
+            textarea.value = '';
+            showToast("Metin gönderildi.");
+        };
+
+        let selectedFile = null;
+        window.handleFileSelect = (event) => {
+            selectedFile = event.target.files[0];
+            const display = document.getElementById('file-name-display');
+            const btn = document.getElementById('btn-send-file');
+            
+            if (selectedFile) {
+                display.innerText = selectedFile.name + ` (${(selectedFile.size / 1024 / 1024).toFixed(2)} MB)`;
+                display.style.color = "var(--text-main)";
+                btn.disabled = false;
+                btn.classList.remove('btn-outline');
+            } else {
+                display.innerText = "Dosya Seçmek İçin Tıklayın";
+                display.style.color = "inherit";
+                btn.disabled = true;
+                btn.classList.add('btn-outline');
+            }
+        };
+
+        window.sendFile = () => {
+            if (!selectedFile || !conn || !conn.open) return;
+
+            const btn = document.getElementById('btn-send-file');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-rounded">sync</span> Gönderiliyor...';
+
+            // PeerJS ArrayBuffer ve Blob'ları otomatik parçalayıp (chunk) gönderebilir.
+            const payload = {
+                type: 'file',
+                filename: selectedFile.name,
+                filetype: selectedFile.type,
+                filesize: selectedFile.size,
+                filedata: selectedFile, // Doğrudan File objesini veriyoruz
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            conn.send(payload);
+            addHistoryItem(payload, 'sent');
+            
+            // Sıfırlama
+            setTimeout(() => {
+                showToast("Dosya gönderildi.");
+                selectedFile = null;
+                document.getElementById('file-input').value = '';
+                handleFileSelect({target: {files: []}});
+                btn.innerHTML = '<span class="material-symbols-rounded">upload_file</span> Dosyayı Gönder';
+            }, 500);
+        };
+
+        // --- 5. VERİ ALMA VE UI YANSITMA ---
+        function handleIncomingData(data) {
+            playSound();
+            addHistoryItem(data, 'received');
+            
+            if (data.type === 'text') {
+                showToast("Yeni bir metin/link aldınız!");
+            } else if (data.type === 'file') {
+                showToast("Yeni bir dosya aldınız: " + data.filename);
+            } else if (data.type === 'system') {
+                showToast(data.content, "error");
+            }
+        }
+
+        function addHistoryItem(data, direction) {
+            const list = document.getElementById('history-list');
+            // Eğer ilk öğeyse temizle
+            if (list.innerHTML.includes("Henüz bir transfer")) list.innerHTML = '';
+
+            const item = document.createElement('div');
+            item.className = `history-item ${direction}`;
+            
+            const dirText = direction === 'sent' ? 'Gönderildi' : 'Alındı';
+            const icon = data.type === 'text' ? 'notes' : 'folder';
+            
+            let contentHtml = '';
+            let actionHtml = '';
+
+            if (data.type === 'text') {
+                // Güvenlik için HTML etiketlerini temizle
+                const safeText = data.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                contentHtml = `<div class="history-content">${safeText}</div>`;
+                
+                // Link tespiti
+                if(data.content.startsWith('http')) {
+                    actionHtml = `<a href="${data.content}" target="_blank" class="btn-small btn-outline" style="text-decoration:none; display:inline-block;"><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">open_in_new</span> Linki Aç</a>`;
+                } else {
+                    actionHtml = `<button class="btn-small btn-outline" onclick="copyToClipboard('${safeText.replace(/'/g, "\\'")}')"><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">content_copy</span> Kopyala</button>`;
+                }
+                
+            } else if (data.type === 'file') {
+                const sizeMB = (data.filesize / 1024 / 1024).toFixed(2);
+                contentHtml = `<div class="history-content" style="display:flex; align-items:center; gap:0.5rem; font-weight:600;">
+                    <span class="material-symbols-rounded">draft</span> ${data.filename} <span style="font-weight:400; color:var(--text-muted)">(${sizeMB} MB)</span>
+                </div>`;
+                
+                if (direction === 'received') {
+                    // Blob oluştur ve indirme linki yarat
+                    const blob = new Blob([data.filedata], { type: data.filetype });
+                    const url = URL.createObjectURL(blob);
+                    actionHtml = `<a href="${url}" download="${data.filename}" class="btn-small btn-outline" style="text-decoration:none; display:inline-block; background:var(--primary); color:white; border-color:var(--primary)"><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">download</span> İndir</a>`;
+                } else {
+                    actionHtml = `<span style="font-size:0.8rem; color:var(--success); font-weight:600;">Karşı tarafa iletildi</span>`;
+                }
+            }
+
+            item.innerHTML = `
+                <div class="history-header">
+                    <span style="display:flex; align-items:center; gap:0.25rem;"><span class="material-symbols-rounded" style="font-size:16px;">${icon}</span> ${data.type === 'text' ? 'Metin' : 'Dosya'}</span>
+                    <span>${dirText} • ${data.timestamp}</span>
+                </div>
+                ${contentHtml}
+                ${actionHtml ? `<div class="history-action">${actionHtml}</div>` : ''}
+            `;
+
+            list.prepend(item); // En üste ekle
+        }
+
+        // --- YARDIMCI FONKSİYONLAR ---
+        window.copyToClipboard = (text) => {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Panoya kopyalandı!");
+            }).catch(err => {
+                showToast("Kopyalama başarısız.", "error");
+            });
+        };
+
+        function showToast(message, type = 'normal') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            let icon = 'info';
+            if(type === 'success') { icon = 'check_circle'; toast.style.backgroundColor = 'var(--success)'; }
+            if(type === 'error') { icon = 'error'; toast.style.backgroundColor = 'var(--danger)'; }
+
+            toast.innerHTML = `<span class="material-symbols-rounded">${icon}</span> ${message}`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                toast.style.transition = 'transform 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Basit ses bildirimi
+        function playSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 note
+                osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.1); // C6 note
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        // Uygulama başlarken PeerJS'i kur
+        window.onload = () => {
+            initPeer();
+        };
+
+    </script>
+</body>
+</html>
