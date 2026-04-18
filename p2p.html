@@ -14,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        darkbg: '#0f172a', // slate-900 (Koyu Mavi Taban)
-                        darkpanel: '#1e293b', // slate-800
-                        darkborder: '#334155', // slate-700
+                        darkbg: '#0f172a',
+                        darkpanel: '#1e293b',
+                        darkborder: '#334155',
                     }
                 }
             }
@@ -25,7 +25,6 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; overscroll-behavior: none; }
         .hide { display: none !important; }
-        /* Mobil sorunları çözen dvh (Dynamic Viewport Height) */
         .h-dvh { height: 100vh; height: 100dvh; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -44,15 +43,50 @@
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        .animate-slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
         #file-input { display: none; }
+        /* Lightbox resmi için optimizasyon */
+        #lightbox-img { max-height: 90vh; max-width: 90vw; object-fit: contain; }
     </style>
 </head>
 <body class="h-dvh w-screen overflow-hidden flex items-center justify-center">
 
+    <div id="lightbox" class="hide fixed inset-0 z-[100] bg-black/95 flex items-center justify-center transition-opacity">
+        <button id="close-lightbox" class="absolute top-6 right-6 p-2 text-slate-300 hover:text-white transition-colors bg-white/10 rounded-full">
+            <i class="ph ph-x text-2xl"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Görsel" class="rounded-lg shadow-2xl">
+    </div>
+
+    <div id="incoming-call-modal" class="hide fixed top-6 left-1/2 transform -translate-x-1/2 z-[60] bg-darkpanel border border-blue-500/50 rounded-2xl shadow-2xl p-4 w-11/12 max-w-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div id="call-type-icon" class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                <i class="ph ph-phone-ringing text-xl"></i>
+            </div>
+            <div>
+                <p id="incoming-caller-name" class="text-sm font-semibold text-white">-----</p>
+                <p id="incoming-call-text" class="text-xs text-blue-300 animate-pulse">Gelen Çağrı...</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="reject-call-btn" class="p-2.5 bg-red-500/10 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors">
+                <i class="ph ph-phone-slash text-xl"></i>
+            </button>
+            <button id="accept-call-btn" class="p-2.5 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20">
+                <i class="ph ph-phone text-xl" id="accept-call-icon"></i>
+            </button>
+        </div>
+    </div>
+
     <div id="login-screen" class="w-full max-w-sm p-8 glass-panel rounded-3xl shadow-2xl border border-darkborder mx-4 transition-all duration-500">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-semibold tracking-tight text-white">VibeChat</h1>
-            <p class="text-xs text-slate-400 mt-2">Uçtan Uca Şifreli Ağa Katılın</p>
+            <p class="text-xs text-slate-400 mt-2">Sıfır Sunucu, Kusursuz P2P</p>
         </div>
         
         <div class="space-y-4">
@@ -94,7 +128,7 @@
                         <div class="absolute bottom-0 right-0 w-3 h-3 bg-slate-500 rounded-full border-2 border-darkpanel" id="online-status"></div>
                     </div>
                     <div class="flex flex-col">
-                        <h2 class="font-medium text-white text-base md:text-lg leading-tight" id="header-room-display">-----</h2>
+                        <h2 class="font-medium text-white text-base md:text-lg leading-tight truncate max-w-[120px] md:max-w-[200px]" id="header-room-display">-----</h2>
                         <p class="text-[11px] text-slate-400 flex items-center gap-1" id="peer-status-text">
                             Bekleniyor...
                         </p>
@@ -117,11 +151,9 @@
             <div id="video-overlay" class="hide absolute inset-0 bg-black z-40 flex flex-col">
                 <div class="flex-1 relative">
                     <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
-                    
-                    <div class="absolute bottom-6 right-4 w-28 md:w-40 aspect-[3/4] bg-darkpanel rounded-2xl overflow-hidden shadow-2xl border-2 border-darkborder z-50">
+                    <div class="absolute bottom-24 md:bottom-6 right-4 w-28 md:w-40 aspect-[3/4] bg-darkpanel rounded-2xl overflow-hidden shadow-2xl border-2 border-darkborder z-50">
                         <video id="local-video" autoplay playsinline muted class="w-full h-full object-cover transform scale-x-[-1]"></video>
                     </div>
-
                     <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-darkpanel/80 backdrop-blur px-6 py-3 rounded-full border border-darkborder z-50">
                         <button id="switch-cam-btn" class="p-3 bg-darkbg text-white rounded-full hover:bg-darkborder transition-colors">
                             <i class="ph ph-camera-rotate text-xl"></i>
@@ -152,7 +184,7 @@
                     
                     <textarea id="message-input" rows="1" placeholder="Mesaj yaz..." class="flex-1 bg-transparent resize-none outline-none text-slate-100 py-2.5 text-sm md:text-base max-h-24 scrollbar-hide" style="min-height: 40px;"></textarea>
                     
-                    <button id="record-audio-btn" class="p-2.5 text-slate-400 hover:text-red-400 transition-colors">
+                    <button id="record-audio-btn" class="p-2.5 text-slate-400 hover:text-red-400 transition-colors touch-none select-none">
                         <i class="ph ph-microphone text-xl md:text-2xl" id="mic-icon"></i>
                     </button>
 
@@ -166,7 +198,7 @@
     </div>
 
     <script>
-        // UI Elementleri
+        // --- Değişkenler ve Seçiciler ---
         const loginScreen = document.getElementById('login-screen');
         const chatScreen = document.getElementById('chat-screen');
         const usernameInput = document.getElementById('username-input');
@@ -179,26 +211,26 @@
         const inputArea = document.getElementById('input-area');
         const messageInput = document.getElementById('message-input');
         
-        // Arama UI Elementleri
-        const voiceBanner = document.getElementById('voice-banner');
-        const voiceTimerDisplay = document.getElementById('voice-timer');
-        const videoOverlay = document.getElementById('video-overlay');
-        const localVideo = document.getElementById('local-video');
-        const remoteVideo = document.getElementById('remote-video');
+        // Modal & Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const incomingCallModal = document.getElementById('incoming-call-modal');
+        const incomingCallerName = document.getElementById('incoming-caller-name');
+        const incomingCallText = document.getElementById('incoming-call-text');
+        const callTypeIcon = document.getElementById('call-type-icon');
+        const acceptCallIcon = document.getElementById('accept-call-icon');
         
-        // P2P Değişkenleri
         let peer = null, conn = null, currentCall = null, localStream = null;
-        let currentUser = "", currentRoom = "";
+        let currentUser = "", currentRoom = "", peerName = "Karşı Taraf";
+        let pendingCall = null, isVideoCallPending = false;
         
-        // Medya/Kayıt Değişkenleri
+        // Ses Kayıt State'i
         let mediaRecorder, audioChunks = [];
-        let isMuted = false, isFrontCam = true;
-        let callInterval = null, callSeconds = 0;
+        let isRecording = false;
+        let recordStartTime = 0;
 
-        // --- UI Yardımcı Fonksiyonlar ---
-        const scrollToBottom = () => {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        };
+        // --- Arayüz Yardımcıları ---
+        const scrollToBottom = () => { messagesContainer.scrollTop = messagesContainer.scrollHeight; };
 
         const sysMsg = (text) => {
             const div = document.createElement('div');
@@ -208,16 +240,19 @@
             scrollToBottom();
         };
 
+        const openLightbox = (src) => {
+            lightboxImg.src = src;
+            lightbox.classList.remove('hide');
+        };
+        document.getElementById('close-lightbox').onclick = () => lightbox.classList.add('hide');
+
         const createMessageBubble = (data, isMine) => {
             const wrapper = document.createElement('div');
             wrapper.className = `flex w-full flex-col ${isMine ? 'items-end' : 'items-start'}`;
             
-            // Toast tarzı minimal balon
             const bubble = document.createElement('div');
             bubble.className = `px-3 py-2 md:px-4 md:py-2.5 rounded-2xl w-fit max-w-[80%] md:max-w-[65%] shadow-sm flex flex-col ${
-                isMine 
-                ? 'bg-blue-600 text-white rounded-tr-sm' 
-                : 'bg-darkpanel border border-darkborder text-slate-100 rounded-tl-sm'
+                isMine ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-darkpanel border border-darkborder text-slate-100 rounded-tl-sm'
             }`;
             
             if(data.type === 'text') {
@@ -227,22 +262,30 @@
                 bubble.appendChild(textEl);
             } 
             else if(data.type === 'file') {
-                const fileLink = document.createElement('a');
-                fileLink.href = data.content;
-                fileLink.download = data.fileName;
-                fileLink.className = `flex items-center gap-2 text-sm font-medium ${isMine ? 'text-white' : 'text-blue-400'} hover:underline`;
-                fileLink.innerHTML = `<i class="ph ph-file-arrow-down text-lg"></i> <span class="truncate max-w-[150px]">${data.fileName}</span>`;
-                bubble.appendChild(fileLink);
+                // Eğer dosya bir resimse (MIME tipi image ile başlıyorsa)
+                if(data.fileType && data.fileType.startsWith('image/')) {
+                    const imgPreview = document.createElement('img');
+                    imgPreview.src = data.content;
+                    imgPreview.className = "w-48 md:w-64 rounded-lg object-cover cursor-pointer border border-white/10 hover:opacity-90 transition-opacity";
+                    imgPreview.onclick = () => openLightbox(data.content);
+                    bubble.appendChild(imgPreview);
+                } else {
+                    const fileLink = document.createElement('a');
+                    fileLink.href = data.content;
+                    fileLink.download = data.fileName;
+                    fileLink.className = `flex items-center gap-2 text-sm font-medium ${isMine ? 'text-white' : 'text-blue-400'} hover:underline`;
+                    fileLink.innerHTML = `<i class="ph ph-file-arrow-down text-lg"></i> <span class="truncate max-w-[150px]">${data.fileName}</span>`;
+                    bubble.appendChild(fileLink);
+                }
             }
             else if(data.type === 'audio') {
                 const audioEl = document.createElement('audio');
                 audioEl.controls = true;
                 audioEl.src = data.content;
-                audioEl.className = 'h-8 w-40 md:w-48'; // Minimal boyut
+                audioEl.className = 'h-8 w-44 md:w-56';
                 bubble.appendChild(audioEl);
             }
 
-            // Kompakt zaman etiketi
             const timeStamp = document.createElement('span');
             timeStamp.className = `text-[9px] block mt-1 text-right ${isMine ? 'text-blue-200/80' : 'text-slate-500'}`;
             timeStamp.textContent = data.time;
@@ -253,30 +296,25 @@
             scrollToBottom();
         };
 
-        // --- P2P Motoru ---
+        // --- P2P ve Çağrı (Call) Mimarisi ---
         const initP2P = (room) => {
             const hostId = `vbc-${room}-host`;
             document.getElementById('status-text').textContent = "Ağa bağlanılıyor...";
             
             peer = new Peer(hostId);
-
-            peer.on('open', () => {
-                sysMsg("Oda açıldı. Bekleniyor...");
-                setupPeerEvents();
-            });
-
+            peer.on('open', () => { sysMsg("Oda açıldı. Bekleniyor..."); setupPeerEvents(); });
             peer.on('error', (err) => {
                 if (err.type === 'unavailable-id') {
                     peer.destroy();
                     peer = new Peer();
                     peer.on('open', () => {
-                        document.getElementById('status-text').textContent = "Oda bulundu, eşleşiliyor...";
+                        document.getElementById('status-text').textContent = "Eşleşiliyor...";
                         conn = peer.connect(hostId);
                         setupConnectionEvents(conn);
                         setupPeerEvents();
                     });
                 } else {
-                    alert("Ağ hatası: " + err.message);
+                    alert("Ağ hatası.");
                     location.reload();
                 }
             });
@@ -292,19 +330,27 @@
                 setupConnectionEvents(conn);
             });
 
-            // Gelen Arama
+            // Gelen Arama (Custom Modal ile)
             peer.on('call', (call) => {
-                // Video izi var mı kontrol et (Görüntülü mü Sesli mi?)
-                const isVideo = confirm("Gelen bir arama var. Görüntülü yanıtlamak ister misiniz? (İptal = Sadece Ses)");
+                if(currentCall) { call.close(); return; } // Zaten arama varsa reddet
                 
-                navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true })
-                .then((stream) => {
-                    localStream = stream;
-                    if(isVideo) localVideo.srcObject = stream;
-                    call.answer(stream);
-                    setupCallEvents(call, isVideo);
-                })
-                .catch(() => call.close());
+                pendingCall = call;
+                isVideoCallPending = call.metadata && call.metadata.type === 'video';
+                
+                // UI Güncelle
+                incomingCallerName.textContent = peerName;
+                if(isVideoCallPending) {
+                    incomingCallText.textContent = "Görüntülü arıyor...";
+                    callTypeIcon.innerHTML = '<i class="ph ph-video-camera text-xl"></i>';
+                    acceptCallIcon.className = "ph ph-video-camera text-xl";
+                } else {
+                    incomingCallText.textContent = "Sesli arıyor...";
+                    callTypeIcon.innerHTML = '<i class="ph ph-phone-ringing text-xl"></i>';
+                    acceptCallIcon.className = "ph ph-phone text-xl";
+                }
+                
+                incomingCallModal.classList.remove('hide');
+                incomingCallModal.classList.add('animate-slide-down');
             });
         };
 
@@ -314,144 +360,140 @@
                 onlineStatus.classList.add('online-dot');
                 peerStatusText.innerHTML = `<i class="ph ph-lock-key text-green-400"></i> P2P Aktif`;
                 inputArea.classList.remove('pointer-events-none', 'opacity-50');
-                
                 sysMsg("Bağlantı kuruldu.");
                 connection.send({ type: 'sys_name', name: currentUser });
             });
 
             connection.on('data', (data) => {
                 if(data.type === 'sys_name') {
-                    headerRoomDisplay.textContent = data.name;
-                    headerAvatar.textContent = data.name.charAt(0).toUpperCase();
-                } 
-                else if (['text', 'file', 'audio'].includes(data.type)) {
+                    peerName = data.name;
+                    headerRoomDisplay.textContent = peerName;
+                    headerAvatar.textContent = peerName.charAt(0).toUpperCase();
+                } else {
                     createMessageBubble(data, false);
                 }
             });
 
-            connection.on('close', () => {
-                sysMsg("Bağlantı koptu.");
-                location.reload(); // Güvenlik için odayı sıfırla
-            });
+            connection.on('close', () => location.reload());
         };
 
-        const sendData = (type, content, fileName = "") => {
+        const sendPayload = (type, content, fileObj = {}) => {
             if(!conn || !conn.open) return;
-            const payload = { type, content, fileName, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+            const payload = { type, content, fileName: fileObj.name || "", fileType: fileObj.type || "", time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
             conn.send(payload);
             createMessageBubble(payload, true);
         };
 
-        // --- Event Listeners: Mesajlaşma ---
-        document.getElementById('join-btn').addEventListener('click', () => {
-            currentUser = usernameInput.value.trim();
+        // --- Etkileşimler (Olay Dinleyicileri) ---
+        document.getElementById('join-btn').onclick = () => {
+            currentUser = usernameInput.value.trim() || "Kullanıcı";
             currentRoom = roomInput.value.trim().toUpperCase();
-            if(currentUser.length < 2 || currentRoom.length !== 5) return alert("Geçerli isim ve 5 haneli kod girin.");
+            if(currentRoom.length !== 5) return alert("Oda kodu 5 haneli olmalıdır.");
             initP2P(currentRoom);
-        });
+        };
 
         const handleSend = () => {
             const text = messageInput.value.trim();
             if(!text) return;
-            sendData('text', text);
+            sendPayload('text', text);
             messageInput.value = '';
             messageInput.style.height = '40px';
         };
 
-        document.getElementById('send-btn').addEventListener('click', handleSend);
-        messageInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
-        });
-        messageInput.addEventListener('input', function() {
-            this.style.height = '40px';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-
-        // Dosya
+        document.getElementById('send-btn').onclick = handleSend;
+        messageInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
+        
         const fileInput = document.getElementById('file-input');
-        document.getElementById('attachment-btn').addEventListener('click', () => fileInput.click());
+        document.getElementById('attachment-btn').onclick = () => fileInput.click();
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
-            reader.onload = (ev) => sendData('file', ev.target.result, file.name);
+            reader.onload = (ev) => sendPayload('file', ev.target.result, file);
             reader.readAsDataURL(file);
+            fileInput.value = '';
         });
 
-        // Ses Kaydı
+        // --- Ses Kaydı Mimarisi (Mükemmelleştirildi) ---
         const micBtn = document.getElementById('record-audio-btn');
         const micIcon = document.getElementById('mic-icon');
-        micBtn.addEventListener('mousedown', async () => {
+
+        const startRecording = async () => {
+            if(isRecording) return;
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
-                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                isRecording = true;
+                recordStartTime = Date.now();
+                
+                mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
                 mediaRecorder.onstop = () => {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => sendData('audio', ev.target.result);
-                    reader.readAsDataURL(new Blob(audioChunks));
-                    stream.getTracks().forEach(t => t.stop());
+                    const duration = Date.now() - recordStartTime;
+                    isRecording = false;
+                    micIcon.classList.remove('recording-pulse');
+                    stream.getTracks().forEach(t => t.stop()); // Donanımı kesinlikle kapat
+
+                    // Çok kısa tıklamaları (boş kayıt) engelle
+                    if(duration > 500 && audioChunks.length > 0) {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        reader.onload = (ev) => sendPayload('audio', ev.target.result);
+                        reader.readAsDataURL(blob);
+                    }
                 };
                 mediaRecorder.start();
                 micIcon.classList.add('recording-pulse');
-            } catch (e) {}
-        });
-        const stopRec = () => {
-            if(mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                micIcon.classList.remove('recording-pulse');
-            }
-        };
-        micBtn.addEventListener('mouseup', stopRec);
-        micBtn.addEventListener('mouseleave', stopRec);
-        micBtn.addEventListener('touchstart', (e) => { e.preventDefault(); micBtn.dispatchEvent(new Event('mousedown')); });
-        micBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopRec(); });
-
-        // --- Event Listeners: Medya (Arama) ---
-        const formatTime = (sec) => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;
-        
-        const startTimer = () => {
-            callSeconds = 0;
-            voiceTimerDisplay.textContent = "00:00";
-            callInterval = setInterval(() => {
-                callSeconds++;
-                voiceTimerDisplay.textContent = formatTime(callSeconds);
-            }, 1000);
-        };
-
-        const toggleMute = (btnIconId) => {
-            if(!localStream) return;
-            isMuted = !isMuted;
-            localStream.getAudioTracks()[0].enabled = !isMuted;
-            const icon = document.getElementById(btnIconId);
-            icon.className = isMuted ? "ph ph-microphone-slash text-xl text-red-400" : "ph ph-microphone text-xl";
-        };
-
-        // Ön/Arka Kamera Değiştirme (Zarif Track Değişimi)
-        const switchCamera = async () => {
-            if (!localStream) return;
-            isFrontCam = !isFrontCam;
-            try {
-                const newStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: isFrontCam ? "user" : "environment" }
-                });
-                const newVideoTrack = newStream.getVideoTracks()[0];
-                
-                // Kendi arayüzümüzde değiştir
-                localStream.removeTrack(localStream.getVideoTracks()[0]);
-                localStream.addTrack(newVideoTrack);
-                localVideo.srcObject = localStream;
-                localVideo.classList.toggle('scale-x-[-1]', isFrontCam); // Arka kamerada aynalamayı kaldır
-                
-                // Karşı tarafa giden izi (Track) yayını kesmeden değiştir
-                if(currentCall && currentCall.peerConnection) {
-                    const sender = currentCall.peerConnection.getSenders().find(s => s.track.kind === 'video');
-                    if(sender) sender.replaceTrack(newVideoTrack);
-                }
             } catch (e) {
-                isFrontCam = !isFrontCam; // Hata olursa durumu geri al
+                isRecording = false;
             }
+        };
+
+        const stopRecording = () => {
+            if(mediaRecorder && isRecording && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        };
+
+        // Modern Event yönetimi (Mouse ve Touch çakışmasını engeller)
+        micBtn.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            micBtn.setPointerCapture(e.pointerId);
+            startRecording();
+        });
+        
+        micBtn.addEventListener('pointerup', (e) => {
+            e.preventDefault();
+            micBtn.releasePointerCapture(e.pointerId);
+            stopRecording();
+        });
+        
+        micBtn.addEventListener('pointercancel', stopRecording); // Ekran dışına çıkma/Arama gelme durumu
+
+        // --- Arama ve Medya Kontrolleri ---
+        const endMediaSession = () => {
+            document.getElementById('video-overlay').classList.add('hide');
+            document.getElementById('voice-banner').classList.add('hide');
+            if(localStream) localStream.getTracks().forEach(t => t.stop());
+            document.getElementById('local-video').srcObject = null;
+            document.getElementById('remote-video').srcObject = null;
+            currentCall = null;
+            localStream = null;
+        };
+
+        const setupCallEvents = (call, isVideo) => {
+            currentCall = call;
+            if(isVideo) {
+                document.getElementById('video-overlay').classList.remove('hide');
+            } else {
+                document.getElementById('voice-banner').classList.remove('hide');
+                // Timer vs buraya eklenebilir
+            }
+            call.on('stream', (rStream) => {
+                if(isVideo) document.getElementById('remote-video').srcObject = rStream;
+                else { const audio = new Audio(); audio.srcObject = rStream; audio.play(); }
+            });
+            call.on('close', endMediaSession);
         };
 
         const startCall = (isVideo) => {
@@ -459,57 +501,42 @@
             navigator.mediaDevices.getUserMedia({ video: isVideo ? { facingMode: "user" } : false, audio: true })
             .then((stream) => {
                 localStream = stream;
-                if(isVideo) localVideo.srcObject = stream;
-                currentCall = peer.call(conn.peer, stream);
+                if(isVideo) document.getElementById('local-video').srcObject = stream;
+                // Metadata ile aramanın türünü belirtiyoruz!
+                currentCall = peer.call(conn.peer, stream, { metadata: { type: isVideo ? 'video' : 'audio' } });
                 setupCallEvents(currentCall, isVideo);
-            })
-            .catch(e => alert("Kamera/Mikrofon izni gerekli."));
+            }).catch(() => alert("Kamera/Mikrofon izni gerekli."));
         };
 
-        const setupCallEvents = (call, isVideo) => {
-            currentCall = call;
-            isMuted = false;
-            
-            if(isVideo) {
-                videoOverlay.classList.remove('hide');
-                document.getElementById('video-mute-icon').className = "ph ph-microphone text-xl";
-            } else {
-                voiceBanner.classList.remove('hide');
-                document.getElementById('mute-icon').className = "ph ph-microphone text-lg";
-                startTimer();
-            }
-            
-            call.on('stream', (rStream) => {
-                if(isVideo) remoteVideo.srcObject = rStream;
-                else {
-                    const audio = new Audio();
-                    audio.srcObject = rStream;
-                    audio.play();
-                }
-            });
-            call.on('close', endMediaSession);
-        };
-
-        const endMediaSession = () => {
-            videoOverlay.classList.add('hide');
-            voiceBanner.classList.add('hide');
-            clearInterval(callInterval);
-            if(localStream) localStream.getTracks().forEach(t => t.stop());
-            localVideo.srcObject = null;
-            remoteVideo.srcObject = null;
-            currentCall = null;
-            localStream = null;
-        };
-
-        // Arama Butonları
         document.getElementById('video-call-btn').onclick = () => startCall(true);
         document.getElementById('voice-call-btn').onclick = () => startCall(false);
         document.getElementById('end-video-btn').onclick = () => { if(currentCall) currentCall.close(); endMediaSession(); };
         document.getElementById('end-voice-btn').onclick = () => { if(currentCall) currentCall.close(); endMediaSession(); };
-        document.getElementById('switch-cam-btn').onclick = switchCamera;
-        document.getElementById('video-mute-btn').onclick = () => toggleMute('video-mute-icon');
-        document.getElementById('mute-mic-btn').onclick = () => toggleMute('mute-icon');
         document.getElementById('leave-btn').onclick = () => location.reload();
+
+        // Gelen Arama Butonları (Custom Modal)
+        document.getElementById('reject-call-btn').onclick = () => {
+            if(pendingCall) pendingCall.close();
+            incomingCallModal.classList.add('hide');
+            pendingCall = null;
+        };
+
+        document.getElementById('accept-call-btn').onclick = () => {
+            incomingCallModal.classList.add('hide');
+            if(!pendingCall) return;
+            
+            navigator.mediaDevices.getUserMedia({ video: isVideoCallPending ? {facingMode: "user"} : false, audio: true })
+            .then(stream => {
+                localStream = stream;
+                if(isVideoCallPending) document.getElementById('local-video').srcObject = stream;
+                pendingCall.answer(stream);
+                setupCallEvents(pendingCall, isVideoCallPending);
+                pendingCall = null;
+            }).catch(() => {
+                pendingCall.close();
+                pendingCall = null;
+            });
+        };
 
     </script>
 </body>
