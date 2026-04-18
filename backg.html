@@ -15,8 +15,8 @@
             --bg-color: #1c1917; 
             --board-outer: #38220f; 
             --board-inner: #e6d5b8; 
-            --point-dark: #7f1d1d; 
-            --point-light: #1e293b; 
+            --point-dark: #7f1d1d; /* Koyu Kırmızı (Dikdörtgen Hane) */
+            --point-light: #1e293b; /* Koyu Lacivert (Dikdörtgen Hane) */
             
             --checker-black: #171717;
             --checker-white: #f8fafc;
@@ -84,7 +84,7 @@
         .dice-area { display: flex; gap: 0.5rem; align-items: center; }
         .die { width: 36px; height: 36px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: opacity 0.3s; }
         .die.empty { background: #444; box-shadow: none; color: transparent; }
-        .die.used { opacity: 0.3; } 
+        .die.used { opacity: 0.2; } 
 
         @keyframes rollAnim {
             0% { transform: rotate(0deg) scale(1) translateY(0); }
@@ -98,7 +98,6 @@
         .btn-small { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 8px; background: #444; color: white; border: none; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.25rem;}
         .btn-small:hover:not(:disabled) { background: #555; }
         
-        /* Oynayacak yer yoksa butonu patlat (Pulse Effect) */
         @keyframes pulseAttention {
             0% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.7); }
             70% { box-shadow: 0 0 0 8px rgba(217, 119, 6, 0); }
@@ -123,17 +122,20 @@
         .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
 
         .points-row { flex: 1; display: flex; position: relative; }
-        .points-row.bottom { transform: scaleY(-1); }
-
+        
         .point { flex: 1; position: relative; display: flex; justify-content: center; cursor: pointer; }
         
+        /* Modern Dikdörtgen Slot Tasarımı */
         .point-bg {
-            position: absolute; top: 0; width: 75%; height: 95%; border-radius: 4px;
-            background: var(--point-dark); transition: var(--transition);
+            position: absolute; width: 75%; height: 95%; border-radius: 4px;
+            background: var(--point-dark); transition: var(--transition); z-index: 1;
         }
+        .points-row.top .point-bg { top: 0; }
+        .points-row.bottom .point-bg { bottom: 0; }
+
         .point:nth-child(even) .point-bg { background: var(--point-light); }
         .point:hover .point-bg { filter: brightness(1.3); }
-        .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 10px var(--primary); z-index: 2;}
 
         /* Pullar */
         .checker {
@@ -141,17 +143,22 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
         }
-        .points-row.bottom .checker { transform: scaleY(-1); } 
-
+        
         .checker.black { background: var(--checker-black); border: 2px solid #444; color: white; }
         .checker.white { background: var(--checker-white); border: 2px solid #cbd5e1; color: black; }
         
-        /* İstifleme */
-        .checker:nth-child(2) { top: 2px; }
-        .checker:nth-child(3) { top: 25px; }
-        .checker:nth-child(4) { top: 48px; }
-        .checker:nth-child(5) { top: 71px; }
-        .checker:nth-child(6) { top: 94px; }
+        /* VibeCoder Kusursuz İstifleme (Alt ve Üst için Ayrı Zırh) */
+        .points-row.top .checker:nth-child(2) { top: 4px; }
+        .points-row.top .checker:nth-child(3) { top: 30px; }
+        .points-row.top .checker:nth-child(4) { top: 56px; }
+        .points-row.top .checker:nth-child(5) { top: 82px; }
+        .points-row.top .checker:nth-child(6) { top: 108px; }
+
+        .points-row.bottom .checker:nth-child(2) { bottom: 4px; }
+        .points-row.bottom .checker:nth-child(3) { bottom: 30px; }
+        .points-row.bottom .checker:nth-child(4) { bottom: 56px; }
+        .points-row.bottom .checker:nth-child(5) { bottom: 82px; }
+        .points-row.bottom .checker:nth-child(6) { bottom: 108px; }
 
         .broken-area { display: flex; flex-direction: column; gap: -5px; align-items: center; width: 100%; height: 100%; justify-content: center;}
 
@@ -276,7 +283,7 @@
             </div>
             <div class="chat-input">
                 <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
-                <button onclick="sendChatMessage()"><span class="material-symbols-rounded">send</span></button>
+                <button onclick="sendChatMessage()"><span class="material-symbols-rounded" style="font-size:18px">send</span></button>
             </div>
         </div>
 
@@ -306,7 +313,6 @@
             if (isMuted) return;
             try {
                 if (!audioCtx) initAudio();
-                // 3D Zar Çarpma Simülasyonu
                 for(let i=0; i<3; i++) {
                     setTimeout(() => {
                         const osc = audioCtx.createOscillator();
@@ -322,9 +328,9 @@
             } catch (e) {}
         }
 
-        // --- STATE YÖNETİMİ ---
+        // --- STATE YÖNETİMİ (SINGLE SOURCE OF TRUTH) ---
         let peer = null; let conn = null; let myPeerId = '';
-        let myColor = 'black'; // Host: Black, Guest: White
+        let myColor = 'black'; 
         
         let gameState = {
             board: Array(24).fill(null).map(() => ({ color: null, count: 0 })),
@@ -333,14 +339,16 @@
             scores: { black: 0, white: 0 },
             targetScore: 3,
             currentTurn: 'black', 
-            dice: [] 
+            originalDice: [], // Ekrandaki zar görselleri için
+            dice: [], // Harcanabilir zarlar
+            rollId: 0 // Zar animasyonu tetikleyici
         };
 
         let turnSnapshot = null; 
         let selectedPoint = null;
-        let autoPassTimer = null; // Otomatik Geçiş Zamanlayıcısı
+        let autoPassTimer = null; 
 
-        // Kriptografik Güçlü Zar
+        // Kriptografik Zar
         function getSecureRandomDice() {
             const array = new Uint32Array(2);
             window.crypto.getRandomValues(array);
@@ -354,19 +362,27 @@
             return result;
         }
 
-        // --- BAĞLANTI (P2P) ---
+        // --- BAĞLANTI (P2P ZIRHI) ---
         function initPeer() {
             myPeerId = generateShortId();
             peer = new Peer(myPeerId);
 
             peer.on('open', (id) => { document.getElementById('my-id').innerText = id; });
 
+            // Host Olarak Bağlantı Karşılama
             peer.on('connection', (connection) => {
                 if (conn) return; 
                 conn = connection;
                 myColor = 'black'; 
                 gameState.targetScore = parseInt(document.getElementById('target-score').value) || 3;
-                setupConnection();
+                
+                conn.on('open', () => {
+                    startGameUI();
+                    initBoard();
+                    sendSync();
+                });
+                
+                setupConnectionDataHandlers();
             });
         }
 
@@ -377,37 +393,41 @@
             document.getElementById('btn-connect').innerText = "Bağlanıyor...";
             conn = peer.connect(targetId, { reliable: true });
             myColor = 'white'; 
-            setupConnection();
+            
+            conn.on('open', () => {
+                startGameUI();
+                conn.send({ type: 'request_sync' }); // Garanti için Host'tan tahtayı iste
+            });
+            
+            setupConnectionDataHandlers();
         };
 
-        function setupConnection() {
-            conn.on('open', () => {
-                showToast("Rakip bağlandı! Oyun başlıyor.");
-                document.getElementById('connection-screen').style.display = 'none';
-                document.getElementById('game-screen').style.display = 'flex';
-                
-                if(myColor === 'black') {
-                    initBoard();
-                    sendSync();
-                }
-            });
+        function startGameUI() {
+            showToast("Bağlantı kuruldu! Oyun başlıyor.");
+            document.getElementById('connection-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+        }
 
+        function setupConnectionDataHandlers() {
             conn.on('data', (data) => {
-                if(data.type === 'sync') {
+                if(data.type === 'request_sync' && myColor === 'black') {
+                    sendSync();
+                } else if(data.type === 'sync') {
+                    const oldRollId = gameState.rollId;
                     gameState = data.state;
                     selectedPoint = null;
+
+                    // Eğer yeni bir zar atılmışsa animasyon oynat (Guest için)
+                    if (gameState.rollId !== oldRollId && gameState.originalDice.length > 0) {
+                        animateDice(gameState.originalDice[0], gameState.originalDice[1]);
+                        addMessage(`Rakip zar attı: ${gameState.originalDice[0]} - ${gameState.originalDice[1]}`, 'system');
+                    }
                     renderAll();
                 } else if(data.type === 'chat') {
                     addMessage(data.text, 'peer');
                     if(!document.getElementById('chat-container').classList.contains('open')) {
                         document.getElementById('chat-badge').style.display = 'inline-block';
                     }
-                } else if(data.type === 'dice_roll') {
-                    gameState.dice = data.dice;
-                    gameState.currentTurn = data.turn;
-                    animateDice(data.d1, data.d2);
-                    addMessage(`Rakip zar attı: ${data.d1} - ${data.d2}`, 'system');
-                    renderAll();
                 }
             });
 
@@ -421,8 +441,11 @@
             gameState.board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
             gameState.bar = { black: 0, white: 0 };
             gameState.off = { black: 0, white: 0 };
+            gameState.originalDice = [];
             gameState.dice = [];
             gameState.currentTurn = 'black';
+            gameState.rollId = 0;
+            turnSnapshot = null;
             
             gameState.board[23] = { color: 'black', count: 2 };
             gameState.board[12] = { color: 'black', count: 5 };
@@ -450,22 +473,21 @@
 
             const [d1, d2] = getSecureRandomDice();
             
+            gameState.originalDice = [d1, d2];
             if(d1 === d2) gameState.dice = [d1, d1, d1, d1];
             else gameState.dice = [d1, d2];
+            
+            gameState.rollId = Math.random(); // Karşı tarafta animasyon tetiklemek için
 
             createSnapshot(); 
             animateDice(d1, d2);
             addMessage(`Zar attın: ${d1} - ${d2}`, 'system');
             
             renderAll();
-
-            if(conn && conn.open) {
-                conn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, turn: myColor });
-            }
+            sendSync(); // Direkt tüm state'i yolla, ayrıca zar paketi atmaya gerek yok.
         };
 
         window.undoTurn = () => {
-            // Eğer otomatik geçiş başladıysa iptal et
             if(autoPassTimer) {
                 clearTimeout(autoPassTimer);
                 autoPassTimer = null;
@@ -486,6 +508,7 @@
 
             gameState.currentTurn = (myColor === 'black') ? 'white' : 'black';
             gameState.dice = []; 
+            gameState.originalDice = []; // Yeni tura geçerken zarları temizle
             turnSnapshot = null;
             selectedPoint = null;
             
@@ -534,8 +557,12 @@
                 if(gameState.dice.length > 0) {
                     gameState.dice.sort((a,b) => b-a); 
                     gameState.dice.shift(); 
-                    gameState.board[from].count--;
-                    if(gameState.board[from].count === 0) gameState.board[from].color = null;
+                    
+                    if(from !== 'bar') {
+                        gameState.board[from].count--;
+                        if(gameState.board[from].count === 0) gameState.board[from].color = null;
+                    }
+                    
                     gameState.off[myColor]++;
                     selectedPoint = null;
                     
@@ -583,20 +610,23 @@
             finalizeMove();
         };
 
-        // Her hamle sonrası çalışan Zırhlı Kontrol Sistemi
         function finalizeMove() {
             renderAll();
             sendSync();
 
-            // VIBECODER: Akıllı Otomatik Geçiş (Auto Turn-Pass)
+            // VIBECODER OTOMATİK GEÇİŞ (AUTO-PASS)
             if(gameState.dice.length === 0 && gameState.currentTurn === myColor) {
-                showToast("Zarlar bitti. Sıra rakibe geçiyor...");
+                showToast("Zarlar bitti. Sıra devrediliyor...");
                 autoPassTimer = setTimeout(() => {
                     if(gameState.currentTurn === myColor && gameState.dice.length === 0) {
                         endTurn();
                     }
-                }, 2000); // Kullanıcıya geri alması için 2 saniye düşünme payı ver
+                }, 1500); 
             }
+        }
+
+        function sendSync() {
+            if(conn && conn.open) conn.send({ type: 'sync', state: gameState });
         }
 
         // --- 6. GÖRSELLEŞTİRME (RENDER) ---
@@ -631,7 +661,6 @@
                 btnEnd.disabled = false;
                 document.getElementById('btn-undo').disabled = (turnSnapshot === null);
 
-                // Zar var ama hamle yapamıyorsa butonu patlat (Pulse)
                 if(gameState.dice.length > 0) btnEnd.classList.add('needs-attention');
                 else btnEnd.classList.remove('needs-attention');
 
@@ -646,16 +675,25 @@
                 btnEnd.classList.remove('needs-attention');
             }
 
+            // Zar Görselleri
             const d1El = document.getElementById('die1');
             const d2El = document.getElementById('die2');
             
-            if(turnSnapshot && turnSnapshot.dice && turnSnapshot.dice.length >= 2) {
-                const orig = turnSnapshot.dice;
+            if(gameState.originalDice && gameState.originalDice.length >= 2) {
+                const orig = gameState.originalDice;
                 d1El.innerText = orig[0]; d1El.className = 'die';
                 d2El.innerText = orig[1]; d2El.className = 'die';
 
-                if(!gameState.dice.includes(orig[0])) d1El.classList.add('used');
-                if(!gameState.dice.includes(orig[1])) d2El.classList.add('used');
+                // Hangi zarların harcandığını (saydamlaşacağını) bul
+                let diceCopy = [...gameState.dice];
+                if(orig[0] === orig[1]) {
+                    const spent = 4 - diceCopy.length;
+                    if(spent > 0) d1El.classList.add('used'); 
+                    if(spent >= 4) d2El.classList.add('used'); 
+                } else {
+                    if(!diceCopy.includes(orig[0])) d1El.classList.add('used');
+                    if(!diceCopy.includes(orig[1])) d2El.classList.add('used');
+                }
             } else {
                 d1El.className = 'die empty'; d1El.innerText = '';
                 d2El.className = 'die empty'; d2El.innerText = '';
