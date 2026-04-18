@@ -7,23 +7,22 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-    
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
     <style>
         /* --- TAILWIND VIBE & NEUMORPHIC WOOD THEME --- */
         :root {
-            --bg-color: #1c1917; /* slate-900 */
-            --board-outer: #452912; /* Dark Walnut */
-            --board-inner: #f1e4c3; /* Light Wood/Cream */
-            --point-dark: #8b3a3a; /* Deep Red */
-            --point-light: #2f4f4f; /* Slate Gray */
+            --bg-color: #1c1917; 
+            --board-outer: #38220f; 
+            --board-inner: #e6d5b8; 
+            --point-dark: #7f1d1d; /* Elegant Dark Red */
+            --point-light: #1e293b; /* Slate Gray */
             
-            --checker-black: #2d2d2d;
-            --checker-white: #f8f8f8;
+            --checker-black: #171717;
+            --checker-white: #f8fafc;
             
-            --primary: #c28b5a; 
-            --primary-hover: #b07a4a;
+            --primary: #d97706; 
+            --primary-hover: #b45309;
             
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -34,19 +33,14 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background-color: var(--bg-color); color: var(--text-main); 
-            height: 100vh; display: flex; flex-direction: column; align-items: center; 
-            overflow: hidden; /* Prevent scrolling on mobile */
-        }
+        body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
 
         /* --- BAĞLANTI EKRANI --- */
         #connection-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 2rem; gap: 2rem;
+            padding: 2rem; gap: 2rem; overflow-y: auto;
         }
 
         .logo { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
@@ -62,107 +56,121 @@
         
         .id-display { font-size: 2rem; font-weight: 800; color: var(--primary); text-align: center; background: #1c1917; padding: 1rem; border-radius: var(--radius-md); letter-spacing: 2px; }
         
-        input[type="text"] { 
-            padding: 1rem; border-radius: var(--radius-md); border: 2px solid #444; background: #1c1917; color: white; font-size: 1.2rem; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; outline: none; transition: var(--transition);
+        input[type="text"], select { 
+            padding: 1rem; border-radius: var(--radius-md); border: 2px solid #444; background: #1c1917; color: white; font-size: 1.1rem; text-align: center; font-weight: 700; outline: none; transition: var(--transition);
         }
-        input[type="text"]:focus { border-color: var(--primary); }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); }
 
-        button {
-            background: var(--primary); color: #1c1917; border: none; padding: 1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem;
-        }
-        button:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        button { background: var(--primary); color: #1c1917; border: none; padding: 1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
+        button:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* --- OYUN EKRANI --- */
-        #game-screen {
-            display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px;
-        }
+        #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px; }
 
-        /* Üst Bar (Zarlar ve Durum) */
-        .game-header {
-            padding: 1rem; display: flex; justify-content: space-between; align-items: center; background: #292524; border-bottom: 1px solid #444; flex-shrink: 0;
+        /* Skor ve Hedef Bilgisi */
+        .scoreboard {
+            background: #171717; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); border-bottom: 1px solid #333;
         }
-        .player-info { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem;}
+        .score-display { display: flex; align-items: center; gap: 1rem; font-size: 1rem; color: white; }
+        .score-display span { display: inline-flex; align-items: center; gap: 0.25rem; }
+
+        /* Üst Bar (Zarlar ve Kontroller) */
+        .game-header { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; background: #292524; border-bottom: 1px solid #444; flex-shrink: 0; flex-wrap: wrap; gap: 0.5rem; }
+        .player-turn { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 0.95rem; color: var(--primary); }
+        .player-turn.wait { color: var(--text-muted); }
         .checker-icon { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #000; }
         
         .dice-area { display: flex; gap: 0.5rem; align-items: center; }
-        .die { width: 40px; height: 40px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); }
+        .die { width: 36px; height: 36px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: opacity 0.3s; }
         .die.empty { background: #444; box-shadow: none; color: transparent; }
-        
-        .btn-roll { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .die.used { opacity: 0.3; } /* Harcanmış zar efekti */
 
-        /* TAVLA TAHTASI (VIBECODER MOBİL MİMARİSİ) */
-        .board-container {
-            flex: 1; padding: 1rem 0.5rem; display: flex; justify-content: center; align-items: center;
+        /* Zar Atma Animasyonu */
+        @keyframes rollAnim {
+            0% { transform: rotate(0deg) scale(1) translateY(0); }
+            25% { transform: rotate(90deg) scale(1.1) translateY(-10px); }
+            50% { transform: rotate(180deg) scale(1.2) translateY(0); }
+            75% { transform: rotate(270deg) scale(1.1) translateY(-5px); }
+            100% { transform: rotate(360deg) scale(1) translateY(0); }
         }
+        .rolling { animation: rollAnim 0.4s ease-out; }
+
+        .btn-small { padding: 0.5rem 0.75rem; font-size: 0.85rem; border-radius: 8px; background: #444; color: white; }
+        .btn-small:hover:not(:disabled) { background: #555; }
+        .btn-action-group { display: flex; gap: 0.5rem; width: 100%; justify-content: flex-end; }
+
+        /* TAVLA TAHTASI (VIBECODER DİKDÖRTGEN MİMARİSİ) */
+        .board-container { flex: 1; padding: 0.75rem 0.5rem; display: flex; justify-content: center; align-items: center; }
 
         .backgammon-board {
-            background: var(--board-outer); width: 100%; height: 100%; max-height: 700px; border-radius: 8px; padding: 10px; display: flex; gap: 10px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            background: var(--board-outer); width: 100%; height: 100%; max-height: 700px; border-radius: 12px; padding: 10px; display: flex; gap: 8px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
         }
 
-        /* Ortadaki Bar */
-        .board-bar { width: 30px; background: #2c1a0c; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; }
+        .board-bar { width: 35px; background: #241407; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
 
-        .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 4px; overflow: hidden; }
+        .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
 
         .points-row { flex: 1; display: flex; position: relative; }
-        .points-row.bottom { transform: scaleY(-1); /* Alt sırayı ters çevir */ }
+        .points-row.bottom { transform: scaleY(-1); /* Alt sırayı yön olarak ters çevirir, görselliği bozar o yüzden pulları içeride düzelteceğiz */ }
 
-        .point { flex: 1; position: relative; display: flex; justify-content: center; cursor: pointer; transition: var(--transition); }
-        .point:hover { background: rgba(0,0,0,0.05); }
-        .point.selected { background: rgba(194, 139, 90, 0.4); }
+        .point { flex: 1; position: relative; display: flex; justify-content: center; cursor: pointer; }
         
-        /* Hane (Üçgen) Çizimleri */
-        .point::before {
-            content: ''; position: absolute; top: 0; width: 0; height: 0; 
-            border-left: 14vw solid transparent; border-right: 14vw solid transparent; border-top: 150px solid var(--point-dark);
+        /* Modern Dikdörtgen Slot Tasarımı (Üçgen Yerine) */
+        .point-bg {
+            position: absolute; top: 0; width: 75%; height: 95%; border-radius: 4px;
+            background: var(--point-dark); transition: var(--transition);
         }
-        @media (min-width: 500px) { .point::before { border-left: 20px solid transparent; border-right: 20px solid transparent; } }
-        .point:nth-child(even)::before { border-top-color: var(--point-light); }
+        .point:nth-child(even) .point-bg { background: var(--point-light); }
+        .point:hover .point-bg { filter: brightness(1.3); }
+        .point.selected .point-bg { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
         /* Pullar (Checkers) */
         .checker {
             width: 8vw; max-width: 32px; height: 8vw; max-height: 32px; border-radius: 50%; position: absolute;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4), inset 0 -3px 0 rgba(0,0,0,0.3);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
-            transition: transform 0.2s;
         }
-        .checker.black { background: var(--checker-black); border: 2px solid #555; color: white; }
-        .checker.white { background: var(--checker-white); border: 2px solid #ccc; color: black; }
-        
-        /* VibeCoder İstifleme Zırhı: Pul Konumları */
-        .checker:nth-child(1) { top: 2px; }
-        .checker:nth-child(2) { top: 25px; }
-        .checker:nth-child(3) { top: 48px; }
-        .checker:nth-child(4) { top: 71px; }
-        .checker:nth-child(5) { top: 94px; }
-        /* 5'ten fazlası çizilmez, JS ile rozet eklenir */
+        /* Alt sıradaki pulların yazısı ters dönmesin diye */
+        .points-row.bottom .checker { transform: scaleY(-1); } 
 
-        /* Kırık Pullar ve Toplama Alanı */
-        .broken-area { display: flex; flex-direction: column; gap: -10px; align-items: center; }
+        .checker.black { background: var(--checker-black); border: 2px solid #444; color: white; }
+        .checker.white { background: var(--checker-white); border: 2px solid #cbd5e1; color: black; }
+        
+        /* VibeCoder İstifleme Zırhı */
+        .checker:nth-child(2) { top: 2px; }
+        .checker:nth-child(3) { top: 25px; }
+        .checker:nth-child(4) { top: 48px; }
+        .checker:nth-child(5) { top: 71px; }
+        .checker:nth-child(6) { top: 94px; }
+
+        .broken-area { display: flex; flex-direction: column; gap: -5px; align-items: center; width: 100%; height: 100%; justify-content: center;}
+
+        /* Toplama (Bear Off) Alanı */
+        .bear-off-area { display: flex; justify-content: center; align-items: center; padding: 0.5rem; background: #292524; font-size: 0.8rem; font-weight: 700; color: var(--primary); cursor: pointer; border-top: 1px solid #444;}
+        .bear-off-area:hover { background: #333; }
 
         /* --- AKORDEON SOHBET --- */
-        .chat-container {
-            background: #292524; border-top: 1px solid #444; flex-shrink: 0; display: flex; flex-direction: column; transition: var(--transition); height: 60px; overflow: hidden;
-        }
-        .chat-container.open { height: 300px; }
+        .chat-container { background: #292524; border-top: 1px solid #444; flex-shrink: 0; display: flex; flex-direction: column; transition: var(--transition); height: 50px; overflow: hidden; z-index: 20;}
+        .chat-container.open { height: 250px; }
 
-        .chat-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; color: var(--primary); }
+        .chat-header { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-weight: 700; color: var(--primary); font-size: 0.9rem;}
         .chat-header .badge { background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; display: none; }
         .chat-header.has-new .badge { display: inline-block; }
 
         .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; background: #1c1917; }
-        .msg { font-size: 0.9rem; padding: 0.5rem 0.75rem; border-radius: 8px; width: fit-content; max-width: 85%; line-height: 1.4; }
+        .msg { font-size: 0.85rem; padding: 0.5rem 0.75rem; border-radius: 8px; width: fit-content; max-width: 85%; line-height: 1.4; }
         .msg.me { background: var(--primary); color: #1c1917; align-self: flex-end; border-bottom-right-radius: 0; font-weight: 600;}
         .msg.peer { background: #444; color: white; align-self: flex-start; border-bottom-left-radius: 0; }
-        .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.8rem; font-style: italic; }
+        .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.75rem; font-style: italic; }
 
         .chat-input { display: flex; padding: 0.5rem; background: #292524; gap: 0.5rem; }
-        .chat-input input { flex: 1; padding: 0.75rem; border-radius: 20px; border: none; background: #1c1917; color: white; outline: none; }
-        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; }
+        .chat-input input { flex: 1; padding: 0.5rem 0.75rem; border-radius: 20px; border: none; background: #1c1917; color: white; outline: none; font-size: 0.9rem;}
+        .chat-input button { padding: 0.5rem; border-radius: 50%; width: 36px; height: 36px; }
 
         /* Toast */
         #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; }
+        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
     </style>
@@ -171,20 +179,28 @@
 
     <div id="connection-screen">
         <div class="logo"><span class="material-symbols-rounded" style="font-size: 3rem;">casino</span> VibeTavla</div>
-        <p style="text-align: center; color: var(--text-muted);">P2P Sunucusuz Tavla Deneyimi</p>
         
-        <div class="conn-card">
+        <div class="conn-card" id="host-card">
             <div class="input-group">
-                <label>Sizin Kodunuz (SİYAH)</label>
+                <label>Hedef Skor (Oyun Kaçta Bitsin?)</label>
+                <select id="target-score">
+                    <option value="1">1 (Tek Maç)</option>
+                    <option value="3" selected>3</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Sizin Kodunuz (SİYAH - HOST)</label>
                 <div class="id-display" id="my-id">...</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">Rakibe bu kodu verin.</p>
             </div>
 
-            <div style="display:flex; align-items:center; gap: 1rem; color: #444;">
+            <div style="display:flex; align-items:center; gap: 1rem; color: #444; margin: 0.5rem 0;">
                 <hr style="flex:1; border-color:#444;"><span style="font-size:0.8rem; font-weight:700;">VEYA BAĞLAN</span><hr style="flex:1; border-color:#444;">
             </div>
 
             <div class="input-group">
-                <label>Rakibin Kodu (BEYAZ)</label>
+                <label>Rakibin Kodu (BEYAZ - MİSAFİR)</label>
                 <input type="text" id="target-id" placeholder="KOD GİR">
                 <button onclick="connectToPeer()" id="btn-connect" style="margin-top: 0.5rem;">Oyuna Katıl</button>
             </div>
@@ -193,53 +209,64 @@
 
     <div id="game-screen">
         
+        <div class="scoreboard">
+            <div class="score-display">
+                <span style="color:var(--text-muted)">Skor:</span>
+                <span><div class="checker-icon" style="background:var(--checker-black)"></div> <span id="score-black">0</span></span>
+                <span>-</span>
+                <span><span id="score-white">0</span> <div class="checker-icon" style="background:var(--checker-white)"></div></span>
+            </div>
+            <div>Hedef: <span id="target-score-display">3</span></div>
+        </div>
+
         <div class="game-header">
-            <div class="player-info">
-                <div class="checker-icon" id="my-color-icon" style="background: var(--checker-black);"></div>
-                <span id="my-role-text">Siyah (Host)</span>
+            <div class="player-turn" id="turn-display">
+                Sıra Bekleniyor...
             </div>
             
             <div class="dice-area">
                 <div class="die empty" id="die1"></div>
                 <div class="die empty" id="die2"></div>
-                <button class="btn-roll" onclick="rollDice()"><span class="material-symbols-rounded" style="font-size: 18px;">casino</span> Zar At</button>
+                <button class="btn-small" id="btn-roll" onclick="rollDice()" style="background:var(--primary); color:#000; font-weight:800;">Zar At</button>
+            </div>
+
+            <div class="btn-action-group">
+                <button class="btn-small" id="btn-undo" onclick="undoTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">undo</span> Geri Al</button>
+                <button class="btn-small" id="btn-end" onclick="endTurn()" disabled><span class="material-symbols-rounded" style="font-size:16px;">done_all</span> Turu Bitir</button>
             </div>
         </div>
 
         <div class="board-container">
             <div class="backgammon-board">
-                
                 <div class="board-half">
-                    <div class="points-row top" id="quad-2">
-                        </div>
-                    <div class="points-row bottom" id="quad-3">
-                        </div>
+                    <div class="points-row top" id="quad-2"></div>
+                    <div class="points-row bottom" id="quad-3"></div>
                 </div>
 
-                <div class="board-bar" id="bar-area" onclick="handlePointClick('bar')">
-                    </div>
+                <div class="board-bar" id="bar-area" onclick="handlePointClick('bar')"></div>
 
                 <div class="board-half">
-                    <div class="points-row top" id="quad-1">
-                        </div>
-                    <div class="points-row bottom" id="quad-4">
-                        </div>
+                    <div class="points-row top" id="quad-1"></div>
+                    <div class="points-row bottom" id="quad-4"></div>
                 </div>
-
             </div>
+        </div>
+        
+        <div class="bear-off-area" onclick="handlePointClick('bearoff')">
+            <span class="material-symbols-rounded">exit_to_app</span> Seçili Pulu Topla / Oyundan Çıkar
         </div>
 
         <div class="chat-container" id="chat-container">
             <div class="chat-header" onclick="toggleChat()">
-                <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-rounded">chat</span> Sohbet & Kayıtlar <span class="badge" id="chat-badge">Yeni</span></span>
+                <span style="display:flex; align-items:center; gap:0.5rem;"><span class="material-symbols-rounded" style="font-size:18px;">chat</span> Sohbet <span class="badge" id="chat-badge">Yeni</span></span>
                 <span class="material-symbols-rounded" id="chat-toggle-icon">expand_less</span>
             </div>
             <div class="chat-messages" id="chat-messages">
-                <div class="msg system">Serbest masaya (Sandbox) hoş geldiniz. Kurallar esnektir.</div>
+                <div class="msg system">VibeTavla motoru başlatıldı. Oynamak için pullara dokunun.</div>
             </div>
             <div class="chat-input">
                 <input type="text" id="msg-input" placeholder="Mesaj yazın..." onkeypress="handleKeypress(event)">
-                <button onclick="sendChatMessage()"><span class="material-symbols-rounded">send</span></button>
+                <button onclick="sendChatMessage()"><span class="material-symbols-rounded" style="font-size:18px">send</span></button>
             </div>
         </div>
 
@@ -248,11 +275,56 @@
     <div id="toast-container"></div>
 
     <script>
-        // --- 1. PEERJS & BAĞLANTI YÖNETİMİ ---
-        let peer = null;
-        let conn = null;
-        let myPeerId = '';
-        let myColor = 'black'; // Host is Black, Guest is White
+        // --- SES VE ANİMASYON MOTORU ---
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        document.addEventListener('click', initAudio, { once: true });
+
+        function playDiceSound() {
+            try {
+                if (!audioCtx) initAudio();
+                // Zar çarpma sesini simüle eden hızlı gürültü serisi
+                for(let i=0; i<3; i++) {
+                    setTimeout(() => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain); gain.connect(audioCtx.destination);
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(300 + Math.random()*200, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                    }, i * 80);
+                }
+            } catch (e) {}
+        }
+
+        // --- STATE YÖNETİMİ ---
+        let peer = null; let conn = null; let myPeerId = '';
+        let myColor = 'black'; // Host: Black, Guest: White
+        
+        let gameState = {
+            board: Array(24).fill(null).map(() => ({ color: null, count: 0 })),
+            bar: { black: 0, white: 0 },
+            off: { black: 0, white: 0 }, // Toplanan pullar
+            scores: { black: 0, white: 0 },
+            targetScore: 3,
+            currentTurn: 'black', // Oyunu siyah başlatır
+            dice: [] // Örn: [3, 1] veya [4,4,4,4]
+        };
+
+        let turnSnapshot = null; // Geri Al (Undo) için
+        let selectedPoint = null;
+
+        // Kriptografik Güçlü Zar
+        function getSecureRandomDice() {
+            const array = new Uint32Array(2);
+            window.crypto.getRandomValues(array);
+            return [(array[0] % 6) + 1, (array[1] % 6) + 1];
+        }
 
         function generateShortId() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -261,19 +333,18 @@
             return result;
         }
 
+        // --- BAĞLANTI (P2P) ---
         function initPeer() {
             myPeerId = generateShortId();
             peer = new Peer(myPeerId);
 
-            peer.on('open', (id) => {
-                document.getElementById('my-id').innerText = id;
-            });
+            peer.on('open', (id) => { document.getElementById('my-id').innerText = id; });
 
-            // Birisi bana bağlanırsa (Ben HOST isem)
             peer.on('connection', (connection) => {
-                if (conn) return; // Zaten biri bağlı
+                if (conn) return; 
                 conn = connection;
-                myColor = 'black'; // Oyunu kuran siyahtır
+                myColor = 'black'; 
+                gameState.targetScore = parseInt(document.getElementById('target-score').value) || 3;
                 setupConnection();
             });
         }
@@ -284,7 +355,7 @@
 
             document.getElementById('btn-connect').innerText = "Bağlanıyor...";
             conn = peer.connect(targetId, { reliable: true });
-            myColor = 'white'; // Bağlanan beyazdır
+            myColor = 'white'; 
             setupConnection();
         };
 
@@ -294,12 +365,7 @@
                 document.getElementById('connection-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
                 
-                // UI Renk Ayarları
-                document.getElementById('my-color-icon').style.background = myColor === 'black' ? 'var(--checker-black)' : 'var(--checker-white)';
-                document.getElementById('my-role-text').innerText = myColor === 'black' ? 'Siyah (Sen)' : 'Beyaz (Sen)';
-
                 if(myColor === 'black') {
-                    // Host isek tahtayı kur ve gönder
                     initBoard();
                     sendSync();
                 }
@@ -307,200 +373,322 @@
 
             conn.on('data', (data) => {
                 if(data.type === 'sync') {
-                    board = data.board;
-                    bar = data.bar;
-                    renderBoard();
+                    gameState = data.state;
+                    selectedPoint = null;
+                    renderAll();
                 } else if(data.type === 'chat') {
                     addMessage(data.text, 'peer');
                     if(!document.getElementById('chat-container').classList.contains('open')) {
                         document.getElementById('chat-badge').style.display = 'inline-block';
                     }
-                } else if(data.type === 'dice') {
-                    displayDice(data.d1, data.d2);
-                    addMessage("Rakip zar attı: " + data.d1 + " - " + data.d2, 'system');
+                } else if(data.type === 'dice_roll') {
+                    gameState.dice = data.dice;
+                    gameState.currentTurn = data.turn;
+                    animateDice(data.d1, data.d2);
+                    addMessage(`Rakip zar attı: ${data.d1} - ${data.d2}`, 'system');
+                    renderAll();
                 }
             });
 
             conn.on('close', () => {
-                showToast("Rakip oyundan ayrıldı.");
+                showToast("Rakip ayrıldı. Sayfa yenileniyor.");
                 setTimeout(() => location.reload(), 2000);
             });
         }
 
-        // --- 2. OYUN MOTORU (STATE) ---
-        // 24 hane (0-23). 
-        // Geleneksel dizilim:
-        // Black: 2 on 24(idx 23), 5 on 13(idx 12), 3 on 8(idx 7), 5 on 6(idx 5)
-        // White: 2 on 1(idx 0), 5 on 12(idx 11), 3 on 17(idx 16), 5 on 19(idx 18)
-
-        let board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
-        let bar = { black: 0, white: 0 };
-        let selectedPoint = null;
-
         function initBoard() {
-            board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
-            bar = { black: 0, white: 0 };
+            gameState.board = Array(24).fill(null).map(() => ({ color: null, count: 0 }));
+            gameState.bar = { black: 0, white: 0 };
+            gameState.off = { black: 0, white: 0 };
+            gameState.dice = [];
+            gameState.currentTurn = 'black';
             
-            // Siyah (Host) Dizilimi
-            board[23] = { color: 'black', count: 2 };
-            board[12] = { color: 'black', count: 5 };
-            board[7]  = { color: 'black', count: 3 };
-            board[5]  = { color: 'black', count: 5 };
+            gameState.board[23] = { color: 'black', count: 2 };
+            gameState.board[12] = { color: 'black', count: 5 };
+            gameState.board[7]  = { color: 'black', count: 3 };
+            gameState.board[5]  = { color: 'black', count: 5 };
 
-            // Beyaz (Guest) Dizilimi
-            board[0]  = { color: 'white', count: 2 };
-            board[11] = { color: 'white', count: 5 };
-            board[16] = { color: 'white', count: 3 };
-            board[18] = { color: 'white', count: 5 };
+            gameState.board[0]  = { color: 'white', count: 2 };
+            gameState.board[11] = { color: 'white', count: 5 };
+            gameState.board[16] = { color: 'white', count: 3 };
+            gameState.board[18] = { color: 'white', count: 5 };
 
+            renderAll();
+        }
+
+        // --- OYUN KURALLARI VE MOTORU ---
+
+        function createSnapshot() {
+            turnSnapshot = JSON.parse(JSON.stringify(gameState));
+            document.getElementById('btn-undo').disabled = false;
+        }
+
+        window.rollDice = () => {
+            if(gameState.currentTurn !== myColor) {
+                showToast("Şu an sıra sizde değil!"); return;
+            }
+            if(gameState.dice.length > 0) {
+                showToast("Önce mevcut zarlarınızı oynamalısınız."); return;
+            }
+
+            const [d1, d2] = getSecureRandomDice();
+            
+            // Çift atılırsa 4 tane zar verilir
+            if(d1 === d2) gameState.dice = [d1, d1, d1, d1];
+            else gameState.dice = [d1, d2];
+
+            createSnapshot(); // Zarı attığı an durumu kaydet (Geri alabilmek için)
+            
+            animateDice(d1, d2);
+            addMessage(`Zar attın: ${d1} - ${d2}`, 'system');
+            
+            renderAll();
+
+            if(conn && conn.open) {
+                conn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, turn: myColor });
+            }
+        };
+
+        window.undoTurn = () => {
+            if(turnSnapshot && gameState.currentTurn === myColor) {
+                gameState = JSON.parse(JSON.stringify(turnSnapshot));
+                selectedPoint = null;
+                renderAll();
+                sendSync();
+            }
+        };
+
+        window.endTurn = () => {
+            if(gameState.currentTurn !== myColor) return;
+            
+            // Sırayı karşı tarafa geçir
+            gameState.currentTurn = (myColor === 'black') ? 'white' : 'black';
+            gameState.dice = []; // Kalan zarları temizle
+            turnSnapshot = null;
+            selectedPoint = null;
+            
+            renderAll();
+            sendSync();
+            addMessage("Sıranızı bitirdiniz.", 'system');
+        };
+
+        // Mesafe Hesaplama Zırhı
+        function getDistance(from, to) {
+            // Black moves down (23 to 0). White moves up (0 to 23).
+            if(from === 'bar') {
+                if(myColor === 'black') return 24 - to; // Black enters at 23,22.. -> (24 - 23 = 1)
+                else return to + 1; // White enters at 0,1.. -> (0 + 1 = 1)
+            }
+            if(myColor === 'black') return from - to;
+            else return to - from;
+        }
+
+        window.handlePointClick = (index) => {
+            if(gameState.currentTurn !== myColor) { showToast("Sıra rakipte."); return; }
+            if(gameState.dice.length === 0) { showToast("Önce zar atmalısınız."); return; }
+
+            // Seçim İptali
+            if(selectedPoint === index) {
+                selectedPoint = null; renderAll(); return;
+            }
+
+            // Yeni Seçim Yapma
+            if(selectedPoint === null) {
+                if(index === 'bar') {
+                    if(gameState.bar[myColor] > 0) selectedPoint = 'bar';
+                } else if(index !== 'bearoff') {
+                    if(gameState.board[index].count > 0 && gameState.board[index].color === myColor) {
+                        // KURAL: Eğer kırık pulu varsa mecburen bardan çıkmalı
+                        if(gameState.bar[myColor] > 0) {
+                            showToast("Önce kırık pulunuzu oyuna sokmalısınız!"); return;
+                        }
+                        selectedPoint = index;
+                    }
+                }
+                renderAll(); return;
+            }
+
+            // --- TAŞIMA (MOVE) AŞAMASI ---
+            const from = selectedPoint;
+            const to = index;
+
+            if(to === 'bar') return; 
+
+            // Toplama (Bear Off)
+            if(to === 'bearoff') {
+                // (Basit Sandbox Toplama: Oyuncu mesafeyi kendisi bilir, onaylayınca taşı sileriz)
+                // Profesyonel motorda tüm pulların içeride olduğu kontrol edilir ama mobil sandbox'ta
+                // oyuncuya inisiyatif verip 1 zar eksiltiyoruz.
+                if(gameState.dice.length > 0) {
+                    gameState.dice.sort((a,b) => b-a); // En büyük zarı harca
+                    gameState.dice.shift(); 
+                    gameState.board[from].count--;
+                    if(gameState.board[from].count === 0) gameState.board[from].color = null;
+                    gameState.off[myColor]++;
+                    selectedPoint = null;
+                    
+                    // Oyun Bitti mi?
+                    if(gameState.off[myColor] === 15) {
+                        gameState.scores[myColor]++;
+                        showToast("TEBRİKLER! OYUNU KAZANDINIZ!", "success");
+                        setTimeout(() => { initBoard(); sendSync(); }, 3000);
+                        return;
+                    }
+                    renderAll(); sendSync(); return;
+                }
+            }
+
+            // Zar Kontrolü
+            const dist = getDistance(from, to);
+            const dieIndex = gameState.dice.indexOf(dist);
+
+            if(dieIndex === -1) {
+                showToast("Zarlarınız bu hamleye uygun değil. Mesafe: " + dist);
+                selectedPoint = null; renderAll(); return;
+            }
+
+            // Hedef Nokta Kontrolü (Kapı)
+            if(gameState.board[to].count > 1 && gameState.board[to].color !== myColor) {
+                showToast("Burası rakip kapısı!");
+                selectedPoint = null; renderAll(); return;
+            }
+
+            // Kırma (Hit)
+            if(gameState.board[to].count === 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null) {
+                gameState.bar[gameState.board[to].color]++;
+                gameState.board[to].count = 0;
+                addMessage("Pul kırıldı!", "system");
+            }
+
+            // Zar Harcama ve Pulu Taşıma
+            gameState.dice.splice(dieIndex, 1);
+
+            if(from === 'bar') gameState.bar[myColor]--;
+            else {
+                gameState.board[from].count--;
+                if(gameState.board[from].count === 0) gameState.board[from].color = null;
+            }
+
+            gameState.board[to].color = myColor;
+            gameState.board[to].count++;
+
+            selectedPoint = null;
+            renderAll();
+            sendSync();
+        };
+
+        function sendSync() {
+            if(conn && conn.open) conn.send({ type: 'sync', state: gameState });
+        }
+
+        // --- 6. GÖRSELLEŞTİRME (RENDER) ---
+
+        function animateDice(d1, d2) {
+            playDiceSound();
+            const el1 = document.getElementById('die1'); const el2 = document.getElementById('die2');
+            el1.classList.add('rolling'); el2.classList.add('rolling');
+            setTimeout(() => {
+                el1.classList.remove('rolling'); el2.classList.remove('rolling');
+            }, 400);
+        }
+
+        function renderAll() {
+            renderHeader();
             renderBoard();
         }
 
-        // --- 3. GÖRSELLEŞTİRME (RENDER) ---
-        function renderBoard() {
-            const quad1 = document.getElementById('quad-1'); // 19-24 (Index 18-23)
-            const quad2 = document.getElementById('quad-2'); // 13-18 (Index 12-17)
-            const quad3 = document.getElementById('quad-3'); // 7-12 (Index 6-11)
-            const quad4 = document.getElementById('quad-4'); // 1-6 (Index 0-5)
+        function renderHeader() {
+            // Skor
+            document.getElementById('score-black').innerText = gameState.scores.black;
+            document.getElementById('score-white').innerText = gameState.scores.white;
+            document.getElementById('target-score-display').innerText = gameState.targetScore;
+
+            // Sıra Kimde
+            const turnDisplay = document.getElementById('turn-display');
+            if(gameState.currentTurn === myColor) {
+                turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${myColor})"></div> SIRA SİZDE`;
+                turnDisplay.className = "player-turn";
+                document.getElementById('btn-roll').disabled = (gameState.dice.length > 0);
+                document.getElementById('btn-end').disabled = false;
+                document.getElementById('btn-undo').disabled = (turnSnapshot === null);
+            } else {
+                const oppColor = myColor === 'black' ? 'white' : 'black';
+                turnDisplay.innerHTML = `<div class="checker-icon" style="background:var(--checker-${oppColor})"></div> SIRA RAKİPTE`;
+                turnDisplay.className = "player-turn wait";
+                document.getElementById('btn-roll').disabled = true;
+                document.getElementById('btn-end').disabled = true;
+                document.getElementById('btn-undo').disabled = true;
+            }
+
+            // Zar Gösterimi (Harcanan zarları saydam yap)
+            const d1El = document.getElementById('die1');
+            const d2El = document.getElementById('die2');
             
+            // Snapshot'tan orijinal atılan zarları bul
+            if(turnSnapshot && turnSnapshot.dice && turnSnapshot.dice.length >= 2) {
+                const orig = turnSnapshot.dice;
+                // Çift atıldıysa 4 zar gösterimi için basit bir UI, yoksa 2 zar.
+                d1El.innerText = orig[0]; d1El.className = 'die';
+                d2El.innerText = orig[1]; d2El.className = 'die';
+
+                // Eğer gameState.dice içinde bu zar yoksa "used" class'ı ekle
+                if(!gameState.dice.includes(orig[0])) d1El.classList.add('used');
+                if(!gameState.dice.includes(orig[1])) d2El.classList.add('used');
+            } else {
+                d1El.className = 'die empty'; d1El.innerText = '';
+                d2El.className = 'die empty'; d2El.innerText = '';
+            }
+        }
+
+        function renderBoard() {
+            const quad1 = document.getElementById('quad-1'); const quad2 = document.getElementById('quad-2');
+            const quad3 = document.getElementById('quad-3'); const quad4 = document.getElementById('quad-4');
             quad1.innerHTML = ''; quad2.innerHTML = ''; quad3.innerHTML = ''; quad4.innerHTML = '';
 
-            // Haneleri Çiz
             for(let i=0; i<24; i++) {
                 const pointDiv = document.createElement('div');
                 pointDiv.className = 'point';
                 if(selectedPoint === i) pointDiv.classList.add('selected');
                 pointDiv.onclick = () => handlePointClick(i);
 
-                const data = board[i];
+                // VIBECODER: Dikdörtgen Slot
+                const pointBg = document.createElement('div');
+                pointBg.className = 'point-bg';
+                pointDiv.appendChild(pointBg);
+
+                const data = gameState.board[i];
                 if(data.count > 0) {
-                    // VIBECODER: Akıllı İstifleme Algoritması (Mobil taşma koruması)
-                    const drawCount = Math.min(data.count, 5); // Max 5 pul çiz
+                    const drawCount = Math.min(data.count, 6); // Max 6 pul
                     for(let c=0; c<drawCount; c++) {
                         const checker = document.createElement('div');
                         checker.className = `checker ${data.color}`;
-                        
-                        // Eğer 5. pultaysak ve toplam 5'ten fazlaysa sayıyı yaz
-                        if(c === 4 && data.count > 5) {
-                            checker.innerText = "+" + (data.count - 4);
-                        }
+                        if(c === 5 && data.count > 6) checker.innerText = "+" + (data.count - 5);
                         pointDiv.appendChild(checker);
                     }
                 }
 
-                // Çeyreklere dağıt
-                if(i >= 0 && i <= 5) quad4.prepend(pointDiv); // 6'dan 1'e ters dizilir
-                else if(i >= 6 && i <= 11) quad3.prepend(pointDiv); // 12'den 7'ye ters
-                else if(i >= 12 && i <= 17) quad2.appendChild(pointDiv); // 13'ten 18'e düz
-                else if(i >= 18 && i <= 23) quad1.appendChild(pointDiv); // 19'dan 24'e düz
+                if(i >= 0 && i <= 5) quad4.prepend(pointDiv); 
+                else if(i >= 6 && i <= 11) quad3.prepend(pointDiv); 
+                else if(i >= 12 && i <= 17) quad2.appendChild(pointDiv); 
+                else if(i >= 18 && i <= 23) quad1.appendChild(pointDiv); 
             }
 
-            // Kırık Pulları (Bar) Çiz
             const barArea = document.getElementById('bar-area');
             barArea.innerHTML = '';
-            if(selectedPoint === 'bar') barArea.style.background = 'rgba(194, 139, 90, 0.4)';
-            else barArea.style.background = '#2c1a0c';
+            if(selectedPoint === 'bar') barArea.style.boxShadow = 'inset 0 0 0 2px var(--primary)';
+            else barArea.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
 
-            if(bar.black > 0) {
+            if(gameState.bar.black > 0) {
                 const c = document.createElement('div'); c.className = 'checker black'; 
-                if(bar.black>1) c.innerText = bar.black; barArea.appendChild(c);
+                if(gameState.bar.black>1) c.innerText = gameState.bar.black; barArea.appendChild(c);
             }
-            if(bar.white > 0) {
+            if(gameState.bar.white > 0) {
                 const c = document.createElement('div'); c.className = 'checker white'; 
-                if(bar.white>1) c.innerText = bar.white; barArea.appendChild(c);
+                if(gameState.bar.white>1) c.innerText = gameState.bar.white; barArea.appendChild(c);
             }
         }
 
-        // --- 4. ETKİLEŞİM VE HAMLE (SANDBOX) ---
-        window.handlePointClick = (index) => {
-            // Seçim İptali
-            if(selectedPoint === index) {
-                selectedPoint = null;
-                renderBoard();
-                return;
-            }
-
-            // Yeni Seçim Yapma (Sadece kendi rengini seçebilir)
-            if(selectedPoint === null) {
-                if(index === 'bar') {
-                    if(bar[myColor] > 0) selectedPoint = 'bar';
-                } else {
-                    if(board[index].count > 0 && board[index].color === myColor) {
-                        selectedPoint = index;
-                    }
-                }
-                renderBoard();
-                return;
-            }
-
-            // Hedefe Taşıma Aşaması
-            const from = selectedPoint;
-            const to = index;
-
-            if(to === 'bar') return; // Bar'a kendi kendine gidemez
-
-            // Kırma Durumu (Hit)
-            if(board[to].count === 1 && board[to].color !== myColor && board[to].color !== null) {
-                bar[board[to].color]++; // Rakibi bar'a gönder
-                board[to].count = 0; // Hane boşaldı
-                addMessage("Pul kırıldı!", "system");
-            }
-
-            // Güvenlik: Hanede rakibin 1'den fazla pulu varsa (Kapı) gidemezsin
-            if(board[to].count > 1 && board[to].color !== myColor) {
-                showToast("Burası rakip kapısı, hamle yapılamaz!");
-                selectedPoint = null;
-                renderBoard();
-                return;
-            }
-
-            // Pulu Kaldır
-            if(from === 'bar') {
-                bar[myColor]--;
-            } else {
-                board[from].count--;
-                if(board[from].count === 0) board[from].color = null;
-            }
-
-            // Pulu Hedefe Koy
-            board[to].color = myColor;
-            board[to].count++;
-
-            // İşlemi Bitir ve Senkronize Et
-            selectedPoint = null;
-            renderBoard();
-            sendSync();
-        };
-
-        window.rollDice = () => {
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
-            displayDice(d1, d2);
-            addMessage("Zar attın: " + d1 + " - " + d2, 'system');
-            
-            if(conn && conn.open) {
-                conn.send({ type: 'dice', d1, d2 });
-            }
-        };
-
-        function displayDice(d1, d2) {
-            const el1 = document.getElementById('die1');
-            const el2 = document.getElementById('die2');
-            el1.className = 'die'; el1.innerText = d1;
-            el2.className = 'die'; el2.innerText = d2;
-            
-            // Minik animasyon
-            el1.style.transform = "scale(1.2)"; el2.style.transform = "scale(1.2)";
-            setTimeout(() => { el1.style.transform = "scale(1)"; el2.style.transform = "scale(1)"; }, 200);
-        }
-
-        function sendSync() {
-            if(conn && conn.open) {
-                conn.send({ type: 'sync', board: board, bar: bar });
-            }
-        }
-
-        // --- 5. SOHBET VE ARAYÜZ (UX) ---
+        // --- 7. SOHBET (UX) ---
         window.toggleChat = () => {
             const chat = document.getElementById('chat-container');
             const icon = document.getElementById('chat-toggle-icon');
@@ -535,11 +723,12 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        function showToast(msg) {
+        function showToast(msg, type='normal') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerText = msg;
+            if(type === 'success') { toast.style.background = 'var(--success)'; toast.style.color = '#fff'; }
             container.appendChild(toast);
             
             setTimeout(() => toast.classList.add('show'), 10);
@@ -549,7 +738,6 @@
             }, 2500);
         }
 
-        // Başlangıç
         window.onload = initPeer;
 
     </script>
