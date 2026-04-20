@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VibeTavla | Profesyonel P2P</title>
+    <title>VibeTavla | Profesyonel</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
@@ -346,6 +346,7 @@
             toast.innerHTML = type === 'chat' ? `<span class="material-symbols-rounded">chat</span> <span>${msg}</span>` : msg;
             
             if(type === 'success') { toast.style.background = 'var(--primary)'; toast.style.color = '#1c1917'; }
+            else if(type === 'error') { toast.style.background = '#ef4444'; toast.style.color = 'white'; }
             
             container.appendChild(toast);
             setTimeout(() => toast.classList.add('show'), 10);
@@ -440,7 +441,6 @@
                 gameState.currentTurn = data.turn; gameState.rollId = data.rollId;
                 
                 animateDice(data.d1, data.d2);
-                addMessage(`Rakip zar attı: ${data.d1} - ${data.d2}`, 'system');
                 renderAll();
                 broadcastExcept({ type: 'sync', state: gameState }, conn.peer);
             }
@@ -511,7 +511,6 @@
 
                     if (gameState.rollId !== oldRollId && gameState.originalDice.length > 0) {
                         animateDice(gameState.originalDice[0], gameState.originalDice[1]);
-                        addMessage(`Zar atıldı: ${gameState.originalDice[0]} - ${gameState.originalDice[1]}`, 'system');
                     }
                     renderAll();
                 }
@@ -571,9 +570,9 @@
 
             createSnapshot(); 
             animateDice(d1, d2);
-            addMessage(`Zar attın: ${d1} - ${d2}`, 'system');
             
             renderAll();
+            checkTurnStatus(); // VibeCoder Deadlock Kontrolü
             
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, originalDice: gameState.originalDice, turn: myColor, rollId: gameState.rollId });
@@ -587,6 +586,7 @@
                 gameState = JSON.parse(JSON.stringify(turnSnapshot));
                 selectedPoint = null; possibleMoves = [];
                 renderAll();
+                checkTurnStatus(); // VibeCoder Deadlock Kontrolü
                 if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
                 else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
             }
@@ -604,6 +604,60 @@
             renderAll();
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
+        }
+
+        // VibeCoder - Bloklanma (Deadlock) Denetimi
+        function hasAnyValidMove() {
+            if (gameState.dice.length === 0) return false;
+            const bearOffAllowed = canBearOff();
+            
+            const checkPoint = (from, die) => {
+                let to = (from === 'bar')
+                    ? ((myColor === 'black') ? 24 - die : die - 1)
+                    : ((myColor === 'black') ? from - die : from + die);
+                
+                if (to >= 0 && to <= 23) {
+                    if (!(gameState.board[to].count > 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null)) {
+                        return true;
+                    }
+                } else if (bearOffAllowed && from !== 'bar') {
+                    return true; 
+                }
+                return false;
+            };
+
+            const uniqueDice = [...new Set(gameState.dice)];
+
+            if (gameState.bar[myColor] > 0) {
+                for (let d of uniqueDice) {
+                    if (checkPoint('bar', d)) return true;
+                }
+                return false;
+            }
+
+            for (let i=0; i<24; i++) {
+                if (gameState.board[i].color === myColor && gameState.board[i].count > 0) {
+                    for (let d of uniqueDice) {
+                        if (checkPoint(i, d)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // VibeCoder - Otomatik Sıra Atlatma Motoru
+        function checkTurnStatus() {
+            if (myRole === 'spectator') return;
+            if (gameState.currentTurn === myColor) {
+                if (gameState.dice.length > 0 && !hasAnyValidMove()) {
+                    showToast("Yapılabilecek hamle yok. Sıra rakibe geçiyor...", "error");
+                    if (autoPassTimer) clearTimeout(autoPassTimer);
+                    autoPassTimer = setTimeout(() => { endTurn(); }, 1500);
+                } else if (gameState.dice.length === 0) {
+                    if (autoPassTimer) clearTimeout(autoPassTimer);
+                    autoPassTimer = setTimeout(() => { endTurn(); }, 1500);
+                }
+            }
         }
 
         function getDistance(from, to) {
@@ -630,17 +684,43 @@
             const uniqueDice = [...new Set(gameState.dice)]; 
             const bearOffAllowed = canBearOff();
 
-            uniqueDice.forEach(die => {
-                let to = (from === 'bar')
-                    ? ((myColor === 'black') ? 24 - die : die - 1)
-                    : ((myColor === 'black') ? from - die : from + die);
+            const getTo = (f, d) => (f === 'bar') ? ((myColor === 'black') ? 24 - d : d - 1) : ((myColor === 'black') ? f - d : f + d);
+            const isValid = (t) => t >= 0 && t <= 23 && !(gameState.board[t].count > 1 && gameState.board[t].color !== myColor && gameState.board[t].color !== null);
 
-                if (to >= 0 && to <= 23) {
-                    if (!(gameState.board[to].count > 1 && gameState.board[to].color !== myColor)) {
-                        possibleMoves.push(to);
-                    }
+            // Tekil Zarlar
+            uniqueDice.forEach(die => {
+                let to = getTo(from, die);
+                if (isValid(to)) {
+                    possibleMoves.push(to);
                 }
             });
+
+            // VibeCoder - Kombine (Toplu) Hamle Desteği
+            if (gameState.dice.length >= 2 && from !== 'bearoff') {
+                if (gameState.dice.length === 2 && gameState.dice[0] !== gameState.dice[1]) {
+                    let d1 = gameState.dice[0]; let d2 = gameState.dice[1];
+                    let to1 = getTo(from, d1); let to2 = getTo(from, d2);
+                    let valid1 = isValid(to1) && isValid(getTo(to1, d2));
+                    let valid2 = isValid(to2) && isValid(getTo(to2, d1));
+                    
+                    if (valid1 || valid2) {
+                        let comboTo = getTo(to1, d2);
+                        if (comboTo >= 0 && comboTo <= 23 && !possibleMoves.includes(comboTo)) {
+                            possibleMoves.push(comboTo);
+                        }
+                    }
+                } else if (gameState.dice[0] === gameState.dice[1]) {
+                    let d = gameState.dice[0];
+                    let curr = from;
+                    let validPath = true;
+                    for (let i = 1; i <= gameState.dice.length; i++) {
+                        let next = getTo(curr, d);
+                        if (!isValid(next)) { validPath = false; break; }
+                        if (i > 1 && !possibleMoves.includes(next)) possibleMoves.push(next);
+                        curr = next;
+                    }
+                }
+            }
 
             if (bearOffAllowed && from !== 'bar') possibleMoves.push('bearoff');
         }
@@ -700,14 +780,27 @@
             }
 
             const dist = getDistance(from, to);
-            const dieIndex = gameState.dice.indexOf(dist);
+            let dieIndex = gameState.dice.indexOf(dist);
             
+            // Eğer hedef noktada kırılacak rakip varsa
             if(gameState.board[to].count === 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null) {
                 gameState.bar[gameState.board[to].color]++;
                 gameState.board[to].count = 0;
             }
 
-            gameState.dice.splice(dieIndex, 1);
+            // VibeCoder Kombine Zar Harcama Yönetimi
+            if (dieIndex !== -1) {
+                gameState.dice.splice(dieIndex, 1);
+            } else {
+                if (gameState.dice.length > 1 && gameState.dice[0] === gameState.dice[1]) {
+                    const step = gameState.dice[0];
+                    const steps = dist / step;
+                    for(let k=0; k<steps; k++) gameState.dice.shift();
+                } else {
+                    gameState.dice.shift();
+                    gameState.dice.shift();
+                }
+            }
 
             if(from === 'bar') gameState.bar[myColor]--;
             else {
@@ -726,15 +819,7 @@
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
 
-            // VIBECODER KUSURSUZ OTOMATİK GEÇİŞ
-            if(gameState.dice.length === 0 && gameState.currentTurn === myColor) {
-                if(autoPassTimer) clearTimeout(autoPassTimer);
-                autoPassTimer = setTimeout(() => {
-                    if(gameState.currentTurn === myColor && gameState.dice.length === 0) {
-                        endTurn();
-                    }
-                }, 1500); 
-            }
+            checkTurnStatus(); // VibeCoder Deadlock Kontrolü
         }
 
         // --- 5. GÖRSELLEŞTİRME (RENDER) ---
