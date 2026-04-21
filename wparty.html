@@ -3,31 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VibeCoder P2P Watch Party</title>
+    <title>VibeCoder P2P Watch & Chat</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* --- Tailwind Şıklığı, Vanilya Hızı (CSS Değişkenleri ve Modern Reset) --- */
+        /* --- Tailwind Şıklığı, Vanilya Hızı --- */
         :root {
             --bg-color: #f8fafc; /* slate-50 */
             --surface-color: #ffffff;
             --text-main: #0f172a; /* slate-900 */
             --text-muted: #64748b; /* slate-500 */
-            --primary: #3b82f6; /* blue-500 */
-            --primary-hover: #2563eb; /* blue-600 */
+            --primary: #6366f1; /* indigo-500 */
+            --primary-hover: #4f46e5; /* indigo-600 */
             --success: #10b981; /* emerald-500 */
+            --chat-me: #e0e7ff; /* indigo-100 */
+            --chat-other: #f1f5f9; /* slate-100 */
             --border: #e2e8f0; /* slate-200 */
             --radius-md: 0.5rem;
             --radius-xl: 1rem;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
         body {
             background-color: var(--bg-color);
@@ -35,41 +32,34 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            overflow: hidden; /* Sayfa kaymasını engelle, mobilde app hissiyatı ver */
+            overflow: hidden;
         }
 
-        /* --- Medya Alanı (Ekranın Üst %40'ı) --- */
+        /* --- Medya Alanı --- */
         #media-container {
-            height: 40vh; /* Mobilde ekranın yarısından azı */
+            height: 40vh;
             min-height: 250px;
             background-color: #000;
             position: relative;
             box-shadow: var(--shadow-md);
             z-index: 10;
+            flex-shrink: 0;
         }
 
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Videonun oranını bozmadan sığdır */
-        }
+        video { width: 100%; height: 100%; object-fit: contain; }
+        .viewer-mode video { pointer-events: none; } /* İzleyici videoya dokunamaz */
 
-        /* İzleyici için video tıklamalarını engelle (Senkron bozulmasın diye) */
-        .viewer-mode video {
-            pointer-events: none; 
-        }
-
-        /* --- Kontrol ve Durum Alanı (Alt Kısım) --- */
+        /* --- Uygulama İçi Genel Alan --- */
         #app-container {
             flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1rem;
             max-width: 600px;
             margin: 0 auto;
             width: 100%;
+            overflow: hidden; /* İç scroll için ana gövdeyi kilitledik */
         }
 
         .card {
@@ -80,282 +70,300 @@
             box-shadow: var(--shadow-sm);
         }
 
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
+        .header-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .text-sm { font-size: 0.875rem; color: var(--text-muted); }
 
-        .text-sm {
-            font-size: 0.875rem;
-            color: var(--text-muted);
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+        
+        input[type="text"] {
+            width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border);
+            border-radius: var(--radius-md); font-size: 1rem; outline: none; transition: border-color 0.2s;
         }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-        }
+        input[type="text"]:focus { border-color: var(--primary); }
+        
+        input#input-room-id { text-transform: uppercase; text-align: center; font-weight: bold; letter-spacing: 2px;}
 
         button {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: none;
-            border-radius: var(--radius-md);
-            background-color: var(--primary);
-            color: white;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            width: 100%; padding: 0.75rem 1rem; border: none; border-radius: var(--radius-md);
+            background-color: var(--primary); color: white; font-size: 1rem; font-weight: 500;
+            cursor: pointer; transition: background-color 0.2s;
         }
+        button:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #059669; }
 
-        button:hover {
-            background-color: var(--primary-hover);
-        }
+        .hidden { display: none !important; }
 
-        .btn-success {
-            background-color: var(--success);
-        }
-        .btn-success:hover {
-            background-color: #059669; /* emerald-600 */
-        }
-
-        /* Durum Logları */
-        #log-container {
-            background-color: #1e293b; /* slate-800 */
-            color: #38bdf8; /* sky-400 */
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            font-family: monospace;
-            font-size: 0.85rem;
-            height: 120px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Host ID Gösterim Alanı */
+        /* KISA KOD GÖSTERİMİ */
         .id-badge {
-            background-color: #f1f5f9; /* slate-100 */
-            padding: 0.75rem;
-            border-radius: var(--radius-md);
-            text-align: center;
-            font-family: monospace;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary);
-            letter-spacing: 1px;
-            margin: 1rem 0;
-            user-select: all;
+            background-color: var(--chat-me); padding: 1rem; border-radius: var(--radius-md);
+            text-align: center; font-family: monospace; font-size: 2rem; font-weight: bold;
+            color: var(--primary); letter-spacing: 4px; margin: 1rem 0;
+        }
+
+        /* --- SOHBET (CHAT) ALANI --- */
+        #chat-section {
+            display: flex; flex-direction: column; flex: 1; overflow: hidden;
+            background-color: var(--surface-color); border: 1px solid var(--border);
+            border-radius: var(--radius-xl); box-shadow: var(--shadow-sm);
+        }
+
+        #chat-messages {
+            flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;
+        }
+
+        .chat-bubble {
+            max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.95rem; line-height: 1.4;
+        }
+        .chat-bubble.me {
+            background-color: var(--primary); color: white; align-self: flex-end;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .chat-bubble.other {
+            background-color: var(--chat-other); color: var(--text-main); align-self: flex-start;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-system {
+            align-self: center; background: none; color: var(--text-muted); font-size: 0.75rem; font-style: italic; padding: 0;
+        }
+
+        #chat-input-area {
+            display: flex; padding: 0.75rem; border-top: 1px solid var(--border); gap: 0.5rem;
+        }
+        #chat-input-area input {
+            flex: 1; margin: 0; padding: 0.5rem 1rem; border-radius: 2rem;
+        }
+        #chat-input-area button {
+            width: auto; padding: 0.5rem 1.25rem; border-radius: 2rem;
         }
     </style>
 </head>
 <body>
 
     <div id="media-container">
-        <video id="video-player" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" controls></video>
+        <video id="video-player" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" controls></video>
     </div>
 
     <div id="app-container">
         
         <div id="setup-card" class="card">
-            <h2 class="header-title">Oda Kur veya Katıl</h2>
-            <p class="text-sm">İzlemek istediğin arkadaşınla P2P (Uçtan Uca) güvenli bağlantı kur.</p>
+            <h2 class="header-title">Odalar</h2>
+            <button id="btn-create-room">👑 Yeni Oda Kur</button>
             
-            <div class="input-group" style="margin-top: 1.5rem;">
-                <button id="btn-create-room">👑 Oda Kur (Host Ol)</button>
-            </div>
-            
-            <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.875rem;">veya</div>
+            <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.875rem;">veya katıl</div>
             
             <div class="input-group">
-                <input type="text" id="input-room-id" placeholder="Oda ID'sini buraya yapıştır..." autocomplete="off">
-                <button id="btn-join-room" class="btn-success">🔗 Odaya Katıl (İzleyici Ol)</button>
+                <input type="text" id="input-room-id" placeholder="5 HARFLİ KOD" maxlength="5">
+                <button id="btn-join-room" class="btn-success">🔗 Odaya Katıl</button>
             </div>
+            <p id="setup-log" class="text-sm" style="text-align: center; margin-top: 1rem; color: #ef4444;"></p>
         </div>
 
         <div id="host-card" class="card hidden">
-            <h2 class="header-title">Oda Kuruldu</h2>
-            <p class="text-sm">Arkadaşının sana bağlanması için aşağıdaki ID'yi kopyalayıp ona gönder:</p>
-            <div id="my-peer-id" class="id-badge">Yükleniyor...</div>
-            <p class="text-sm" style="text-align: center; color: var(--success);" id="host-status">İzleyici bekleniyor...</p>
+            <h2 class="header-title" style="text-align: center;">Oda Kodun</h2>
+            <p class="text-sm" style="text-align: center;">Arkadaşının bağlanması için bu kodu gönder:</p>
+            <div id="my-short-code" class="id-badge">...</div>
+            <p class="text-sm" style="text-align: center; color: var(--success);">İzleyici bekleniyor...</p>
         </div>
 
-        <div class="card">
-            <h2 class="header-title" style="font-size: 1rem;">Sistem Durumu</h2>
-            <div id="log-container">
-                <div>> Sistem başlatıldı. P2P bağlantı bekleniyor...</div>
+        <div id="chat-section" class="hidden">
+            <div id="chat-messages">
+                <div class="chat-bubble chat-system">P2P Bağlantı kuruldu. Sohbet şifrelidir.</div>
             </div>
+            <form id="chat-input-area" onsubmit="sendChatMessage(event)">
+                <input type="text" id="chat-input" placeholder="Mesaj yaz..." autocomplete="off" required>
+                <button type="submit">Gönder</button>
+            </form>
         </div>
 
     </div>
 
     <script>
         /**
-         * VibeCoder P2P Watch Party Engine
-         * Mimari: WebRTC (PeerJS) - Olay Odaklı Senkronizasyon
+         * VibeCoder P2P Watch & Chat Engine
+         * Mimari: WebRTC (PeerJS) - Multiplexing Data Channel
          */
+
+        // --- SABİTLER VE DEĞİŞKENLER ---
+        const PREFIX = "vbc-watch-"; // Arka planda çakışmayı önleyen gizli alan
+        let peer = null;
+        let connection = null;
+        let isHost = false;
+        let isSyncing = false; 
 
         // UI Elementleri
         const video = document.getElementById('video-player');
         const setupCard = document.getElementById('setup-card');
         const hostCard = document.getElementById('host-card');
-        const mediaContainer = document.getElementById('media-container');
-        const myPeerIdDisplay = document.getElementById('my-peer-id');
-        const hostStatusDisplay = document.getElementById('host-status');
+        const chatSection = document.getElementById('chat-section');
+        const myShortCodeDisplay = document.getElementById('my-short-code');
         const inputRoomId = document.getElementById('input-room-id');
-        const logContainer = document.getElementById('log-container');
+        const setupLog = document.getElementById('setup-log');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const mediaContainer = document.getElementById('media-container');
 
-        // Global Değişkenler
-        let peer = null;
-        let connection = null;
-        let isHost = false;
-        let isSyncing = false; // Sonsuz döngüleri engellemek için bayrak (flag)
-
-        // Log Yazdırma Fonksiyonu
-        function log(message) {
-            const el = document.createElement('div');
-            const time = new Date().toLocaleTimeString('tr-TR', { hour12: false });
-            el.textContent = `[${time}] > ${message}`;
-            logContainer.appendChild(el);
-            logContainer.scrollTop = logContainer.scrollHeight;
+        // Rasgele 5 Harfli/Rakamlı Kod Üretici
+        function generateShortCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Karışabilen O,0,1,I haricinde
+            let result = '';
+            for (let i = 0; i < 5; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
 
-        // --- HOST MANTIĞI (Oda Kuran Kişi) ---
+        // --- ARAYÜZ VE SİSTEM YARDIMCILARI ---
+        function showLog(msg) {
+            setupLog.textContent = msg;
+        }
+
+        function appendChat(message, type) {
+            const el = document.createElement('div');
+            el.className = `chat-bubble ${type}`;
+            el.textContent = message;
+            chatMessages.appendChild(el);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Otomatik aşağı kaydır
+        }
+
+        function switchToChatMode() {
+            setupCard.classList.add('hidden');
+            hostCard.classList.add('hidden');
+            chatSection.classList.remove('hidden');
+        }
+
+        // --- VERİ PAKETLEME (MULTIPLEXING) ---
+        function sendDataPayload(type, payload) {
+            if (connection && connection.open) {
+                // Veriyi yapılandırılmış bir zarfa koyuyoruz
+                connection.send({
+                    type: type, // 'sync' veya 'chat'
+                    payload: payload
+                });
+            }
+        }
+
+        // --- GELEN VERİ YÖNETİMİ ---
+        function handleIncomingData(dataEnvelope) {
+            // Zarftan tipi ve veriyi çıkar
+            const { type, payload } = dataEnvelope;
+
+            if (type === 'chat') {
+                // Sohbet mesajı geldiyse ekrana bas
+                appendChat(payload.text, 'other');
+            } 
+            else if (type === 'sync') {
+                // Senkronizasyon komutu geldiyse videoyu güncelle
+                isSyncing = true; 
+                if (Math.abs(video.currentTime - payload.time) > 0.5) {
+                    video.currentTime = payload.time;
+                }
+                if (payload.isPlaying && video.paused) {
+                    video.play().catch(e => appendChat("Video oto-oynatma engellendi, ekrana dokunun.", "chat-system"));
+                } else if (!payload.isPlaying && !video.paused) {
+                    video.pause();
+                }
+                setTimeout(() => { isSyncing = false; }, 100);
+            }
+        }
+
+        // --- HOST MANTIĞI ---
         document.getElementById('btn-create-room').addEventListener('click', () => {
             isHost = true;
-            setupCard.classList.add('hidden');
-            hostCard.classList.remove('hidden');
-            log("PeerJS sunucusuna bağlanılıyor...");
+            showLog("Sunucuya bağlanılıyor...");
+            const shortCode = generateShortCode();
+            const fullId = PREFIX + shortCode;
 
-            // Yeni bir Peer oluştur (ID'yi otomatik atar)
-            peer = new Peer();
+            // Kendi belirlediğimiz ID ile Peer oluştur
+            peer = new Peer(fullId);
 
-            peer.on('open', (id) => {
-                myPeerIdDisplay.textContent = id;
-                log(`Oda oluşturuldu. ID: ${id}`);
+            peer.on('open', () => {
+                setupCard.classList.add('hidden');
+                hostCard.classList.remove('hidden');
+                myShortCodeDisplay.textContent = shortCode;
             });
 
-            // Birisi bağlandığında tetiklenir
             peer.on('connection', (conn) => {
                 connection = conn;
-                hostStatusDisplay.textContent = "Bağlantı başarılı! Arkadaşınız odada.";
-                log("İzleyici odaya katıldı!");
+                switchToChatMode();
+                appendChat("İzleyici odaya katıldı!", "chat-system");
                 
-                // İzleyiciye şu anki video durumunu gönder
-                sendSyncData('sync', video.currentTime, !video.paused);
-                
+                // Başlangıç senkronizasyonunu gönder
+                sendDataPayload('sync', { action: 'init', time: video.currentTime, isPlaying: !video.paused });
                 setupHostVideoListeners();
+
+                connection.on('data', handleIncomingData);
             });
 
             peer.on('error', (err) => {
-                log(`Hata: ${err.type}`);
+                if(err.type === 'unavailable-id') {
+                    showLog("Bir hata oluştu. Lütfen tekrar deneyin.");
+                } else {
+                    showLog("Bağlantı hatası: " + err.type);
+                }
             });
         });
 
-        // --- VİEWER MANTIĞI (Odaya Katılan Kişi) ---
+        // --- VİEWER MANTIĞI ---
         document.getElementById('btn-join-room').addEventListener('click', () => {
-            const targetId = inputRoomId.value.trim();
-            if (!targetId) {
-                alert("Lütfen bir Oda ID'si girin.");
+            const code = inputRoomId.value.trim().toUpperCase();
+            if (code.length !== 5) {
+                showLog("Lütfen 5 haneli kodu girin.");
                 return;
             }
 
             isHost = false;
-            setupCard.classList.add('hidden');
-            log("PeerJS sunucusuna bağlanılıyor...");
-
-            // İzleyici için izleri sil, sade UI bırak
+            showLog("Oda aranıyor...");
             mediaContainer.classList.add('viewer-mode'); 
-            video.removeAttribute('controls'); // İzleyicinin kontrollerini al
+            video.removeAttribute('controls'); 
 
-            peer = new Peer();
+            peer = new Peer(); // İzleyici rasgele id alabilir sorun yok.
 
             peer.on('open', () => {
-                log(`Host aranıyor: ${targetId}...`);
+                const targetId = PREFIX + code;
                 connection = peer.connect(targetId);
 
                 connection.on('open', () => {
-                    log("Host'a başarıyla bağlanıldı! Senkronizasyon bekleniyor...");
+                    switchToChatMode();
+                    appendChat("Odaya başarıyla bağlandınız!", "chat-system");
                     
-                    // Host'tan gelen komutları dinle
-                    connection.on('data', (data) => {
-                        handleIncomingSyncData(data);
-                    });
+                    connection.on('data', handleIncomingData);
                 });
 
                 connection.on('error', (err) => {
-                    log(`Bağlantı hatası: ${err}`);
+                    switchToChatMode();
+                    appendChat("Bağlantı koptu.", "chat-system");
                 });
             });
         });
 
-        // --- VERİ GÖNDERME (Sadece Host) ---
-        function sendSyncData(action, time, isPlaying) {
-            if (connection && connection.open) {
-                const payload = { action, time, isPlaying };
-                connection.send(payload);
-                log(`Gönderildi: ${action} - ${Math.floor(time)}s`);
-            }
-        }
-
-        // Host'un videoya yaptığı müdahaleleri dinleyen fonksiyon
+        // --- HOST VİDEO DİNLEYİCİLERİ ---
         function setupHostVideoListeners() {
             video.addEventListener('play', () => {
-                if(!isSyncing) sendSyncData('play', video.currentTime, true);
+                if(!isSyncing) sendDataPayload('sync', { action: 'play', time: video.currentTime, isPlaying: true });
             });
-
             video.addEventListener('pause', () => {
-                if(!isSyncing) sendSyncData('pause', video.currentTime, false);
+                if(!isSyncing) sendDataPayload('sync', { action: 'pause', time: video.currentTime, isPlaying: false });
             });
-
             video.addEventListener('seeked', () => {
-                if(!isSyncing) sendSyncData('seek', video.currentTime, !video.paused);
+                if(!isSyncing) sendDataPayload('sync', { action: 'seek', time: video.currentTime, isPlaying: !video.paused });
             });
         }
 
-        // --- VERİ ALMA (Sadece İzleyici) ---
-        function handleIncomingSyncData(data) {
-            log(`Alındı: ${data.action} - ${Math.floor(data.time)}s`);
+        // --- SOHBET GÖNDERME MANTIĞI ---
+        window.sendChatMessage = function(e) {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text || !connection || !connection.open) return;
+
+            // Kendi ekranımıza ekle
+            appendChat(text, 'me');
             
-            // Sonsuz döngüye girmemesi için bayrağı kaldır
-            isSyncing = true; 
-
-            // Zaman farkı 0.5 saniyeden fazlaysa senkronize et (Gereksiz atlamaları önler)
-            if (Math.abs(video.currentTime - data.time) > 0.5) {
-                video.currentTime = data.time;
-            }
-
-            if (data.isPlaying && video.paused) {
-                video.play().catch(e => log("Tarayıcı otomatik oynatmaya izin vermedi. Lütfen ekrana dokunun."));
-            } else if (!data.isPlaying && !video.paused) {
-                video.pause();
-            }
-
-            // İşlem bittikten sonra bayrağı sıfırla
-            setTimeout(() => { isSyncing = false; }, 100);
-        }
+            // Karşı tarafa 'chat' etiketiyle gönder
+            sendDataPayload('chat', { text: text });
+            
+            chatInput.value = '';
+        };
 
     </script>
 </body>
