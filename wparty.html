@@ -3,84 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VibeCoder P2P Watch & Chat (Pro Sürüm)</title>
+    <title>VibeCoder P2P Watch & Chat (Ultimate Sürüm)</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* --- Tailwind Şıklığı, Vanilya Hızı --- */
+        /* --- Tailwind Şıklığı --- */
         :root {
-            --bg-color: #f8fafc;
-            --surface-color: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --success: #10b981;
-            --chat-me: #e0e7ff;
-            --chat-other: #f1f5f9;
-            --border: #e2e8f0;
-            --radius-md: 0.5rem;
-            --radius-xl: 1rem;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --bg-color: #f8fafc; --surface-color: #ffffff; --text-main: #0f172a; --text-muted: #64748b;
+            --primary: #6366f1; --primary-hover: #4f46e5; --success: #10b981; --warning: #f59e0b;
+            --chat-me: #e0e7ff; --chat-other: #f1f5f9; --border: #e2e8f0;
+            --radius-md: 0.5rem; --radius-xl: 1rem; --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05); --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
-        /* BODY KİLİDİ: Sayfa asla kaymaz, iç elemanlar kayar */
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            height: 100vh; 
-            height: 100dvh; 
-            overflow: hidden; /* Dış kaydırmayı tamamen kapattık */
-        }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
 
-        /* --- MEDYA ALANI (ASLA HAREKET ETMEZ, ASLA KÜÇÜLMEZ) --- */
+        /* --- MEDYA ALANI (Sabit) --- */
         #media-container {
-            height: 35dvh; /* Ekranın %35'ini alır */
-            min-height: 200px;
-            flex: 0 0 auto; /* BÜYÜME VE KÜÇÜLME KİLİDİ */
-            background-color: #000;
-            position: relative;
-            box-shadow: var(--shadow-md);
-            z-index: 50; /* Her zaman üstte */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 35dvh; min-height: 200px; flex: 0 0 auto; background-color: #000; position: relative; box-shadow: var(--shadow-md); z-index: 50; display: flex; align-items: center; justify-content: center;
         }
 
         #native-video-player { width: 100%; height: 100%; object-fit: contain; }
         #yt-player-wrapper { width: 100%; height: 100%; }
-        
-        /* İzleyici videoya dokunamaz (Senkron bozulmasın diye YT iframe dahil her şeyi kitler) */
         .viewer-mode { pointer-events: none; } 
 
-        #no-video-placeholder {
-            position: absolute; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem; text-align: center; pointer-events: none;
-        }
+        #no-video-placeholder { position: absolute; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem; text-align: center; pointer-events: none; padding: 1rem;}
 
-        /* --- UYGULAMA İÇİ GENEL ALAN (KAYDIRILABİLİR BÖLGE) --- */
-        #app-container {
-            flex: 1 1 auto; /* Kalan boşluğu doldur */
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            max-width: 600px;
-            margin: 0 auto;
-            width: 100%;
-            overflow-y: auto; /* SADECE BU ALAN KAYAR */
-            scroll-behavior: smooth;
-        }
+        /* Canlı Yayın (Live) Etiketi */
+        #live-badge { position: absolute; top: 10px; left: 10px; background-color: #ef4444; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold; animation: pulse 2s infinite; z-index: 60; display: none; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* Kartlar ve Formlar */
-        .card {
-            background-color: var(--surface-color); border: 1px solid var(--border);
-            border-radius: var(--radius-xl); padding: 1.5rem; box-shadow: var(--shadow-sm); flex-shrink: 0;
-        }
+        /* --- UYGULAMA İÇİ GENEL ALAN --- */
+        #app-container { flex: 1 1 auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; max-width: 600px; margin: 0 auto; width: 100%; overflow-y: auto; scroll-behavior: smooth; }
 
+        .card { background-color: var(--surface-color); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 1.5rem; box-shadow: var(--shadow-sm); flex-shrink: 0; }
         .header-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
         .text-sm { font-size: 0.875rem; color: var(--text-muted); }
 
@@ -89,25 +45,28 @@
         input[type="text"]:focus { border-color: var(--primary); }
         input#input-room-id { text-transform: uppercase; text-align: center; font-weight: bold; letter-spacing: 2px;}
 
-        button { width: 100%; padding: 0.75rem 1rem; border: none; border-radius: var(--radius-md); background-color: var(--primary); color: white; font-size: 1rem; font-weight: 500; cursor: pointer; }
+        button { width: 100%; padding: 0.75rem 1rem; border: none; border-radius: var(--radius-md); background-color: var(--primary); color: white; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s; }
         button:hover { background-color: var(--primary-hover); }
         .btn-success { background-color: var(--success); }
         .btn-success:hover { background-color: #059669; }
         .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-warning { background-color: var(--warning); color: #fff; }
+        .btn-warning:hover { background-color: #d97706; }
+        
         .hidden { display: none !important; }
 
         .id-badge { background-color: var(--chat-me); padding: 1rem; border-radius: var(--radius-md); text-align: center; font-family: monospace; font-size: 2rem; font-weight: bold; color: var(--primary); letter-spacing: 4px; margin: 1rem 0; }
 
-        /* --- SOHBET VE HOST KONTROL ALANI --- */
-        #chat-section {
-            display: flex; flex-direction: column; flex: 1; min-height: 300px;
-            background-color: var(--surface-color); border: 1px solid var(--border);
-            border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden;
-        }
-
-        #host-dynamic-controls { padding: 0.75rem; background-color: var(--chat-me); border-bottom: 1px solid var(--border); display: flex; gap: 0.5rem; }
+        /* --- SOHBET VE KONTROLLER --- */
+        #chat-section { display: flex; flex-direction: column; flex: 1; min-height: 300px; background-color: var(--surface-color); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); overflow: hidden; }
+        
+        #host-controls-wrapper { display: flex; flex-direction: column; background-color: var(--chat-me); border-bottom: 1px solid var(--border); }
+        #host-dynamic-controls { padding: 0.75rem; display: flex; gap: 0.5rem; }
         #host-dynamic-controls input { padding: 0.5rem; font-size: 0.85rem; }
         #host-dynamic-controls button { padding: 0.5rem; width: auto; font-size: 0.85rem; white-space: nowrap; }
+        
+        #host-stream-controls { padding: 0 0.75rem 0.75rem 0.75rem; }
+        #host-stream-controls button { font-size: 0.85rem; padding: 0.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem;}
 
         #chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
         .chat-bubble { max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
@@ -124,10 +83,10 @@
 
     <div id="media-container">
         <span id="no-video-placeholder">Bağlantı kurulduğunda video burada oynatılacak.</span>
+        <div id="live-badge">CANLI YAYIN</div>
+        
         <video id="native-video-player" playsinline class="hidden"></video>
-        <div id="yt-player-wrapper" class="hidden">
-            <div id="yt-player-iframe"></div>
-        </div>
+        <div id="yt-player-wrapper" class="hidden"><div id="yt-player-iframe"></div></div>
     </div>
 
     <div id="app-container">
@@ -135,7 +94,7 @@
         <div id="setup-card" class="card">
             <h2 class="header-title">Oda Kur</h2>
             <div class="input-group" style="margin-top: 0;">
-                <input type="text" id="initial-video-url" placeholder="YouTube, MP4 linki vb. yapıştırın...">
+                <input type="text" id="initial-video-url" placeholder="YouTube veya MP4 linki (İsteğe bağlı)">
                 <button id="btn-create-room">👑 Yeni Oda Kur</button>
             </div>
             
@@ -157,10 +116,16 @@
         </div>
 
         <div id="chat-section" class="hidden">
-            <div id="host-dynamic-controls" class="hidden">
-                <input type="text" id="dynamic-video-url" placeholder="Yeni video/youtube linki yapıştır...">
-                <button id="btn-change-video" class="btn-outline">Yükle</button>
+            <div id="host-controls-wrapper" class="hidden">
+                <div id="host-dynamic-controls">
+                    <input type="text" id="dynamic-video-url" placeholder="Yeni video/youtube linki yapıştır...">
+                    <button id="btn-change-video" class="btn-outline">Yükle</button>
+                </div>
+                <div id="host-stream-controls">
+                    <button id="btn-share-screen" class="btn-warning">📺 Sekme Paylaş (Her Site İçin)</button>
+                </div>
             </div>
+
             <div id="chat-messages">
                 <div class="chat-bubble chat-system">P2P Bağlantı bekleniyor...</div>
             </div>
@@ -176,22 +141,24 @@
 
     <script>
         /**
-         * VibeCoder P2P Watch & Chat Engine v3.0
-         * Mimari: Dual-Engine (YouTube + HTML5), CSS Lock
+         * VibeCoder P2P Watch & Chat Engine v4.0
+         * Mimari: URL Sync + WebRTC MediaStream (Ekran Paylaşımı)
          */
 
         const PREFIX = "vbc-watch-";
-        let peer = null, connection = null, isHost = false, isSyncing = false;
+        let peer = null, dataConnection = null, mediaCall = null;
+        let isHost = false, isSyncing = false;
         
-        // Medya Motoru Durumu
-        let activePlayerMode = 'none'; // 'native' veya 'youtube'
+        let activePlayerMode = 'none'; // 'native', 'youtube', veya 'stream'
         let currentVideoUrl = '';
+        let localStream = null;
 
         // UI Elemanları
         const mediaContainer = document.getElementById('media-container');
         const nativeVideo = document.getElementById('native-video-player');
         const ytWrapper = document.getElementById('yt-player-wrapper');
         const placeholder = document.getElementById('no-video-placeholder');
+        const liveBadge = document.getElementById('live-badge');
         
         const setupCard = document.getElementById('setup-card');
         const hostCard = document.getElementById('host-card');
@@ -203,43 +170,47 @@
         const chatInput = document.getElementById('chat-input');
         
         const initialVideoUrl = document.getElementById('initial-video-url');
-        const hostDynamicControls = document.getElementById('host-dynamic-controls');
+        const hostControlsWrapper = document.getElementById('host-controls-wrapper');
         const dynamicVideoUrl = document.getElementById('dynamic-video-url');
         const btnChangeVideo = document.getElementById('btn-change-video');
+        const btnShareScreen = document.getElementById('btn-share-screen');
 
-        // --- YOUTUBE API KURULUMU ---
+        // YouTube API
         let ytPlayer = null;
         let isYtApiReady = false;
-
-        window.onYouTubeIframeAPIReady = function() {
-            isYtApiReady = true;
-        };
-
-        // YouTube ID Çıkaran Gelişmiş Fonksiyon (Regex)
+        window.onYouTubeIframeAPIReady = function() { isYtApiReady = true; };
         function extractYTId(url) {
             const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
+            const match = url.match(regExp); return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // --- HİBRİT MEDYA ROUTER (YÖNLENDİRİCİ) ---
+        // --- MEDYA TEMİZLEME YARDIMCISI ---
+        function clearMedia() {
+            if(ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
+            ytWrapper.classList.add('hidden');
+            
+            nativeVideo.pause();
+            nativeVideo.src = "";
+            nativeVideo.srcObject = null; // Stream'i temizle
+            nativeVideo.classList.add('hidden');
+            
+            liveBadge.style.display = 'none';
+        }
+
+        // --- HİBRİT YÖNLENDİRİCİ (URL) ---
         function loadVideoSource(url) {
             if(!url) return;
+            clearMedia();
             currentVideoUrl = url;
             placeholder.classList.add('hidden');
 
             const ytId = extractYTId(url);
 
             if (ytId) {
-                // YOUTUBE MODU
                 activePlayerMode = 'youtube';
-                nativeVideo.classList.add('hidden');
-                nativeVideo.pause();
                 ytWrapper.classList.remove('hidden');
-
-                if (ytPlayer) {
-                    ytPlayer.loadVideoById(ytId);
-                } else if (isYtApiReady) {
+                if (ytPlayer) ytPlayer.loadVideoById(ytId);
+                else if (isYtApiReady) {
                     ytPlayer = new YT.Player('yt-player-iframe', {
                         height: '100%', width: '100%', videoId: ytId,
                         playerVars: { 'playsinline': 1, 'controls': isHost ? 1 : 0 },
@@ -247,24 +218,66 @@
                     });
                 }
             } else {
-                // HTML5 (NATIVE) MODU
                 activePlayerMode = 'native';
-                ytWrapper.classList.add('hidden');
-                if (ytPlayer && typeof ytPlayer.stopVideo === 'function') ytPlayer.stopVideo();
                 nativeVideo.classList.remove('hidden');
                 nativeVideo.src = url;
                 nativeVideo.load();
             }
         }
 
-        // --- UNIFIED (BİRLEŞİK) SYNC ADAPTÖRÜ ---
-        // Native veya YouTube fark etmeksizin ortak metodlarla videoları senkronize eder.
+        // --- EKRAN PAYLAŞIMI (STREAM) MOTORU ---
+        async function startScreenShare() {
+            try {
+                // Sesi ve Görüntüyü Tarayıcıdan İste
+                const stream = await navigator.mediaDevices.getDisplayMedia({ 
+                    video: { cursor: "always" }, 
+                    audio: { echoCancellation: false, noiseSuppression: false, sampleRate: 44100 } // Film sesi için optimizasyon
+                });
+                
+                localStream = stream;
+                clearMedia();
+                
+                activePlayerMode = 'stream';
+                placeholder.classList.add('hidden');
+                liveBadge.style.display = 'block';
+                
+                nativeVideo.classList.remove('hidden');
+                nativeVideo.srcObject = stream; // URL değil, Canlı Stream veriyoruz
+                nativeVideo.muted = true; // Kendi paylaştığımız sesi yankı yapmasın diye kendimize kısıyoruz
+                nativeVideo.play();
+
+                // Eğer bağlantı varsa, MediaStream'i karşı tarafa "Ara" diyerek gönder
+                if (peer && dataConnection) {
+                    mediaCall = peer.call(dataConnection.peer, stream);
+                    appendChat("Canlı sekme yayını başlatıldı.", "chat-system");
+                    
+                    // İzleyiciye modun değiştiğini bildir ki eski videoları kapatsın
+                    sendDataPayload('sync', { action: 'stream-started' });
+                }
+
+                // Ekran paylaşımı tarayıcıdan durdurulursa
+                stream.getVideoTracks()[0].onended = function () {
+                    appendChat("Ekran paylaşımı durduruldu.", "chat-system");
+                    sendDataPayload('sync', { action: 'stream-ended' });
+                    clearMedia();
+                    placeholder.classList.remove('hidden');
+                };
+
+            } catch (err) {
+                appendChat("Ekran paylaşılamadı veya iptal edildi.", "chat-system");
+            }
+        }
+
+        btnShareScreen.addEventListener('click', startScreenShare);
+
+        // --- BİRLEŞİK SYNC ADAPTÖRÜ (Sadece URL tabanlılar için) ---
         function applySyncState(time, isPlaying) {
-            isSyncing = true;
+            if(activePlayerMode === 'stream') return; // Canlı yayında senkrona gerek yok!
             
+            isSyncing = true;
             if (activePlayerMode === 'native') {
                 if (Math.abs(nativeVideo.currentTime - time) > 0.5) nativeVideo.currentTime = time;
-                if (isPlaying && nativeVideo.paused) nativeVideo.play().catch(e=>appendChat("Oynatma için ekrana dokunun.", "chat-system"));
+                if (isPlaying && nativeVideo.paused) nativeVideo.play().catch(e=>appendChat("Oynatmak için ekrana dokunun.", "chat-system"));
                 else if (!isPlaying && !nativeVideo.paused) nativeVideo.pause();
             } 
             else if (activePlayerMode === 'youtube' && ytPlayer && typeof ytPlayer.seekTo === 'function') {
@@ -272,11 +285,10 @@
                 if (isPlaying) ytPlayer.playVideo();
                 else ytPlayer.pauseVideo();
             }
-            
-            setTimeout(() => { isSyncing = false; }, 300); // Sonsuz döngü kesici
+            setTimeout(() => { isSyncing = false; }, 300);
         }
 
-        // --- HOST İÇİN OLAY DİNLEYİCİLER (NATIVE & YOUTUBE) ---
+        // --- HOST OLAY DİNLEYİCİLERİ ---
         function setupHostNativeListeners() {
             nativeVideo.setAttribute('controls', 'true');
             nativeVideo.addEventListener('play', () => { if(!isSyncing && activePlayerMode === 'native') sendSyncData('play', nativeVideo.currentTime, true); });
@@ -291,64 +303,59 @@
             if (event.data === YT.PlayerState.PAUSED) sendSyncData('pause', time, false);
         }
 
-        // --- GENEL P2P FONKSİYONLARI ---
+        // --- GENEL P2P YARDIMCILARI ---
         function generateShortCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
-            let result = '';
-            for (let i=0; i<5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-            return result;
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let res = '';
+            for (let i=0; i<5; i++) res += chars.charAt(Math.floor(Math.random() * chars.length)); return res;
         }
 
-        function appendChat(message, type) {
-            const el = document.createElement('div');
-            el.className = `chat-bubble ${type}`;
-            el.textContent = message;
-            chatMessages.appendChild(el);
-            chatMessages.scrollTop = chatMessages.scrollHeight; 
+        function appendChat(msg, type) {
+            const el = document.createElement('div'); el.className = `chat-bubble ${type}`; el.textContent = msg;
+            chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
-        function switchToChatMode() {
-            setupCard.classList.add('hidden'); hostCard.classList.add('hidden'); chatSection.classList.remove('hidden');
-        }
-
-        function sendDataPayload(type, payload) {
-            if (connection && connection.open) connection.send({ type: type, payload: payload });
-        }
-
-        function sendSyncData(action, time, isPlaying) {
-            sendDataPayload('sync', { action, time, isPlaying });
-        }
+        function switchToChatMode() { setupCard.classList.add('hidden'); hostCard.classList.add('hidden'); chatSection.classList.remove('hidden'); }
+        function sendDataPayload(type, payload) { if (dataConnection && dataConnection.open) dataConnection.send({ type, payload }); }
+        function sendSyncData(action, time, isPlaying) { sendDataPayload('sync', { action, time, isPlaying }); }
 
         function handleIncomingData(dataEnvelope) {
             const { type, payload } = dataEnvelope;
-
             if (type === 'chat') {
                 appendChat(payload.text, 'other');
             } 
             else if (type === 'sync') {
-                if (payload.action === 'change-url' || payload.action === 'init') {
+                if(payload.action === 'stream-started') {
+                    appendChat("Host canlı ekran yayını başlattı.", "chat-system");
+                    clearMedia(); // İzleyici URL videolarını kapatıp yayını bekler
+                }
+                else if(payload.action === 'stream-ended') {
+                    appendChat("Canlı yayın sona erdi.", "chat-system");
+                    clearMedia();
+                    placeholder.classList.remove('hidden');
+                }
+                else if (payload.action === 'change-url' || payload.action === 'init') {
                     if (payload.url && currentVideoUrl !== payload.url) {
                         loadVideoSource(payload.url);
-                        appendChat(payload.action === 'init' ? "Video senkronize edildi." : "Host videoyu değiştirdi.", "chat-system");
+                        appendChat(payload.action === 'init' ? "Bağlanıldı." : "Host yeni bir video linki açtı.", "chat-system");
                     }
                 }
-                if (payload.action !== 'change-url') {
+                else if (payload.action !== 'change-url') {
                     applySyncState(payload.time, payload.isPlaying);
                 }
             }
         }
 
-        // --- HOST TETİKLEYİCİLERİ ---
         btnChangeVideo.addEventListener('click', () => {
             const newUrl = dynamicVideoUrl.value.trim();
             if (newUrl) {
+                if(localStream) { localStream.getTracks().forEach(t=>t.stop()); localStream = null; } // Yayın varsa durdur
                 loadVideoSource(newUrl);
                 sendDataPayload('sync', { action: 'change-url', url: newUrl });
-                appendChat("Yeni video yüklendi ve izleyiciye gönderildi.", "chat-system");
                 dynamicVideoUrl.value = '';
             }
         });
 
+        // --- HOST KURULUM ---
         document.getElementById('btn-create-room').addEventListener('click', () => {
             isHost = true;
             setupHostNativeListeners(); 
@@ -358,71 +365,83 @@
 
             setupLog.textContent = "Sunucuya bağlanılıyor...";
             const shortCode = generateShortCode();
-            
             peer = new Peer(PREFIX + shortCode);
 
             peer.on('open', () => {
-                setupCard.classList.add('hidden');
-                hostCard.classList.remove('hidden');
-                myShortCodeDisplay.textContent = shortCode;
+                setupCard.classList.add('hidden'); hostCard.classList.remove('hidden'); myShortCodeDisplay.textContent = shortCode;
             });
 
             peer.on('connection', (conn) => {
-                connection = conn;
+                dataConnection = conn;
                 switchToChatMode();
-                hostDynamicControls.classList.remove('hidden');
+                hostControlsWrapper.classList.remove('hidden');
                 chatMessages.innerHTML = '';
                 appendChat("İzleyici odaya katıldı! P2P bağlantı güvenli.", "chat-system");
                 
-                // Başlangıç durumunu gönder
-                let cTime = 0, cPlaying = false;
-                if(activePlayerMode === 'native') { cTime = nativeVideo.currentTime; cPlaying = !nativeVideo.paused; }
-                else if(activePlayerMode === 'youtube' && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
-                    cTime = ytPlayer.getCurrentTime(); cPlaying = (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+                if(activePlayerMode === 'stream' && localStream) {
+                    mediaCall = peer.call(dataConnection.peer, localStream);
+                } else {
+                    let cTime = 0, cPlaying = false;
+                    if(activePlayerMode === 'native') { cTime = nativeVideo.currentTime; cPlaying = !nativeVideo.paused; }
+                    else if(activePlayerMode === 'youtube' && ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+                        cTime = ytPlayer.getCurrentTime(); cPlaying = (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+                    }
+                    sendDataPayload('sync', { action: 'init', url: currentVideoUrl, time: cTime, isPlaying: cPlaying });
                 }
-                sendDataPayload('sync', { action: 'init', url: currentVideoUrl, time: cTime, isPlaying: cPlaying });
-                
-                connection.on('data', handleIncomingData);
+                dataConnection.on('data', handleIncomingData);
             });
-
-            peer.on('error', (err) => setupLog.textContent = "Bağlantı hatası: " + err.type);
+            peer.on('error', (err) => setupLog.textContent = "Hata: " + err.type);
         });
 
-        // --- VİEWER TETİKLEYİCİLERİ ---
+        // --- VİEWER KURULUM ---
         document.getElementById('btn-join-room').addEventListener('click', () => {
             const code = inputRoomId.value.trim().toUpperCase();
             if (code.length !== 5) { setupLog.textContent = "Lütfen 5 haneli kodu girin."; return; }
 
             isHost = false;
             setupLog.textContent = "Oda aranıyor...";
-            mediaContainer.classList.add('viewer-mode'); // İzleyicinin tıklamalarını KİLİTLE
-            
+            mediaContainer.classList.add('viewer-mode'); 
             peer = new Peer(); 
 
             peer.on('open', () => {
-                connection = peer.connect(PREFIX + code);
-                connection.on('open', () => {
+                dataConnection = peer.connect(PREFIX + code);
+                dataConnection.on('open', () => {
                     switchToChatMode();
                     chatMessages.innerHTML = '';
-                    appendChat("Odaya başarıyla bağlandınız! Video bekleniyor...", "chat-system");
-                    connection.on('data', handleIncomingData);
+                    appendChat("Odaya bağlandınız! Veri bekleniyor...", "chat-system");
+                    dataConnection.on('data', handleIncomingData);
                 });
-                connection.on('error', () => appendChat("Bağlantı koptu.", "chat-system"));
+                dataConnection.on('error', () => appendChat("Bağlantı koptu.", "chat-system"));
+            });
+
+            // YENİ: İZLEYİCİ GÖRÜNTÜLÜ ARAMAYI (CANLI YAYINI) KABUL EDİYOR
+            peer.on('call', (call) => {
+                mediaCall = call;
+                call.answer(); // Otomatik cevapla
+                
+                call.on('stream', (remoteStream) => {
+                    clearMedia();
+                    activePlayerMode = 'stream';
+                    placeholder.classList.add('hidden');
+                    liveBadge.style.display = 'block';
+                    
+                    nativeVideo.classList.remove('hidden');
+                    nativeVideo.srcObject = remoteStream;
+                    
+                    // İzleyici tarafında ses açık olmalı
+                    nativeVideo.muted = false; 
+                    nativeVideo.play().catch(e => appendChat("Yayının sesini açmak için ekrana bir kez dokunun.", "chat-system"));
+                });
             });
         });
 
         // Sohbet
         window.sendChatMessage = function(e) {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text || !connection || !connection.open) return;
-
-            appendChat(text, 'me');
-            sendDataPayload('chat', { text: text });
-            chatInput.value = '';
-            chatInput.focus(); 
+            e.preventDefault(); const text = chatInput.value.trim();
+            if (!text || !dataConnection || !dataConnection.open) return;
+            appendChat(text, 'me'); sendDataPayload('chat', { text: text });
+            chatInput.value = ''; chatInput.focus(); 
         };
-
     </script>
 </body>
 </html>
