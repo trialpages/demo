@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VibeCoder P2P Watch Party</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        /* --- Tailwind Şıklığı, Vanilya Hızı (CSS Değişkenleri ve Modern Reset) --- */
+        :root {
+            --bg-color: #f8fafc; /* slate-50 */
+            --surface-color: #ffffff;
+            --text-main: #0f172a; /* slate-900 */
+            --text-muted: #64748b; /* slate-500 */
+            --primary: #3b82f6; /* blue-500 */
+            --primary-hover: #2563eb; /* blue-600 */
+            --success: #10b981; /* emerald-500 */
+            --border: #e2e8f0; /* slate-200 */
+            --radius-md: 0.5rem;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Sayfa kaymasını engelle, mobilde app hissiyatı ver */
+        }
+
+        /* --- Medya Alanı (Ekranın Üst %40'ı) --- */
+        #media-container {
+            height: 40vh; /* Mobilde ekranın yarısından azı */
+            min-height: 250px;
+            background-color: #000;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Videonun oranını bozmadan sığdır */
+        }
+
+        /* İzleyici için video tıklamalarını engelle (Senkron bozulmasın diye) */
+        .viewer-mode video {
+            pointer-events: none; 
+        }
+
+        /* --- Kontrol ve Durum Alanı (Alt Kısım) --- */
+        #app-container {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: var(--radius-md);
+            background-color: var(--primary);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+        .btn-success:hover {
+            background-color: #059669; /* emerald-600 */
+        }
+
+        /* Durum Logları */
+        #log-container {
+            background-color: #1e293b; /* slate-800 */
+            color: #38bdf8; /* sky-400 */
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 0.85rem;
+            height: 120px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Host ID Gösterim Alanı */
+        .id-badge {
+            background-color: #f1f5f9; /* slate-100 */
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            letter-spacing: 1px;
+            margin: 1rem 0;
+            user-select: all;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="media-container">
+        <video id="video-player" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" controls></video>
+    </div>
+
+    <div id="app-container">
+        
+        <div id="setup-card" class="card">
+            <h2 class="header-title">Oda Kur veya Katıl</h2>
+            <p class="text-sm">İzlemek istediğin arkadaşınla P2P (Uçtan Uca) güvenli bağlantı kur.</p>
+            
+            <div class="input-group" style="margin-top: 1.5rem;">
+                <button id="btn-create-room">👑 Oda Kur (Host Ol)</button>
+            </div>
+            
+            <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.875rem;">veya</div>
+            
+            <div class="input-group">
+                <input type="text" id="input-room-id" placeholder="Oda ID'sini buraya yapıştır..." autocomplete="off">
+                <button id="btn-join-room" class="btn-success">🔗 Odaya Katıl (İzleyici Ol)</button>
+            </div>
+        </div>
+
+        <div id="host-card" class="card hidden">
+            <h2 class="header-title">Oda Kuruldu</h2>
+            <p class="text-sm">Arkadaşının sana bağlanması için aşağıdaki ID'yi kopyalayıp ona gönder:</p>
+            <div id="my-peer-id" class="id-badge">Yükleniyor...</div>
+            <p class="text-sm" style="text-align: center; color: var(--success);" id="host-status">İzleyici bekleniyor...</p>
+        </div>
+
+        <div class="card">
+            <h2 class="header-title" style="font-size: 1rem;">Sistem Durumu</h2>
+            <div id="log-container">
+                <div>> Sistem başlatıldı. P2P bağlantı bekleniyor...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * VibeCoder P2P Watch Party Engine
+         * Mimari: WebRTC (PeerJS) - Olay Odaklı Senkronizasyon
+         */
+
+        // UI Elementleri
+        const video = document.getElementById('video-player');
+        const setupCard = document.getElementById('setup-card');
+        const hostCard = document.getElementById('host-card');
+        const mediaContainer = document.getElementById('media-container');
+        const myPeerIdDisplay = document.getElementById('my-peer-id');
+        const hostStatusDisplay = document.getElementById('host-status');
+        const inputRoomId = document.getElementById('input-room-id');
+        const logContainer = document.getElementById('log-container');
+
+        // Global Değişkenler
+        let peer = null;
+        let connection = null;
+        let isHost = false;
+        let isSyncing = false; // Sonsuz döngüleri engellemek için bayrak (flag)
+
+        // Log Yazdırma Fonksiyonu
+        function log(message) {
+            const el = document.createElement('div');
+            const time = new Date().toLocaleTimeString('tr-TR', { hour12: false });
+            el.textContent = `[${time}] > ${message}`;
+            logContainer.appendChild(el);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // --- HOST MANTIĞI (Oda Kuran Kişi) ---
+        document.getElementById('btn-create-room').addEventListener('click', () => {
+            isHost = true;
+            setupCard.classList.add('hidden');
+            hostCard.classList.remove('hidden');
+            log("PeerJS sunucusuna bağlanılıyor...");
+
+            // Yeni bir Peer oluştur (ID'yi otomatik atar)
+            peer = new Peer();
+
+            peer.on('open', (id) => {
+                myPeerIdDisplay.textContent = id;
+                log(`Oda oluşturuldu. ID: ${id}`);
+            });
+
+            // Birisi bağlandığında tetiklenir
+            peer.on('connection', (conn) => {
+                connection = conn;
+                hostStatusDisplay.textContent = "Bağlantı başarılı! Arkadaşınız odada.";
+                log("İzleyici odaya katıldı!");
+                
+                // İzleyiciye şu anki video durumunu gönder
+                sendSyncData('sync', video.currentTime, !video.paused);
+                
+                setupHostVideoListeners();
+            });
+
+            peer.on('error', (err) => {
+                log(`Hata: ${err.type}`);
+            });
+        });
+
+        // --- VİEWER MANTIĞI (Odaya Katılan Kişi) ---
+        document.getElementById('btn-join-room').addEventListener('click', () => {
+            const targetId = inputRoomId.value.trim();
+            if (!targetId) {
+                alert("Lütfen bir Oda ID'si girin.");
+                return;
+            }
+
+            isHost = false;
+            setupCard.classList.add('hidden');
+            log("PeerJS sunucusuna bağlanılıyor...");
+
+            // İzleyici için izleri sil, sade UI bırak
+            mediaContainer.classList.add('viewer-mode'); 
+            video.removeAttribute('controls'); // İzleyicinin kontrollerini al
+
+            peer = new Peer();
+
+            peer.on('open', () => {
+                log(`Host aranıyor: ${targetId}...`);
+                connection = peer.connect(targetId);
+
+                connection.on('open', () => {
+                    log("Host'a başarıyla bağlanıldı! Senkronizasyon bekleniyor...");
+                    
+                    // Host'tan gelen komutları dinle
+                    connection.on('data', (data) => {
+                        handleIncomingSyncData(data);
+                    });
+                });
+
+                connection.on('error', (err) => {
+                    log(`Bağlantı hatası: ${err}`);
+                });
+            });
+        });
+
+        // --- VERİ GÖNDERME (Sadece Host) ---
+        function sendSyncData(action, time, isPlaying) {
+            if (connection && connection.open) {
+                const payload = { action, time, isPlaying };
+                connection.send(payload);
+                log(`Gönderildi: ${action} - ${Math.floor(time)}s`);
+            }
+        }
+
+        // Host'un videoya yaptığı müdahaleleri dinleyen fonksiyon
+        function setupHostVideoListeners() {
+            video.addEventListener('play', () => {
+                if(!isSyncing) sendSyncData('play', video.currentTime, true);
+            });
+
+            video.addEventListener('pause', () => {
+                if(!isSyncing) sendSyncData('pause', video.currentTime, false);
+            });
+
+            video.addEventListener('seeked', () => {
+                if(!isSyncing) sendSyncData('seek', video.currentTime, !video.paused);
+            });
+        }
+
+        // --- VERİ ALMA (Sadece İzleyici) ---
+        function handleIncomingSyncData(data) {
+            log(`Alındı: ${data.action} - ${Math.floor(data.time)}s`);
+            
+            // Sonsuz döngüye girmemesi için bayrağı kaldır
+            isSyncing = true; 
+
+            // Zaman farkı 0.5 saniyeden fazlaysa senkronize et (Gereksiz atlamaları önler)
+            if (Math.abs(video.currentTime - data.time) > 0.5) {
+                video.currentTime = data.time;
+            }
+
+            if (data.isPlaying && video.paused) {
+                video.play().catch(e => log("Tarayıcı otomatik oynatmaya izin vermedi. Lütfen ekrana dokunun."));
+            } else if (!data.isPlaying && !video.paused) {
+                video.pause();
+            }
+
+            // İşlem bittikten sonra bayrağı sıfırla
+            setTimeout(() => { isSyncing = false; }, 100);
+        }
+
+    </script>
+</body>
+</html>
