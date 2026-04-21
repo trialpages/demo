@@ -2,22 +2,22 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VibeCoder P2P Watch & Chat</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         /* --- Tailwind Şıklığı, Vanilya Hızı --- */
         :root {
-            --bg-color: #f8fafc; /* slate-50 */
+            --bg-color: #f8fafc;
             --surface-color: #ffffff;
-            --text-main: #0f172a; /* slate-900 */
-            --text-muted: #64748b; /* slate-500 */
-            --primary: #6366f1; /* indigo-500 */
-            --primary-hover: #4f46e5; /* indigo-600 */
-            --success: #10b981; /* emerald-500 */
-            --chat-me: #e0e7ff; /* indigo-100 */
-            --chat-other: #f1f5f9; /* slate-100 */
-            --border: #e2e8f0; /* slate-200 */
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --chat-me: #e0e7ff;
+            --chat-other: #f1f5f9;
+            --border: #e2e8f0;
             --radius-md: 0.5rem;
             --radius-xl: 1rem;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -31,23 +31,36 @@
             color: var(--text-main);
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            /* Mobilde tarayıcı barlarını hesaba katan dinamik yükseklik (Ders 3) */
+            height: 100vh; /* Fallback */
+            height: 100dvh; 
             overflow: hidden;
         }
 
         /* --- Medya Alanı --- */
         #media-container {
-            height: 40vh;
-            min-height: 250px;
+            height: 35dvh; /* Mobilde daha fazla yer kalsın diye %35'e çektik */
+            min-height: 200px;
             background-color: #000;
             position: relative;
             box-shadow: var(--shadow-md);
             z-index: 10;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         video { width: 100%; height: 100%; object-fit: contain; }
         .viewer-mode video { pointer-events: none; } /* İzleyici videoya dokunamaz */
+
+        #no-video-placeholder {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            text-align: center;
+            pointer-events: none;
+        }
 
         /* --- Uygulama İçi Genel Alan --- */
         #app-container {
@@ -59,7 +72,8 @@
             max-width: 600px;
             margin: 0 auto;
             width: 100%;
-            overflow: hidden; /* İç scroll için ana gövdeyi kilitledik */
+            overflow: hidden;
+            min-height: 0; /* Flex çocuklarının taşmasını engeller */
         }
 
         .card {
@@ -68,6 +82,7 @@
             border-radius: var(--radius-xl);
             padding: 1.5rem;
             box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
         }
 
         .header-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
@@ -91,6 +106,8 @@
         button:hover { background-color: var(--primary-hover); }
         .btn-success { background-color: var(--success); }
         .btn-success:hover { background-color: #059669; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background-color: var(--chat-me); }
 
         .hidden { display: none !important; }
 
@@ -101,12 +118,24 @@
             color: var(--primary); letter-spacing: 4px; margin: 1rem 0;
         }
 
-        /* --- SOHBET (CHAT) ALANI --- */
+        /* --- SOHBET VE HOST KONTROL ALANI --- */
         #chat-section {
             display: flex; flex-direction: column; flex: 1; overflow: hidden;
             background-color: var(--surface-color); border: 1px solid var(--border);
             border-radius: var(--radius-xl); box-shadow: var(--shadow-sm);
+            min-height: 0;
         }
+
+        #host-dynamic-controls {
+            padding: 0.75rem;
+            background-color: var(--chat-me);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        #host-dynamic-controls input { padding: 0.5rem; font-size: 0.85rem; }
+        #host-dynamic-controls button { padding: 0.5rem; width: auto; font-size: 0.85rem; white-space: nowrap; }
 
         #chat-messages {
             flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;
@@ -114,6 +143,7 @@
 
         .chat-bubble {
             max-width: 80%; padding: 0.75rem 1rem; border-radius: 1rem; font-size: 0.95rem; line-height: 1.4;
+            word-wrap: break-word;
         }
         .chat-bubble.me {
             background-color: var(--primary); color: white; align-self: flex-end;
@@ -125,10 +155,12 @@
         }
         .chat-system {
             align-self: center; background: none; color: var(--text-muted); font-size: 0.75rem; font-style: italic; padding: 0;
+            text-align: center;
         }
 
         #chat-input-area {
             display: flex; padding: 0.75rem; border-top: 1px solid var(--border); gap: 0.5rem;
+            background-color: var(--surface-color);
         }
         #chat-input-area input {
             flex: 1; margin: 0; padding: 0.5rem 1rem; border-radius: 2rem;
@@ -141,18 +173,22 @@
 <body>
 
     <div id="media-container">
-        <video id="video-player" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" controls></video>
-    </div>
+        <span id="no-video-placeholder">Bağlantı kurulduğunda video burada oynatılacak.</span>
+        <video id="video-player" playsinline></video> </div>
 
     <div id="app-container">
         
         <div id="setup-card" class="card">
-            <h2 class="header-title">Odalar</h2>
-            <button id="btn-create-room">👑 Yeni Oda Kur</button>
+            <h2 class="header-title">Oda Kur</h2>
+            <div class="input-group" style="margin-top: 0;">
+                <input type="text" id="initial-video-url" placeholder="Video Linki (.mp4, .m3u8) (İsteğe Bağlı)">
+                <button id="btn-create-room">👑 Yeni Oda Kur</button>
+            </div>
             
             <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.875rem;">veya katıl</div>
             
-            <div class="input-group">
+            <h2 class="header-title">Odaya Katıl</h2>
+            <div class="input-group" style="margin-top: 0;">
                 <input type="text" id="input-room-id" placeholder="5 HARFLİ KOD" maxlength="5">
                 <button id="btn-join-room" class="btn-success">🔗 Odaya Katıl</button>
             </div>
@@ -167,8 +203,13 @@
         </div>
 
         <div id="chat-section" class="hidden">
+            <div id="host-dynamic-controls" class="hidden">
+                <input type="text" id="dynamic-video-url" placeholder="Yeni video linki yapıştır...">
+                <button id="btn-change-video" class="btn-outline">Yükle</button>
+            </div>
+
             <div id="chat-messages">
-                <div class="chat-bubble chat-system">P2P Bağlantı kuruldu. Sohbet şifrelidir.</div>
+                <div class="chat-bubble chat-system">P2P Bağlantı bekleniyor...</div>
             </div>
             <form id="chat-input-area" onsubmit="sendChatMessage(event)">
                 <input type="text" id="chat-input" placeholder="Mesaj yaz..." autocomplete="off" required>
@@ -180,12 +221,11 @@
 
     <script>
         /**
-         * VibeCoder P2P Watch & Chat Engine
-         * Mimari: WebRTC (PeerJS) - Multiplexing Data Channel
+         * VibeCoder P2P Watch & Chat Engine v2.1
+         * Mimarî: Dinamik Viewport (100dvh) + Dynamic Media Routing
          */
 
-        // --- SABİTLER VE DEĞİŞKENLER ---
-        const PREFIX = "vbc-watch-"; // Arka planda çakışmayı önleyen gizli alan
+        const PREFIX = "vbc-watch-";
         let peer = null;
         let connection = null;
         let isHost = false;
@@ -193,6 +233,7 @@
 
         // UI Elementleri
         const video = document.getElementById('video-player');
+        const placeholder = document.getElementById('no-video-placeholder');
         const setupCard = document.getElementById('setup-card');
         const hostCard = document.getElementById('host-card');
         const chatSection = document.getElementById('chat-section');
@@ -202,10 +243,15 @@
         const chatMessages = document.getElementById('chat-messages');
         const chatInput = document.getElementById('chat-input');
         const mediaContainer = document.getElementById('media-container');
+        
+        // Dinamik Video Link Elementleri
+        const initialVideoUrl = document.getElementById('initial-video-url');
+        const hostDynamicControls = document.getElementById('host-dynamic-controls');
+        const dynamicVideoUrl = document.getElementById('dynamic-video-url');
+        const btnChangeVideo = document.getElementById('btn-change-video');
 
-        // Rasgele 5 Harfli/Rakamlı Kod Üretici
         function generateShortCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Karışabilen O,0,1,I haricinde
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
             let result = '';
             for (let i = 0; i < 5; i++) {
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -213,17 +259,14 @@
             return result;
         }
 
-        // --- ARAYÜZ VE SİSTEM YARDIMCILARI ---
-        function showLog(msg) {
-            setupLog.textContent = msg;
-        }
+        function showLog(msg) { setupLog.textContent = msg; }
 
         function appendChat(message, type) {
             const el = document.createElement('div');
             el.className = `chat-bubble ${type}`;
             el.textContent = message;
             chatMessages.appendChild(el);
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Otomatik aşağı kaydır
+            chatMessages.scrollTop = chatMessages.scrollHeight; 
         }
 
         function switchToChatMode() {
@@ -232,50 +275,77 @@
             chatSection.classList.remove('hidden');
         }
 
-        // --- VERİ PAKETLEME (MULTIPLEXING) ---
+        // --- VİDEO YÜKLEME YARDIMCISI ---
+        function loadVideoSource(url) {
+            if(!url) return;
+            video.src = url;
+            video.load();
+            placeholder.classList.add('hidden');
+        }
+
         function sendDataPayload(type, payload) {
             if (connection && connection.open) {
-                // Veriyi yapılandırılmış bir zarfa koyuyoruz
-                connection.send({
-                    type: type, // 'sync' veya 'chat'
-                    payload: payload
-                });
+                connection.send({ type: type, payload: payload });
             }
         }
 
         // --- GELEN VERİ YÖNETİMİ ---
         function handleIncomingData(dataEnvelope) {
-            // Zarftan tipi ve veriyi çıkar
             const { type, payload } = dataEnvelope;
 
             if (type === 'chat') {
-                // Sohbet mesajı geldiyse ekrana bas
                 appendChat(payload.text, 'other');
             } 
             else if (type === 'sync') {
-                // Senkronizasyon komutu geldiyse videoyu güncelle
                 isSyncing = true; 
-                if (Math.abs(video.currentTime - payload.time) > 0.5) {
-                    video.currentTime = payload.time;
+
+                // Eğer Host yeni bir video URL'si gönderdiyse (veya ilk bağlantıysa)
+                if (payload.action === 'change-url' || payload.action === 'init') {
+                    if (payload.url && video.src !== payload.url) {
+                        loadVideoSource(payload.url);
+                        appendChat(payload.action === 'init' ? "Video senkronize edildi." : "Host videoyu değiştirdi.", "chat-system");
+                    }
                 }
-                if (payload.isPlaying && video.paused) {
-                    video.play().catch(e => appendChat("Video oto-oynatma engellendi, ekrana dokunun.", "chat-system"));
-                } else if (!payload.isPlaying && !video.paused) {
-                    video.pause();
+
+                if (payload.action !== 'change-url') {
+                    if (Math.abs(video.currentTime - payload.time) > 0.5) {
+                        video.currentTime = payload.time;
+                    }
+                    if (payload.isPlaying && video.paused) {
+                        video.play().catch(e => appendChat("Video oto-oynatma engellendi, ekrana dokunup oynatın.", "chat-system"));
+                    } else if (!payload.isPlaying && !video.paused) {
+                        video.pause();
+                    }
                 }
+                
                 setTimeout(() => { isSyncing = false; }, 100);
             }
         }
 
+        // --- HOST VİDEO DEĞİŞTİRME TETİKLEYİCİSİ ---
+        btnChangeVideo.addEventListener('click', () => {
+            const newUrl = dynamicVideoUrl.value.trim();
+            if (newUrl) {
+                loadVideoSource(newUrl);
+                sendDataPayload('sync', { action: 'change-url', url: newUrl });
+                appendChat("Yeni video yüklendi ve izleyiciye gönderildi.", "chat-system");
+                dynamicVideoUrl.value = ''; // Kutuyu temizle
+            }
+        });
+
         // --- HOST MANTIĞI ---
         document.getElementById('btn-create-room').addEventListener('click', () => {
             isHost = true;
+            video.setAttribute('controls', 'true'); // Host kontrolleri görebilir
+            
+            // Eğer kurulum ekranında link girildiyse hemen yükle
+            const startUrl = initialVideoUrl.value.trim();
+            if(startUrl) loadVideoSource(startUrl);
+
             showLog("Sunucuya bağlanılıyor...");
             const shortCode = generateShortCode();
-            const fullId = PREFIX + shortCode;
-
-            // Kendi belirlediğimiz ID ile Peer oluştur
-            peer = new Peer(fullId);
+            
+            peer = new Peer(PREFIX + shortCode);
 
             peer.on('open', () => {
                 setupCard.classList.add('hidden');
@@ -286,58 +356,50 @@
             peer.on('connection', (conn) => {
                 connection = conn;
                 switchToChatMode();
-                appendChat("İzleyici odaya katıldı!", "chat-system");
                 
-                // Başlangıç senkronizasyonunu gönder
-                sendDataPayload('sync', { action: 'init', time: video.currentTime, isPlaying: !video.paused });
+                // Host için dinamik video değiştirme barını aktif et
+                hostDynamicControls.classList.remove('hidden');
+                
+                chatMessages.innerHTML = ''; // Bekleme yazısını temizle
+                appendChat("İzleyici odaya katıldı! P2P bağlantı güvenli.", "chat-system");
+                
+                // İzleyici bağlanır bağlanmaz şu anki videoyu ve durumunu gönder (Dinamik Routing)
+                sendDataPayload('sync', { action: 'init', url: video.src, time: video.currentTime, isPlaying: !video.paused });
                 setupHostVideoListeners();
 
                 connection.on('data', handleIncomingData);
             });
 
-            peer.on('error', (err) => {
-                if(err.type === 'unavailable-id') {
-                    showLog("Bir hata oluştu. Lütfen tekrar deneyin.");
-                } else {
-                    showLog("Bağlantı hatası: " + err.type);
-                }
-            });
+            peer.on('error', (err) => showLog("Bağlantı hatası: " + err.type));
         });
 
         // --- VİEWER MANTIĞI ---
         document.getElementById('btn-join-room').addEventListener('click', () => {
             const code = inputRoomId.value.trim().toUpperCase();
-            if (code.length !== 5) {
-                showLog("Lütfen 5 haneli kodu girin.");
-                return;
-            }
+            if (code.length !== 5) { showLog("Lütfen 5 haneli kodu girin."); return; }
 
             isHost = false;
             showLog("Oda aranıyor...");
             mediaContainer.classList.add('viewer-mode'); 
             video.removeAttribute('controls'); 
 
-            peer = new Peer(); // İzleyici rasgele id alabilir sorun yok.
+            peer = new Peer(); 
 
             peer.on('open', () => {
-                const targetId = PREFIX + code;
-                connection = peer.connect(targetId);
+                connection = peer.connect(PREFIX + code);
 
                 connection.on('open', () => {
                     switchToChatMode();
-                    appendChat("Odaya başarıyla bağlandınız!", "chat-system");
+                    chatMessages.innerHTML = '';
+                    appendChat("Odaya başarıyla bağlandınız! Video bekleniyor...", "chat-system");
                     
                     connection.on('data', handleIncomingData);
                 });
 
-                connection.on('error', (err) => {
-                    switchToChatMode();
-                    appendChat("Bağlantı koptu.", "chat-system");
-                });
+                connection.on('error', () => appendChat("Bağlantı koptu.", "chat-system"));
             });
         });
 
-        // --- HOST VİDEO DİNLEYİCİLERİ ---
         function setupHostVideoListeners() {
             video.addEventListener('play', () => {
                 if(!isSyncing) sendDataPayload('sync', { action: 'play', time: video.currentTime, isPlaying: true });
@@ -350,19 +412,17 @@
             });
         }
 
-        // --- SOHBET GÖNDERME MANTIĞI ---
         window.sendChatMessage = function(e) {
             e.preventDefault();
             const text = chatInput.value.trim();
             if (!text || !connection || !connection.open) return;
 
-            // Kendi ekranımıza ekle
             appendChat(text, 'me');
-            
-            // Karşı tarafa 'chat' etiketiyle gönder
             sendDataPayload('chat', { text: text });
-            
             chatInput.value = '';
+            
+            // Mobilde klavye açıkken mesaj atınca inputta kalması için odaklamayı yenile
+            chatInput.focus(); 
         };
 
     </script>
