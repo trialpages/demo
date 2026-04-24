@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baybas Bag | Size Çok Yakışacak</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        logo: ['Dancing Script', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#fdfbf7',
+                            DEFAULT: '#d4af37', /* Zarif bir altın/kum rengi */
+                            dark: '#2c2c2c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Yumuşak geçişler için özel sınıf */
+        .smooth-transition { transition: all 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="bg-brand-light text-brand-dark font-sans antialiased flex flex-col min-h-screen">
+
+    <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-transform duration-300 translate-x-full opacity-0 z-50">
+        Ürün sepete eklendi!
+    </div>
+
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            
+            <button id="mobileMenuBtn" class="md:hidden text-2xl focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="text-center md:text-left flex-1 md:flex-none flex flex-col items-center md:items-start cursor-pointer">
+                <h1 class="font-logo text-4xl tracking-wider text-black">Baybas Bag</h1>
+                <span class="text-xs italic text-gray-500 mt-1 tracking-widest">Size çok yakışacak</span>
+            </div>
+
+            <nav class="hidden md:flex space-x-8 items-center font-medium text-sm">
+                <a href="#" class="hover:text-brand smooth-transition text-brand-dark">Anasayfa</a>
+                <a href="#" class="hover:text-brand smooth-transition">Hakkımızda</a>
+                <a href="#" class="hover:text-brand smooth-transition">Ürünlerimiz</a>
+                <a href="#" class="hover:text-brand smooth-transition">Kategoriler</a>
+                <a href="#" class="hover:text-brand smooth-transition">İletişim/Sipariş</a>
+            </nav>
+
+            <div class="flex space-x-5 items-center text-lg">
+                <button class="hover:text-brand smooth-transition hidden md:block"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <button class="hover:text-brand smooth-transition hidden md:block"><i class="fa-regular fa-user"></i></button>
+                <button class="hover:text-brand smooth-transition relative">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cartCount" class="absolute -top-2 -right-2 bg-brand text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-t px-4 py-4 space-y-4 shadow-inner">
+            <a href="#" class="block text-sm font-medium hover:text-brand">Anasayfa</a>
+            <a href="#" class="block text-sm font-medium hover:text-brand">Hakkımızda</a>
+            <a href="#" class="block text-sm font-medium hover:text-brand">Ürünlerimiz</a>
+            <a href="#" class="block text-sm font-medium hover:text-brand">Kategoriler</a>
+            <a href="#" class="block text-sm font-medium hover:text-brand">İletişim/Sipariş</a>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        
+        <section class="relative bg-gray-100 h-[60vh] flex items-center justify-center overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1584916201218-f4242ceb4809?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Şık Çantalar" class="absolute inset-0 w-full h-full object-cover opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            
+            <div class="relative z-10 text-center text-white px-4">
+                <h2 class="text-4xl md:text-6xl font-logo mb-4">Yeni Sezon Koleksiyonu</h2>
+                <p class="mb-8 font-light tracking-wide text-lg">Zarafeti omuzunuzda taşıyın. Her tarza uygun, özel üretim çantalar.</p>
+                <button class="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-brand hover:text-white smooth-transition shadow-lg">
+                    Koleksiyonu Keşfet
+                </button>
+            </div>
+        </section>
+
+        <section class="container mx-auto px-4 py-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-semibold mb-2">Öne Çıkan Ürünler</h3>
+                <div class="w-16 h-1 bg-brand mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+                
+                <div class="group relative">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-200 rounded-lg mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Deri Omuz Çantası" class="object-cover w-full h-full group-hover:scale-105 smooth-transition">
+                        <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 smooth-transition translate-y-4 group-hover:translate-y-0">
+                            <button onclick="addToCart()" class="w-full bg-black text-white py-2 rounded font-medium hover:bg-brand smooth-transition">Sepete Ekle</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-lg">Klasik Deri Omuz Çantası</h4>
+                        <div class="flex items-center text-brand text-sm my-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star-half-stroke"></i>
+                            <span class="text-gray-400 ml-2 text-xs">(24)</span>
+                        </div>
+                        <p class="font-semibold text-xl">1.250 TL</p>
+                    </div>
+                </div>
+
+                <div class="group relative">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-200 rounded-lg mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Zincirli Gece Çantası" class="object-cover w-full h-full group-hover:scale-105 smooth-transition">
+                        <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 smooth-transition translate-y-4 group-hover:translate-y-0">
+                            <button onclick="addToCart()" class="w-full bg-black text-white py-2 rounded font-medium hover:bg-brand smooth-transition">Sepete Ekle</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-lg">Zincirli Gece Çantası</h4>
+                        <div class="flex items-center text-brand text-sm my-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            <span class="text-gray-400 ml-2 text-xs">(12)</span>
+                        </div>
+                        <p class="font-semibold text-xl">890 TL</p>
+                    </div>
+                </div>
+
+                <div class="group relative">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-200 rounded-lg mb-4 relative">
+                        <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">%20 İndirim</span>
+                        <img src="https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Günlük Bez Çanta" class="object-cover w-full h-full group-hover:scale-105 smooth-transition">
+                        <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 smooth-transition translate-y-4 group-hover:translate-y-0">
+                            <button onclick="addToCart()" class="w-full bg-black text-white py-2 rounded font-medium hover:bg-brand smooth-transition">Sepete Ekle</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-lg">Günlük Bez Shopper</h4>
+                        <div class="flex items-center text-brand text-sm my-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+                            <span class="text-gray-400 ml-2 text-xs">(8)</span>
+                        </div>
+                        <p class="font-semibold text-xl"><span class="line-through text-gray-400 text-sm mr-2">450 TL</span>360 TL</p>
+                    </div>
+                </div>
+
+                <div class="group relative">
+                    <div class="aspect-[4/5] overflow-hidden bg-gray-200 rounded-lg mb-4 relative">
+                        <img src="https://images.unsplash.com/photo-1591561954557-26941169b49e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Süet Sırt Çantası" class="object-cover w-full h-full group-hover:scale-105 smooth-transition">
+                        <div class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 smooth-transition translate-y-4 group-hover:translate-y-0">
+                            <button onclick="addToCart()" class="w-full bg-black text-white py-2 rounded font-medium hover:bg-brand smooth-transition">Sepete Ekle</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-lg">Süet Sırt Çantası</h4>
+                        <div class="flex items-center text-brand text-sm my-1">
+                            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                            <span class="text-gray-400 ml-2 text-xs">(41)</span>
+                        </div>
+                        <p class="font-semibold text-xl">1.450 TL</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="bg-white py-16 border-t border-gray-100">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="text-center mb-10">
+                    <h3 class="text-2xl font-semibold mb-2">Müşterilerimiz Ne Diyor?</h3>
+                    <p class="text-gray-500 text-sm">Ürün detay sayfalarında yer alacak yorum ve yanıt sisteminin önizlemesi.</p>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold">AY</div>
+                            <div>
+                                <h5 class="font-semibold text-sm">Ayşe Y.</h5>
+                                <div class="text-brand text-xs"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                            </div>
+                        </div>
+                        <span class="text-xs text-gray-400">12 Ekim 2025</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Klasik deri omuz çantasını sipariş ettim, kargo çok hızlıydı. Derisinin kalitesi muazzam, boyutu da günlük kullanım için ideal. İçine her şeyimi sığdırabiliyorum!</p>
+                    <button class="text-xs text-gray-500 font-medium hover:text-brand smooth-transition">Yanıtla <i class="fa-solid fa-reply ml-1"></i></button>
+                    
+                    <div class="mt-4 ml-8 pl-4 border-l-2 border-brand/30">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-store"></i></div>
+                            <h5 class="font-semibold text-xs text-black">Baybas Bag Ekibi</h5>
+                            <span class="text-[10px] text-gray-400">13 Ekim 2025</span>
+                        </div>
+                        <p class="text-gray-600 text-xs">Güzel günlerde kullanmanız dileğiyle Ayşe Hanım! Zarafetinizin bir parçası olmak bizi çok mutlu etti. Sevgiler.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-black text-white py-12 border-t-4 border-brand">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <h2 class="font-logo text-3xl mb-4">Baybas Bag</h2>
+                <p class="text-gray-400 text-sm mb-4">Zarafeti detaylarda arayanlar için tasarlandı. Size çok yakışacak.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white smooth-transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white smooth-transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white smooth-transition"><i class="fa-brands fa-pinterest text-xl"></i></a>
+                </div>
+            </div>
+            
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Hızlı Bağlantılar</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" class="hover:text-brand smooth-transition">Hakkımızda</a></li>
+                    <li><a href="#" class="hover:text-brand smooth-transition">İade ve Değişim Şartları</a></li>
+                    <li><a href="#" class="hover:text-brand smooth-transition">Kargo Takip</a></li>
+                    <li><a href="#" class="hover:text-brand smooth-transition">Sıkça Sorulan Sorular</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">İletişimde Kalın</h4>
+                <p class="text-gray-400 text-sm mb-4">Yeni koleksiyonlar ve indirimlerden ilk siz haberdar olun.</p>
+                <form class="flex" onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="E-posta adresiniz" class="px-4 py-2 w-full text-black outline-none rounded-l">
+                    <button class="bg-brand px-4 py-2 rounded-r hover:bg-yellow-600 smooth-transition font-medium">Katıl</button>
+                </form>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+            &copy; 2026 Baybas Bag. Tüm hakları saklıdır.
+        </div>
+    </footer>
+
+    <script>
+        // Mobil Menü Aç/Kapat
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Sepete Ekle Simülasyonu ve Toast Bildirimi
+        let cartItemCount = 0;
+        const cartBadge = document.getElementById('cartCount');
+        const toast = document.getElementById('toast');
+
+        function addToCart() {
+            // Sepet sayısını artır
+            cartItemCount++;
+            cartBadge.innerText = cartItemCount;
+            
+            // Animasyon efekti (kalp atışı gibi)
+            cartBadge.classList.add('scale-125');
+            setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
+
+            // Toast bildirimini göster
+            toast.classList.remove('translate-x-full', 'opacity-0');
+            
+            // 3 saniye sonra gizle
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
