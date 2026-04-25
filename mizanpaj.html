@@ -15,22 +15,29 @@
     <style>
         /* --- Arayüz ve Login Ekranı Stilleri --- */
         body { margin: 0; padding: 0; background-color: #f4f1ea; font-family: 'Merriweather', serif; color: #332d2a; }
+        
         #login-screen {
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: linear-gradient(135deg, #4a3b32 0%, #2c241e 100%); color: #f4f1ea;
         }
-        #login-screen h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 10px; }
-        .login-btn {
-            background-color: #fff; color: #4a3b32; border: none; padding: 12px 24px; font-size: 16px;
-            font-weight: bold; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.2s;
+        #login-screen h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 5px; }
+        #login-screen p { margin-bottom: 30px; font-style: italic; opacity: 0.8; }
+        
+        .login-form {
+            display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px;
         }
-        .login-btn:hover { transform: translateY(-2px); }
-        .login-btn img { width: 20px; }
+        .login-form input {
+            padding: 12px 15px; border: none; border-radius: 4px; font-family: 'Merriweather', serif; font-size: 14px; outline: none;
+        }
+        .login-form button {
+            background-color: #c8b9a6; color: #2c241e; border: none; padding: 12px; font-size: 16px;
+            font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+        }
+        .login-form button:hover { background-color: #e8e3d8; }
 
         #ui-controls {
             position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #fff; padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-radius: 8px; display: none; /* Login sonrası açılacak */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); border-radius: 8px; display: none;
         }
         #ui-controls button {
             background: #4a3b32; color: white; border: none; padding: 10px 20px; font-size: 16px; cursor: pointer; border-radius: 4px;
@@ -52,7 +59,7 @@
         /* Kapak Tasarımı */
         .cover-page {
             height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background-image: linear-gradient(rgba(44, 36, 30, 0.85), rgba(44, 36, 30, 0.95)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1000&auto=format&fit=crop');
+            background-image: linear-gradient(rgba(44, 36, 30, 0.75), rgba(44, 36, 30, 0.95)), url('https://images.unsplash.com/photo-1568667256549-094345857637?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGlicmFyeXxlbnwwfHwwfHx8MA%3D%3D');
             background-size: cover; background-position: center; color: #f9f6f0; text-align: center;
             page-break-after: always; padding: 40px; box-sizing: border-box;
         }
@@ -62,17 +69,24 @@
 
         /* Jenerik (Hakkımızda) Sayfası */
         .colophon-page {
-            page-break-after: always; padding: 40px; display: flex; flex-direction: column; justify-content: center; height: 100%;
+            page-break-after: always; padding: 40mm 20mm; display: flex; flex-direction: column; height: 100%; box-sizing: border-box;
         }
-        .colophon-page h3 { font-family: 'Playfair Display', serif; font-size: 24pt; border-bottom: 2px solid #4a3b32; padding-bottom: 10px; margin-bottom: 20px; }
-        .colophon-content { font-size: 11pt; line-height: 1.8; text-align: justify; color: #444; }
-        .colophon-board { margin-top: 40px; }
-        .colophon-board p { margin: 5px 0; font-size: 10pt; }
+        .colophon-header { font-family: 'Playfair Display', serif; font-size: 24pt; border-bottom: 2px solid #4a3b32; padding-bottom: 10px; margin-bottom: 40px; text-align: center; }
+        
+        .colophon-board { margin-bottom: 40px; }
+        .role-group { margin-bottom: 20px; text-align: center; }
+        .role-title { display: block; font-size: 10pt; text-transform: uppercase; letter-spacing: 2px; color: #777; margin-bottom: 5px; }
+        .role-name { display: block; font-family: 'Playfair Display', serif; font-size: 16pt; font-weight: bold; color: #2c241e; }
+        
+        .colophon-content { font-size: 12pt; line-height: 1.8; text-align: center; color: #444; margin-top: auto; padding-top: 40px; border-top: 1px solid #eee; }
+        .colophon-content p { margin-bottom: 15px; }
+        
+        .colophon-footer { margin-top: 40px; text-align: center; font-family: 'Playfair Display', serif; font-size: 14pt; color: #2c241e; font-style: italic; }
 
         /* İçindekiler Sayfası */
         .toc-page { page-break-after: always; padding-top: 20px; }
         .toc-page h2 { font-family: 'Playfair Display', serif; font-size: 28pt; text-align: center; margin-bottom: 40px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
-        .toc-item { display: flex; justify-content: space-between; font-size: 14pt; margin-bottom: 15px; }
+        .toc-item { display: flex; justify-content: space-between; font-size: 14pt; margin-bottom: 15px; border-bottom: 1px dotted #ccc; padding-bottom: 5px;}
         .toc-title { font-weight: bold; color: #2c241e; }
         .toc-author { font-style: italic; color: #666; font-size: 12pt; }
 
@@ -90,11 +104,9 @@
             float: left; font-size: 44pt; line-height: 38pt; padding-right: 8px; font-family: 'Playfair Display', serif; color: #4a3b32;
         }
 
-        /* Başlıklar sütun sonuna denk gelmesin diye */
-        .article-content h2, .article-content h3 { break-after: avoid; font-family: 'Playfair Display', serif; color: #2c241e; }
-        .article-content p { orphans: 3; widows: 3; } /* Paragrafın son/ilk satırı tek kalmasın */
+        .article-content h2, .article-content h3 { break-after: avoid; font-family: 'Playfair Display', serif; color: #2c241e; margin-top: 20px; }
+        .article-content p { orphans: 3; widows: 3; }
 
-        /* İçerik başlangıçta gizli */
         #magazine-wrapper { display: none; }
     </style>
 </head>
@@ -102,11 +114,12 @@
 
     <div id="login-screen">
         <h1>İHTİSAS Paneli</h1>
-        <p style="margin-bottom: 30px; font-style: italic;">Dizgi ve Yönetim Modülü</p>
-        <button class="login-btn" id="loginBtn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
-            Google ile Giriş Yap
-        </button>
+        <p>Dizgi ve Yönetim Modülü</p>
+        <div class="login-form">
+            <input type="email" id="email" placeholder="E-posta Adresi" required>
+            <input type="password" id="password" placeholder="Parola" required>
+            <button id="loginBtn">Giriş Yap</button>
+        </div>
         <p id="login-error" style="color: #ffcccc; margin-top: 15px; display: none;"></p>
     </div>
 
@@ -125,15 +138,26 @@
             </div>
 
             <div class="colophon-page">
-                <h3>Hakkımızda</h3>
-                <div class="colophon-content">
-                    <p>İhtisas Dergisi; sosyal bilimler, fikir hayatı, edebiyat ve siyaset bilimi alanlarında özgün, akademik ve entelektüel içerikler üretmek gayesiyle yayın hayatına başlamış bağımsız bir platformdur.</p>
-                    <p>Amacımız, güncel meseleleri tarihi bir derinlikle ele almak, farklı disiplinleri bir araya getirerek çok boyutlu bir tartışma zemini oluşturmak ve okuyucularımıza güvenilir, nitelikli metinler sunmaktır.</p>
-                </div>
+                <div class="colophon-header">Jenerik</div>
+                
                 <div class="colophon-board">
-                    <p><strong>İmtiyaz Sahibi:</strong> İhtisas Yayın Kurulu</p>
-                    <p><strong>Yayın Türü:</strong> Dijital ve Matbu E-Dergi</p>
-                    <p><strong>İletişim:</strong> iletisim@ihtisasdergi.web.app</p>
+                    <div class="role-group">
+                        <span class="role-title">Sahibi</span>
+                        <span class="role-name">Ahmet Yasin</span>
+                    </div>
+                    <div class="role-group">
+                        <span class="role-title">Sorumlu Müdür</span>
+                        <span class="role-name">Yasin Hocaoğlu</span>
+                    </div>
+                </div>
+
+                <div class="colophon-content">
+                    <p>Dergimiz periyodik olmayan dönemlerde e-Dergi olarak<br><strong>ihtisasdergi.web.app</strong> adresinde yayınlanmaktadır.</p>
+                    <p>İletişim için web sitemizi kullanabilirsiniz.</p>
+                </div>
+
+                <div class="colophon-footer">
+                    İzmir<br>2026
                 </div>
             </div>
 
@@ -149,7 +173,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -164,13 +188,25 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
         const db = getFirestore(app);
 
-        // Login İşlemi
+        // E-posta / Parola ile Giriş
         document.getElementById('loginBtn').addEventListener('click', () => {
-            signInWithPopup(auth, provider).catch((error) => {
-                document.getElementById('login-error').innerText = "Giriş başarısız: " + error.message;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if(!email || !password) {
+                document.getElementById('login-error').innerText = "Lütfen e-posta ve parola giriniz.";
+                document.getElementById('login-error').style.display = 'block';
+                return;
+            }
+
+            signInWithEmailAndPassword(auth, email, password).catch((error) => {
+                let msg = "Giriş başarısız.";
+                if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    msg = "Hatalı e-posta veya parola.";
+                }
+                document.getElementById('login-error').innerText = msg;
                 document.getElementById('login-error').style.display = 'block';
             });
         });
@@ -178,15 +214,11 @@
         // Kullanıcı Durumunu Dinle
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Giriş Başarılı
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('magazine-wrapper').style.display = 'block';
                 document.getElementById('ui-controls').style.display = 'block';
-                
-                // Makaleleri Çek ve Dizgiyi Başlat
                 buildMagazine();
             } else {
-                // Giriş Yapılmamış
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('magazine-wrapper').style.display = 'none';
                 document.getElementById('ui-controls').style.display = 'none';
@@ -248,24 +280,21 @@
 
                 document.getElementById('status-text').innerText = "Sayfalar diziliyor, lütfen bekleyin...";
 
-                // KRİTİK NOKTA: Veriler DOM'a eklendikten sonra Paged.js'i manuel tetikliyoruz.
-                // Bu sayede sayfa atlama veya 3 sayfada kalma sorunu çözülüyor.
+                // Paged.js Manuel Tetikleme
                 let paged = new window.Paged.Previewer();
                 await paged.preview(document.getElementById('magazine-content').innerHTML, [''], document.body);
 
-                // İşlem bitince arayüzü güncelle
                 document.getElementById('status-text').innerText = "Dizgi tamamlandı. Çıktı alabilirsiniz.";
                 const printBtn = document.getElementById('print-btn');
                 printBtn.disabled = false;
                 printBtn.style.opacity = '1';
                 printBtn.style.backgroundColor = "#27ae60";
 
-                // DOM yapısı değiştiği için magazine-wrapper'ı gizle, paged.js kendi yapısını kurar
                 document.getElementById('magazine-wrapper').style.display = 'none';
 
             } catch (error) {
                 console.error("Hata:", error);
-                document.getElementById('status-text').innerText = "Hata: Veriler çekilemedi.";
+                document.getElementById('status-text').innerText = "Hata: Veriler çekilemedi. Konsolu kontrol edin.";
             }
         }
     </script>
