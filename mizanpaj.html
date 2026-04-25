@@ -3,360 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İhtisas Dergisi - Profesyonel Dizgi Paneli</title>
-    
-    <script>
-        window.PagedConfig = { auto: false };
-    </script>
-    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
-
+    <title>İhtisas Dergisi - Sayı: 1</title>
     <style>
-        /* --- ARAYÜZ VE GİRİŞ (BASKIDA GİZLENİR) --- */
-        body { margin: 0; background-color: #f4f1ea; font-family: 'Merriweather', serif; color: #1a1a1a; }
-        
-        #login-screen {
-            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: linear-gradient(135deg, #2c241e 0%, #1a1511 100%); color: #f4f1ea;
-        }
-        #login-screen h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 5px; }
-        .login-form { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; margin-top: 20px;}
-        .login-form input { padding: 14px; border: none; border-radius: 4px; font-family: inherit; font-size: 15px; }
-        .login-form button { background-color: #c8b9a6; color: #2c241e; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .login-form button:hover { background-color: #e8e3d8; }
-
-        #ui-controls {
-            position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #fff; padding: 15px 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 8px; border-left: 5px solid #2c241e; display: none;
-        }
-        #ui-controls p { margin: 0 0 10px 0; font-family: sans-serif; font-size: 14px; font-weight: bold; color: #333; }
-        #ui-controls button { background: #2c241e; color: white; border: none; padding: 10px 20px; font-size: 15px; cursor: pointer; border-radius: 4px; width: 100%; transition: 0.3s; }
-
-        @media print {
-            #ui-controls, #login-screen { display: none !important; }
-            body { background-color: #fff; }
+        /* Genel Temeller */
+        :root {
+            --primary-color: #5d4037; /* Kahverengi - Toprak tonu */
+            --bg-color: #f5f5dc;      /* Bej */
+            --accent-color: #1a237e;  /* Koyu Mavi */
+            --text-color: #333;
         }
 
-        /* --- MİZANPAJ VE SAYFA AYARLARI --- */
         @page {
             size: A4;
-            margin: 25mm 22mm; /* Kusursuz kenar boşlukları */
-            @bottom-center { content: counter(page); font-family: 'Merriweather', serif; font-size: 10pt; color: #333; }
+            margin: 0;
         }
-        @page:first { margin: 0; @bottom-center { content: none; } } /* Kapak numaralandırılmaz */
-        @page:nth(2) { margin: 0; @bottom-center { content: none; } } /* Jenerik numaralandırılmaz */
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ccc;
+            color: var(--text-color);
+        }
+
+        /* Navigasyon / Kontroller */
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .btn-pdf {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .btn-pdf:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Dergi Yapısı */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            margin: 20mm auto;
+            background: var(--bg-color);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            page-break-after: always;
+            box-sizing: border-box;
+        }
 
         /* 1. KAPAK SAYFASI */
-        .cover-page {
-            height: 100vh; display: flex; flex-direction: column; position: relative;
-            background-image: linear-gradient(rgba(26, 21, 17, 0.4), rgba(26, 21, 17, 0.95)), url('https://images.unsplash.com/photo-1568667256549-094345857637?w=800&auto=format&fit=crop&q=60');
-            background-size: cover; background-position: center; color: #f9f6f0;
-            page-break-after: always; padding: 60px 40px; box-sizing: border-box; text-align: center;
+        .cover {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3e2723 100%);
+            color: white;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-        .cover-header { margin-top: 10vh; }
-        .cover-header h1 { font-family: 'Playfair Display', serif; font-size: 80pt; margin: 0; letter-spacing: 10px; font-weight: 700; text-shadow: 2px 4px 10px rgba(0,0,0,0.5); }
-        .cover-header h2 { font-size: 18pt; font-weight: 300; margin-top: 20px; letter-spacing: 4px; border-top: 1px solid rgba(200,185,166,0.5); padding-top: 20px; color: #c8b9a6; }
-        
-        .cover-highlights { position: absolute; bottom: 80px; right: 40px; text-align: right; max-width: 60%; background: rgba(0,0,0,0.4); padding: 25px; border-right: 4px solid #c8b9a6; }
-        .cover-highlights h3 { margin: 0 0 15px 0; font-family: 'Playfair Display', serif; font-size: 14pt; color: #c8b9a6; letter-spacing: 2px; text-transform: uppercase; }
-        .cover-highlight-item { font-size: 13pt; margin-bottom: 10px; line-height: 1.4; font-style: italic; }
 
-        .issue-info { position: absolute; top: 40px; right: 40px; font-size: 14pt; font-family: 'Playfair Display', serif; font-style: italic; color: #c8b9a6; }
-
-        /* 2. JENERİK SAYFASI (MASTHEAD) */
-        .colophon-page {
-            height: 100vh; background-color: #fbfaf8; page-break-after: always; padding: 40mm 30mm; display: flex; flex-direction: column; box-sizing: border-box;
+        .cover-title {
+            font-size: 72pt;
+            letter-spacing: 5px;
+            margin: 0;
+            text-transform: uppercase;
+            border-bottom: 5px solid white;
+            padding-bottom: 20px;
         }
-        .colophon-title { font-family: 'Playfair Display', serif; font-size: 40pt; color: #1a1511; text-align: center; margin: 0; line-height: 1; }
-        .colophon-subtitle { text-align: center; font-size: 11pt; color: #555; text-transform: uppercase; letter-spacing: 3px; margin-top: 10px; padding-bottom: 30px; border-bottom: 2px solid #e8e3d8; margin-bottom: 40px; }
-        
-        .colophon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
-        .c-box h4 { font-family: 'Playfair Display', serif; font-size: 14pt; color: #2c241e; margin: 0 0 8px 0; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .c-box p { font-size: 10.5pt; color: #444; margin: 0 0 5px 0; line-height: 1.5; }
-        .c-box .name { font-weight: bold; color: #1a1511; }
 
-        .colophon-footer { margin-top: auto; text-align: center; border-top: 1px solid #e8e3d8; padding-top: 20px; font-size: 10pt; line-height: 1.8; color: #666; }
+        .cover-subtitle {
+            font-size: 18pt;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .cover-footer {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            font-size: 14pt;
+        }
+
+        /* 2. JENERİK SAYFASI */
+        .jenerik {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .jenerik-content {
+            width: 60%;
+            border-top: 1px solid var(--primary-color);
+            border-bottom: 1px solid var(--primary-color);
+            padding: 40px 0;
+            line-height: 2;
+        }
+
+        .jenerik-content h2 {
+            margin-bottom: 30px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+        }
+
+        .jenerik-item {
+            margin-bottom: 10px;
+            font-size: 11pt;
+        }
+
+        .jenerik-item b {
+            display: block;
+            text-transform: uppercase;
+            font-size: 9pt;
+            color: #666;
+        }
 
         /* 3. İÇİNDEKİLER */
-        .toc-page { page-break-after: always; padding-top: 20px; }
-        .toc-page h2 { font-family: 'Playfair Display', serif; font-size: 32pt; text-align: center; margin-bottom: 50px; color: #1a1511; letter-spacing: 2px; }
-        
-        .toc-list { display: flex; flex-direction: column; gap: 15px; margin: 0 10mm; }
-        .toc-item-link { display: flex; text-decoration: none; color: inherit; align-items: baseline; width: 100%; transition: 0.2s; }
-        
-        .toc-text-block { display: flex; flex-direction: column; max-width: 80%; }
-        .toc-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15pt; color: #2c241e; line-height: 1.3; }
-        .toc-author { font-style: italic; font-size: 11pt; color: #666; margin-top: 3px; }
-        
-        .toc-leader { flex-grow: 1; border-bottom: 2px dotted #bbb; margin: 0 15px; position: relative; top: -4px; }
-        
-        /* Paged.js Target Counter (Dinamik Sayfa No) */
-        .toc-page-num { font-family: 'Playfair Display', serif; font-size: 16pt; font-weight: bold; color: #1a1511; }
-        .toc-page-num::after { content: target-counter(attr(data-target), page); }
-
-        /* 4. MAKALE MİZANPAJI (KUSURSUZ YERLEŞİM) */
-        .article { page-break-before: always; }
-        
-        .article-header { text-align: center; margin-bottom: 40px; column-span: all; padding: 0 15mm; }
-        .article-category { display: inline-block; font-family: sans-serif; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: #777; border-top: 1px solid #777; border-bottom: 1px solid #777; padding: 4px 0; margin-bottom: 20px; }
-        .article-title { font-family: 'Playfair Display', serif; font-size: 28pt; margin: 0 0 15px 0; color: #1a1511; line-height: 1.25; }
-        .article-author { font-size: 14pt; font-style: italic; color: #444; }
-
-        .article-image { width: 100%; max-height: 350px; object-fit: cover; margin-bottom: 30px; column-span: all; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
-        .article-content { 
-            column-count: 2; 
-            column-gap: 12mm; /* Sütunlar arası ideal boşluk */
-            text-align: justify; 
-            font-size: 10.5pt; 
-            color: #111; 
-            line-height: 1.7; /* Satır aralığı */
+        .contents {
+            padding: 40mm 20mm;
         }
 
-        /* Paragrafların birbirine girmesini engelleme */
-        .article-content p {
-            margin: 0 0 12px 0; /* Paragraf altı boşluk */
-            hyphens: auto; /* Kelime bölme (Tireleme) */
-            text-indent: 15px; /* Paragraf başı girintisi */
+        .contents h2 {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 40px;
         }
 
-        /* İlk paragrafta girinti olmaz ve büyük harfle başlar (Drop Cap) */
-        .article-content p:first-of-type { text-indent: 0; }
-        .article-content p:first-of-type::first-letter {
-            float: left; font-size: 48pt; line-height: 40pt; padding-right: 10px; margin-top: 4px; font-family: 'Playfair Display', serif; color: #2c241e; font-weight: bold;
+        .toc-list {
+            list-style: none;
+            padding: 0;
         }
 
-        .article-content h2, .article-content h3 { font-family: 'Playfair Display', serif; color: #1a1511; column-span: none; break-after: avoid; margin-top: 25px; margin-bottom: 10px; }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px dotted #999;
+        }
 
-        #magazine-wrapper { display: none; }
+        .toc-page-num::before {
+            content: "S. ";
+        }
+
+        /* Sayfa Numaralandırma Mantığı (Baskı İçin) */
+        body { counter-reset: pageNum; }
+        .page { counter-increment: pageNum; }
+        .page-footer {
+            position: absolute;
+            bottom: 15mm;
+            right: 15mm;
+            font-size: 10pt;
+        }
+        .page-footer::after {
+            content: counter(pageNum);
+        }
+
+        /* BASKI AYARLARI */
+        @media print {
+            .controls { display: none; }
+            body { background: none; }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .cover {
+                background: var(--primary-color) !important;
+                color: white !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <h1>İHTİSAS Paneli</h1>
-        <p style="opacity: 0.8; font-style: italic;">Akademik Mizanpaj Motoru V2</p>
-        <div class="login-form">
-            <input type="email" id="email" placeholder="E-posta Adresi" required>
-            <input type="password" id="password" placeholder="Parola" required>
-            <button id="loginBtn">Sisteme Giriş Yap</button>
-        </div>
-        <p id="login-error" style="color: #ffcccc; margin-top: 15px; display: none; text-align: center;"></p>
+    <div class="controls">
+        <button class="btn-pdf" onclick="window.print()">PDF OLARAK İNDİR / YAZDIR</button>
     </div>
 
-    <div id="ui-controls">
-        <p id="status-text">Veritabanına bağlanılıyor...</p>
-        <button onclick="window.print()" id="print-btn" disabled style="opacity: 0.5;">PDF Olarak İndir</button>
-    </div>
-
-    <div id="magazine-wrapper">
-        <div id="magazine-content">
-            
-            <div class="cover-page">
-                <div class="issue-info" id="cover-date">İzmir, 2026</div>
-                <div class="cover-header">
-                    <h1>İHTİSAS</h1>
-                    <h2>İLMÎ, FİKRÎ, EDEBÎ, SİYASÎ DERGİ</h2>
-                </div>
-                <div class="cover-highlights" id="cover-highlights">
-                    <h3>Bu Sayıda</h3>
-                    </div>
-            </div>
-
-            <div class="colophon-page">
-                <h1 class="colophon-title">İHTİSAS</h1>
-                <div class="colophon-subtitle">İlmî, Fikrî, Edebî, Siyasî Dergi</div>
-                
-                <div class="colophon-grid">
-                    <div class="c-box">
-                        <h4>İmtiyaz Sahibi</h4>
-                        <p class="name">Ahmet Yasin</p>
-                    </div>
-                    <div class="c-box">
-                        <h4>Sorumlu Müdür</h4>
-                        <p class="name">Yasin Hocaoğlu</p>
-                    </div>
-                    <div class="c-box">
-                        <h4>Yayın Periyodu ve Türü</h4>
-                        <p>Periyodik olmayan e-Dergi (Dijital Yayın)</p>
-                        <p>ISSN: (Başvuru Aşamasında)</p>
-                    </div>
-                    <div class="c-box">
-                        <h4>Grafik & Mizanpaj</h4>
-                        <p>İhtisas Dizgi Servisi (Akademik Şablon)</p>
-                    </div>
-                </div>
-
-                <div class="colophon-footer">
-                    <p>Dergimiz ihtisasdergi.web.app adresinde yayınlanmaktadır.<br>
-                    Yayınlanan makalelerin fikri sorumluluğu yazarlarına aittir.</p>
-                    <p style="margin-top: 15px; font-weight: bold; color: #1a1511;">İZMİR • 2026</p>
-                </div>
-            </div>
-
-            <div class="toc-page">
-                <h2>İçindekiler</h2>
-                <div class="toc-list" id="toc-container">
-                    </div>
-            </div>
-
-            <div id="articles-container">
-                </div>
-
+    <div class="page cover">
+        <h1 class="cover-title">İHTİSAS</h1>
+        <p class="cover-subtitle">Sosyal ve Fikri Meseleler Dergisi</p>
+        <div class="cover-footer">
+            Sayı: 01 | Nisan 2026 | İZMİR
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    <div class="page jenerik">
+        <div class="jenerik-content">
+            <h2>KÜNYE</h2>
+            <div class="jenerik-item"><b>İmtiyaz Sahibi</b> Dr. Öğr. Üyesi Ahmet Yasin KÜÇÜKTİRYAKİ</div>
+            <div class="jenerik-item"><b>Editör</b> Dr. Ahmet Yasin KÜÇÜKTİRYAKİ</div>
+            <div class="jenerik-item"><b>Tasarım ve Mizanpaj</b> Vibe Coding AI</div>
+            <div class="jenerik-item"><b>Yayın Yeri</b> İzmir / Türkiye</div>
+            <div class="jenerik-item"><b>İletişim</b> ihtisas.dergi@edu.tr</div>
+            <div class="jenerik-item" style="margin-top: 30px; font-size: 9pt;">
+                Nisan 2026 tarihinde İzmir'de hazırlanmıştır. <br> Tüm hakları saklıdır.
+            </div>
+        </div>
+        <div class="page-footer"></div>
+    </div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAhQPJiplyKn5hQQY3ZAWrEwU4n8NdEx2w",
-            authDomain: "ihtisasdergi.firebaseapp.com",
-            projectId: "ihtisasdergi",
-            storageBucket: "ihtisasdergi.firebasestorage.app",
-            messagingSenderId: "791201866171",
-            appId: "1:791201866171:web:9db75d685b6b02dddca49e",
-            measurementId: "G-KCV9BBMQ6E"
-        };
+    <div class="page contents">
+        <h2>İÇİNDEKİLER</h2>
+        <ul class="toc-list">
+            <li class="toc-item">
+                <span>Editörden</span>
+                <span class="toc-page-num">4</span>
+            </li>
+            <li class="toc-item">
+                <span>Hukuk ve Toplum Üzerine Notlar</span>
+                <span class="toc-page-num">8</span>
+            </li>
+            <li class="toc-item">
+                <span>Osmanlıca Belgelerde Sosyal Hayat</span>
+                <span class="toc-page-num">15</span>
+            </li>
+            <li class="toc-item">
+                <span>Karşılaştırmalı Hukuk Sistemleri</span>
+                <span class="toc-page-num">24</span>
+            </li>
+        </ul>
+        <div class="page-footer"></div>
+    </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    <div class="page" style="padding: 20mm;">
+        <h2 style="color: var(--primary-color);">Editörden</h2>
+        <p style="text-align: justify; line-height: 1.6;">
+            Değerli okurlar, "İhtisas" dergisinin bu ilk sayısında sizleri akademik bir titizlik ve dijital bir vizyonla selamlıyoruz. 
+            İzmir'den yola çıkan bu serüven, sosyal bilimlerin derinliklerine inmeyi amaçlamaktadır...
+        </p>
+        <div class="page-footer"></div>
+    </div>
 
-        // Paragraf Formatlayıcı (Kritik Sorun Çözücü)
-        // Eğer veritabanındaki metin <p> içermiyorsa, satır atlamalarından bölüp paragrafa çevirir.
-        function formatContent(text) {
-            if (!text) return "";
-            if (text.includes('<p>')) return text; 
-            return text.split('\n')
-                       .filter(p => p.trim() !== '')
-                       .map(p => `<p>${p.trim()}</p>`)
-                       .join('');
-        }
-
-        // Login İşlemi
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const btn = document.getElementById('loginBtn');
-            btn.innerText = "Giriş Yapılıyor...";
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            signInWithEmailAndPassword(auth, email, password).catch((error) => {
-                btn.innerText = "Sisteme Giriş Yap";
-                document.getElementById('login-error').innerText = "Hata: E-posta veya parola yanlış.";
-                document.getElementById('login-error').style.display = 'block';
-            });
-        });
-
-        // Auth Kontrolü
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('magazine-wrapper').style.display = 'block';
-                document.getElementById('ui-controls').style.display = 'block';
-                buildMagazine();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('magazine-wrapper').style.display = 'none';
-            }
-        });
-
-        async function buildMagazine() {
-            try {
-                const articlesRef = collection(db, "articles");
-                const q = query(articlesRef, orderBy("date", "desc")); 
-                const querySnapshot = await getDocs(q);
-
-                const tocContainer = document.getElementById('toc-container');
-                const articlesContainer = document.getElementById('articles-container');
-                const coverHighlights = document.getElementById('cover-highlights');
-                
-                const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-                const d = new Date();
-                document.getElementById('cover-date').innerText = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-
-                let articles = [];
-                querySnapshot.forEach((doc) => { articles.push(doc.data()); });
-
-                if (articles.length === 0) {
-                    document.getElementById('status-text').innerText = "Veritabanında makale yok.";
-                    return;
-                }
-
-                // 1. Kapağa Öne Çıkan Başlıkları Ekle (İlk 3 Makale)
-                const highlights = articles.slice(0, 3);
-                highlights.forEach(art => {
-                    coverHighlights.innerHTML += `<div class="cover-highlight-item">${art.title}</div>`;
-                });
-
-                // 2. Makaleleri ve İçindekileri Oluştur
-                articles.forEach((data, index) => {
-                    // Paged.js sayfa numaralandırması için benzersiz ID
-                    const articleId = `article-id-${index}`; 
-                    
-                    // İçindekiler Listesi Elemanı
-                    tocContainer.innerHTML += `
-                        <a href="#${articleId}" data-target="#${articleId}" class="toc-item-link">
-                            <div class="toc-text-block">
-                                <span class="toc-title">${data.title}</span>
-                                <span class="toc-author">${data.author || 'İsimsiz Yazar'}</span>
-                            </div>
-                            <div class="toc-leader"></div>
-                            <div class="toc-page-num"></div>
-                        </a>
-                    `;
-
-                    // Makale İçeriği (Formatlayıcı Fonksiyondan Geçirilmiş)
-                    const formattedText = formatContent(data.content);
-                    const imageHtml = data.image ? `<img src="${data.image}" class="article-image" alt="Makale Görseli">` : '';
-                    
-                    articlesContainer.innerHTML += `
-                        <div class="article" id="${articleId}">
-                            <div class="article-header">
-                                <div class="article-category">${data.category || 'ARAŞTIRMA'}</div>
-                                <h1 class="article-title">${data.title}</h1>
-                                <div class="article-author">${data.author || 'İsimsiz Yazar'}</div>
-                            </div>
-                            ${imageHtml}
-                            <div class="article-content">
-                                ${formattedText}
-                            </div>
-                        </div>
-                    `;
-                });
-
-                document.getElementById('status-text').innerText = "Dizgi motoru çalışıyor...";
-
-                // Paged.js'i güvenli bir şekilde tetikle (Hata Yakalamalı)
-                setTimeout(async () => {
-                    try {
-                        // Mevcut DOM'u okuyup Paged.js'e devrediyoruz
-                        await window.PagedPolyfill.preview();
-                        
-                        document.getElementById('status-text').innerText = "Dizgi tamamlandı. Çıktı hazır.";
-                        document.getElementById('status-text').style.color = "#27ae60";
-                        const printBtn = document.getElementById('print-btn');
-                        printBtn.disabled = false;
-                        printBtn.style.opacity = '1';
-                        
-                        // Orijinal wrapper'ı gizle, Paged.js kendi .pagedjs_pages yapısını kurar
-                        document.getElementById('magazine-wrapper').style.display = 'none';
-                    } catch (pagedError) {
-                        console.error(pagedError);
-                        document.getElementById('status-text').innerText = "Dizgi Hatası: Konsola bakınız.";
-                        document.getElementById('status-text').style.color = "red";
-                    }
-                }, 1000); // Görsellerin DOM'a tam yerleşmesi için 1 sn tolerans
-
-            } catch (error) {
-                console.error("Firebase Hatası:", error);
-                document.getElementById('status-text').innerText = "Veri çekilirken hata oluştu.";
-                document.getElementById('status-text').style.color = "red";
-            }
-        }
-    </script>
 </body>
 </html>
