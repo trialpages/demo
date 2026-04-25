@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İhtisas Dergisi - Profesyonel Dizgi Paneli V3</title>
+    <title>İhtisas Dergisi - Profesyonel Dizgi Paneli V4</title>
     
     <script>window.PagedConfig = { auto: false };</script>
     <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
@@ -14,19 +14,22 @@
         /* --- ARAYÜZ (BASKIDA GİZLENİR) --- */
         body { margin: 0; background-color: #f4f1ea; font-family: 'Merriweather', serif; color: #1a1a1a; }
         
-        #login-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #2c241e 0%, #1a1511 100%); color: #f4f1ea; }
+        #login-screen, #loading-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #2c241e 0%, #1a1511 100%); color: #f4f1ea; }
         #login-screen h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 5px; }
         .login-form { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 320px; margin-top: 20px;}
         .login-form input { padding: 14px; border: none; border-radius: 4px; font-family: inherit; font-size: 15px; }
         .login-form button { background-color: #c8b9a6; color: #2c241e; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
         
-        #ui-controls { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #fff; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 8px; border-left: 5px solid #27ae60; display: none; text-align: center; }
-        #ui-controls p { margin: 0 0 10px 0; font-weight: bold; color: #333; }
+        #loading-screen { display: none; background: #fbfaf8; color: #1a1511; font-family: 'Playfair Display', serif; font-size: 24pt; text-align: center; }
+
+        /* Yazdır Butonu (Dizgi sonrası eklenecek) */
+        #ui-controls { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #fff; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 8px; border-left: 5px solid #27ae60; text-align: center; }
+        #ui-controls p { margin: 0 0 10px 0; font-weight: bold; color: #333; font-family: sans-serif; font-size: 14px; }
         #ui-controls button { background: #2c241e; color: white; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: bold; }
         .print-hint { font-size: 11px; color: #666; margin-top: 8px; display: block; font-family: sans-serif; }
 
         @media print {
-            #ui-controls, #login-screen { display: none !important; }
+            #ui-controls, #login-screen, #loading-screen { display: none !important; }
             body { background-color: #fff; }
         }
 
@@ -35,7 +38,7 @@
         @page:first { margin: 0; @bottom-center { content: none; } }
         @page:nth(2) { margin: 0; @bottom-center { content: none; } }
 
-        /* 1. KAPAK SAYFASI (Garantili Baskı Yöntemi) */
+        /* 1. KAPAK SAYFASI (Garantili Baskı Yöntemi: Arka plan yerine img etiketi) */
         .cover-page { position: relative; height: 100vh; overflow: hidden; page-break-after: always; padding: 60px 40px; box-sizing: border-box; text-align: center; }
         .cover-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.35); }
         .cover-content { position: relative; z-index: 1; color: #f9f6f0; height: 100%; display: flex; flex-direction: column; }
@@ -89,14 +92,14 @@
         .article-content p:first-of-type::first-letter { float: left; font-size: 48pt; line-height: 40pt; padding-right: 10px; margin-top: 4px; font-family: 'Playfair Display', serif; color: #2c241e; font-weight: bold; }
         .article-content h2, .article-content h3 { font-family: 'Playfair Display', serif; color: #1a1511; column-span: none; break-after: avoid; margin-top: 25px; margin-bottom: 10px; }
 
-        #magazine-source { display: none; } /* Orijinal veriyi gizle */
+        #magazine-wrapper { display: none; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <h1>İHTİSAS Paneli</h1>
-        <p style="opacity: 0.8; font-style: italic;">Akademik Mizanpaj Motoru V3</p>
+        <p style="opacity: 0.8; font-style: italic;">Akademik Mizanpaj Motoru V4</p>
         <div class="login-form">
             <input type="email" id="email" placeholder="E-posta Adresi" required>
             <input type="password" id="password" placeholder="Parola" required>
@@ -105,19 +108,23 @@
         <p id="login-error" style="color: #ffcccc; margin-top: 15px; display: none; text-align: center;"></p>
     </div>
 
-    <div id="magazine-source">
+    <div id="loading-screen">
+        Makaleler veritabanından çekiliyor, mizanpaj hazırlanıyor... Lütfen bekleyin.
+    </div>
+
+    <div id="magazine-wrapper">
         
         <div class="cover-page">
-            <img class="cover-bg-image" src="https://images.unsplash.com/photo-1568667256549-094345857637?w=800&auto=format&fit=crop&q=60" alt="Kapak">
+            <img class="cover-bg-image" src="https://images.unsplash.com/photo-1568667256549-094345857637?w=800&auto=format&fit=crop&q=60" alt="Kapak Arka Plan">
             <div class="cover-content">
-                <div class="issue-info">Nisan 2026 • Sayı: 1 • İzmir</div>
+                <div class="issue-info" id="issue-date-cover">Nisan 2026 • Sayı: 1 • İzmir</div>
                 <div class="cover-header">
                     <h1>İHTİSAS</h1>
                     <h2>İLMÎ, FİKRÎ, EDEBÎ, SİYASÎ DERGİ</h2>
                 </div>
                 <div class="cover-highlights" id="cover-highlights">
                     <h3>Bu Sayıda</h3>
-                </div>
+                    </div>
             </div>
         </div>
 
@@ -133,7 +140,7 @@
             </div>
 
             <div class="c-footer">Yayınlanan makalelerin fikri sorumluluğu yazarlarına aittir.</div>
-            <div class="c-location">İZMİR • NİSAN 2026<br><span style="font-size:12pt; font-weight:normal;">Sayı: 1</span></div>
+            <div class="c-location" id="issue-date-colophon">İZMİR • NİSAN 2026<br><span style="font-size:12pt; font-weight:normal;">Sayı: 1</span></div>
         </div>
 
         <div class="toc-page">
@@ -163,6 +170,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Makale metnini formatla (Paragraflara böl)
         function formatContent(text) {
             if (!text) return "";
             if (text.includes('<p>')) return text; 
@@ -182,14 +190,12 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('loading-screen').style.display = 'flex';
                 buildMagazine();
             }
         });
 
         async function buildMagazine() {
-            // Ekrana geçici bir yükleniyor yazısı bas (Paged.js DOM'u ele geçireceği için direkt body'e basıyoruz)
-            document.body.innerHTML += `<div id="temp-loading" style="display:flex; height:100vh; align-items:center; justify-content:center; font-family:serif; font-size:24px; color:#1a1511;">Veritabanından makaleler çekiliyor, lütfen bekleyin...</div>`;
-
             try {
                 const q = query(collection(db, "articles"), orderBy("date", "desc")); 
                 const querySnapshot = await getDocs(q);
@@ -198,9 +204,18 @@
                 querySnapshot.forEach(doc => articles.push(doc.data()));
 
                 if (articles.length === 0) {
-                    document.getElementById('temp-loading').innerText = "Veritabanında makale bulunamadı.";
+                    document.getElementById('loading-screen').innerText = "Veritabanında makale bulunamadı.";
                     return;
                 }
+
+                // Tarihi dinamik ayarla
+                const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+                const today = new Date();
+                const monthStr = monthNames[today.getMonth()];
+                const yearStr = today.getFullYear();
+                
+                document.getElementById('issue-date-cover').innerText = `${monthStr} ${yearStr} • Sayı: 1 • İzmir`;
+                document.getElementById('issue-date-colophon').innerHTML = `İZMİR • ${monthStr.toUpperCase()} ${yearStr}<br><span style="font-size:12pt; font-weight:normal;">Sayı: 1</span>`;
 
                 // İlk 3 makaleyi kapağa ekle
                 const coverHighlights = document.getElementById('cover-highlights');
@@ -214,7 +229,7 @@
                 articles.forEach((data, index) => {
                     const articleId = `article-${index}`;
                     
-                    // İçindekiler
+                    // İçindekiler'e Ekle
                     tocContainer.innerHTML += `
                         <a href="#${articleId}" class="toc-item-link">
                             <div class="toc-text-block">
@@ -226,7 +241,7 @@
                         </a>
                     `;
 
-                    // Makale
+                    // Makaleyi Ekle
                     const imageHtml = data.image ? `<img src="${data.image}" class="article-image">` : '';
                     articlesContainer.innerHTML += `
                         <div class="article" id="${articleId}">
@@ -241,44 +256,26 @@
                     `;
                 });
 
-                // Yükleniyor yazısını güncelle
-                document.getElementById('temp-loading').innerText = "Sayfalar diziliyor, mizanpaj ayarlanıyor...";
+                // Veriler hazır, DOM'a basılması için dergi iskeletini görünür yapıyoruz
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('magazine-wrapper').style.display = 'block';
 
-                // Paged.js'i Başlat
-                setTimeout(async () => {
-                    try {
-                        let paged = new window.Paged.Previewer();
-                        // #magazine-source içindeki HTML'i alıp, otomatik sayfalandırıp body'e yazar
-                        await paged.preview(document.getElementById('magazine-source').innerHTML, [''], document.body);
-                        
-                        // Yükleniyor yazısını kaldır
-                        const tempLoading = document.getElementById('temp-loading');
-                        if(tempLoading) tempLoading.remove();
-
-                        // KRİTİK: Butonu Paged.js işlemi BİTTİKTEN sonra ekrana zorla ekliyoruz
-                        const uiHtml = `
-                            <div id="ui-controls" style="display:block;">
-                                <p>Dizgi Tamamlandı</p>
-                                <button id="final-print-btn">🖨️ PDF Olarak İndir</button>
-                                <span class="print-hint">(Açılan ekranda 'PDF Olarak Kaydet'i seçiniz)</span>
-                            </div>
-                        `;
-                        document.body.insertAdjacentHTML('beforeend', uiHtml);
-                        
-                        // Butonun yazdırma olayını bağla
-                        document.getElementById('final-print-btn').addEventListener('click', () => {
-                            window.print();
-                        });
-
-                    } catch (err) {
-                        console.error(err);
-                        document.getElementById('temp-loading').innerText = "Dizgi Hatası!";
-                    }
-                }, 1000);
+                // KRİTİK: Sağlam çalışan V2 dizgi motorunu tetikliyoruz
+                await window.PagedPolyfill.preview();
+                
+                // Dizgi bittikten sonra sayfanın sağ altına butonu ekliyoruz
+                const printBtnHtml = `
+                    <div id="ui-controls">
+                        <p>Dizgi Tamamlandı</p>
+                        <button onclick="window.print()">🖨️ PDF Olarak İndir</button>
+                        <span class="print-hint">(Açılan ekranda 'PDF Olarak Kaydet'i seçiniz)</span>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', printBtnHtml);
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('temp-loading').innerText = "Veri çekme hatası!";
+                document.getElementById('loading-screen').innerText = "Veri çekme hatası! Konsolu kontrol ediniz.";
             }
         }
     </script>
