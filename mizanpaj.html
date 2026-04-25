@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İhtisas Dergisi - PDF Çıktı Modülü</title>
+    
+    <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* A4 Dergi Mizanpajı Ayarları */
+        @page {
+            size: A4;
+            margin: 25mm 20mm;
+            @bottom-center {
+                content: counter(page);
+                font-family: 'Merriweather', serif;
+                font-size: 10pt;
+                color: #555;
+            }
+        }
+
+        /* Kapak Sayfasında Numara Olmasın */
+        @page:first {
+            margin: 0;
+            @bottom-center { content: none; }
+        }
+
+        /* Genel Tipografi */
+        body {
+            font-family: 'Merriweather', serif;
+            color: #1a1a1a;
+            line-height: 1.7;
+            background: #fff;
+        }
+
+        /* Kapak Tasarımı */
+        .cover-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            text-align: center;
+            page-break-after: always;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        .cover-page h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 64pt;
+            margin: 0;
+            letter-spacing: 5px;
+        }
+        .cover-page h2 {
+            font-size: 24pt;
+            font-weight: 300;
+            margin-top: 10px;
+            border-top: 2px solid #ecf0f1;
+            padding-top: 20px;
+        }
+
+        /* İçindekiler Sayfası */
+        .toc-page {
+            page-break-after: always;
+        }
+        .toc-page h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28pt;
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14pt;
+            margin-bottom: 15px;
+        }
+        .toc-title { font-weight: bold; }
+        .toc-author { font-style: italic; color: #555; font-size: 12pt; }
+
+        /* Makale Tasarımı (Çift Sütun) */
+        .article {
+            page-break-before: always;
+        }
+        .article-header {
+            text-align: center;
+            margin-bottom: 30px;
+            column-span: all; /* Başlık sütunları böler, tam genişlik kaplar */
+        }
+        .article-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26pt;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        .article-author {
+            font-size: 14pt;
+            font-style: italic;
+            color: #444;
+        }
+        .article-category {
+            display: inline-block;
+            background: #eee;
+            padding: 3px 10px;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .article-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            column-span: all;
+            border-bottom: 3px solid #2c3e50;
+        }
+        .article-content {
+            column-count: 2; /* 2 Sütunlu Akademik Dizgi */
+            column-gap: 10mm;
+            text-align: justify;
+            font-size: 10.5pt;
+        }
+        
+        /* İlk harfi büyütme (Drop Cap) */
+        .article-content > p:first-of-type::first-letter {
+            float: left;
+            font-size: 40pt;
+            line-height: 35pt;
+            padding-right: 8px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Ekranda görünen kontrol butonu (PDF'de çıkmaz) */
+        @media print {
+            #ui-controls { display: none !important; }
+        }
+        #ui-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: #fff;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        #ui-controls button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-controls">
+        <p style="margin:0 0 10px 0; font-family:sans-serif; font-size:14px;" id="status-text">Veriler yükleniyor...</p>
+        <button onclick="window.print()">PDF Olarak Kaydet</button>
+    </div>
+
+    <div id="magazine-content">
+        
+        <div class="cover-page">
+            <h1>İHTİSAS</h1>
+            <h2>Sosyal ve Fikri Araştırmalar</h2>
+            <p style="margin-top:50px; font-size:16pt;" id="issue-date-display"></p>
+        </div>
+
+        <div class="toc-page">
+            <h2>İçindekiler</h2>
+            <div id="toc-container"></div>
+        </div>
+
+        <div id="articles-container"></div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Senin konfigürasyonun
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhQPJiplyKn5hQQY3ZAWrEwU4n8NdEx2w",
+            authDomain: "ihtisasdergi.firebaseapp.com",
+            projectId: "ihtisasdergi",
+            storageBucket: "ihtisasdergi.firebasestorage.app",
+            messagingSenderId: "791201866171",
+            appId: "1:791201866171:web:9db75d685b6b02dddca49e",
+            measurementId: "G-KCV9BBMQ6E"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadMagazine() {
+            try {
+                const articlesRef = collection(db, "articles");
+                // Makaleleri tarihe göre sıralayarak çek
+                const q = query(articlesRef, orderBy("date", "desc")); 
+                const querySnapshot = await getDocs(q);
+
+                const tocContainer = document.getElementById('toc-container');
+                const articlesContainer = document.getElementById('articles-container');
+                
+                // Güncel tarihi kapağa yazdır
+                const today = new Date();
+                document.getElementById('issue-date-display').innerText = today.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) + " Sayısı";
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    // İçindekiler listesine ekle
+                    tocContainer.innerHTML += `
+                        <div class="toc-item">
+                            <div>
+                                <div class="toc-title">${data.title}</div>
+                                <div class="toc-author">${data.author || 'İsimsiz Yazar'} - <span style="font-size:10pt">${data.category}</span></div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Makale HTML yapısını oluştur
+                    const imageHtml = data.image ? `<img src="${data.image}" class="article-image" alt="Makale Görseli">` : '';
+                    
+                    articlesContainer.innerHTML += `
+                        <div class="article">
+                            <div class="article-header">
+                                <div class="article-category">${data.category || 'Genel'}</div>
+                                <h1 class="article-title">${data.title}</h1>
+                                <div class="article-author">${data.author || 'İsimsiz Yazar'}</div>
+                                <div style="font-size:10pt; color:#777;">${data.date}</div>
+                            </div>
+                            ${imageHtml}
+                            <div class="article-content">
+                                ${data.content}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('status-text').innerText = "Dizgi tamamlandı. Çıktı alabilirsiniz.";
+
+            } catch (error) {
+                console.error("Veri çekme hatası:", error);
+                document.getElementById('status-text').innerText = "Hata: Veriler çekilemedi.";
+            }
+        }
+
+        // Paged.js yüklendikten hemen önce Firestore verilerini DOM'a basıyoruz
+        window.addEventListener('DOMContentLoaded', () => {
+            loadMagazine();
+        });
+    </script>
+</body>
+</html>
