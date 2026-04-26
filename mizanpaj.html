@@ -3,16 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İhtisas Dergisi - Profesyonel Dizgi Paneli V4</title>
+    <title>İhtisas Dergisi - Profesyonel Dizgi Paneli V5</title>
     
-    <script>window.PagedConfig = { auto: false };</script>
+    <script>
+        window.PagedConfig = { auto: false };
+    </script>
     <script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+
+    <script>
+        // Paged.js'in kronik sorunlarını (Buton silinmesi ve Sayfa 0 hatası) çözen Özel Mimarimiz
+        class CustomMagazineHandler extends Paged.Handler {
+            constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+
+            // Tüm dizgi işlemi bittikten sonra çalışır
+            afterRendered(pages) {
+                // 1. İÇİNDEKİLER 0 HATASININ KESİN ÇÖZÜMÜ: Sayfa numaralarını manuel hesapla ve bas
+                const tocLinks = document.querySelectorAll('.toc-item-link');
+                tocLinks.forEach(link => {
+                    const targetId = link.getAttribute('href').replace('#', '');
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        const page = targetElement.closest('.pagedjs_page');
+                        if (page) {
+                            const pageNumber = page.getAttribute('data-page-number');
+                            link.querySelector('.toc-page-num').innerText = pageNumber;
+                        }
+                    }
+                });
+
+                // 2. KAYBOLMAYAN BUTON: Paged.js işini bitirince butonu ekrana zorla iğnele
+                const btnHtml = `
+                    <div id="ui-controls" style="display:block; position:fixed; bottom:20px; right:20px; z-index:99999; background:#fff; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,0.4); border-radius:8px; border-left:5px solid #27ae60; text-align:center;">
+                        <p style="margin: 0 0 10px 0; font-weight: bold; color: #333; font-family: sans-serif; font-size: 14px;">Dizgi Tamamlandı</p>
+                        <button onclick="window.print()" style="background: #2c241e; color: white; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: bold; transition: 0.3s;">🖨️ PDF Olarak İndir</button>
+                        <span style="font-size: 11px; color: #666; margin-top: 8px; display: block; font-family: sans-serif;">(Açılan ekranda 'PDF Olarak Kaydet'i seçiniz)</span>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', btnHtml);
+            }
+        }
+        Paged.registerHandlers(CustomMagazineHandler);
+    </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 
     <style>
-        /* --- ARAYÜZ (BASKIDA GİZLENİR) --- */
-        body { margin: 0; background-color: #f4f1ea; font-family: 'Merriweather', serif; color: #1a1a1a; }
+        /* --- ARAYÜZ --- */
+        body { margin: 0; background-color: #fdfbf7; font-family: 'Merriweather', serif; color: #1a1a1a; }
         
         #login-screen, #loading-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #2c241e 0%, #1a1511 100%); color: #f4f1ea; }
         #login-screen h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 5px; }
@@ -20,25 +57,43 @@
         .login-form input { padding: 14px; border: none; border-radius: 4px; font-family: inherit; font-size: 15px; }
         .login-form button { background-color: #c8b9a6; color: #2c241e; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; }
         
-        #loading-screen { display: none; background: #fbfaf8; color: #1a1511; font-family: 'Playfair Display', serif; font-size: 24pt; text-align: center; }
-
-        /* Yazdır Butonu (Dizgi sonrası eklenecek) */
-        #ui-controls { position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #fff; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-radius: 8px; border-left: 5px solid #27ae60; text-align: center; }
-        #ui-controls p { margin: 0 0 10px 0; font-weight: bold; color: #333; font-family: sans-serif; font-size: 14px; }
-        #ui-controls button { background: #2c241e; color: white; border: none; padding: 12px 25px; font-size: 16px; cursor: pointer; border-radius: 4px; width: 100%; font-weight: bold; }
-        .print-hint { font-size: 11px; color: #666; margin-top: 8px; display: block; font-family: sans-serif; }
+        #loading-screen { display: none; background: #fdfbf7; color: #1a1511; font-family: 'Playfair Display', serif; font-size: 20pt; text-align: center; }
 
         @media print {
             #ui-controls, #login-screen, #loading-screen { display: none !important; }
-            body { background-color: #fff; }
         }
 
         /* --- MİZANPAJ AYARLARI --- */
-        @page { size: A4; margin: 25mm 22mm; @bottom-center { content: counter(page); font-family: 'Merriweather', serif; font-size: 10pt; color: #333; } }
-        @page:first { margin: 0; @bottom-center { content: none; } }
-        @page:nth(2) { margin: 0; @bottom-center { content: none; } }
+        /* Zemin rengi matbaa kalitesinde krem/sarımtırak (#fdfbf7) yapıldı */
+        .pagedjs_page { background-color: #fdfbf7 !important; }
 
-        /* 1. KAPAK SAYFASI (Garantili Baskı Yöntemi: Arka plan yerine img etiketi) */
+        @page { 
+            size: A4; 
+            margin: 25mm 22mm; 
+            
+            /* Üst Bilgi (Header) */
+            @top-center { 
+                content: "İHTİSAS DERGİSİ • SAYI: 1 • NİSAN 2026"; 
+                font-family: 'Merriweather', serif; 
+                font-size: 8pt; 
+                color: #888; 
+                letter-spacing: 2px; 
+            }
+            
+            /* Alt Bilgi (Footer / Sayfa No) */
+            @bottom-center { 
+                content: counter(page); 
+                font-family: 'Merriweather', serif; 
+                font-size: 10pt; 
+                color: #333; 
+            } 
+        }
+        
+        /* Kapak ve Jenerikte Üst/Alt bilgi olmasın */
+        @page:first { @top-center { content: none; } @bottom-center { content: none; } }
+        @page:nth(2) { @top-center { content: none; } @bottom-center { content: none; } }
+
+        /* 1. KAPAK SAYFASI */
         .cover-page { position: relative; height: 100vh; overflow: hidden; page-break-after: always; padding: 60px 40px; box-sizing: border-box; text-align: center; }
         .cover-bg-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; filter: brightness(0.35); }
         .cover-content { position: relative; z-index: 1; color: #f9f6f0; height: 100%; display: flex; flex-direction: column; }
@@ -53,8 +108,8 @@
         .cover-highlights h3 { margin: 0 0 15px 0; font-family: 'Playfair Display', serif; font-size: 14pt; color: #c8b9a6; letter-spacing: 2px; text-transform: uppercase; }
         .cover-highlight-item { font-size: 13pt; margin-bottom: 10px; line-height: 1.4; font-style: italic; }
 
-        /* 2. JENERİK (Sıkı ve Merkezi Tasarım) */
-        .colophon-page { height: 100vh; background-color: #fbfaf8; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box; padding: 40mm 20mm; }
+        /* 2. JENERİK */
+        .colophon-page { height: 100vh; page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; box-sizing: border-box; padding: 40mm 20mm; }
         
         .c-logo { font-family: 'Playfair Display', serif; font-size: 45pt; color: #1a1511; margin: 0; line-height: 1; letter-spacing: 4px; }
         .c-sublogo { font-size: 11pt; color: #555; text-transform: uppercase; letter-spacing: 3px; margin-top: 10px; }
@@ -67,7 +122,8 @@
         .c-location { margin-top: 30px; font-family: 'Playfair Display', serif; font-size: 16pt; font-weight: bold; color: #1a1511; }
 
         /* 3. İÇİNDEKİLER */
-        .toc-page { page-break-after: always; padding-top: 20px; }
+        /* Boş sayfa oluşmasını engellemek için page-break-before optimize edildi */
+        .toc-page { padding-top: 20px; page-break-after: always; }
         .toc-page h2 { font-family: 'Playfair Display', serif; font-size: 32pt; text-align: center; margin-bottom: 50px; color: #1a1511; letter-spacing: 2px; }
         
         .toc-item-link { display: flex; align-items: baseline; text-decoration: none; color: inherit; margin-bottom: 18px; width: 100%; }
@@ -76,9 +132,9 @@
         .toc-author { font-style: italic; font-size: 11pt; color: #666; }
         
         .toc-leader { flex-grow: 1; border-bottom: 2px dotted #aaa; margin: 0 15px; position: relative; top: -4px; }
-        .toc-page-num::after { content: target-counter(attr(href), page); font-family: 'Playfair Display', serif; font-size: 16pt; font-weight: bold; color: #1a1511; }
+        .toc-page-num { font-family: 'Playfair Display', serif; font-size: 16pt; font-weight: bold; color: #1a1511; }
 
-        /* 4. MAKALELER */
+        /* 4. MAKALELER & MANŞET KUTULARI */
         .article { page-break-before: always; }
         .article-header { text-align: center; margin-bottom: 40px; column-span: all; padding: 0 15mm; }
         .article-category { display: inline-block; font-family: sans-serif; font-size: 9pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: #777; border-top: 1px solid #777; border-bottom: 1px solid #777; padding: 4px 0; margin-bottom: 20px; }
@@ -92,6 +148,22 @@
         .article-content p:first-of-type::first-letter { float: left; font-size: 48pt; line-height: 40pt; padding-right: 10px; margin-top: 4px; font-family: 'Playfair Display', serif; color: #2c241e; font-weight: bold; }
         .article-content h2, .article-content h3 { font-family: 'Playfair Display', serif; color: #1a1511; column-span: none; break-after: avoid; margin-top: 25px; margin-bottom: 10px; }
 
+        /* Yeni: Çarpıcı Manşet Kutusu (Pull-Quote) */
+        .pull-quote {
+            column-span: all; /* Her iki sütunu kapla */
+            font-family: 'Playfair Display', serif;
+            font-size: 16pt;
+            font-style: italic;
+            color: #4a3b32;
+            text-align: center;
+            margin: 30px 10%;
+            padding: 20px 0;
+            border-top: 3px solid #c8b9a6;
+            border-bottom: 3px solid #c8b9a6;
+            line-height: 1.5;
+            background-color: transparent;
+        }
+
         #magazine-wrapper { display: none; }
     </style>
 </head>
@@ -99,7 +171,7 @@
 
     <div id="login-screen">
         <h1>İHTİSAS Paneli</h1>
-        <p style="opacity: 0.8; font-style: italic;">Akademik Mizanpaj Motoru V4</p>
+        <p style="opacity: 0.8; font-style: italic;">Akademik Mizanpaj Motoru V5</p>
         <div class="login-form">
             <input type="email" id="email" placeholder="E-posta Adresi" required>
             <input type="password" id="password" placeholder="Parola" required>
@@ -109,7 +181,7 @@
     </div>
 
     <div id="loading-screen">
-        Makaleler veritabanından çekiliyor, mizanpaj hazırlanıyor... Lütfen bekleyin.
+        Makaleler çekiliyor, sayfa numaraları hesaplanıyor... Lütfen bekleyin.
     </div>
 
     <div id="magazine-wrapper">
@@ -124,7 +196,7 @@
                 </div>
                 <div class="cover-highlights" id="cover-highlights">
                     <h3>Bu Sayıda</h3>
-                    </div>
+                </div>
             </div>
         </div>
 
@@ -170,11 +242,35 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Makale metnini formatla (Paragraflara böl)
+        // Dinamik Manşet (Pull Quote) çıkaran Gelişmiş Formatlayıcı
         function formatContent(text) {
             if (!text) return "";
-            if (text.includes('<p>')) return text; 
-            return text.split('\n').filter(p => p.trim() !== '').map(p => `<p>${p.trim()}</p>`).join('');
+            
+            // Eğer veri zaten HTML ise <p> etiketlerini temizleyip diziye al, değilse satır atlamalarından böl
+            let isHtml = text.includes('<p>');
+            let rawParagraphs = isHtml ? text.match(/<p>(.*?)<\/p>/g).map(p => p.replace(/<\/?p>/g, '')) : text.split('\n').filter(p => p.trim() !== '');
+            
+            let formatted = [];
+            let pullQuoteInserted = false;
+
+            for (let i = 0; i < rawParagraphs.length; i++) {
+                let pText = rawParagraphs[i].trim();
+                if (pText === '') continue;
+
+                // Makalenin 3. veya 4. paragrafında, dikkat çekici uzunlukta bir cümle varsa onu MANŞET yap
+                if (!pullQuoteInserted && i >= 2 && i <= 4 && pText.length > 80) {
+                    let sentences = pText.split('. ');
+                    if (sentences.length > 0 && sentences[0].length > 40) {
+                        // Manşeti ekle (cümle sonuna nokta koyarak)
+                        formatted.push(`<div class="pull-quote">“${sentences[0]}.”</div>`);
+                        pullQuoteInserted = true;
+                    }
+                }
+                
+                // Normal paragrafı ekle
+                formatted.push(`<p>${pText}</p>`);
+            }
+            return formatted.join('');
         }
 
         document.getElementById('loginBtn').addEventListener('click', () => {
@@ -217,7 +313,6 @@
                 document.getElementById('issue-date-cover').innerText = `${monthStr} ${yearStr} • Sayı: 1 • İzmir`;
                 document.getElementById('issue-date-colophon').innerHTML = `İZMİR • ${monthStr.toUpperCase()} ${yearStr}<br><span style="font-size:12pt; font-weight:normal;">Sayı: 1</span>`;
 
-                // İlk 3 makaleyi kapağa ekle
                 const coverHighlights = document.getElementById('cover-highlights');
                 articles.slice(0, 3).forEach(art => {
                     coverHighlights.innerHTML += `<div class="cover-highlight-item">${art.title}</div>`;
@@ -229,7 +324,6 @@
                 articles.forEach((data, index) => {
                     const articleId = `article-${index}`;
                     
-                    // İçindekiler'e Ekle
                     tocContainer.innerHTML += `
                         <a href="#${articleId}" class="toc-item-link">
                             <div class="toc-text-block">
@@ -237,11 +331,9 @@
                                 <span class="toc-author">${data.author || 'İsimsiz Yazar'}</span>
                             </div>
                             <div class="toc-leader"></div>
-                            <div class="toc-page-num"></div>
-                        </a>
+                            <div class="toc-page-num">...</div> </a>
                     `;
 
-                    // Makaleyi Ekle
                     const imageHtml = data.image ? `<img src="${data.image}" class="article-image">` : '';
                     articlesContainer.innerHTML += `
                         <div class="article" id="${articleId}">
@@ -256,22 +348,13 @@
                     `;
                 });
 
-                // Veriler hazır, DOM'a basılması için dergi iskeletini görünür yapıyoruz
                 document.getElementById('loading-screen').style.display = 'none';
                 document.getElementById('magazine-wrapper').style.display = 'block';
 
-                // KRİTİK: Sağlam çalışan V2 dizgi motorunu tetikliyoruz
+                // Dizgi Motorunu Çalıştır
                 await window.PagedPolyfill.preview();
                 
-                // Dizgi bittikten sonra sayfanın sağ altına butonu ekliyoruz
-                const printBtnHtml = `
-                    <div id="ui-controls">
-                        <p>Dizgi Tamamlandı</p>
-                        <button onclick="window.print()">🖨️ PDF Olarak İndir</button>
-                        <span class="print-hint">(Açılan ekranda 'PDF Olarak Kaydet'i seçiniz)</span>
-                    </div>
-                `;
-                document.body.insertAdjacentHTML('beforeend', printBtnHtml);
+                // (Not: Numaralandırma ve Buton ekleme işlemi sayfanın en üstündeki CustomMagazineHandler içinde otomatik yapılmaktadır.)
 
             } catch (error) {
                 console.error(error);
