@@ -3,55 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>VibeCoder WParty (Native Mobile Edition)</title>
+    <title>WParty - Senkronize İzle & Sohbet Et</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* --- Tailwind Renkleri ve Modern Reset --- */
+        /* --- VibeCoder "Neon Party" Teması (Tailwind Esintili) --- */
         :root {
-            --bg-color: #0f172a; /* Koyu tema arkaplan (Video ile bütünlük) */
-            --surface-color: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --primary: #ec4899; /* Canlı bir pembe/mor tonu */
+            --bg-base: #020617;      /* Slate 950 - Derin siyah/lacivert */
+            --bg-surface: #0f172a;   /* Slate 900 */
+            --bg-glass: rgba(15, 23, 42, 0.7);
+            --primary: #ec4899;      /* Pink 500 */
             --primary-hover: #db2777;
-            --success: #10b981;
-            --chat-me: #fce7f3;
-            --chat-other: #f1f5f9;
-            --border: #e2e8f0;
+            --secondary: #8b5cf6;    /* Violet 500 */
+            --success: #10b981;      /* Emerald 500 */
+            --text-main: #f8fafc;    /* Slate 50 */
+            --text-muted: #94a3b8;   /* Slate 400 */
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
 
-        /* Vücut tamamen kilitli, kaydırma yok */
-        body, html { height: 100%; width: 100%; overflow: hidden; background-color: var(--bg-color); touch-action: manipulation; }
+        body, html { 
+            height: 100%; width: 100%; 
+            background-color: var(--bg-base); 
+            color: var(--text-main);
+            overflow: hidden; 
+            touch-action: manipulation; 
+        }
 
-        /* --- ANA UYGULAMA KAPSAYICISI (VisualViewport ile boyutlanacak) --- */
+        /* --- ANA UYGULAMA KAPSAYICISI --- */
         #app-root {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             display: flex; flex-direction: column;
             width: 100%; max-width: 600px; margin: 0 auto;
-            background: var(--bg-color); overflow: hidden;
+            background: var(--bg-base); 
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
 
         /* =========================================
-           1. LOBİ (KURULUM EKRANI)
+           1. LOBİ (KURULUM & DAVET EKRANI)
            ========================================= */
         #lobby-screen {
             flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background-color: var(--surface-color); padding: 2rem; z-index: 50;
+            background: radial-gradient(circle at top, var(--bg-surface), var(--bg-base)); 
+            padding: 2rem; z-index: 50;
         }
-        .logo { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; letter-spacing: -1px; }
-        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; text-align: center; }
         
-        .lobby-card { width: 100%; background: #f8fafc; border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .glow-logo {
+            font-size: 3rem; font-weight: 900; 
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem; letter-spacing: -2px;
+            filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.4));
+        }
+        .subtitle { color: var(--text-muted); font-size: 1rem; margin-bottom: 2.5rem; text-align: center; }
         
-        .input-style { width: 100%; padding: 0.85rem 1rem; border: 1px solid var(--border); border-radius: 0.75rem; font-size: 1rem; outline: none; transition: 0.2s; }
-        .input-style:focus { border-color: var(--primary); }
-        .btn { width: 100%; padding: 0.85rem; border: none; border-radius: 0.75rem; background: var(--primary); color: white; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .btn-success { background: var(--success); }
+        .lobby-card { 
+            width: 100%; background: var(--bg-glass); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border); border-radius: 1.5rem; 
+            padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .btn { 
+            width: 100%; padding: 1rem; border: none; border-radius: 1rem; 
+            font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: all 0.2s ease; 
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3); }
+        .btn-success { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
+        .btn-outline { background: transparent; color: var(--text-main); border: 1px solid var(--border); }
         
-        #code-display { font-family: monospace; font-size: 2.5rem; font-weight: bold; color: var(--primary); text-align: center; letter-spacing: 5px; padding: 1rem; background: var(--chat-me); border-radius: 0.75rem; margin: 1rem 0;}
+        #invite-link-display {
+            background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 0.75rem;
+            font-family: monospace; font-size: 0.9rem; color: var(--primary);
+            text-align: center; word-break: break-all; border: 1px dashed var(--border);
+        }
 
         /* =========================================
            2. VİDEO BÖLÜMÜ (ÜSTTE SABİT, 16:9)
@@ -60,66 +89,102 @@
 
         #video-section {
             width: 100%;
-            aspect-ratio: 16 / 9; /* Altın oran, mobilde kusursuz boyut */
-            flex-shrink: 0; /* Klavye açılsa da ASLA EZİLMEZ */
+            aspect-ratio: 16 / 9; /* Asla bozulmaz */
+            flex-shrink: 0; /* Klavye açılsa da ezilmez */
             background-color: #000; position: relative;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 10;
         }
         #native-video { width: 100%; height: 100%; object-fit: contain; }
         #yt-wrapper { width: 100%; height: 100%; }
 
-        /* Mobil Auto-play Güvenlik Kalkanı (Dokunmaya zorlar) */
         #play-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.7); color: white; display: none;
-            flex-direction: column; align-items: center; justify-content: center; z-index: 20;
-            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            color: white; display: none; flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 20; cursor: pointer; animation: pulse 2s infinite;
         }
-        .play-icon { font-size: 3rem; margin-bottom: 0.5rem; color: var(--primary); }
+        @keyframes pulse { 0% { background: rgba(0,0,0,0.85); } 50% { background: rgba(236,72,153,0.1); } 100% { background: rgba(0,0,0,0.85); } }
+        
+        .play-icon { font-size: 4rem; color: var(--primary); margin-bottom: 1rem; text-shadow: 0 0 20px var(--primary); }
 
-        #video-placeholder { color: rgba(255,255,255,0.5); font-size: 0.85rem; text-align: center; padding: 1rem; }
+        #video-placeholder { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;}
+        .placeholder-icon { font-size: 2.5rem; opacity: 0.5; }
 
         /* =========================================
            3. SOHBET BÖLÜMÜ (ESNEK & KAYDIRILABİLİR)
            ========================================= */
         #chat-section {
-            flex: 1; /* Videodan arta kalan tüm boşluğu alır */
+            flex: 1; 
             display: flex; flex-direction: column;
-            background-color: var(--surface-color);
-            border-radius: 1.5rem 1.5rem 0 0; /* Modern görünüm için üst köşeleri yuvarlat */
-            margin-top: -1rem; /* Video ile hafif iç içe geçsin */
+            background: var(--bg-surface);
+            border-radius: 1.5rem 1.5rem 0 0; 
+            margin-top: -1rem; 
             padding-top: 1rem;
-            z-index: 5; overflow: hidden; /* Sadece mesaj listesi kayacak */
+            z-index: 5; overflow: hidden; 
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
         }
 
         #host-url-bar {
-            display: flex; padding: 0.5rem 1rem; gap: 0.5rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
+            display: flex; padding: 0.5rem 1rem 1rem 1rem; gap: 0.5rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
         }
-        #host-url-bar input { flex: 1; padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 2rem; font-size: 0.85rem; outline: none; }
-        #host-url-bar button { padding: 0.5rem 1rem; background: var(--text-main); color: white; border: none; border-radius: 2rem; font-size: 0.85rem; font-weight: bold;}
+        #host-url-bar input { 
+            flex: 1; padding: 0.75rem 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); 
+            border-radius: 2rem; font-size: 0.9rem; color: white; outline: none; transition: 0.3s;
+        }
+        #host-url-bar input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
+        #host-url-bar button { 
+            padding: 0.75rem 1.5rem; background: var(--text-main); color: var(--bg-base); 
+            border: none; border-radius: 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer;
+        }
 
-        /* Mesaj Listesi Alanı */
         #messages-container {
             flex: 1; overflow-y: auto; padding: 1rem;
-            display: flex; flex-direction: column; gap: 0.75rem;
+            display: flex; flex-direction: column; gap: 0.85rem;
             scroll-behavior: smooth;
         }
+        #messages-container::-webkit-scrollbar { width: 4px; }
+        #messages-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-        .bubble { max-width: 85%; padding: 0.65rem 1rem; border-radius: 1.25rem; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .bubble.system { align-self: center; background: none; box-shadow: none; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
-        .bubble.me { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; }
-        .bubble.other { background: var(--chat-other); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+        .bubble { 
+            max-width: 80%; padding: 0.75rem 1.25rem; border-radius: 1.25rem; 
+            font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; 
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        
+        .bubble.system { 
+            align-self: center; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            color: var(--text-muted); font-size: 0.8rem; text-align: center; border-radius: 2rem; padding: 0.4rem 1rem;
+        }
+        .bubble.me { 
+            background: linear-gradient(135deg, var(--primary), #d946ef); color: white; 
+            align-self: flex-end; border-bottom-right-radius: 0.25rem; 
+            box-shadow: 0 4px 10px rgba(236,72,153,0.2);
+        }
+        .bubble.other { 
+            background: rgba(255,255,255,0.1); color: var(--text-main); border: 1px solid var(--border);
+            align-self: flex-start; border-bottom-left-radius: 0.25rem; 
+        }
 
-        /* Mesaj Gönderme Kutusu (Klavyeye yapışık kalır) */
+        /* Mesaj Gönderme Kutusu */
         #input-area {
-            display: flex; padding: 0.75rem 1rem; background: var(--surface-color); border-top: 1px solid var(--border);
-            gap: 0.5rem; flex-shrink: 0;
+            display: flex; padding: 0.75rem 1rem; background: var(--bg-surface); 
+            border-top: 1px solid var(--border); gap: 0.5rem; flex-shrink: 0;
             padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
         }
-        #chat-input { flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 2rem; font-size: 1rem; outline: none; background: #f8fafc; }
-        #chat-input:focus { border-color: var(--primary); background: #fff;}
-        #btn-send { padding: 0.75rem 1.25rem; background: var(--primary); color: white; border: none; border-radius: 2rem; font-weight: bold; cursor: pointer; }
-        #btn-send:active { background: var(--primary-hover); }
+        #chat-input { 
+            flex: 1; padding: 0.85rem 1.25rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); 
+            border-radius: 2rem; font-size: 1rem; color: white; outline: none; transition: 0.3s;
+        }
+        #chat-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
+        #chat-input::placeholder { color: var(--text-muted); }
+        
+        #btn-send { 
+            padding: 0 1.25rem; background: var(--primary); color: white; border: none; 
+            border-radius: 2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        #btn-send:active { background: var(--primary-hover); transform: scale(0.95); }
+        #btn-send svg { width: 20px; height: 20px; fill: currentColor; }
 
         .hidden { display: none !important; }
     </style>
@@ -129,34 +194,40 @@
     <div id="app-root">
         
         <div id="lobby-screen">
-            <div class="logo">WParty</div>
+            <div class="glow-logo">WParty</div>
             <div class="subtitle">Senkronize izle, kesintisiz sohbet et.</div>
             
             <div id="setup-start" class="lobby-card">
-                <button id="btn-create-p2p" class="btn">👑 Oda Kur (Host Ol)</button>
-                <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">veya</div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="join-code" class="input-style" placeholder="5 HANELİ KOD" maxlength="5" style="text-transform: uppercase; text-align: center; font-weight: bold; letter-spacing: 2px;">
-                </div>
-                <button id="btn-join-p2p" class="btn btn-success">🔗 Odaya Katıl</button>
-                <div id="lobby-log" style="text-align: center; color: #ef4444; font-size: 0.85rem; height: 1rem;"></div>
+                <button id="btn-create-p2p" class="btn btn-primary">👑 Yeni Parti Kur</button>
+                <div id="lobby-log" style="text-align: center; color: var(--primary); font-size: 0.85rem; height: 1rem;"></div>
             </div>
 
             <div id="setup-host-waiting" class="lobby-card hidden">
-                <p style="text-align: center; font-size: 0.9rem; color: var(--text-muted);">Arkadaşına bu kodu gönder:</p>
-                <div id="code-display">...</div>
-                <p style="text-align: center; font-size: 0.9rem; color: var(--success); font-weight: 600;">Bağlantı bekleniyor...</p>
+                <p style="text-align: center; font-size: 0.95rem; color: var(--text-main);">Odan hazır! Bu linki arkadaşına gönder:</p>
+                <div id="invite-link-display">...</div>
+                <button id="btn-copy-link" class="btn btn-outline">📋 Linki Kopyala</button>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--success); font-weight: 600; margin-top: 0.5rem; animation: pulse 2s infinite;">Arkadaşının katılması bekleniyor...</p>
+            </div>
+
+            <div id="setup-join-invite" class="lobby-card hidden">
+                <p style="text-align: center; font-size: 1rem; color: var(--text-main); font-weight: bold;">Bir partiye davet edildin!</p>
+                <button id="btn-join-p2p" class="btn btn-success">🎉 Partiye Katıl</button>
+                <div id="join-log" style="text-align: center; color: #ef4444; font-size: 0.85rem; height: 1rem;"></div>
             </div>
         </div>
 
         <div id="main-screen">
             
             <div id="video-section">
-                <div id="video-placeholder">Host video yüklediğinde burada açılacak.</div>
+                <div id="video-placeholder">
+                    <div class="placeholder-icon">🍿</div>
+                    <div>Host video yüklediğinde burada açılacak.</div>
+                </div>
                 
                 <div id="play-overlay">
                     <div class="play-icon">▶</div>
-                    <div>Sesi Açmak İçin Dokun</div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">Sesi Aç & Senkronize Ol</div>
+                    <div style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">(Tarayıcı kuralları gereği dokunman gerekiyor)</div>
                 </div>
 
                 <video id="native-video" playsinline class="hidden"></video>
@@ -165,17 +236,19 @@
 
             <div id="chat-section">
                 <div id="host-url-bar" class="hidden">
-                    <input type="text" id="host-video-url" placeholder="YouTube veya MP4 linki...">
+                    <input type="text" id="host-video-url" placeholder="YouTube veya MP4 linki yapıştır...">
                     <button id="btn-load-video">Aç</button>
                 </div>
 
                 <div id="messages-container">
-                    <div class="bubble system">Bağlantı kuruldu. Sohbet şifrelidir.</div>
+                    <div class="bubble system">Bağlantı kuruldu. Parti başlıyor! 🚀</div>
                 </div>
 
                 <form id="input-area" onsubmit="sendMsg(event)">
-                    <input type="text" id="chat-input" placeholder="Mesaj yaz..." autocomplete="off" required>
-                    <button type="submit" id="btn-send">Gönder</button>
+                    <input type="text" id="chat-input" placeholder="Mesaj yaz..." autocomplete="off">
+                    <button type="submit" id="btn-send">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
                 </form>
             </div>
         </div>
@@ -186,12 +259,12 @@
 
     <script>
         /**
-         * VibeCoder WParty v7.0 - Native Mobile UX
+         * VibeCoder WParty v8.0 - Native Mobile UX & Link Invite System
          */
 
         /* ==========================================
-           MİMARİ DOKUNUŞ: KLAVYE (VISUAL VIEWPORT) FİX
-           Mobil klavye açıldığında ekranın dışarı taşmasını engeller.
+           MİMARİ: KLAVYE (VISUAL VIEWPORT) KORUMASI
+           Mobil klavye açıldığında videoyu korur, sadece chat küçülür.
            ========================================== */
         const appRoot = document.getElementById('app-root');
         const msgContainer = document.getElementById('messages-container');
@@ -199,20 +272,20 @@
         function resizeViewport() {
             if (window.visualViewport) {
                 appRoot.style.height = window.visualViewport.height + 'px';
-                // Klavye açıldığında sohbetin en altına kaydır
-                setTimeout(() => msgContainer.scrollTop = msgContainer.scrollHeight, 100);
+                // Klavye açıldığında sohbetin en altına yumuşak kaydır
+                setTimeout(() => msgContainer.scrollTop = msgContainer.scrollHeight, 150);
             }
         }
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', resizeViewport);
             window.visualViewport.addEventListener('scroll', resizeViewport);
-            resizeViewport(); // İlk açılış
+            resizeViewport();
         }
 
         /* ==========================================
            P2P VE UI DEĞİŞKENLERİ
            ========================================== */
-        const PREFIX = "vbc-v7-";
+        const PREFIX = "vwparty-";
         let peer = null, conn = null, isHost = false, isSyncing = false;
         let activeMode = 'none', currentUrl = '';
 
@@ -221,9 +294,11 @@
         const mainScreen = document.getElementById('main-screen');
         const startCard = document.getElementById('setup-start');
         const waitCard = document.getElementById('setup-host-waiting');
+        const joinCard = document.getElementById('setup-join-invite');
+        
         const lobbyLog = document.getElementById('lobby-log');
-        const codeDisplay = document.getElementById('code-display');
-        const joinCodeInput = document.getElementById('join-code');
+        const joinLog = document.getElementById('join-log');
+        const inviteLinkDisplay = document.getElementById('invite-link-display');
         
         const hostUrlBar = document.getElementById('host-url-bar');
         const inputVideoUrl = document.getElementById('host-video-url');
@@ -233,6 +308,18 @@
         const nativeVid = document.getElementById('native-video');
         const ytWrap = document.getElementById('yt-wrapper');
         const chatInput = document.getElementById('chat-input');
+
+        /* ==========================================
+           URL PARAMETRE KONTROLÜ (DAVET SİSTEMİ)
+           ========================================== */
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCodeFromUrl = urlParams.get('room');
+
+        if (roomCodeFromUrl) {
+            // Link ile gelmişse Host olma ekranını gizle, direkt Katıl ekranını göster
+            startCard.classList.add('hidden');
+            joinCard.classList.remove('hidden');
+        }
 
         /* ==========================================
            VİDEO MOTORU (YOUTUBE + MP4)
@@ -250,7 +337,7 @@
             if(!url) return;
             currentUrl = url;
             vPlaceholder.classList.add('hidden');
-            playOverlay.style.display = 'none'; // Yeni video yüklendiğinde kalkanı gizle
+            playOverlay.style.display = 'none';
 
             const ytId = extractYT(url);
             if (ytId) {
@@ -285,7 +372,7 @@
         }
 
         /* ==========================================
-           SENKRONİZASYON VE GÜVENLİK (AUTO-PLAY)
+           SENKRONİZASYON VE AUTOPLAY GÜVENLİĞİ
            ========================================== */
         function applySync(time, isPlaying) {
             isSyncing = true;
@@ -293,7 +380,7 @@
                 if (Math.abs(nativeVid.currentTime - time) > 0.5) nativeVid.currentTime = time;
                 if (isPlaying && nativeVid.paused) {
                     nativeVid.play().catch(e => {
-                        // MİMARİ ÇÖZÜM: Tarayıcı oynatmayı reddederse (kullanıcı dokunmadıysa) Overlay'i göster
+                        // Tarayıcı sessiz başlatmaya izin vermezse kalkanı göster
                         if(!isHost) playOverlay.style.display = 'flex';
                     });
                 } else if (!isPlaying && !nativeVid.paused) nativeVid.pause();
@@ -309,9 +396,10 @@
         playOverlay.addEventListener('click', () => {
             playOverlay.style.display = 'none';
             if (activeMode === 'native') nativeVid.play();
+            else if (activeMode === 'youtube' && ytPlayer) ytPlayer.playVideo();
         });
 
-        // Host Video Olay Dinleyicileri
+        // Host Video Eventleri
         nativeVid.addEventListener('play', () => { if(isHost && !isSyncing) sendSync('play', nativeVid.currentTime, true); });
         nativeVid.addEventListener('pause', () => { if(isHost && !isSyncing) sendSync('pause', nativeVid.currentTime, false); });
         nativeVid.addEventListener('seeked', () => { if(isHost && !isSyncing) sendSync('seek', nativeVid.currentTime, !nativeVid.paused); });
@@ -324,17 +412,15 @@
         }
 
         /* ==========================================
-           P2P HABERLEŞME VE SOHBET
+           P2P HABERLEŞME & SOHBET MOTORU
            ========================================== */
         function genCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let res = '';
-            for(let i=0; i<5; i++) res += chars.charAt(Math.floor(Math.random() * chars.length)); return res;
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
         function appendChat(msg, type) {
             const el = document.createElement('div'); el.className = `bubble ${type}`; el.textContent = msg;
             msgContainer.appendChild(el); 
-            // Yumuşak kaydırma
             setTimeout(() => msgContainer.scrollTop = msgContainer.scrollHeight, 50);
         }
 
@@ -351,7 +437,7 @@
                 if (action === 'url' || action === 'init') {
                     if (url && currentUrl !== url) {
                         loadVideo(url);
-                        appendChat(action === 'init' ? "Video bağlandı." : "Host yeni bir video açtı.", "system");
+                        appendChat(action === 'init' ? "Mevcut video senkronize edildi." : "Host yeni bir video açtı.", "system");
                     }
                 } else {
                     applySync(time, isPlaying);
@@ -363,31 +449,48 @@
             lobbyScreen.style.display = 'none';
             mainScreen.style.display = 'flex';
             if(isHost) hostUrlBar.classList.remove('hidden');
-            resizeViewport(); // UI değiştiği için boyutları tazele
+            
+            // Adres çubuğunu temizle (Opsiyonel: Estetik görünüm için)
+            window.history.replaceState({}, document.title, window.location.pathname);
+            resizeViewport(); 
         }
 
         // --- HOST BAĞLANTISI ---
         document.getElementById('btn-create-p2p').addEventListener('click', () => {
             isHost = true;
-            lobbyLog.textContent = "Sunucuya bağlanılıyor...";
+            lobbyLog.textContent = "Parti oluşturuluyor...";
             const code = genCode();
             peer = new Peer(PREFIX + code);
 
             peer.on('open', () => {
                 startCard.classList.add('hidden');
                 waitCard.classList.remove('hidden');
-                codeDisplay.textContent = code;
-                lobbyLog.textContent = "";
+                
+                // Kopyalanabilir link oluştur
+                const baseUrl = window.location.href.split('?')[0];
+                const inviteUrl = `${baseUrl}?room=${code}`;
+                inviteLinkDisplay.textContent = inviteUrl;
+                
+                // Kopyalama Butonu İşlevi
+                document.getElementById('btn-copy-link').onclick = () => {
+                    navigator.clipboard.writeText(inviteUrl).then(() => {
+                        const btn = document.getElementById('btn-copy-link');
+                        btn.textContent = "✅ Kopyalandı!";
+                        btn.classList.add('btn-success');
+                        setTimeout(() => { btn.textContent = "📋 Linki Kopyala"; btn.classList.remove('btn-success'); }, 2000);
+                    });
+                };
             });
 
             peer.on('connection', (c) => {
                 conn = c;
                 startApp();
-                appendChat("İzleyici odaya katıldı!", "system");
+                appendChat("Arkadaşın partiye katıldı!", "system");
                 sendSync('init', 0, false, currentUrl);
                 conn.on('data', handleData);
+                conn.on('close', () => appendChat("Arkadaşın partiden ayrıldı.", "system"));
             });
-            peer.on('error', (err) => lobbyLog.textContent = "Bağlantı hatası: " + err.type);
+            peer.on('error', (err) => lobbyLog.textContent = "Hata: " + err.type);
         });
 
         document.getElementById('btn-load-video').addEventListener('click', () => {
@@ -399,24 +502,34 @@
             }
         });
 
-        // --- İZLEYİCİ BAĞLANTISI ---
+        // --- İZLEYİCİ BAĞLANTISI (LİNK İLE) ---
         document.getElementById('btn-join-p2p').addEventListener('click', () => {
-            const code = joinCodeInput.value.trim().toUpperCase();
-            if(code.length !== 5) { lobbyLog.textContent = "5 haneli kodu giriniz."; return; }
+            if(!roomCodeFromUrl) return;
             
             isHost = false;
-            lobbyLog.textContent = "Oda aranıyor...";
+            joinLog.textContent = "Partiye bağlanılıyor...";
+            document.getElementById('btn-join-p2p').disabled = true;
+            
             peer = new Peer();
 
             peer.on('open', () => {
-                conn = peer.connect(PREFIX + code);
+                conn = peer.connect(PREFIX + roomCodeFromUrl);
+                
                 conn.on('open', () => {
                     startApp();
                     conn.on('data', handleData);
                 });
-                conn.on('error', () => appendChat("Bağlantı koptu.", "system"));
+                
+                conn.on('error', () => {
+                    joinLog.textContent = "Bağlantı koptu.";
+                    document.getElementById('btn-join-p2p').disabled = false;
+                });
             });
-            peer.on('error', (err) => lobbyLog.textContent = "Oda bulunamadı.");
+            
+            peer.on('error', (err) => {
+                joinLog.textContent = "Oda bulunamadı veya host ayrılmış.";
+                document.getElementById('btn-join-p2p').disabled = false;
+            });
         });
 
         // --- MESAJ GÖNDERME ---
@@ -429,7 +542,7 @@
             conn.send({ type: 'chat', text: text });
             chatInput.value = '';
             
-            // Mobilde klavyenin kapanmaması için odağı geri ver
+            // Mobilde klavyenin kapanmaması için odağı koru
             chatInput.focus();
         };
 
