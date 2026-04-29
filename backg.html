@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>VibeTavla | Profesyonel</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -10,20 +10,21 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
     <style>
-        /* --- TAILWIND VIBE & NEUMORPHIC WOOD THEME --- */
+        /* --- VIBECODER "DEEP BLUE" THEME --- */
         :root {
-            --bg-color: #1c1917; 
-            --board-outer: #38220f; 
-            --board-inner: #e6d5b8; 
-            --point-dark: #7f1d1d; 
-            --point-light: #1e293b; 
+            --bg-color: #020617;       /* Slate 950 */
+            --bg-surface: #0f172a;     /* Slate 900 */
+            --board-outer: #1e293b;    /* Slate 800 */
+            --board-inner: #0f172a;    /* Slate 900 */
+            --point-dark: #1e293b;     /* Slate 800 */
+            --point-light: #334155;    /* Slate 700 */
             
-            --checker-black: #171717;
-            --checker-white: #f8fafc;
+            --checker-black: #020617;  /* Siyah Pullar (Koyu Lacivert) */
+            --checker-white: #f8fafc;  /* Beyaz Pullar */
             
-            --primary: #d97706; 
-            --primary-hover: #b45309;
-            --highlight: #10b981; 
+            --primary: #0ea5e9;        /* Sky 500 */
+            --primary-hover: #0284c7;  /* Sky 600 */
+            --highlight: #22d3ee;      /* Cyan 400 */
             
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -34,84 +35,112 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        
+        html, body {
+            height: 100%;
+            height: 100vh;
+            height: 100dvh; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            overflow: hidden; 
+        }
 
         /* --- BAĞLANTI EKRANI --- */
         #connection-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 100;
+            background: radial-gradient(circle at top, var(--bg-surface), var(--bg-color));
+            z-index: 100;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 2rem; gap: 2rem; overflow-y: auto;
+            padding: max(2rem, env(safe-area-inset-top)) 2rem max(2rem, env(safe-area-inset-bottom)) 2rem; 
+            gap: 2rem; overflow-y: auto;
         }
 
-        .logo { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+        .logo { 
+            font-size: 2.5rem; font-weight: 800; color: var(--primary); 
+            display: flex; align-items: center; gap: 0.5rem; 
+            filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.4));
+        }
         
         .conn-card {
-            background: #292524; padding: 2rem; border-radius: var(--radius-lg);
-            border: 1px solid #444; width: 100%; max-width: 400px;
-            display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 2.5rem 2rem; border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,255,255,0.05); width: 100%; max-width: 400px;
+            display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
         .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
         label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         
-        .id-display { font-size: 2rem; font-weight: 800; color: var(--primary); text-align: center; background: #1c1917; padding: 1rem; border-radius: var(--radius-md); letter-spacing: 2px; }
-        
         input[type="text"], select { 
-            padding: 1rem; border-radius: var(--radius-md); border: 2px solid #444; background: #1c1917; color: white; font-size: 1.1rem; text-align: center; font-weight: 700; outline: none; transition: var(--transition);
+            padding: 1rem; border-radius: var(--radius-md); border: 1px solid #334155; 
+            background: rgba(0,0,0,0.3); color: white; font-size: 1.1rem; text-align: center; 
+            font-weight: 700; outline: none; transition: var(--transition);
         }
-        input[type="text"]:focus, select:focus { border-color: var(--primary); }
+        input[type="text"]:focus, select:focus { border-color: var(--primary); background: rgba(0,0,0,0.5); }
 
-        button { background: var(--primary); color: #1c1917; border: none; padding: 1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
-        button:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); }
+        button { background: var(--primary); color: white; border: none; padding: 1.1rem; border-radius: var(--radius-md); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; justify-content: center; align-items: center; gap: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;}
+        button:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);}
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-secondary { background: #444; color: white; }
-        .btn-secondary:hover:not(:disabled) { background: #555; }
+        .btn-secondary { background: transparent; color: var(--text-main); border: 1px solid #334155; }
+        .btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
+
+        .invite-display {
+            background: rgba(0,0,0,0.4); padding: 1rem; border-radius: var(--radius-md);
+            font-family: monospace; font-size: 0.85rem; color: var(--highlight);
+            text-align: center; word-break: break-all; border: 1px dashed #334155;
+        }
+
+        .hidden { display: none !important; }
 
         /* --- OYUN EKRANI --- */
         #game-screen { display: none; width: 100%; height: 100%; flex-direction: column; max-width: 600px; position: relative;}
 
-        /* KOMPAKT ÜST YÖNETİM PANELİ (Unified Header) */
-        .game-header { padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: flex-start; background: #292524; border-bottom: 1px solid #444; flex-shrink: 0; }
+        /* KOMPAKT ÜST YÖNETİM PANELİ */
+        .game-header { 
+            padding: max(0.75rem, env(safe-area-inset-top)) 1rem 0.75rem 1rem; 
+            display: flex; justify-content: space-between; align-items: flex-start; 
+            background: var(--bg-surface); border-bottom: 1px solid #334155; flex-shrink: 0; 
+        }
         .header-col { display: flex; flex-direction: column; gap: 0.5rem; }
         .header-col.right { align-items: flex-end; }
 
-        /* Sol Taraf: Sıra ve Zarlar */
         .player-turn { display: flex; align-items: center; gap: 0.4rem; font-weight: 800; font-size: 0.9rem; color: var(--primary); }
         .player-turn.wait { color: var(--text-muted); }
         
         .dice-area { display: flex; gap: 0.4rem; align-items: center; }
-        .die { width: 34px; height: 34px; background: #f8f8f8; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); transition: opacity 0.3s; }
-        .die.empty { background: #444; box-shadow: none; color: transparent; }
+        .die { width: 34px; height: 34px; background: #e2e8f0; color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; font-weight: 800; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1); transition: opacity 0.3s; }
+        .die.empty { background: #334155; box-shadow: none; color: transparent; }
         .die.used { opacity: 0.2; } 
 
         @keyframes rollAnim { 0% { transform: rotate(0deg) scale(1) translateY(0); } 25% { transform: rotate(90deg) scale(1.1) translateY(-10px); } 50% { transform: rotate(180deg) scale(1.2) translateY(0); } 75% { transform: rotate(270deg) scale(1.1) translateY(-5px); } 100% { transform: rotate(360deg) scale(1) translateY(0); } }
         .rolling { animation: rollAnim 0.4s ease-out; }
 
-        .btn-roll { padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: #000; border: none; font-weight: 800; cursor: pointer; transition: var(--transition);}
+        .btn-roll { padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 8px; background: var(--primary); color: white; border: none; font-weight: 800; cursor: pointer; transition: var(--transition); letter-spacing: 0;}
         .btn-roll:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px);}
 
-        /* Sağ Taraf: Skor ve İkon Butonları */
-        .mini-score { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-main); background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid #444;}
+        .mini-score { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-main); background: rgba(0,0,0,0.3); padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid #334155;}
         .mini-score .name { max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-size: 0.75rem;}
-        .checker-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #000; }
+        .checker-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
 
         .btn-action-group { display: flex; gap: 0.4rem; align-items: center; }
-        .btn-icon { background: transparent; border: 1px solid #555; padding: 0.4rem 0.6rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
-        .btn-icon:hover:not(:disabled) { background: #333; color: white; }
+        .btn-icon { background: transparent; border: 1px solid #475569; padding: 0.4rem 0.6rem; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .btn-icon:hover:not(:disabled) { background: #334155; color: white; }
         .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; }
         
-        .btn-icon.has-new { background: #ef4444; color: white; border-color: #ef4444; animation: pulseChat 1s infinite; }
+        .btn-icon.has-new { background: #0ea5e9; color: white; border-color: #0ea5e9; animation: pulseChat 1s infinite; }
         @keyframes pulseChat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         /* TAVLA TAHTASI */
         .board-container { flex: 1; padding: 0.75rem 0.5rem; display: flex; justify-content: center; align-items: center; min-height: 0; }
 
         .backgammon-board {
-            background: var(--board-outer); width: 100%; height: 100%; max-height: 700px; border-radius: 12px; padding: 10px; display: flex; gap: 8px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+            background: var(--board-outer); width: 100%; height: 100%; max-height: 700px; border-radius: 12px; padding: 10px; display: flex; gap: 8px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5); border: 1px solid #334155;
         }
 
-        .board-bar { width: 35px; background: #241407; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .board-bar { width: 35px; background: rgba(0,0,0,0.4); border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1rem; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
         .board-half { flex: 1; display: flex; flex-direction: column; background: var(--board-inner); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
 
@@ -138,41 +167,46 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 -3px 0 rgba(0,0,0,0.3);
             display: flex; justify-content: center; align-items: center; font-weight: 800; font-size: 0.8rem; z-index: 10;
         }
-        .checker.black { background: var(--checker-black); border: 2px solid #444; color: white; }
+        .checker.black { background: var(--checker-black); border: 2px solid #334155; color: white; }
         .checker.white { background: var(--checker-white); border: 2px solid #cbd5e1; color: black; }
         
         .points-row.top .checker:nth-child(2) { top: 4px; } .points-row.top .checker:nth-child(3) { top: 30px; } .points-row.top .checker:nth-child(4) { top: 56px; } .points-row.top .checker:nth-child(5) { top: 82px; } .points-row.top .checker:nth-child(6) { top: 108px; }
         .points-row.bottom .checker:nth-child(2) { bottom: 4px; } .points-row.bottom .checker:nth-child(3) { bottom: 30px; } .points-row.bottom .checker:nth-child(4) { bottom: 56px; } .points-row.bottom .checker:nth-child(5) { bottom: 82px; } .points-row.bottom .checker:nth-child(6) { bottom: 108px; }
 
-        .bear-off-area { display: flex; justify-content: center; align-items: center; padding: 0.5rem; background: #292524; font-size: 0.8rem; font-weight: 700; color: var(--primary); cursor: pointer; border-top: 1px solid #444; transition: var(--transition);}
-        .bear-off-area.highlight-move { background: rgba(16, 185, 129, 0.2); border: 2px dashed var(--highlight); color: var(--highlight); }
+        .bear-off-area { 
+            display: flex; justify-content: center; align-items: center; 
+            padding: 0.75rem 0.5rem max(0.75rem, env(safe-area-inset-bottom)) 0.5rem; 
+            background: var(--bg-surface); font-size: 0.85rem; font-weight: 700; color: var(--primary); 
+            cursor: pointer; border-top: 1px solid #334155; transition: var(--transition); text-transform: uppercase;
+        }
+        .bear-off-area.highlight-move { background: rgba(34, 211, 238, 0.1); border: 2px dashed var(--highlight); color: var(--highlight); }
 
-        /* --- SOHBET OVERLAY (AKORDEON YERİNE ŞIK KUTU) --- */
+        /* --- SOHBET OVERLAY --- */
         .chat-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
             z-index: 200; display: none; flex-direction: column; justify-content: flex-end;
         }
-        .chat-box { background: #1c1917; height: 70%; border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1); }
-        .chat-header { padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 700; }
+        .chat-box { background: var(--bg-surface); height: 70%; border-top-left-radius: var(--radius-lg); border-top-right-radius: var(--radius-lg); display: flex; flex-direction: column; border-top: 1px solid rgba(255,255,255,0.1); padding-bottom: env(safe-area-inset-bottom); }
+        .chat-header { padding: 1.2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; font-weight: 700; color: var(--primary); }
         .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; }
-        .msg { font-size: 0.9rem; padding: 0.6rem 1rem; border-radius: 12px; width: fit-content; max-width: 85%; line-height: 1.4; color: white;}
+        .msg { font-size: 0.9rem; padding: 0.75rem 1rem; border-radius: 12px; width: fit-content; max-width: 85%; line-height: 1.4; color: white;}
         .msg.me { background: var(--primary); align-self: flex-end; border-bottom-right-radius: 0; }
         .msg.peer { background: #334155; align-self: flex-start; border-bottom-left-radius: 0; }
         .msg.system { background: transparent; color: var(--text-muted); align-self: center; font-size: 0.8rem; font-style: italic; }
-        .chat-input { display: flex; padding: 1rem; gap: 0.5rem; background: #292524; }
-        .chat-input input { flex: 1; padding: 0.75rem 1rem; border-radius: 20px; border: none; background: #171717; color: white; outline: none; }
+        .chat-input { display: flex; padding: 1rem; gap: 0.5rem; background: var(--bg-surface); border-top: 1px solid #334155;}
+        .chat-input input { flex: 1; padding: 0.85rem 1rem; border-radius: 20px; border: 1px solid #334155; background: rgba(0,0,0,0.3); color: white; outline: none; }
+        .chat-input input:focus { border-color: var(--primary); }
         .chat-input button { padding: 0.5rem; border-radius: 50%; width: 44px; height: 44px; }
 
-        /* Toast */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
-        .toast { background: var(--primary); color: #000; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;}
+        #toast-container { position: fixed; top: max(20px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px;}
+        .toast { background: var(--primary); color: white; padding: 0.75rem 1.5rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5); opacity: 0; transform: translateY(-20px); transition: all 0.3s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;}
         .toast.chat-toast { background: #334155; color: white; }
         .toast.show { opacity: 1; transform: translateY(0); }
 
         .spectator-banner { background: #ef4444; color: white; text-align: center; font-size: 0.8rem; font-weight: 700; padding: 0.2rem; display: none; }
 
         @media (max-width: 600px) {
-            .game-header { padding: 0.5rem; }
+            .game-header { padding: max(0.5rem, env(safe-area-inset-top)) 0.5rem 0.5rem 0.5rem; }
             .mini-score .name { max-width: 45px; }
         }
 
@@ -183,19 +217,19 @@
     <div id="connection-screen">
         <div class="logo"><span class="material-symbols-rounded" style="font-size: 3rem;">casino</span> VibeTavla</div>
         
-        <div class="conn-card" id="host-card">
+        <div class="conn-card" id="host-setup-section">
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <h3 style="color: var(--text-main); font-size: 1.2rem;">Yeni Oyun Kur</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">Siyah pullarla oyuna başlarsınız.</p>
+            </div>
             
             <div class="input-group">
                 <label>İsminiz</label>
-                <input type="text" id="player-name" placeholder="Örn: Efsane" autocomplete="off">
-            </div>
-
-            <div style="display:flex; align-items:center; gap: 1rem; color: #444; margin: 0.5rem 0;">
-                <hr style="flex:1; border-color:#444;"><span style="font-size:0.8rem; font-weight:700;">OYUN KUR (SİYAH)</span><hr style="flex:1; border-color:#444;">
+                <input type="text" id="host-name" placeholder="Örn: Efsane" autocomplete="off">
             </div>
 
             <div class="input-group">
-                <label>Hedef Skor (Kaçta Bitsin?)</label>
+                <label>Hedef Skor</label>
                 <select id="target-score">
                     <option value="1">1 (Tek Maç)</option>
                     <option value="3" selected>3</option>
@@ -203,24 +237,38 @@
                 </select>
             </div>
 
-            <div class="input-group">
-                <label>Oda Kodunuz (Host)</label>
-                <div class="id-display" id="my-id">...</div>
-            </div>
-
-            <div style="display:flex; align-items:center; gap: 1rem; color: #444; margin: 0.5rem 0;">
-                <hr style="flex:1; border-color:#444;"><span style="font-size:0.8rem; font-weight:700;">VEYA BAĞLAN</span><hr style="flex:1; border-color:#444;">
-            </div>
-
-            <div class="input-group">
-                <label>Hedef Kod</label>
-                <input type="text" id="target-id" placeholder="KOD GİR">
-                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                    <button onclick="connectToPeer('guest')" id="btn-connect-guest" style="flex:1; font-size:0.9rem;">Oyuncu Katıl</button>
-                    <button onclick="connectToPeer('spectator')" id="btn-connect-spectator" class="btn-secondary" style="flex:1; font-size:0.9rem;">İzleyici Katıl</button>
-                </div>
-            </div>
+            <button id="btn-create-game" onclick="initHost()">Bağlantı Oluştur</button>
         </div>
+
+        <div class="conn-card hidden" id="host-waiting-section">
+            <div style="text-align: center;">
+                <h3 style="color: var(--primary); font-size: 1.2rem;">Odanız Hazır!</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Aşağıdaki linki rakibinize gönderin.</p>
+            </div>
+            
+            <div class="invite-display" id="invite-link-display">...</div>
+            <button id="btn-copy-link" class="btn-secondary">📋 Linki Kopyala</button>
+            
+            <p style="text-align: center; font-size: 0.85rem; color: var(--highlight); font-weight: 600; margin-top: 0.5rem; animation: pulseChat 1.5s infinite;">Rakibin katılması bekleniyor...</p>
+        </div>
+
+        <div class="conn-card hidden" id="guest-setup-section">
+            <div style="text-align: center; margin-bottom: 0.5rem;">
+                <h3 style="color: var(--text-main); font-size: 1.2rem;">Oyuna Davet Edildiniz</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem;">Beyaz pullarla oyuna dahil olursunuz.</p>
+            </div>
+
+            <div class="input-group">
+                <label>İsminiz</label>
+                <input type="text" id="guest-name" placeholder="Örn: Rakip" autocomplete="off">
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <button onclick="connectToPeer('guest')" style="flex:1; font-size:0.9rem;">Oyuncu Katıl</button>
+            </div>
+            <button onclick="connectToPeer('spectator')" class="btn-secondary" style="font-size:0.9rem;">İzleyici Olarak Gir</button>
+        </div>
+
     </div>
 
     <div id="game-screen">
@@ -281,7 +329,7 @@
             <div class="chat-box">
                 <div class="chat-header">
                     <span>Masa Sohbeti</span>
-                    <button onclick="toggleChat()" style="background:transparent; color:white; padding:0; box-shadow:none;"><span class="material-symbols-rounded">close</span></button>
+                    <button onclick="toggleChat()" style="background:transparent; color:var(--text-main); padding:0; box-shadow:none;"><span class="material-symbols-rounded">close</span></button>
                 </div>
                 <div class="chat-messages" id="chat-messages">
                     <div class="msg system">VibeTavla Sunucusuna Bağlanıldı.</div>
@@ -345,7 +393,7 @@
             toast.className = type === 'chat' ? 'toast chat-toast' : 'toast';
             toast.innerHTML = type === 'chat' ? `<span class="material-symbols-rounded">chat</span> <span>${msg}</span>` : msg;
             
-            if(type === 'success') { toast.style.background = 'var(--primary)'; toast.style.color = '#1c1917'; }
+            if(type === 'success') { toast.style.background = 'var(--primary)'; toast.style.color = 'white'; }
             else if(type === 'error') { toast.style.background = '#ef4444'; toast.style.color = 'white'; }
             
             container.appendChild(toast);
@@ -353,7 +401,7 @@
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- 2. YILDIZ TOPOLOJİSİ (HOST/GUEST/SPECTATOR) STATE YÖNETİMİ ---
+        // --- 2. YILDIZ TOPOLOJİSİ VE STATE YÖNETİMİ ---
         let peer = null; 
         let myPeerId = '';
         let myRole = 'host'; 
@@ -382,25 +430,59 @@
         let possibleMoves = []; 
         let autoPassTimer = null; 
 
+        // URL PARAMETRESİ (DAVET LİNKİ) KONTROLÜ
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCodeFromUrl = urlParams.get('room');
+
+        window.onload = () => {
+            if (roomCodeFromUrl) {
+                // Link ile gelmişse Host kurulumunu gizle, Guest ekranını aç
+                document.getElementById('host-setup-section').classList.add('hidden');
+                document.getElementById('guest-setup-section').classList.remove('hidden');
+                document.getElementById('guest-name').value = "Oyuncu" + Math.floor(Math.random()*100);
+            } else {
+                document.getElementById('host-name').value = "Oyuncu" + Math.floor(Math.random()*100);
+            }
+        };
+
         function getSecureRandomDice() {
             const array = new Uint32Array(2);
             window.crypto.getRandomValues(array);
             return [(array[0] % 6) + 1, (array[1] % 6) + 1];
         }
+
         function generateShortId() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let result = '';
-            for (let i = 0; i < 5; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
-            return result;
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
         }
 
         // --- 3. BAĞLANTI (P2P ZIRHI) ---
-        function initHost() {
+        window.initHost = () => {
+            document.getElementById('btn-create-game').disabled = true;
+            document.getElementById('btn-create-game').innerText = "Oluşturuluyor...";
+            
             myPeerId = generateShortId();
             peer = new Peer(myPeerId);
 
             peer.on('open', (id) => { 
-                document.getElementById('my-id').innerText = id; 
+                // Host ekranını bekleme ekranına çevir
+                document.getElementById('host-setup-section').classList.add('hidden');
+                document.getElementById('host-waiting-section').classList.remove('hidden');
+                
+                // Link Oluştur ve Göster
+                const baseUrl = window.location.href.split('?')[0];
+                const inviteUrl = `${baseUrl}?room=${id}`;
+                document.getElementById('invite-link-display').textContent = inviteUrl;
+                
+                // Kopyalama İşlevi
+                document.getElementById('btn-copy-link').onclick = () => {
+                    navigator.clipboard.writeText(inviteUrl).then(() => {
+                        const btn = document.getElementById('btn-copy-link');
+                        btn.innerHTML = "✅ Kopyalandı";
+                        btn.style.color = "var(--highlight)";
+                        setTimeout(() => { btn.innerHTML = "📋 Linki Kopyala"; btn.style.color = ""; }, 2000);
+                    });
+                };
+
                 initBoard(); 
             });
 
@@ -408,11 +490,17 @@
                 conn.on('data', (data) => handleHostData(conn, data));
                 conn.on('close', () => handleHostClose(conn));
             });
-        }
+            
+            peer.on('error', (err) => {
+                showToast("Bağlantı hatası: " + err.type, "error");
+                document.getElementById('btn-create-game').disabled = false;
+                document.getElementById('btn-create-game').innerText = "Bağlantı Oluştur";
+            });
+        };
 
         function handleHostData(conn, data) {
             if (data.type === 'handshake') {
-                myName = document.getElementById('player-name').value.trim() || "Siyah";
+                myName = document.getElementById('host-name').value.trim() || "Siyah";
                 document.getElementById('name-black').innerText = myName;
                 gameState.targetScore = parseInt(document.getElementById('target-score').value) || 3;
 
@@ -466,16 +554,19 @@
         function broadcastChat(sender, text) { addMessage(text, 'system'); broadcast({ type: 'chat', text: text, sender: sender }); }
 
         window.connectToPeer = (roleParam) => {
-            myName = document.getElementById('player-name').value.trim() || "Misafir";
-            const targetId = document.getElementById('target-id').value.trim().toUpperCase();
-            if (!targetId) return;
+            if(!roomCodeFromUrl) return;
 
-            document.getElementById('btn-connect-guest').disabled = true;
-            document.getElementById('btn-connect-spectator').disabled = true;
+            myName = document.getElementById('guest-name').value.trim() || "Misafir";
             myRole = roleParam;
 
-            if(!peer) { peer = new Peer(); peer.on('open', () => { connectToHost(targetId); }); } 
-            else { connectToHost(targetId); }
+            showToast("Bağlanılıyor...");
+
+            if(!peer) { peer = new Peer(); peer.on('open', () => { connectToHost(roomCodeFromUrl); }); } 
+            else { connectToHost(roomCodeFromUrl); }
+            
+            peer.on('error', () => {
+                showToast("Oda bulunamadı veya Host ayrılmış.", "error");
+            });
         };
 
         function connectToHost(targetId) {
@@ -526,6 +617,9 @@
         function startGameUI() {
             document.getElementById('connection-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'flex';
+            
+            // Adres çubuğunu temizle
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         function initBoard() {
@@ -572,7 +666,7 @@
             animateDice(d1, d2);
             
             renderAll();
-            checkTurnStatus(); // VibeCoder Deadlock Kontrolü
+            checkTurnStatus(); 
             
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'dice_roll', d1, d2, dice: gameState.dice, originalDice: gameState.originalDice, turn: myColor, rollId: gameState.rollId });
@@ -586,7 +680,7 @@
                 gameState = JSON.parse(JSON.stringify(turnSnapshot));
                 selectedPoint = null; possibleMoves = [];
                 renderAll();
-                checkTurnStatus(); // VibeCoder Deadlock Kontrolü
+                checkTurnStatus(); 
                 if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
                 else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
             }
@@ -606,7 +700,6 @@
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
         }
 
-        // VibeCoder - Bloklanma (Deadlock) Denetimi
         function hasAnyValidMove() {
             if (gameState.dice.length === 0) return false;
             const bearOffAllowed = canBearOff();
@@ -645,7 +738,6 @@
             return false;
         }
 
-        // VibeCoder - Otomatik Sıra Atlatma Motoru
         function checkTurnStatus() {
             if (myRole === 'spectator') return;
             if (gameState.currentTurn === myColor) {
@@ -687,7 +779,6 @@
             const getTo = (f, d) => (f === 'bar') ? ((myColor === 'black') ? 24 - d : d - 1) : ((myColor === 'black') ? f - d : f + d);
             const isValid = (t) => t >= 0 && t <= 23 && !(gameState.board[t].count > 1 && gameState.board[t].color !== myColor && gameState.board[t].color !== null);
 
-            // Tekil Zarlar
             uniqueDice.forEach(die => {
                 let to = getTo(from, die);
                 if (isValid(to)) {
@@ -695,7 +786,6 @@
                 }
             });
 
-            // VibeCoder - Kombine (Toplu) Hamle Desteği
             if (gameState.dice.length >= 2 && from !== 'bearoff') {
                 if (gameState.dice.length === 2 && gameState.dice[0] !== gameState.dice[1]) {
                     let d1 = gameState.dice[0]; let d2 = gameState.dice[1];
@@ -731,12 +821,10 @@
             if(gameState.dice.length === 0) { showToast("Önce zar atmalısınız."); return; }
             if(autoPassTimer) { clearTimeout(autoPassTimer); autoPassTimer = null; }
 
-            // Seçim İptali
             if(selectedPoint === index) { 
                 selectedPoint = null; possibleMoves = []; renderAll(); return; 
             }
 
-            // Yeni Seçim
             if(selectedPoint === null) {
                 if(index === 'bar') {
                     if(gameState.bar[myColor] > 0) { selectedPoint = 'bar'; calculatePossibleMoves(); }
@@ -749,7 +837,6 @@
                 renderAll(); return;
             }
 
-            // --- TAŞIMA ---
             const from = selectedPoint; const to = index;
 
             if(to === 'bar') return; 
@@ -782,13 +869,11 @@
             const dist = getDistance(from, to);
             let dieIndex = gameState.dice.indexOf(dist);
             
-            // Eğer hedef noktada kırılacak rakip varsa
             if(gameState.board[to].count === 1 && gameState.board[to].color !== myColor && gameState.board[to].color !== null) {
                 gameState.bar[gameState.board[to].color]++;
                 gameState.board[to].count = 0;
             }
 
-            // VibeCoder Kombine Zar Harcama Yönetimi
             if (dieIndex !== -1) {
                 gameState.dice.splice(dieIndex, 1);
             } else {
@@ -819,7 +904,7 @@
             if(myRole === 'host') broadcast({ type: 'sync', state: gameState });
             else if(myRole === 'guest') hostConn.send({ type: 'sync_from_guest', state: gameState });
 
-            checkTurnStatus(); // VibeCoder Deadlock Kontrolü
+            checkTurnStatus(); 
         }
 
         // --- 5. GÖRSELLEŞTİRME (RENDER) ---
@@ -912,7 +997,7 @@
             const barArea = document.getElementById('bar-area');
             barArea.innerHTML = '';
             if(selectedPoint === 'bar') barArea.style.boxShadow = 'inset 0 0 0 2px var(--primary)';
-            else barArea.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.8)';
+            else barArea.style.boxShadow = 'inset 0 0 10px rgba(0,0,0,0.5)';
 
             if(gameState.bar.black > 0) {
                 const c = document.createElement('div'); c.className = 'checker black'; 
@@ -928,7 +1013,7 @@
             else bearOff.classList.remove('highlight-move');
         }
 
-        // --- 6. YENİ SOHBET OVERLAY ---
+        // --- 6. SOHBET OVERLAY ---
         window.toggleChat = () => {
             const overlay = document.getElementById('chat-overlay');
             const btn = document.getElementById('btn-open-chat');
@@ -976,11 +1061,6 @@
                 showToast(`<strong>${sender}:</strong> ${text}`, 'chat');
             }
         }
-
-        window.onload = () => {
-            document.getElementById('player-name').value = "Oyuncu" + Math.floor(Math.random()*100);
-            initHost();
-        };
 
     </script>
 </body>
