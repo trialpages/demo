@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disiplin & Motivasyon Takibi</title>
+    <title>Disiplin & Motivasyon Takibi V1.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,6 +14,7 @@
                 extend: {
                     colors: {
                         deepblue: {
+                            950: '#060B14',
                             900: '#0B1120',
                             800: '#152033',
                             700: '#1E293B',
@@ -21,6 +22,9 @@
                             500: '#3B82F6',
                             accent: '#60A5FA'
                         }
+                    },
+                    transitionProperty: {
+                        'max-height': 'max-height'
                     }
                 }
             }
@@ -33,112 +37,189 @@
         @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(100%); opacity: 0; } }
         
-        /* Hide scrollbar for clean UI */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        /* Accordion transition logic */
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+        .accordion-content.expanded { max-height: 600px; }
     </style>
 </head>
-<body class="bg-deepblue-900 text-slate-200 font-sans min-h-screen pb-20 selection:bg-deepblue-500 selection:text-white">
+<body class="bg-deepblue-950 text-slate-200 font-sans min-h-screen pb-20 selection:bg-deepblue-500 selection:text-white">
 
-    <header class="bg-deepblue-800 shadow-lg sticky top-0 z-10 border-b border-deepblue-700">
+    <header class="bg-deepblue-900/80 backdrop-blur-md shadow-lg sticky top-0 z-40 border-b border-deepblue-800">
         <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="text-slate-300 hover:text-white focus:outline-none text-xl lg:hidden">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
                 <h1 class="text-xl font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-compass text-deepblue-accent"></i> VibeTracker
                 </h1>
-                <p id="currentDateDisplay" class="text-xs text-slate-400 mt-1"></p>
+            </div>
+            <div class="hidden lg:flex gap-6 text-sm font-medium text-slate-300">
+                <a href="#" onclick="switchView('home')" class="hover:text-deepblue-accent transition">Ana Sayfa</a>
+                <a href="#" onclick="switchView('settings')" class="hover:text-deepblue-accent transition">Veri & Ayarlar</a>
             </div>
             <div class="text-right">
-                <p class="text-xs text-slate-400 uppercase tracking-wider">Bugünün Skoru</p>
-                <p id="totalScoreDisplay" class="text-3xl font-bold text-deepblue-accent transition-all duration-300">0</p>
+                <p id="currentDateDisplay" class="text-xs text-slate-400 capitalize"></p>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-6 space-y-8">
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity"></div>
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-deepblue-900 shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 border-r border-deepblue-800">
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-white mb-8 border-b border-deepblue-800 pb-4"><i class="fa-solid fa-compass text-deepblue-accent"></i> Menü</h2>
+            <nav class="flex flex-col gap-4">
+                <button onclick="switchView('home'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-house w-5"></i> Ana Sayfa</button>
+                <button onclick="switchView('settings'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-database w-5"></i> Veri Yedekle / Ayarlar</button>
+            </nav>
+        </div>
+    </aside>
+
+    <main id="view-home" class="max-w-4xl mx-auto px-4 py-6 space-y-8 block">
         
-        <section>
-            <h2 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2 border-b border-deepblue-700 pb-2">
-                <i class="fa-solid fa-arrow-trend-up"></i> Gelişim Görevleri
-            </h2>
-            <div id="positiveTasksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2 bg-gradient-to-br from-deepblue-800 to-deepblue-900 rounded-2xl p-6 shadow-lg border border-deepblue-700 flex justify-between items-center relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-deepblue-700/30 text-9xl"><i class="fa-solid fa-crown"></i></div>
+                <div class="z-10">
+                    <p class="text-sm text-slate-400 uppercase tracking-wider font-semibold mb-1">Bugünün Toplam Skoru</p>
+                    <p id="totalScoreDisplay" class="text-5xl font-black text-white">0</p>
                 </div>
+                <div class="z-10 text-right">
+                    <div class="inline-flex items-center gap-2 bg-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-sm font-bold border border-orange-500/30">
+                        <i class="fa-solid fa-fire"></i> <span id="streakDisplay">0 Gün Seri</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-deepblue-800 rounded-2xl p-5 shadow-lg border border-deepblue-700">
+                <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-3">Son 3 Gün</p>
+                <div id="recentDaysContainer" class="space-y-2">
+                    </div>
+            </div>
         </section>
 
-        <section>
-            <h2 class="text-lg font-semibold text-rose-400 mb-4 flex items-center gap-2 border-b border-deepblue-700 pb-2">
-                <i class="fa-solid fa-arrow-trend-down"></i> Zaman Kayıpları (Cezalar)
-            </h2>
-            <div id="negativeTasksContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <section class="bg-deepblue-800 rounded-2xl p-5 shadow-lg border border-deepblue-700">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-chart-area text-deepblue-accent"></i> Performans Grafiği
+                </h2>
+                <div class="inline-flex bg-deepblue-900 rounded-lg p-1 border border-deepblue-700 text-xs">
+                    <button onclick="setChartPeriod(7)" id="btn-period-7" class="period-btn px-4 py-1.5 rounded-md text-white bg-deepblue-600 transition">1 Hafta</button>
+                    <button onclick="setChartPeriod(30)" id="btn-period-30" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">1 Ay</button>
+                    <button onclick="setChartPeriod(90)" id="btn-period-90" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">3 Ay</button>
+                    <button onclick="setChartPeriod(180)" id="btn-period-180" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">6 Ay</button>
                 </div>
-        </section>
-
-        <section class="bg-deepblue-800 rounded-xl p-4 shadow-lg border border-deepblue-700">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-chart-line text-deepblue-accent"></i> Haftalık Performans
-            </h2>
+            </div>
             <div class="w-full h-64">
                 <canvas id="scoreChart"></canvas>
             </div>
         </section>
 
-        <section class="bg-deepblue-800 rounded-xl p-5 shadow-lg border border-deepblue-700">
-            <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-plus-circle text-deepblue-accent"></i> Yeni Aktivite Ekle
-            </h2>
-            <form id="addTaskForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Aktivite Adı</label>
-                    <input type="text" id="taskName" required class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-500" placeholder="Örn: Kitap Okuma">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Tür</label>
-                    <select id="taskType" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500">
-                        <option value="positive">Pozitif (Puan Kazandırır)</option>
-                        <option value="negative">Negatif (Puan Kaybettirir)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Puan Etkisi (Sayı)</label>
-                    <input type="number" id="taskPoints" required min="1" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500" placeholder="Örn: 5">
-                </div>
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">Birim (Opsiyonel)</label>
-                    <input type="text" id="taskUnit" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-500" placeholder="Örn: 30 Dk, 1 Sayfa">
-                </div>
-                <div class="md:col-span-2">
-                    <button type="submit" class="w-full bg-deepblue-500 hover:bg-blue-600 text-white font-medium py-2 rounded-lg transition-colors flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-save"></i> Aktiviteyi Kaydet
-                    </button>
-                </div>
-            </form>
+        <section class="space-y-6">
+            <div>
+                <h2 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2 px-2">
+                    <i class="fa-solid fa-bolt"></i> Gelişim Görevleri
+                </h2>
+                <div id="positiveTasksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+            <div>
+                <h2 class="text-lg font-semibold text-rose-400 mb-4 flex items-center gap-2 px-2 mt-8">
+                    <i class="fa-solid fa-ghost"></i> Zaman Kayıpları
+                </h2>
+                <div id="negativeTasksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
         </section>
 
+        <section class="bg-deepblue-800 rounded-2xl shadow-lg border border-deepblue-700 overflow-hidden">
+            <button onclick="toggleAddForm()" class="w-full p-5 flex justify-between items-center text-left focus:outline-none bg-deepblue-800 hover:bg-deepblue-700 transition-colors">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-square-plus text-deepblue-accent"></i> Yeni Etkinlik Ekle
+                </h2>
+                <i id="formChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+            </button>
+            
+            <div id="addTaskAccordion" class="accordion-content bg-deepblue-900/50">
+                <form id="addTaskForm" class="p-5 border-t border-deepblue-700 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Aktivite Adı</label>
+                        <input type="text" id="taskName" required class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: Kitap Okuma">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Tür</label>
+                        <select id="taskType" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500">
+                            <option value="positive">Pozitif (Puan Kazandırır)</option>
+                            <option value="negative">Negatif (Puan Kaybettirir)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Puan Etkisi (Sayı)</label>
+                        <input type="number" id="taskPoints" required min="1" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500" placeholder="Örn: 5">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Birim (Opsiyonel)</label>
+                        <input type="text" id="taskUnit" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: 30 Dk, 1 Sayfa">
+                    </div>
+                    <div class="md:col-span-2 mt-2">
+                        <button type="submit" class="w-full bg-deepblue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-lg shadow-deepblue-500/20">
+                            <i class="fa-solid fa-save"></i> Kaydet ve Başla
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <main id="view-settings" class="max-w-4xl mx-auto px-4 py-6 space-y-6 hidden">
+        <h2 class="text-2xl font-bold text-white mb-6">Veri & Ayarlar</h2>
+        
+        <div class="bg-deepblue-800 rounded-2xl p-6 shadow-lg border border-deepblue-700 space-y-4">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i> Verileri Dışa Aktar (Yedekle)
+            </h3>
+            <p class="text-sm text-slate-400">Firebase entegrasyonu yapılana kadar verilerin tarayıcında saklanır. Kaybetmemek için düzenli yedek alabilirsin.</p>
+            <button onclick="exportData()" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 px-4 py-2 rounded-lg text-sm transition-colors font-medium">
+                JSON Olarak İndir
+            </button>
+        </div>
+
+        <div class="bg-deepblue-800 rounded-2xl p-6 shadow-lg border border-deepblue-700 space-y-4">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-up text-blue-400"></i> Verileri İçe Aktar (Geri Yükle)
+            </h3>
+            <p class="text-sm text-slate-400">Daha önce indirdiğin yedeği buradan yükleyebilirsin. Mevcut verilerin üzerine yazılır.</p>
+            <input type="file" id="importFile" accept=".json" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-deepblue-700 file:text-white hover:file:bg-deepblue-600"/>
+            <button onclick="importData()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors font-medium">
+                Verileri Yükle
+            </button>
+        </div>
     </main>
 
     <div id="toastContainer" class="fixed bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50 pointer-events-none"></div>
 
     <script>
-        // --- 1. DEFAULT DATA & STATE MANAGEMENT ---
+        // --- 1. DEFAULT DATA & STATE ---
         const defaultTasks = [
-            { id: 1, name: 'Vakit Namazı', points: 5, type: 'positive', unit: 'Vakit', count: 0, max: 5 },
-            { id: 2, name: 'Cemaatle Namaz', points: 10, type: 'positive', unit: 'Vakit', count: 0, max: 5 },
-            { id: 3, name: 'Kur\'an Okuma', points: 1, type: 'positive', unit: 'Sayfa', count: 0 },
-            { id: 4, name: 'Zikir', points: 5, type: 'positive', unit: '10 Adet', count: 0 },
-            { id: 5, name: 'Ders Çalışma', points: 5, type: 'positive', unit: '30 Dk', count: 0 },
-            { id: 6, name: 'PC/Mobil Süresi', points: -5, type: 'negative', unit: '15 Dk', count: 0 },
-            { id: 7, name: 'Arkadaşlarla Laklak', points: -3, type: 'negative', unit: '15 Dk', count: 0 },
-            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0 }
+            { id: 1, name: 'Vakit Namazı', points: 5, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-person-praying' },
+            { id: 2, name: 'Cemaatle Namaz', points: 10, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-users' },
+            { id: 3, name: 'Kur\'an Okuma', points: 1, type: 'positive', unit: 'Sayfa', count: 0, icon: 'fa-book-quran' },
+            { id: 4, name: 'Zikir', points: 5, type: 'positive', unit: '10 Adet', count: 0, icon: 'fa-mitten' },
+            { id: 5, name: 'Ders Çalışma', points: 5, type: 'positive', unit: '30 Dk', count: 0, icon: 'fa-book-open-reader' },
+            { id: 6, name: 'PC/Mobil Süresi', points: -5, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-mobile-screen' },
+            { id: 7, name: 'Arkadaşlarla Laklak', points: -3, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-comments' },
+            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0, icon: 'fa-tv' }
         ];
 
         let appData = {
             tasks: [],
-            history: {}, // Format: { "YYYY-MM-DD": score }
+            history: {}, // { "YYYY-MM-DD": score }
             lastLoginDate: ""
         };
 
         let myChart = null;
+        let currentChartPeriod = 7; // Default 1 week
 
         // --- 2. STORAGE & INITIALIZATION ---
         function getTodayString() {
@@ -147,48 +228,66 @@
         }
 
         function loadData() {
-            const savedData = localStorage.getItem('vibeTrackerData');
+            const savedData = localStorage.getItem('vibeTrackerDataV1');
             if (savedData) {
                 appData = JSON.parse(savedData);
+                // Geriye dönük uyumluluk (yeni ikonlar eklendiği için)
+                appData.tasks.forEach(task => {
+                    if(!task.icon) task.icon = task.type === 'positive' ? 'fa-check' : 'fa-xmark';
+                });
             } else {
                 appData.tasks = JSON.parse(JSON.stringify(defaultTasks));
             }
 
             checkDayReset();
             updateUI();
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('tr-TR', options);
         }
 
         function saveData() {
-            localStorage.setItem('vibeTrackerData', JSON.stringify(appData));
+            localStorage.setItem('vibeTrackerDataV1', JSON.stringify(appData));
             updateUI();
         }
 
         function checkDayReset() {
             const today = getTodayString();
             
-            // Eğer yeni bir güne geçildiyse
             if (appData.lastLoginDate && appData.lastLoginDate !== today) {
-                // Dünün skorunu hesapla ve geçmişe kaydet
                 const yesterdayScore = calculateTotalScore();
                 appData.history[appData.lastLoginDate] = yesterdayScore;
-                
-                // Görev sayaçlarını sıfırla
                 appData.tasks.forEach(task => task.count = 0);
-                showToast("Yeni bir gün, yeni bir sayfa! Dünün skoru kaydedildi.", "info");
             }
-            
             appData.lastLoginDate = today;
-            
-            // Tarihi Ekrana Yaz
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('tr-TR', options);
         }
 
-        // --- 3. CORE LOGIC ---
+        // --- 3. CORE LOGIC & GAMIFICATION ---
         function calculateTotalScore() {
-            return appData.tasks.reduce((total, task) => {
-                return total + (task.count * task.points);
-            }, 0);
+            return appData.tasks.reduce((total, task) => total + (task.count * task.points), 0);
+        }
+
+        function calculateStreak() {
+            let streak = 0;
+            const dates = Object.keys(appData.history).sort().reverse();
+            let checkDate = new Date();
+            checkDate.setDate(checkDate.getDate() - 1); // Dünden başla kontrol etmeye
+
+            // Bugünün skoru 0'dan büyükse seriye +1 ekle (görsel tatmin)
+            if (calculateTotalScore() > 0) streak++;
+
+            for (let i = 0; i < dates.length; i++) {
+                const dateStr = dates[i];
+                const d = new Date(dateStr);
+                // Tarihler ardışık mı kontrolü basitçe gün farkıyla yapılabilir ama şimdilik sadece
+                // geçmişte 0'ın üzerinde puan alınan ardışık günleri sayalım
+                if (appData.history[dateStr] > 0) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            return streak;
         }
 
         function triggerTask(taskId, isAdding) {
@@ -197,23 +296,17 @@
 
             if (isAdding) {
                 if (task.max && task.count >= task.max) {
-                    showToast(`${task.name} için günlük maksimum sınıra (${task.max}) ulaştınız.`, "warning");
+                    showToast(`Maksimum limite ulaştın.`, "warning");
                     return;
                 }
                 task.count++;
-                
-                // Animasyonlu geri bildirim
-                const prefix = task.points > 0 ? "+" : "";
-                const color = task.points > 0 ? "success" : "error";
-                showToast(`${task.name} eklendi: ${prefix}${task.points} Puan`, color);
-
+                showToast(`${task.name}: ${task.points > 0 ? '+' : ''}${task.points}`, task.points > 0 ? "success" : "error");
             } else {
                 if (task.count > 0) {
                     task.count--;
-                    showToast(`${task.name} geri alındı.`, "info");
+                    showToast(`Geri alındı.`, "info");
                 }
             }
-
             saveData();
         }
 
@@ -226,59 +319,91 @@
 
             if (!name || isNaN(points)) return;
 
-            // Negatif tür seçildiyse puanı eksiye çevir
             if (type === 'negative') points = -Math.abs(points);
             else points = Math.abs(points);
 
             const newTask = {
-                id: Date.now(), // Benzersiz ID
+                id: Date.now(),
                 name: name,
                 points: points,
                 type: type,
                 unit: unit || 'Adet',
-                count: 0
+                count: 0,
+                icon: type === 'positive' ? 'fa-star' : 'fa-circle-exclamation'
             };
 
             appData.tasks.push(newTask);
             saveData();
-            
-            // Formu temizle
             document.getElementById('addTaskForm').reset();
-            showToast("Yeni aktivite başarıyla eklendi.", "success");
+            toggleAddForm(); // Eklendikten sonra formu kapat
+            showToast("Aktivite eklendi.", "success");
         }
 
-        // --- 4. UI UPDATE & RENDERING ---
+        // --- 4. UI RENDER ---
         function updateUI() {
-            // Skor güncelleme
-            document.getElementById('totalScoreDisplay').textContent = calculateTotalScore();
+            // Skor & Seri Güncelleme
+            const total = calculateTotalScore();
+            const scoreEl = document.getElementById('totalScoreDisplay');
+            scoreEl.textContent = total;
+            scoreEl.className = `text-5xl font-black ${total >= 0 ? 'text-white' : 'text-rose-400'}`;
+            
+            document.getElementById('streakDisplay').textContent = `${calculateStreak()} Gün Seri`;
 
+            // Son 3 Gün Özeti Render
+            const recentContainer = document.getElementById('recentDaysContainer');
+            recentContainer.innerHTML = '';
+            const allDates = Object.keys(appData.history).sort().reverse();
+            const last3Dates = allDates.slice(0, 3);
+            
+            if (last3Dates.length === 0) {
+                recentContainer.innerHTML = '<p class="text-sm text-slate-500">Henüz geçmiş veri yok.</p>';
+            } else {
+                last3Dates.forEach(date => {
+                    const score = appData.history[date];
+                    const color = score >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                    recentContainer.innerHTML += `
+                        <div class="flex justify-between items-center text-sm border-b border-deepblue-700/50 pb-1">
+                            <span class="text-slate-300">${date}</span>
+                            <span class="font-bold ${color}">${score > 0 ? '+' : ''}${score} Puan</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // Görev Listeleri Render
             const posContainer = document.getElementById('positiveTasksContainer');
             const negContainer = document.getElementById('negativeTasksContainer');
-            
-            posContainer.innerHTML = '';
-            negContainer.innerHTML = '';
+            posContainer.innerHTML = ''; negContainer.innerHTML = '';
 
             appData.tasks.forEach(task => {
                 const isPositive = task.type === 'positive';
-                const colorTheme = isPositive ? 'text-emerald-400 bg-emerald-400/10' : 'text-rose-400 bg-rose-400/10';
-                const icon = isPositive ? 'fa-plus' : 'fa-minus';
+                const mainColor = isPositive ? 'emerald' : 'rose';
+                const bgHover = isPositive ? 'hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'hover:border-rose-500/50 hover:shadow-[0_0_15px_rgba(244,63,94,0.1)]';
                 
                 const card = document.createElement('div');
-                card.className = "bg-deepblue-800 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between shadow-sm transition-transform hover:-translate-y-1 duration-200";
+                card.className = `bg-deepblue-800 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between transition-all duration-300 ${bgHover} group`;
                 
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="font-medium text-slate-200">${task.name} <span class="text-xs text-slate-400 block">${task.unit ? 'Her ' + task.unit + ':' : ''} ${task.points} Puan</span></div>
-                        <div class="px-2 py-1 rounded text-xs font-bold ${colorTheme}">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-deepblue-900 flex items-center justify-center border border-deepblue-700 text-${mainColor}-400 group-hover:scale-110 transition-transform">
+                                <i class="fa-solid ${task.icon}"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-slate-200 leading-tight">${task.name}</h3>
+                                <span class="text-[11px] text-slate-400">${task.unit ? 'Her ' + task.unit : 'Adet'}: <strong class="text-${mainColor}-400">${task.points}p</strong></span>
+                            </div>
+                        </div>
+                        <div class="px-2.5 py-1 rounded-md text-xs font-bold bg-${mainColor}-400/10 text-${mainColor}-400 border border-${mainColor}-400/20">
                             ${task.count}x
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 mt-2">
+                    <div class="flex items-center gap-2">
                         <button onclick="triggerTask(${task.id}, true)" class="flex-1 bg-deepblue-700 hover:bg-deepblue-600 text-white py-2 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
-                            <i class="fa-solid ${icon}"></i> Ekle
+                            <i class="fa-solid fa-plus"></i>
                         </button>
                         ${task.count > 0 ? `
-                        <button onclick="triggerTask(${task.id}, false)" class="w-10 bg-deepblue-900 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-700 flex justify-center items-center" title="Geri Al">
+                        <button onclick="triggerTask(${task.id}, false)" class="w-12 bg-deepblue-900/50 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-700 flex justify-center items-center" title="Geri Al">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>
                         ` : ''}
@@ -292,44 +417,66 @@
             renderChart();
         }
 
-        // --- 5. CHART VISUALIZATION ---
+        // --- 5. CHART & ANALYTICS ---
+        function setChartPeriod(days) {
+            currentChartPeriod = days;
+            
+            // Buton Stillerini Güncelle
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('bg-deepblue-600', 'text-white');
+                btn.classList.add('text-slate-400');
+            });
+            document.getElementById(`btn-period-${days}`).classList.remove('text-slate-400');
+            document.getElementById(`btn-period-${days}`).classList.add('bg-deepblue-600', 'text-white');
+
+            renderChart();
+        }
+
+        function generateDateRange(daysBack) {
+            const dates = [];
+            for (let i = daysBack - 1; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+            }
+            return dates;
+        }
+
         function renderChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
             
-            // Geçmiş verileri ve bugünü hazırlama
-            const labels = Object.keys(appData.history).slice(-6); // Son 6 gün
-            const dataPoints = labels.map(date => appData.history[date]);
+            const labels = generateDateRange(currentChartPeriod);
+            const dataPoints = labels.map(date => {
+                if (date === getTodayString()) return calculateTotalScore();
+                return appData.history[date] || 0; // Veri yoksa 0 bas
+            });
             
-            // Bugünü de grafiğe ekleyelim (canlı olarak)
-            labels.push('Bugün');
-            dataPoints.push(calculateTotalScore());
-
             if (myChart) {
-                myChart.data.labels = labels;
+                myChart.data.labels = labels.map(l => l.substring(5)); // Sadece Ay-Gün göster
                 myChart.data.datasets[0].data = dataPoints;
                 myChart.update();
                 return;
             }
 
-            Chart.defaults.color = '#94a3b8'; // Slate 400
-            Chart.defaults.font.family = 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont';
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'ui-sans-serif, system-ui';
 
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: labels.map(l => l.substring(5)),
                     datasets: [{
-                        label: 'Günlük Skor',
+                        label: 'Skor',
                         data: dataPoints,
-                        borderColor: '#3B82F6', // Blue 500
+                        borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         borderWidth: 3,
                         pointBackgroundColor: '#60A5FA',
                         pointBorderColor: '#0B1120',
                         pointBorderWidth: 2,
-                        pointRadius: 5,
+                        pointRadius: 4,
                         fill: true,
-                        tension: 0.4 // Yumuşak kıvrımlar
+                        tension: 0.3
                     }]
                 },
                 options: {
@@ -343,37 +490,28 @@
                             bodyColor: '#F8FAFC',
                             borderColor: '#334155',
                             borderWidth: 1,
-                            padding: 10
+                            padding: 10,
+                            displayColors: false
                         }
                     },
                     scales: {
-                        y: {
-                            grid: { color: '#1E293B' },
-                            beginAtZero: true
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { grid: { color: '#1E293B' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        // --- 6. UTILITIES (TOAST NOTIFICATIONS) ---
+        // --- 6. UTILITIES & UI INTERACTIONS ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             
             let bgClass = "bg-deepblue-800 border-deepblue-600";
             let iconClass = "fa-info-circle text-blue-400";
-            
-            if (type === 'success') {
-                iconClass = "fa-check-circle text-emerald-400";
-            } else if (type === 'error') {
-                iconClass = "fa-exclamation-circle text-rose-400";
-            } else if (type === 'warning') {
-                iconClass = "fa-triangle-exclamation text-amber-400";
-            }
+            if (type === 'success') iconClass = "fa-check-circle text-emerald-400";
+            if (type === 'error') iconClass = "fa-arrow-trend-down text-rose-400";
+            if (type === 'warning') iconClass = "fa-triangle-exclamation text-amber-400";
 
             toast.className = `toast-enter flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border ${bgClass} text-sm text-white max-w-sm w-auto pointer-events-auto`;
             toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
@@ -383,13 +521,82 @@
             setTimeout(() => {
                 toast.classList.replace('toast-enter', 'toast-exit');
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 2500);
         }
 
-        // --- 7. EVENT LISTENERS & BOOTSTRAP ---
+        function toggleAddForm() {
+            const content = document.getElementById('addTaskAccordion');
+            const icon = document.getElementById('formChevron');
+            content.classList.toggle('expanded');
+            if (content.classList.contains('expanded')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function switchView(viewName) {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-settings').classList.add('hidden');
+            
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            
+            if(viewName === 'home') updateUI(); // Grafiğin yeniden düzgün çizilmesi için
+        }
+
+        // --- 7. DATA EXPORT / IMPORT ---
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "vibetracker_backup_" + getTodayString() + ".json");
+            document.body.appendChild(downloadAnchorNode); // Firefox için gerekli
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast("Veriler başarıyla indirildi.", "success");
+        }
+
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) {
+                showToast("Lütfen bir JSON dosyası seçin.", "warning");
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData && importedData.tasks) {
+                        appData = importedData;
+                        saveData();
+                        showToast("Veriler başarıyla yüklendi!", "success");
+                        setTimeout(() => switchView('home'), 1000);
+                    } else {
+                        showToast("Geçersiz dosya formatı.", "error");
+                    }
+                } catch (err) {
+                    showToast("Dosya okunamadı.", "error");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Bootstrap
         document.getElementById('addTaskForm').addEventListener('submit', addNewTask);
-        
-        // Uygulamayı Başlat
         loadData();
 
     </script>
