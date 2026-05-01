@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disiplin & Motivasyon Takibi V1.1</title>
+    <title>Disiplin & Motivasyon Takibi V2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,7 +31,6 @@
         }
     </script>
     <style>
-        /* Toast Notification Animation */
         .toast-enter { animation: slideIn 0.3s ease-out forwards; }
         .toast-exit { animation: slideOut 0.3s ease-in forwards; }
         @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -42,8 +41,9 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
         /* Accordion transition logic */
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
-        .accordion-content.expanded { max-height: 600px; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
+        /* Çok öğe olabileceği için max-height'i yüksek tutuyoruz */
+        .accordion-content.expanded { max-height: 2000px; } 
     </style>
 </head>
 <body class="bg-deepblue-950 text-slate-200 font-sans min-h-screen pb-20 selection:bg-deepblue-500 selection:text-white">
@@ -59,11 +59,14 @@
                 </h1>
             </div>
             <div class="hidden lg:flex gap-6 text-sm font-medium text-slate-300">
-                <a href="#" onclick="switchView('home')" class="hover:text-deepblue-accent transition">Ana Sayfa</a>
-                <a href="#" onclick="switchView('settings')" class="hover:text-deepblue-accent transition">Veri & Ayarlar</a>
+                <a href="#" onclick="switchView('home')" class="hover:text-deepblue-accent transition"><i class="fa-solid fa-house"></i> Ana Sayfa</a>
+                <a href="#" onclick="switchView('profile')" class="hover:text-deepblue-accent transition"><i class="fa-solid fa-user"></i> Profil</a>
+                <a href="#" onclick="switchView('stats')" class="hover:text-deepblue-accent transition"><i class="fa-solid fa-chart-pie"></i> İstatistikler</a>
+                <a href="#" onclick="switchView('settings')" class="hover:text-deepblue-accent transition"><i class="fa-solid fa-gear"></i> Ayarlar</a>
             </div>
-            <div class="text-right">
-                <p id="currentDateDisplay" class="text-xs text-slate-400 capitalize"></p>
+            <div class="text-right flex items-center gap-3">
+                <div id="levelBadgeHeader" class="hidden sm:block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider"></div>
+                <p id="currentDateDisplay" class="text-xs text-slate-400 capitalize hidden sm:block"></p>
             </div>
         </div>
     </header>
@@ -74,19 +77,27 @@
             <h2 class="text-xl font-bold text-white mb-8 border-b border-deepblue-800 pb-4"><i class="fa-solid fa-compass text-deepblue-accent"></i> Menü</h2>
             <nav class="flex flex-col gap-4">
                 <button onclick="switchView('home'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-house w-5"></i> Ana Sayfa</button>
-                <button onclick="switchView('settings'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-database w-5"></i> Veri Yedekle / Ayarlar</button>
+                <button onclick="switchView('profile'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-user w-5"></i> Profil</button>
+                <button onclick="switchView('stats'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-chart-pie w-5"></i> İstatistikler</button>
+                <button onclick="switchView('settings'); toggleSidebar()" class="text-left text-slate-300 hover:text-white hover:bg-deepblue-800 p-2 rounded transition flex items-center gap-3"><i class="fa-solid fa-gear w-5"></i> Ayarlar / Yedek</button>
             </nav>
         </div>
     </aside>
 
-    <main id="view-home" class="max-w-4xl mx-auto px-4 py-6 space-y-8 block">
+    <main id="view-home" class="max-w-4xl mx-auto px-4 py-6 space-y-8 block animate-fade-in">
         
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-2 bg-gradient-to-br from-deepblue-800 to-deepblue-900 rounded-2xl p-6 shadow-lg border border-deepblue-700 flex justify-between items-center relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 text-deepblue-700/30 text-9xl"><i class="fa-solid fa-crown"></i></div>
                 <div class="z-10">
-                    <p class="text-sm text-slate-400 uppercase tracking-wider font-semibold mb-1">Bugünün Toplam Skoru</p>
+                    <div class="flex items-center gap-3 mb-1">
+                        <p class="text-sm text-slate-400 uppercase tracking-wider font-semibold">Bugünün Skoru</p>
+                        <span id="levelBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-700 text-slate-300">Hesaplanıyor</span>
+                    </div>
                     <p id="totalScoreDisplay" class="text-5xl font-black text-white">0</p>
+                    <div class="w-full bg-deepblue-950 rounded-full h-1.5 mt-3 max-w-[200px]">
+                        <div id="scoreProgressBar" class="bg-deepblue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
                 </div>
                 <div class="z-10 text-right">
                     <div class="inline-flex items-center gap-2 bg-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-sm font-bold border border-orange-500/30">
@@ -96,8 +107,7 @@
             </div>
             <div class="bg-deepblue-800 rounded-2xl p-5 shadow-lg border border-deepblue-700">
                 <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-3">Son 3 Gün</p>
-                <div id="recentDaysContainer" class="space-y-2">
-                    </div>
+                <div id="recentDaysContainer" class="space-y-2"></div>
             </div>
         </section>
 
@@ -110,90 +120,170 @@
                     <button onclick="setChartPeriod(7)" id="btn-period-7" class="period-btn px-4 py-1.5 rounded-md text-white bg-deepblue-600 transition">1 Hafta</button>
                     <button onclick="setChartPeriod(30)" id="btn-period-30" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">1 Ay</button>
                     <button onclick="setChartPeriod(90)" id="btn-period-90" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">3 Ay</button>
-                    <button onclick="setChartPeriod(180)" id="btn-period-180" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">6 Ay</button>
                 </div>
             </div>
-            <div class="w-full h-64">
+            <div class="w-full h-56">
                 <canvas id="scoreChart"></canvas>
             </div>
         </section>
 
-        <section class="space-y-6">
-            <div>
-                <h2 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2 px-2">
-                    <i class="fa-solid fa-bolt"></i> Gelişim Görevleri
-                </h2>
-                <div id="positiveTasksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-            <div>
-                <h2 class="text-lg font-semibold text-rose-400 mb-4 flex items-center gap-2 px-2 mt-8">
-                    <i class="fa-solid fa-ghost"></i> Zaman Kayıpları
-                </h2>
-                <div id="negativeTasksContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-        </section>
-
-        <section class="bg-deepblue-800 rounded-2xl shadow-lg border border-deepblue-700 overflow-hidden">
-            <button onclick="toggleAddForm()" class="w-full p-5 flex justify-between items-center text-left focus:outline-none bg-deepblue-800 hover:bg-deepblue-700 transition-colors">
-                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-square-plus text-deepblue-accent"></i> Yeni Etkinlik Ekle
-                </h2>
-                <i id="formChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
-            </button>
+        <section class="space-y-4">
             
-            <div id="addTaskAccordion" class="accordion-content bg-deepblue-900/50">
-                <form id="addTaskForm" class="p-5 border-t border-deepblue-700 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Aktivite Adı</label>
-                        <input type="text" id="taskName" required class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: Kitap Okuma">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Tür</label>
-                        <select id="taskType" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500">
-                            <option value="positive">Pozitif (Puan Kazandırır)</option>
-                            <option value="negative">Negatif (Puan Kaybettirir)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Puan Etkisi (Sayı)</label>
-                        <input type="number" id="taskPoints" required min="1" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500" placeholder="Örn: 5">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Birim (Opsiyonel)</label>
-                        <input type="text" id="taskUnit" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: 30 Dk, 1 Sayfa">
-                    </div>
-                    <div class="md:col-span-2 mt-2">
-                        <button type="submit" class="w-full bg-deepblue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-lg shadow-deepblue-500/20">
-                            <i class="fa-solid fa-save"></i> Kaydet ve Başla
-                        </button>
-                    </div>
-                </form>
+            <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
+                <button onclick="toggleSection('posTasksSection', 'posChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
+                    <h2 class="text-lg font-semibold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Gelişim Görevleri</h2>
+                    <i id="posChevron" class="fa-solid fa-chevron-up text-slate-400 transition-transform duration-300"></i>
+                </button>
+                <div id="posTasksSection" class="accordion-content expanded bg-deepblue-900/30">
+                    <div id="positiveTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
+                <button onclick="toggleSection('excuseTasksSection', 'excuseChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
+                    <h2 class="text-lg font-semibold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-bed-pulse"></i> Mazeretler (Motivasyon Koruyucu)</h2>
+                    <i id="excuseChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                </button>
+                <div id="excuseTasksSection" class="accordion-content bg-deepblue-900/30">
+                    <div id="excuseTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
+                <button onclick="toggleSection('negTasksSection', 'negChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
+                    <h2 class="text-lg font-semibold text-rose-400 flex items-center gap-2"><i class="fa-solid fa-ghost"></i> Zaman Kayıpları</h2>
+                    <i id="negChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                </button>
+                <div id="negTasksSection" class="accordion-content bg-deepblue-900/30">
+                    <div id="negativeTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-2xl shadow-lg border border-deepblue-700 overflow-hidden mt-6">
+                <button onclick="toggleSection('addTaskAccordion', 'formChevron')" class="w-full p-5 flex justify-between items-center text-left focus:outline-none bg-deepblue-800 hover:bg-deepblue-700 transition-colors">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2"><i class="fa-solid fa-square-plus text-deepblue-accent"></i> Yeni Etkinlik / Mazeret Ekle</h2>
+                    <i id="formChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                </button>
+                
+                <div id="addTaskAccordion" class="accordion-content bg-deepblue-900/50">
+                    <form id="addTaskForm" class="p-5 border-t border-deepblue-700 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Aktivite Adı</label>
+                            <input type="text" id="taskName" required class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: Kitap Okuma">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Tür</label>
+                            <select id="taskType" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500">
+                                <option value="positive">Pozitif (Puan Kazandırır)</option>
+                                <option value="excuse">Mazeret (Destek Puanı)</option>
+                                <option value="negative">Negatif (Puan Kaybettirir)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Puan Etkisi (Sayı)</label>
+                            <input type="number" id="taskPoints" required min="1" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500" placeholder="Örn: 5">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Birim (Opsiyonel)</label>
+                            <input type="text" id="taskUnit" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500 placeholder-slate-600" placeholder="Örn: 30 Dk, 1 Sayfa">
+                        </div>
+                        <div class="md:col-span-2 mt-2">
+                            <button type="submit" class="w-full bg-deepblue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-lg shadow-deepblue-500/20">
+                                <i class="fa-solid fa-save"></i> Kaydet ve Ekle
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </section>
     </main>
 
-    <main id="view-settings" class="max-w-4xl mx-auto px-4 py-6 space-y-6 hidden">
-        <h2 class="text-2xl font-bold text-white mb-6">Veri & Ayarlar</h2>
+    <main id="view-profile" class="max-w-4xl mx-auto px-4 py-6 space-y-6 hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-white mb-2"><i class="fa-solid fa-id-card text-deepblue-accent"></i> Profil & Hedefler</h2>
+        <p class="text-slate-400 text-sm mb-6">Uygulama deneyimini kişiselleştir.</p>
+
+        <div class="bg-deepblue-800 rounded-2xl p-6 shadow-lg border border-deepblue-700">
+            <div class="flex flex-col sm:flex-row items-center gap-6 mb-8">
+                <div class="w-24 h-24 rounded-full bg-deepblue-900 border-4 border-deepblue-700 flex items-center justify-center text-4xl text-deepblue-500">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <div class="text-center sm:text-left w-full">
+                    <input type="text" id="profName" class="bg-transparent text-2xl font-bold text-white border-b border-dashed border-deepblue-600 focus:border-deepblue-500 outline-none w-full max-w-xs text-center sm:text-left pb-1" placeholder="Adın / Lakabın" onchange="saveProfile()">
+                    <input type="text" id="profBio" class="bg-transparent text-sm text-slate-400 border-b border-dashed border-deepblue-600 focus:border-deepblue-500 outline-none w-full mt-2 text-center sm:text-left pb-1" placeholder="Motivasyon cümlen..." onchange="saveProfile()">
+                </div>
+            </div>
+
+            <div class="border-t border-deepblue-700 pt-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Sistem Ayarları</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm text-slate-400 mb-2">Günlük İdeal Hedef Puanı</label>
+                        <p class="text-xs text-slate-500 mb-2">Seviye (Zayıf/Orta/Yüksek) hesaplaması bu puana göre yapılır.</p>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="profIdealScore" class="bg-deepblue-900 border border-deepblue-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-deepblue-500 w-32" value="250" onchange="saveProfile()">
+                            <span class="text-sm font-bold text-deepblue-accent">Puan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-stats" class="max-w-4xl mx-auto px-4 py-6 space-y-6 hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-white mb-2"><i class="fa-solid fa-chart-pie text-deepblue-accent"></i> İstatistikler & Analizler</h2>
+        <p class="text-slate-400 text-sm mb-6">Tüm zamanların performansı.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-deepblue-800 rounded-xl p-5 border border-deepblue-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-trophy"></i></div>
+                    <h3 class="text-slate-300 font-medium">En İstikrarlı Görev</h3>
+                </div>
+                <p id="statBestTask" class="text-xl font-bold text-white ml-13">-</p>
+                <p id="statBestCount" class="text-xs text-slate-400 mt-1">-</p>
+            </div>
+            
+            <div class="bg-deepblue-800 rounded-xl p-5 border border-deepblue-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400"><i class="fa-solid fa-bug"></i></div>
+                    <h3 class="text-slate-300 font-medium">En Zayıf Nokta (Sık İhlal)</h3>
+                </div>
+                <p id="statWorstTask" class="text-xl font-bold text-white ml-13">-</p>
+                <p id="statWorstCount" class="text-xs text-slate-400 mt-1">-</p>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-xl p-5 border border-deepblue-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-deepblue-500/20 flex items-center justify-center text-deepblue-400"><i class="fa-solid fa-coins"></i></div>
+                    <h3 class="text-slate-300 font-medium">Tüm Zamanlar Toplam Puan</h3>
+                </div>
+                <p id="statTotalLifetimeScore" class="text-3xl font-black text-white ml-13">0</p>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-xl p-5 border border-deepblue-700 shadow-lg">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <h3 class="text-slate-300 font-medium">Günlük Ortalama Puan</h3>
+                </div>
+                <p id="statAvgScore" class="text-3xl font-black text-white ml-13">0</p>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-settings" class="max-w-4xl mx-auto px-4 py-6 space-y-6 hidden animate-fade-in">
+        <h2 class="text-2xl font-bold text-white mb-6"><i class="fa-solid fa-gear text-deepblue-accent"></i> Veri & Ayarlar</h2>
         
         <div class="bg-deepblue-800 rounded-2xl p-6 shadow-lg border border-deepblue-700 space-y-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                <i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i> Verileri Dışa Aktar (Yedekle)
-            </h3>
-            <p class="text-sm text-slate-400">Firebase entegrasyonu yapılana kadar verilerin tarayıcında saklanır. Kaybetmemek için düzenli yedek alabilirsin.</p>
-            <button onclick="exportData()" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 px-4 py-2 rounded-lg text-sm transition-colors font-medium">
-                JSON Olarak İndir
-            </button>
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down text-emerald-400"></i> Verileri Dışa Aktar (Yedekle)</h3>
+            <p class="text-sm text-slate-400">Tüm geçmişinizi, ayarlarınızı ve görevlerinizi yedekleyin.</p>
+            <button onclick="exportData()" class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/50 px-4 py-2 rounded-lg text-sm transition-colors font-medium">JSON Olarak İndir</button>
         </div>
 
         <div class="bg-deepblue-800 rounded-2xl p-6 shadow-lg border border-deepblue-700 space-y-4">
-            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-                <i class="fa-solid fa-cloud-arrow-up text-blue-400"></i> Verileri İçe Aktar (Geri Yükle)
-            </h3>
-            <p class="text-sm text-slate-400">Daha önce indirdiğin yedeği buradan yükleyebilirsin. Mevcut verilerin üzerine yazılır.</p>
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up text-blue-400"></i> Verileri İçe Aktar (Geri Yükle)</h3>
+            <p class="text-sm text-slate-400">Daha önce indirdiğiniz yedeği geri yükleyin. Mevcut verilerin üzerine yazılır.</p>
             <input type="file" id="importFile" accept=".json" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-deepblue-700 file:text-white hover:file:bg-deepblue-600"/>
-            <button onclick="importData()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors font-medium">
-                Verileri Yükle
-            </button>
+            <button onclick="importData()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors font-medium">Verileri Yükle</button>
         </div>
     </main>
 
@@ -202,24 +292,31 @@
     <script>
         // --- 1. DEFAULT DATA & STATE ---
         const defaultTasks = [
-            { id: 1, name: 'Vakit Namazı', points: 5, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-person-praying' },
-            { id: 2, name: 'Cemaatle Namaz', points: 10, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-users' },
-            { id: 3, name: 'Kur\'an Okuma', points: 1, type: 'positive', unit: 'Sayfa', count: 0, icon: 'fa-book-quran' },
-            { id: 4, name: 'Zikir', points: 5, type: 'positive', unit: '10 Adet', count: 0, icon: 'fa-mitten' },
-            { id: 5, name: 'Ders Çalışma', points: 5, type: 'positive', unit: '30 Dk', count: 0, icon: 'fa-book-open-reader' },
-            { id: 6, name: 'PC/Mobil Süresi', points: -5, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-mobile-screen' },
-            { id: 7, name: 'Arkadaşlarla Laklak', points: -3, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-comments' },
-            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0, icon: 'fa-tv' }
+            { id: 1, name: 'Vakit Namazı', points: 5, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-person-praying', lifetimeCount: 0 },
+            { id: 2, name: 'Cemaatle Namaz', points: 10, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-users', lifetimeCount: 0 },
+            { id: 3, name: 'Kur\'an Okuma', points: 1, type: 'positive', unit: 'Sayfa', count: 0, icon: 'fa-book-quran', lifetimeCount: 0 },
+            { id: 4, name: 'Zikir', points: 5, type: 'positive', unit: '10 Adet', count: 0, icon: 'fa-mitten', lifetimeCount: 0 },
+            { id: 5, name: 'Ders Çalışma', points: 5, type: 'positive', unit: '30 Dk', count: 0, icon: 'fa-book-open-reader', lifetimeCount: 0 },
+            
+            // Yeni: Varsayılan Mazeretler
+            { id: 101, name: 'Hastalık / Halsizlik', points: 20, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-thermometer', lifetimeCount: 0 },
+            { id: 102, name: 'Yolculuk / Seyahat', points: 15, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-plane', lifetimeCount: 0 },
+            { id: 103, name: 'Aşırı İş Yoğunluğu', points: 10, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-briefcase', lifetimeCount: 0 },
+
+            { id: 6, name: 'PC/Mobil Süresi', points: -5, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-mobile-screen', lifetimeCount: 0 },
+            { id: 7, name: 'Arkadaşlarla Laklak', points: -3, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-comments', lifetimeCount: 0 },
+            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0, icon: 'fa-tv', lifetimeCount: 0 }
         ];
 
         let appData = {
+            profile: { name: '', bio: '', idealScore: 250 },
             tasks: [],
-            history: {}, // { "YYYY-MM-DD": score }
+            history: {},
             lastLoginDate: ""
         };
 
         let myChart = null;
-        let currentChartPeriod = 7; // Default 1 week
+        let currentChartPeriod = 7;
 
         // --- 2. STORAGE & INITIALIZATION ---
         function getTodayString() {
@@ -230,16 +327,27 @@
         function loadData() {
             const savedData = localStorage.getItem('vibeTrackerDataV1');
             if (savedData) {
-                appData = JSON.parse(savedData);
-                // Geriye dönük uyumluluk (yeni ikonlar eklendiği için)
-                appData.tasks.forEach(task => {
-                    if(!task.icon) task.icon = task.type === 'positive' ? 'fa-check' : 'fa-xmark';
+                const parsed = JSON.parse(savedData);
+                // Data Patching (Eski sürümden geçiş)
+                appData.history = parsed.history || {};
+                appData.lastLoginDate = parsed.lastLoginDate || "";
+                appData.profile = parsed.profile || { name: '', bio: '', idealScore: 250 };
+                
+                appData.tasks = parsed.tasks.map(task => {
+                    return { ...task, lifetimeCount: task.lifetimeCount || 0 };
                 });
+
+                // Eğer mazeret görevleri yoksa ekle (Migration)
+                if (!appData.tasks.some(t => t.type === 'excuse')) {
+                    appData.tasks.push(...defaultTasks.filter(t => t.type === 'excuse'));
+                }
+
             } else {
                 appData.tasks = JSON.parse(JSON.stringify(defaultTasks));
             }
 
             checkDayReset();
+            populateProfileForm();
             updateUI();
             
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -253,10 +361,8 @@
 
         function checkDayReset() {
             const today = getTodayString();
-            
             if (appData.lastLoginDate && appData.lastLoginDate !== today) {
-                const yesterdayScore = calculateTotalScore();
-                appData.history[appData.lastLoginDate] = yesterdayScore;
+                appData.history[appData.lastLoginDate] = calculateTotalScore();
                 appData.tasks.forEach(task => task.count = 0);
             }
             appData.lastLoginDate = today;
@@ -270,24 +376,22 @@
         function calculateStreak() {
             let streak = 0;
             const dates = Object.keys(appData.history).sort().reverse();
-            let checkDate = new Date();
-            checkDate.setDate(checkDate.getDate() - 1); // Dünden başla kontrol etmeye
-
-            // Bugünün skoru 0'dan büyükse seriye +1 ekle (görsel tatmin)
             if (calculateTotalScore() > 0) streak++;
-
             for (let i = 0; i < dates.length; i++) {
-                const dateStr = dates[i];
-                const d = new Date(dateStr);
-                // Tarihler ardışık mı kontrolü basitçe gün farkıyla yapılabilir ama şimdilik sadece
-                // geçmişte 0'ın üzerinde puan alınan ardışık günleri sayalım
-                if (appData.history[dateStr] > 0) {
-                    streak++;
-                } else {
-                    break;
-                }
+                if (appData.history[dates[i]] > 0) streak++;
+                else break;
             }
             return streak;
+        }
+
+        function getLevelInfo(score) {
+            const ideal = parseInt(appData.profile.idealScore) || 250;
+            const limit1 = Math.floor(ideal * 0.34); // ~85
+            const limit2 = Math.floor(ideal * 0.68); // ~170
+
+            if (score <= limit1) return { text: "Zayıf Seviye", bg: "bg-rose-500/20", textCol: "text-rose-400", border: "border-rose-500/30", percent: Math.min((score/limit1)*33, 33) };
+            if (score <= limit2) return { text: "Orta Seviye", bg: "bg-amber-500/20", textCol: "text-amber-400", border: "border-amber-500/30", percent: 33 + Math.min(((score-limit1)/(limit2-limit1))*33, 33) };
+            return { text: "Yüksek Seviye", bg: "bg-emerald-500/20", textCol: "text-emerald-400", border: "border-emerald-500/30", percent: Math.min(66 + ((score-limit2)/(ideal-limit2))*34, 100) };
         }
 
         function triggerTask(taskId, isAdding) {
@@ -300,14 +404,24 @@
                     return;
                 }
                 task.count++;
+                task.lifetimeCount = (task.lifetimeCount || 0) + 1;
                 showToast(`${task.name}: ${task.points > 0 ? '+' : ''}${task.points}`, task.points > 0 ? "success" : "error");
             } else {
                 if (task.count > 0) {
                     task.count--;
+                    if(task.lifetimeCount > 0) task.lifetimeCount--;
                     showToast(`Geri alındı.`, "info");
                 }
             }
             saveData();
+        }
+
+        function deleteTask(taskId) {
+            if(confirm("Bu görevi tamamen silmek istediğinize emin misiniz? İstatistiklerdeki geçmiş sayıları kaybolacaktır.")) {
+                appData.tasks = appData.tasks.filter(t => t.id !== taskId);
+                saveData();
+                showToast("Görev silindi.", "info");
+            }
         }
 
         function addNewTask(e) {
@@ -318,9 +432,12 @@
             const unit = document.getElementById('taskUnit').value.trim();
 
             if (!name || isNaN(points)) return;
-
             if (type === 'negative') points = -Math.abs(points);
             else points = Math.abs(points);
+
+            let icon = 'fa-star';
+            if(type === 'negative') icon = 'fa-circle-exclamation';
+            if(type === 'excuse') icon = 'fa-kit-medical';
 
             const newTask = {
                 id: Date.now(),
@@ -329,31 +446,94 @@
                 type: type,
                 unit: unit || 'Adet',
                 count: 0,
-                icon: type === 'positive' ? 'fa-star' : 'fa-circle-exclamation'
+                lifetimeCount: 0,
+                icon: icon
             };
 
             appData.tasks.push(newTask);
             saveData();
             document.getElementById('addTaskForm').reset();
-            toggleAddForm(); // Eklendikten sonra formu kapat
+            
+            // Formu kapa ve ilgili sekmeyi aç
+            const content = document.getElementById('addTaskAccordion');
+            content.classList.remove('expanded');
+            document.getElementById('formChevron').style.transform = 'rotate(0deg)';
+            
+            if(type === 'positive') openSection('posTasksSection', 'posChevron');
+            if(type === 'negative') openSection('negTasksSection', 'negChevron');
+            if(type === 'excuse') openSection('excuseTasksSection', 'excuseChevron');
+
             showToast("Aktivite eklendi.", "success");
         }
 
-        // --- 4. UI RENDER ---
+        // --- 4. PROFILE & STATS LOGIC ---
+        function saveProfile() {
+            appData.profile.name = document.getElementById('profName').value;
+            appData.profile.bio = document.getElementById('profBio').value;
+            appData.profile.idealScore = parseInt(document.getElementById('profIdealScore').value) || 250;
+            saveData();
+            showToast("Profil kaydedildi.", "success");
+        }
+
+        function populateProfileForm() {
+            document.getElementById('profName').value = appData.profile.name || '';
+            document.getElementById('profBio').value = appData.profile.bio || '';
+            document.getElementById('profIdealScore').value = appData.profile.idealScore || 250;
+        }
+
+        function calculateStats() {
+            // En İstikrarlı (Positive & Lifetime En Yüksek)
+            const posTasks = appData.tasks.filter(t => t.type === 'positive').sort((a,b) => b.lifetimeCount - a.lifetimeCount);
+            if (posTasks.length > 0 && posTasks[0].lifetimeCount > 0) {
+                document.getElementById('statBestTask').textContent = posTasks[0].name;
+                document.getElementById('statBestCount').textContent = `Tüm zamanlar: ${posTasks[0].lifetimeCount} kez`;
+            }
+
+            // En Zayıf (Negative & Lifetime En Yüksek)
+            const negTasks = appData.tasks.filter(t => t.type === 'negative').sort((a,b) => b.lifetimeCount - a.lifetimeCount);
+            if (negTasks.length > 0 && negTasks[0].lifetimeCount > 0) {
+                document.getElementById('statWorstTask').textContent = negTasks[0].name;
+                document.getElementById('statWorstCount').textContent = `Tüm zamanlar: ${negTasks[0].lifetimeCount} kez`;
+            }
+
+            // Toplam ve Ortalama
+            let totalHistScore = Object.values(appData.history).reduce((a,b) => a+b, 0);
+            let totalDays = Object.keys(appData.history).length;
+            
+            // Bugünü de katalım
+            const todayScore = calculateTotalScore();
+            totalHistScore += todayScore;
+            if(todayScore > 0 || totalDays === 0) totalDays += 1;
+
+            document.getElementById('statTotalLifetimeScore').textContent = totalHistScore;
+            document.getElementById('statAvgScore').textContent = totalDays > 0 ? Math.round(totalHistScore / totalDays) : 0;
+        }
+
+        // --- 5. UI RENDER ---
         function updateUI() {
-            // Skor & Seri Güncelleme
             const total = calculateTotalScore();
+            
+            // Header ve Dashboard Level Badge
+            const lvl = getLevelInfo(total);
+            const badgeHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}">${lvl.text}</span>`;
+            document.getElementById('levelBadge').outerHTML = `<span id="levelBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}">${lvl.text}</span>`;
+            document.getElementById('levelBadgeHeader').className = `hidden sm:block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}`;
+            document.getElementById('levelBadgeHeader').textContent = lvl.text;
+            
+            // Progress Bar
+            document.getElementById('scoreProgressBar').style.width = `${Math.max(0, lvl.percent)}%`;
+            document.getElementById('scoreProgressBar').className = `h-1.5 rounded-full transition-all duration-500 ${total > 0 ? lvl.bg.replace('/20','').replace('bg-','bg-') : 'bg-slate-700'}`; // Color logic simplification
+
+            // Score Display
             const scoreEl = document.getElementById('totalScoreDisplay');
             scoreEl.textContent = total;
             scoreEl.className = `text-5xl font-black ${total >= 0 ? 'text-white' : 'text-rose-400'}`;
-            
             document.getElementById('streakDisplay').textContent = `${calculateStreak()} Gün Seri`;
 
-            // Son 3 Gün Özeti Render
+            // Recent Days
             const recentContainer = document.getElementById('recentDaysContainer');
             recentContainer.innerHTML = '';
-            const allDates = Object.keys(appData.history).sort().reverse();
-            const last3Dates = allDates.slice(0, 3);
+            const last3Dates = Object.keys(appData.history).sort().reverse().slice(0, 3);
             
             if (last3Dates.length === 0) {
                 recentContainer.innerHTML = '<p class="text-sm text-slate-500">Henüz geçmiş veri yok.</p>';
@@ -370,28 +550,34 @@
                 });
             }
 
-            // Görev Listeleri Render
+            // Görev Listeleri
             const posContainer = document.getElementById('positiveTasksContainer');
             const negContainer = document.getElementById('negativeTasksContainer');
-            posContainer.innerHTML = ''; negContainer.innerHTML = '';
+            const excContainer = document.getElementById('excuseTasksContainer');
+            posContainer.innerHTML = ''; negContainer.innerHTML = ''; excContainer.innerHTML = '';
 
             appData.tasks.forEach(task => {
-                const isPositive = task.type === 'positive';
-                const mainColor = isPositive ? 'emerald' : 'rose';
-                const bgHover = isPositive ? 'hover:border-emerald-500/50 hover:shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'hover:border-rose-500/50 hover:shadow-[0_0_15px_rgba(244,63,94,0.1)]';
+                let mainColor = 'emerald';
+                if (task.type === 'negative') mainColor = 'rose';
+                if (task.type === 'excuse') mainColor = 'amber';
+
+                const bgHover = `hover:border-${mainColor}-500/50 hover:shadow-[0_0_15px_rgba(var(--tw-colors-${mainColor}-500),0.1)]`;
                 
                 const card = document.createElement('div');
-                card.className = `bg-deepblue-800 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between transition-all duration-300 ${bgHover} group`;
+                card.className = `bg-deepblue-900 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between transition-all duration-300 relative group`;
                 
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
+                    <button onclick="deleteTask(${task.id})" class="absolute top-2 right-2 text-slate-600 hover:text-rose-500 transition opacity-0 group-hover:opacity-100 p-1">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                    <div class="flex justify-between items-start mb-4 pr-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-deepblue-900 flex items-center justify-center border border-deepblue-700 text-${mainColor}-400 group-hover:scale-110 transition-transform">
+                            <div class="w-10 h-10 rounded-lg bg-deepblue-950 flex items-center justify-center border border-deepblue-800 text-${mainColor}-400 group-hover:scale-110 transition-transform">
                                 <i class="fa-solid ${task.icon}"></i>
                             </div>
                             <div>
-                                <h3 class="font-medium text-slate-200 leading-tight">${task.name}</h3>
-                                <span class="text-[11px] text-slate-400">${task.unit ? 'Her ' + task.unit : 'Adet'}: <strong class="text-${mainColor}-400">${task.points}p</strong></span>
+                                <h3 class="font-medium text-slate-200 leading-tight text-sm">${task.name}</h3>
+                                <span class="text-[10px] text-slate-400">${task.unit ? 'Her ' + task.unit : 'Adet'}: <strong class="text-${mainColor}-400">${task.points}p</strong></span>
                             </div>
                         </div>
                         <div class="px-2.5 py-1 rounded-md text-xs font-bold bg-${mainColor}-400/10 text-${mainColor}-400 border border-${mainColor}-400/20">
@@ -399,36 +585,35 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button onclick="triggerTask(${task.id}, true)" class="flex-1 bg-deepblue-700 hover:bg-deepblue-600 text-white py-2 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
-                            <i class="fa-solid fa-plus"></i>
+                        <button onclick="triggerTask(${task.id}, true)" class="flex-1 bg-deepblue-800 hover:bg-deepblue-700 text-white py-2 rounded-lg text-sm transition-colors flex justify-center items-center gap-2 border border-deepblue-700">
+                            <i class="fa-solid fa-plus"></i> Ekle
                         </button>
                         ${task.count > 0 ? `
-                        <button onclick="triggerTask(${task.id}, false)" class="w-12 bg-deepblue-900/50 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-700 flex justify-center items-center" title="Geri Al">
+                        <button onclick="triggerTask(${task.id}, false)" class="w-10 bg-deepblue-950 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-800 flex justify-center items-center" title="Geri Al">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>
                         ` : ''}
                     </div>
                 `;
 
-                if (isPositive) posContainer.appendChild(card);
-                else negContainer.appendChild(card);
+                if (task.type === 'positive') posContainer.appendChild(card);
+                else if (task.type === 'negative') negContainer.appendChild(card);
+                else if (task.type === 'excuse') excContainer.appendChild(card);
             });
 
             renderChart();
+            calculateStats();
         }
 
-        // --- 5. CHART & ANALYTICS ---
+        // --- 6. CHART ---
         function setChartPeriod(days) {
             currentChartPeriod = days;
-            
-            // Buton Stillerini Güncelle
             document.querySelectorAll('.period-btn').forEach(btn => {
                 btn.classList.remove('bg-deepblue-600', 'text-white');
                 btn.classList.add('text-slate-400');
             });
             document.getElementById(`btn-period-${days}`).classList.remove('text-slate-400');
             document.getElementById(`btn-period-${days}`).classList.add('bg-deepblue-600', 'text-white');
-
             renderChart();
         }
 
@@ -444,15 +629,14 @@
 
         function renderChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
-            
             const labels = generateDateRange(currentChartPeriod);
             const dataPoints = labels.map(date => {
                 if (date === getTodayString()) return calculateTotalScore();
-                return appData.history[date] || 0; // Veri yoksa 0 bas
+                return appData.history[date] || 0;
             });
             
             if (myChart) {
-                myChart.data.labels = labels.map(l => l.substring(5)); // Sadece Ay-Gün göster
+                myChart.data.labels = labels.map(l => l.substring(5));
                 myChart.data.datasets[0].data = dataPoints;
                 myChart.update();
                 return;
@@ -482,18 +666,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1E293B',
-                            titleColor: '#F8FAFC',
-                            bodyColor: '#F8FAFC',
-                            borderColor: '#334155',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: false
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
                         y: { grid: { color: '#1E293B' } },
                         x: { grid: { display: false } }
@@ -502,7 +675,7 @@
             });
         }
 
-        // --- 6. UTILITIES & UI INTERACTIONS ---
+        // --- 7. UTILITIES & UI INTERACTIONS ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -517,28 +690,33 @@
             toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
             
             container.appendChild(toast);
-
             setTimeout(() => {
                 toast.classList.replace('toast-enter', 'toast-exit');
                 setTimeout(() => toast.remove(), 300);
             }, 2500);
         }
 
-        function toggleAddForm() {
-            const content = document.getElementById('addTaskAccordion');
-            const icon = document.getElementById('formChevron');
+        function toggleSection(sectionId, iconId) {
+            const content = document.getElementById(sectionId);
+            const icon = document.getElementById(iconId);
             content.classList.toggle('expanded');
             if (content.classList.contains('expanded')) {
-                icon.style.transform = 'rotate(180deg)';
+                icon.style.transform = 'rotate(180deg)'; // Accordion açıksa ikon yukarı baksın (genel UI UX kuralı)
             } else {
-                icon.style.transform = 'rotate(0deg)';
+                icon.style.transform = 'rotate(0deg)'; // Kapalıysa aşağı baksın
             }
+        }
+
+        function openSection(sectionId, iconId) {
+            const content = document.getElementById(sectionId);
+            const icon = document.getElementById(iconId);
+            content.classList.add('expanded');
+            icon.style.transform = 'rotate(180deg)';
         }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            
             if (sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
@@ -549,56 +727,49 @@
         }
 
         function switchView(viewName) {
-            document.getElementById('view-home').classList.add('hidden');
-            document.getElementById('view-settings').classList.add('hidden');
-            
+            ['home', 'profile', 'stats', 'settings'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            
-            if(viewName === 'home') updateUI(); // Grafiğin yeniden düzgün çizilmesi için
+            if(viewName === 'home') updateUI();
+            if(viewName === 'stats') calculateStats();
         }
 
-        // --- 7. DATA EXPORT / IMPORT ---
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
             const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("href", dataStr);
             downloadAnchorNode.setAttribute("download", "vibetracker_backup_" + getTodayString() + ".json");
-            document.body.appendChild(downloadAnchorNode); // Firefox için gerekli
+            document.body.appendChild(downloadAnchorNode);
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
-            showToast("Veriler başarıyla indirildi.", "success");
+            showToast("Veriler indirildi.", "success");
         }
 
         function importData() {
             const fileInput = document.getElementById('importFile');
-            if (!fileInput.files.length) {
-                showToast("Lütfen bir JSON dosyası seçin.", "warning");
-                return;
-            }
-            const file = fileInput.files[0];
+            if (!fileInput.files.length) return showToast("Dosya seçin.", "warning");
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (importedData && importedData.tasks) {
-                        appData = importedData;
-                        saveData();
-                        showToast("Veriler başarıyla yüklendi!", "success");
+                    const imported = JSON.parse(e.target.result);
+                    if (imported && imported.tasks) {
+                        localStorage.setItem('vibeTrackerDataV1', JSON.stringify(imported));
+                        loadData(); // Sistemi baştan yükle
+                        showToast("Veriler yüklendi!", "success");
                         setTimeout(() => switchView('home'), 1000);
-                    } else {
-                        showToast("Geçersiz dosya formatı.", "error");
                     }
-                } catch (err) {
-                    showToast("Dosya okunamadı.", "error");
-                }
+                } catch (err) { showToast("Dosya okunamadı.", "error"); }
             };
-            reader.readAsText(file);
+            reader.readAsText(fileInput.files[0]);
         }
 
         // Bootstrap
         document.getElementById('addTaskForm').addEventListener('submit', addNewTask);
         loadData();
 
+        // İlk açılışta pozitif olanlar hariç diğerlerini kapalı yapmak için ikon yönlerini ayarla
+        document.getElementById('posChevron').style.transform = 'rotate(180deg)'; 
     </script>
 </body>
 </html>
