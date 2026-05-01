@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disiplin & Motivasyon Takibi V2.0</title>
+    <title>Disiplin & Motivasyon Takibi V2.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -40,9 +40,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
-        /* Accordion transition logic */
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; }
-        /* Çok öğe olabileceği için max-height'i yüksek tutuyoruz */
         .accordion-content.expanded { max-height: 2000px; } 
     </style>
 </head>
@@ -88,23 +86,28 @@
         
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-2 bg-gradient-to-br from-deepblue-800 to-deepblue-900 rounded-2xl p-6 shadow-lg border border-deepblue-700 flex justify-between items-center relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 text-deepblue-700/30 text-9xl"><i class="fa-solid fa-crown"></i></div>
-                <div class="z-10">
-                    <div class="flex items-center gap-3 mb-1">
-                        <p class="text-sm text-slate-400 uppercase tracking-wider font-semibold">Bugünün Skoru</p>
-                        <span id="levelBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-700 text-slate-300">Hesaplanıyor</span>
+                <div class="absolute -right-4 -top-4 text-deepblue-700/30 text-9xl pointer-events-none"><i class="fa-solid fa-crown"></i></div>
+                
+                <div class="z-10 w-full flex justify-between items-center pr-2">
+                    <div>
+                        <p class="text-sm text-slate-400 uppercase tracking-wider font-semibold mb-1">Bugünün Skoru</p>
+                        <p id="totalScoreDisplay" class="text-5xl font-black text-white">0</p>
+                        <div class="w-full bg-deepblue-950 rounded-full h-1.5 mt-3 max-w-[160px] sm:max-w-[200px]">
+                            <div id="scoreProgressBar" class="bg-deepblue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
                     </div>
-                    <p id="totalScoreDisplay" class="text-5xl font-black text-white">0</p>
-                    <div class="w-full bg-deepblue-950 rounded-full h-1.5 mt-3 max-w-[200px]">
-                        <div id="scoreProgressBar" class="bg-deepblue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="z-10 text-right">
-                    <div class="inline-flex items-center gap-2 bg-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-sm font-bold border border-orange-500/30">
-                        <i class="fa-solid fa-fire"></i> <span id="streakDisplay">0 Gün Seri</span>
+
+                    <div class="flex flex-col gap-2 shrink-0 items-end">
+                        <div class="inline-flex items-center justify-center gap-1.5 bg-orange-500/20 text-orange-400 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold border border-orange-500/30 whitespace-nowrap min-w-[110px] sm:min-w-[130px]">
+                            <i class="fa-solid fa-fire"></i> <span id="streakDisplay">0 Gün Seri</span>
+                        </div>
+                        <div id="levelBadge" class="inline-flex items-center justify-center gap-1.5 bg-slate-700/20 text-slate-400 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold border border-slate-600/30 whitespace-nowrap min-w-[110px] sm:min-w-[130px]">
+                            <i class="fa-solid fa-ranking-star"></i> <span id="levelText">Hesaplanıyor</span>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="bg-deepblue-800 rounded-2xl p-5 shadow-lg border border-deepblue-700">
                 <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-3">Son 3 Gün</p>
                 <div id="recentDaysContainer" class="space-y-2"></div>
@@ -116,7 +119,7 @@
                 <h2 class="text-lg font-semibold text-white flex items-center gap-2">
                     <i class="fa-solid fa-chart-area text-deepblue-accent"></i> Performans Grafiği
                 </h2>
-                <div class="inline-flex bg-deepblue-900 rounded-lg p-1 border border-deepblue-700 text-xs">
+                <div class="inline-flex bg-deepblue-900 rounded-lg p-1 border border-deepblue-700 text-xs shrink-0">
                     <button onclick="setChartPeriod(7)" id="btn-period-7" class="period-btn px-4 py-1.5 rounded-md text-white bg-deepblue-600 transition">1 Hafta</button>
                     <button onclick="setChartPeriod(30)" id="btn-period-30" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">1 Ay</button>
                     <button onclick="setChartPeriod(90)" id="btn-period-90" class="period-btn px-4 py-1.5 rounded-md text-slate-400 hover:text-white transition">3 Ay</button>
@@ -130,7 +133,7 @@
         <section class="space-y-4">
             
             <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
-                <button onclick="toggleSection('posTasksSection', 'posChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
+                <button onclick="toggleSection('posTasksSection', 'posChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition focus:outline-none">
                     <h2 class="text-lg font-semibold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-bolt"></i> Gelişim Görevleri</h2>
                     <i id="posChevron" class="fa-solid fa-chevron-up text-slate-400 transition-transform duration-300"></i>
                 </button>
@@ -140,22 +143,22 @@
             </div>
 
             <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
-                <button onclick="toggleSection('excuseTasksSection', 'excuseChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
-                    <h2 class="text-lg font-semibold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-bed-pulse"></i> Mazeretler (Motivasyon Koruyucu)</h2>
-                    <i id="excuseChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
-                </button>
-                <div id="excuseTasksSection" class="accordion-content bg-deepblue-900/30">
-                    <div id="excuseTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                </div>
-            </div>
-
-            <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
-                <button onclick="toggleSection('negTasksSection', 'negChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition">
+                <button onclick="toggleSection('negTasksSection', 'negChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition focus:outline-none">
                     <h2 class="text-lg font-semibold text-rose-400 flex items-center gap-2"><i class="fa-solid fa-ghost"></i> Zaman Kayıpları</h2>
                     <i id="negChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
                 </button>
                 <div id="negTasksSection" class="accordion-content bg-deepblue-900/30">
                     <div id="negativeTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-deepblue-800 rounded-2xl border border-deepblue-700 overflow-hidden shadow-sm">
+                <button onclick="toggleSection('excuseTasksSection', 'excuseChevron')" class="w-full p-4 flex justify-between items-center bg-deepblue-800 hover:bg-deepblue-700/50 transition focus:outline-none">
+                    <h2 class="text-lg font-semibold text-amber-400 flex items-center gap-2"><i class="fa-solid fa-bed-pulse"></i> Mazeretler (Motivasyon Koruyucu)</h2>
+                    <i id="excuseChevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                </button>
+                <div id="excuseTasksSection" class="accordion-content bg-deepblue-900/30">
+                    <div id="excuseTasksContainer" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
             </div>
 
@@ -175,8 +178,8 @@
                             <label class="block text-xs text-slate-400 mb-1">Tür</label>
                             <select id="taskType" class="w-full bg-deepblue-900 border border-deepblue-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-deepblue-500">
                                 <option value="positive">Pozitif (Puan Kazandırır)</option>
-                                <option value="excuse">Mazeret (Destek Puanı)</option>
                                 <option value="negative">Negatif (Puan Kaybettirir)</option>
+                                <option value="excuse">Mazeret (Destek Puanı)</option>
                             </select>
                         </div>
                         <div>
@@ -290,22 +293,18 @@
     <div id="toastContainer" class="fixed bottom-4 left-0 right-0 flex flex-col items-center gap-2 z-50 pointer-events-none"></div>
 
     <script>
-        // --- 1. DEFAULT DATA & STATE ---
         const defaultTasks = [
             { id: 1, name: 'Vakit Namazı', points: 5, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-person-praying', lifetimeCount: 0 },
             { id: 2, name: 'Cemaatle Namaz', points: 10, type: 'positive', unit: 'Vakit', count: 0, max: 5, icon: 'fa-users', lifetimeCount: 0 },
             { id: 3, name: 'Kur\'an Okuma', points: 1, type: 'positive', unit: 'Sayfa', count: 0, icon: 'fa-book-quran', lifetimeCount: 0 },
             { id: 4, name: 'Zikir', points: 5, type: 'positive', unit: '10 Adet', count: 0, icon: 'fa-mitten', lifetimeCount: 0 },
             { id: 5, name: 'Ders Çalışma', points: 5, type: 'positive', unit: '30 Dk', count: 0, icon: 'fa-book-open-reader', lifetimeCount: 0 },
-            
-            // Yeni: Varsayılan Mazeretler
-            { id: 101, name: 'Hastalık / Halsizlik', points: 20, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-thermometer', lifetimeCount: 0 },
-            { id: 102, name: 'Yolculuk / Seyahat', points: 15, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-plane', lifetimeCount: 0 },
-            { id: 103, name: 'Aşırı İş Yoğunluğu', points: 10, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-briefcase', lifetimeCount: 0 },
-
             { id: 6, name: 'PC/Mobil Süresi', points: -5, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-mobile-screen', lifetimeCount: 0 },
             { id: 7, name: 'Arkadaşlarla Laklak', points: -3, type: 'negative', unit: '15 Dk', count: 0, icon: 'fa-comments', lifetimeCount: 0 },
-            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0, icon: 'fa-tv', lifetimeCount: 0 }
+            { id: 8, name: 'TV İzleme', points: -3, type: 'negative', unit: '30 Dk', count: 0, icon: 'fa-tv', lifetimeCount: 0 },
+            { id: 101, name: 'Hastalık / Halsizlik', points: 20, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-thermometer', lifetimeCount: 0 },
+            { id: 102, name: 'Yolculuk / Seyahat', points: 15, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-plane', lifetimeCount: 0 },
+            { id: 103, name: 'Aşırı İş Yoğunluğu', points: 10, type: 'excuse', unit: 'Gün', count: 0, max: 1, icon: 'fa-briefcase', lifetimeCount: 0 }
         ];
 
         let appData = {
@@ -318,7 +317,6 @@
         let myChart = null;
         let currentChartPeriod = 7;
 
-        // --- 2. STORAGE & INITIALIZATION ---
         function getTodayString() {
             const now = new Date();
             return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -328,24 +326,13 @@
             const savedData = localStorage.getItem('vibeTrackerDataV1');
             if (savedData) {
                 const parsed = JSON.parse(savedData);
-                // Data Patching (Eski sürümden geçiş)
                 appData.history = parsed.history || {};
                 appData.lastLoginDate = parsed.lastLoginDate || "";
                 appData.profile = parsed.profile || { name: '', bio: '', idealScore: 250 };
-                
-                appData.tasks = parsed.tasks.map(task => {
-                    return { ...task, lifetimeCount: task.lifetimeCount || 0 };
-                });
-
-                // Eğer mazeret görevleri yoksa ekle (Migration)
-                if (!appData.tasks.some(t => t.type === 'excuse')) {
-                    appData.tasks.push(...defaultTasks.filter(t => t.type === 'excuse'));
-                }
-
+                appData.tasks = parsed.tasks.map(task => { return { ...task, lifetimeCount: task.lifetimeCount || 0 }; });
             } else {
                 appData.tasks = JSON.parse(JSON.stringify(defaultTasks));
             }
-
             checkDayReset();
             populateProfileForm();
             updateUI();
@@ -368,7 +355,6 @@
             appData.lastLoginDate = today;
         }
 
-        // --- 3. CORE LOGIC & GAMIFICATION ---
         function calculateTotalScore() {
             return appData.tasks.reduce((total, task) => total + (task.count * task.points), 0);
         }
@@ -386,8 +372,8 @@
 
         function getLevelInfo(score) {
             const ideal = parseInt(appData.profile.idealScore) || 250;
-            const limit1 = Math.floor(ideal * 0.34); // ~85
-            const limit2 = Math.floor(ideal * 0.68); // ~170
+            const limit1 = Math.floor(ideal * 0.34);
+            const limit2 = Math.floor(ideal * 0.68);
 
             if (score <= limit1) return { text: "Zayıf Seviye", bg: "bg-rose-500/20", textCol: "text-rose-400", border: "border-rose-500/30", percent: Math.min((score/limit1)*33, 33) };
             if (score <= limit2) return { text: "Orta Seviye", bg: "bg-amber-500/20", textCol: "text-amber-400", border: "border-amber-500/30", percent: 33 + Math.min(((score-limit1)/(limit2-limit1))*33, 33) };
@@ -399,10 +385,7 @@
             if (!task) return;
 
             if (isAdding) {
-                if (task.max && task.count >= task.max) {
-                    showToast(`Maksimum limite ulaştın.`, "warning");
-                    return;
-                }
+                if (task.max && task.count >= task.max) return showToast(`Maksimum limite ulaştın.`, "warning");
                 task.count++;
                 task.lifetimeCount = (task.lifetimeCount || 0) + 1;
                 showToast(`${task.name}: ${task.points > 0 ? '+' : ''}${task.points}`, task.points > 0 ? "success" : "error");
@@ -417,7 +400,7 @@
         }
 
         function deleteTask(taskId) {
-            if(confirm("Bu görevi tamamen silmek istediğinize emin misiniz? İstatistiklerdeki geçmiş sayıları kaybolacaktır.")) {
+            if(confirm("Görevi silmek istediğinize emin misiniz?")) {
                 appData.tasks = appData.tasks.filter(t => t.id !== taskId);
                 saveData();
                 showToast("Görev silindi.", "info");
@@ -439,22 +422,10 @@
             if(type === 'negative') icon = 'fa-circle-exclamation';
             if(type === 'excuse') icon = 'fa-kit-medical';
 
-            const newTask = {
-                id: Date.now(),
-                name: name,
-                points: points,
-                type: type,
-                unit: unit || 'Adet',
-                count: 0,
-                lifetimeCount: 0,
-                icon: icon
-            };
-
-            appData.tasks.push(newTask);
+            appData.tasks.push({ id: Date.now(), name: name, points: points, type: type, unit: unit || 'Adet', count: 0, lifetimeCount: 0, icon: icon });
             saveData();
             document.getElementById('addTaskForm').reset();
             
-            // Formu kapa ve ilgili sekmeyi aç
             const content = document.getElementById('addTaskAccordion');
             content.classList.remove('expanded');
             document.getElementById('formChevron').style.transform = 'rotate(0deg)';
@@ -466,7 +437,6 @@
             showToast("Aktivite eklendi.", "success");
         }
 
-        // --- 4. PROFILE & STATS LOGIC ---
         function saveProfile() {
             appData.profile.name = document.getElementById('profName').value;
             appData.profile.bio = document.getElementById('profBio').value;
@@ -482,25 +452,20 @@
         }
 
         function calculateStats() {
-            // En İstikrarlı (Positive & Lifetime En Yüksek)
             const posTasks = appData.tasks.filter(t => t.type === 'positive').sort((a,b) => b.lifetimeCount - a.lifetimeCount);
             if (posTasks.length > 0 && posTasks[0].lifetimeCount > 0) {
                 document.getElementById('statBestTask').textContent = posTasks[0].name;
                 document.getElementById('statBestCount').textContent = `Tüm zamanlar: ${posTasks[0].lifetimeCount} kez`;
             }
 
-            // En Zayıf (Negative & Lifetime En Yüksek)
             const negTasks = appData.tasks.filter(t => t.type === 'negative').sort((a,b) => b.lifetimeCount - a.lifetimeCount);
             if (negTasks.length > 0 && negTasks[0].lifetimeCount > 0) {
                 document.getElementById('statWorstTask').textContent = negTasks[0].name;
                 document.getElementById('statWorstCount').textContent = `Tüm zamanlar: ${negTasks[0].lifetimeCount} kez`;
             }
 
-            // Toplam ve Ortalama
             let totalHistScore = Object.values(appData.history).reduce((a,b) => a+b, 0);
             let totalDays = Object.keys(appData.history).length;
-            
-            // Bugünü de katalım
             const todayScore = calculateTotalScore();
             totalHistScore += todayScore;
             if(todayScore > 0 || totalDays === 0) totalDays += 1;
@@ -509,22 +474,22 @@
             document.getElementById('statAvgScore').textContent = totalDays > 0 ? Math.round(totalHistScore / totalDays) : 0;
         }
 
-        // --- 5. UI RENDER ---
         function updateUI() {
             const total = calculateTotalScore();
-            
-            // Header ve Dashboard Level Badge
             const lvl = getLevelInfo(total);
-            const badgeHTML = `<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}">${lvl.text}</span>`;
-            document.getElementById('levelBadge').outerHTML = `<span id="levelBadge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}">${lvl.text}</span>`;
+            
+            // Level Badge Update (Ana Ekran - Simetrik Pill Tasarımı)
+            const levelBadge = document.getElementById('levelBadge');
+            levelBadge.className = `inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold border whitespace-nowrap min-w-[110px] sm:min-w-[130px] ${lvl.bg} ${lvl.textCol} ${lvl.border}`;
+            document.getElementById('levelText').textContent = lvl.text;
+            
+            // Header Mini Badge
             document.getElementById('levelBadgeHeader').className = `hidden sm:block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${lvl.bg} ${lvl.textCol} border ${lvl.border}`;
             document.getElementById('levelBadgeHeader').textContent = lvl.text;
             
-            // Progress Bar
+            // Progress Bar & Scores
             document.getElementById('scoreProgressBar').style.width = `${Math.max(0, lvl.percent)}%`;
-            document.getElementById('scoreProgressBar').className = `h-1.5 rounded-full transition-all duration-500 ${total > 0 ? lvl.bg.replace('/20','').replace('bg-','bg-') : 'bg-slate-700'}`; // Color logic simplification
-
-            // Score Display
+            document.getElementById('scoreProgressBar').className = `h-1.5 rounded-full transition-all duration-500 ${total > 0 ? lvl.bg.replace('/20','').replace('bg-','bg-') : 'bg-slate-700'}`;
             const scoreEl = document.getElementById('totalScoreDisplay');
             scoreEl.textContent = total;
             scoreEl.className = `text-5xl font-black ${total >= 0 ? 'text-white' : 'text-rose-400'}`;
@@ -534,37 +499,29 @@
             const recentContainer = document.getElementById('recentDaysContainer');
             recentContainer.innerHTML = '';
             const last3Dates = Object.keys(appData.history).sort().reverse().slice(0, 3);
-            
-            if (last3Dates.length === 0) {
-                recentContainer.innerHTML = '<p class="text-sm text-slate-500">Henüz geçmiş veri yok.</p>';
-            } else {
+            if (last3Dates.length === 0) recentContainer.innerHTML = '<p class="text-sm text-slate-500">Henüz geçmiş veri yok.</p>';
+            else {
                 last3Dates.forEach(date => {
                     const score = appData.history[date];
-                    const color = score >= 0 ? 'text-emerald-400' : 'text-rose-400';
                     recentContainer.innerHTML += `
                         <div class="flex justify-between items-center text-sm border-b border-deepblue-700/50 pb-1">
                             <span class="text-slate-300">${date}</span>
-                            <span class="font-bold ${color}">${score > 0 ? '+' : ''}${score} Puan</span>
+                            <span class="font-bold ${score >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${score > 0 ? '+' : ''}${score} Puan</span>
                         </div>
                     `;
                 });
             }
 
-            // Görev Listeleri
+            // Görev Kartları Render
             const posContainer = document.getElementById('positiveTasksContainer');
             const negContainer = document.getElementById('negativeTasksContainer');
             const excContainer = document.getElementById('excuseTasksContainer');
             posContainer.innerHTML = ''; negContainer.innerHTML = ''; excContainer.innerHTML = '';
 
             appData.tasks.forEach(task => {
-                let mainColor = 'emerald';
-                if (task.type === 'negative') mainColor = 'rose';
-                if (task.type === 'excuse') mainColor = 'amber';
-
-                const bgHover = `hover:border-${mainColor}-500/50 hover:shadow-[0_0_15px_rgba(var(--tw-colors-${mainColor}-500),0.1)]`;
-                
+                let mainColor = task.type === 'negative' ? 'rose' : task.type === 'excuse' ? 'amber' : 'emerald';
                 const card = document.createElement('div');
-                card.className = `bg-deepblue-900 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between transition-all duration-300 relative group`;
+                card.className = `bg-deepblue-900 rounded-xl p-4 border border-deepblue-700 flex flex-col justify-between transition-all duration-300 relative group hover:border-${mainColor}-500/50 hover:shadow-[0_0_15px_rgba(var(--tw-colors-${mainColor}-500),0.1)]`;
                 
                 card.innerHTML = `
                     <button onclick="deleteTask(${task.id})" class="absolute top-2 right-2 text-slate-600 hover:text-rose-500 transition opacity-0 group-hover:opacity-100 p-1">
@@ -580,18 +537,14 @@
                                 <span class="text-[10px] text-slate-400">${task.unit ? 'Her ' + task.unit : 'Adet'}: <strong class="text-${mainColor}-400">${task.points}p</strong></span>
                             </div>
                         </div>
-                        <div class="px-2.5 py-1 rounded-md text-xs font-bold bg-${mainColor}-400/10 text-${mainColor}-400 border border-${mainColor}-400/20">
-                            ${task.count}x
-                        </div>
+                        <div class="px-2.5 py-1 rounded-md text-xs font-bold bg-${mainColor}-400/10 text-${mainColor}-400 border border-${mainColor}-400/20">${task.count}x</div>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="triggerTask(${task.id}, true)" class="flex-1 bg-deepblue-800 hover:bg-deepblue-700 text-white py-2 rounded-lg text-sm transition-colors flex justify-center items-center gap-2 border border-deepblue-700">
                             <i class="fa-solid fa-plus"></i> Ekle
                         </button>
                         ${task.count > 0 ? `
-                        <button onclick="triggerTask(${task.id}, false)" class="w-10 bg-deepblue-950 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-800 flex justify-center items-center" title="Geri Al">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
+                        <button onclick="triggerTask(${task.id}, false)" class="w-10 bg-deepblue-950 hover:bg-rose-900/50 text-slate-400 hover:text-rose-400 py-2 rounded-lg text-sm transition-colors border border-deepblue-800 flex justify-center items-center" title="Geri Al"><i class="fa-solid fa-rotate-left"></i></button>
                         ` : ''}
                     </div>
                 `;
@@ -605,7 +558,6 @@
             calculateStats();
         }
 
-        // --- 6. CHART ---
         function setChartPeriod(days) {
             currentChartPeriod = days;
             document.querySelectorAll('.period-btn').forEach(btn => {
@@ -617,26 +569,17 @@
             renderChart();
         }
 
-        function generateDateRange(daysBack) {
-            const dates = [];
-            for (let i = daysBack - 1; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
-            }
-            return dates;
-        }
-
         function renderChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
-            const labels = generateDateRange(currentChartPeriod);
-            const dataPoints = labels.map(date => {
-                if (date === getTodayString()) return calculateTotalScore();
-                return appData.history[date] || 0;
-            });
+            const dates = [];
+            for (let i = currentChartPeriod - 1; i >= 0; i--) {
+                const d = new Date(); d.setDate(d.getDate() - i);
+                dates.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+            }
+            const dataPoints = dates.map(date => date === getTodayString() ? calculateTotalScore() : (appData.history[date] || 0));
             
             if (myChart) {
-                myChart.data.labels = labels.map(l => l.substring(5));
+                myChart.data.labels = dates.map(l => l.substring(5));
                 myChart.data.datasets[0].data = dataPoints;
                 myChart.update();
                 return;
@@ -644,92 +587,50 @@
 
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.font.family = 'ui-sans-serif, system-ui';
-
             myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels.map(l => l.substring(5)),
-                    datasets: [{
-                        label: 'Skor',
-                        data: dataPoints,
-                        borderColor: '#3B82F6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#60A5FA',
-                        pointBorderColor: '#0B1120',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        fill: true,
-                        tension: 0.3
-                    }]
+                    labels: dates.map(l => l.substring(5)),
+                    datasets: [{ label: 'Skor', data: dataPoints, borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.1)', borderWidth: 3, pointBackgroundColor: '#60A5FA', pointBorderColor: '#0B1120', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.3 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: '#1E293B' } },
-                        x: { grid: { display: false } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#1E293B' } }, x: { grid: { display: false } } } }
             });
         }
 
-        // --- 7. UTILITIES & UI INTERACTIONS ---
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
-            
-            let bgClass = "bg-deepblue-800 border-deepblue-600";
-            let iconClass = "fa-info-circle text-blue-400";
-            if (type === 'success') iconClass = "fa-check-circle text-emerald-400";
-            if (type === 'error') iconClass = "fa-arrow-trend-down text-rose-400";
+            let iconClass = type === 'success' ? "fa-check-circle text-emerald-400" : type === 'error' ? "fa-arrow-trend-down text-rose-400" : "fa-info-circle text-blue-400";
             if (type === 'warning') iconClass = "fa-triangle-exclamation text-amber-400";
 
-            toast.className = `toast-enter flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border ${bgClass} text-sm text-white max-w-sm w-auto pointer-events-auto`;
+            toast.className = `toast-enter flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border bg-deepblue-800 border-deepblue-600 text-sm text-white max-w-sm w-auto pointer-events-auto`;
             toast.innerHTML = `<i class="fa-solid ${iconClass}"></i> <span>${message}</span>`;
             
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.replace('toast-enter', 'toast-exit');
-                setTimeout(() => toast.remove(), 300);
-            }, 2500);
+            setTimeout(() => { toast.classList.replace('toast-enter', 'toast-exit'); setTimeout(() => toast.remove(), 300); }, 2500);
         }
 
         function toggleSection(sectionId, iconId) {
             const content = document.getElementById(sectionId);
             const icon = document.getElementById(iconId);
             content.classList.toggle('expanded');
-            if (content.classList.contains('expanded')) {
-                icon.style.transform = 'rotate(180deg)'; // Accordion açıksa ikon yukarı baksın (genel UI UX kuralı)
-            } else {
-                icon.style.transform = 'rotate(0deg)'; // Kapalıysa aşağı baksın
-            }
+            icon.style.transform = content.classList.contains('expanded') ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
         function openSection(sectionId, iconId) {
-            const content = document.getElementById(sectionId);
-            const icon = document.getElementById(iconId);
-            content.classList.add('expanded');
-            icon.style.transform = 'rotate(180deg)';
+            document.getElementById(sectionId).classList.add('expanded');
+            document.getElementById(iconId).style.transform = 'rotate(180deg)';
         }
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
         }
 
         function switchView(viewName) {
-            ['home', 'profile', 'stats', 'settings'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.add('hidden');
-            });
+            ['home', 'profile', 'stats', 'settings'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
             if(viewName === 'home') updateUI();
             if(viewName === 'stats') calculateStats();
@@ -737,12 +638,9 @@
 
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "vibetracker_backup_" + getTodayString() + ".json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr); node.setAttribute("download", "vibetracker_backup_" + getTodayString() + ".json");
+            document.body.appendChild(node); node.click(); node.remove();
             showToast("Veriler indirildi.", "success");
         }
 
@@ -755,8 +653,7 @@
                     const imported = JSON.parse(e.target.result);
                     if (imported && imported.tasks) {
                         localStorage.setItem('vibeTrackerDataV1', JSON.stringify(imported));
-                        loadData(); // Sistemi baştan yükle
-                        showToast("Veriler yüklendi!", "success");
+                        loadData(); showToast("Veriler yüklendi!", "success");
                         setTimeout(() => switchView('home'), 1000);
                     }
                 } catch (err) { showToast("Dosya okunamadı.", "error"); }
@@ -764,11 +661,8 @@
             reader.readAsText(fileInput.files[0]);
         }
 
-        // Bootstrap
         document.getElementById('addTaskForm').addEventListener('submit', addNewTask);
         loadData();
-
-        // İlk açılışta pozitif olanlar hariç diğerlerini kapalı yapmak için ikon yönlerini ayarla
         document.getElementById('posChevron').style.transform = 'rotate(180deg)'; 
     </script>
 </body>
