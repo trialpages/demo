@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piyasa Analiz | MyVibeCoder</title>
+    <title>Piyasa Analiz | MyVibeCoder Profesyonel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -25,246 +25,305 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #131722; }
         ::-webkit-scrollbar-thumb { background: #2962ff; border-radius: 3px; }
+        
+        /* Modal Animasyonları */
+        .modal-enter { opacity: 0; transform: scale(0.95); transition: all 0.2s ease-out; }
+        .modal-enter-active { opacity: 1; transform: scale(1); }
+        .modal-exit { opacity: 1; transform: scale(1); transition: all 0.2s ease-in; }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); pointer-events: none; }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-        // const firebaseConfig = { ... };
-        // const app = initializeApp(firebaseConfig);
+        // Firebase entegrasyonu için yapı hazır.
     </script>
 
-    <header class="bg-darker border-b border-gray-800 sticky top-0 z-50">
+    <header class="bg-darker border-b border-gray-800 sticky top-0 z-40 shadow-md">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-                <i class="fa-solid fa-gem text-brand"></i>
+                <i class="fa-solid fa-chart-pie text-brand"></i>
                 VibeMarkets
             </h1>
-            <div class="text-sm text-gray-400 flex items-center gap-2">
-                <i class="fa-solid fa-circle text-green-500 text-[10px] animate-pulse"></i> 
-                <span>Canlı Piyasalar</span>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 text-sm text-gray-400 border-r border-gray-700 pr-4">
+                    <i class="fa-solid fa-circle text-green-500 text-[10px] animate-pulse"></i> Canlı Veri
+                </div>
+                <button onclick="openModal()" class="text-gray-300 hover:text-white focus:outline-none flex items-center gap-2 bg-dark px-4 py-2 rounded-lg border border-gray-700 transition-colors">
+                    <i class="fa-solid fa-bars"></i>
+                    <span class="hidden sm:inline">Ürün Yönetimi</span>
+                </button>
             </div>
         </div>
+        
+        <div id="ticker-container" class="h-[44px] border-t border-gray-800 bg-dark">
+            </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-8 flex flex-col gap-8">
+    <main class="flex-grow container mx-auto px-4 py-6 flex flex-col gap-8">
         
         <section class="flex flex-col gap-4">
-            <h2 class="text-xl font-semibold text-white border-b border-gray-800 pb-2">Öne Çıkan Kıymetli Madenler</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 h-32">
-                
-                <div class="tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                    "symbol": "FX_IDC:XAUTRYG",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "dateRange": "1D",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "autosize": true,
-                    "largeChartUrl": ""
-                    }
-                    </script>
+            <h2 class="text-lg font-semibold text-white border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-star text-yellow-500"></i> Takip Edilen Ürünler
+            </h2>
+            <div id="minicards-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-32">
                 </div>
-
-                <div class="tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                    "symbol": "FX_IDC:XAGTRYG",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "dateRange": "1D",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "autosize": true,
-                    "largeChartUrl": ""
-                    }
-                    </script>
-                </div>
-
-                <div class="tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                    "symbol": "BIST:ALTIN",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "dateRange": "1D",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "autosize": true,
-                    "largeChartUrl": ""
-                    }
-                    </script>
-                </div>
-
-                <div class="tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                    "symbol": "TVC:PLATINUM",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "dateRange": "1D",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "autosize": true,
-                    "largeChartUrl": ""
-                    }
-                    </script>
-                </div>
-
-                <div class="tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                    {
-                    "symbol": "TVC:PALLADIUM",
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "dateRange": "1D",
-                    "colorTheme": "dark",
-                    "isTransparent": true,
-                    "autosize": true,
-                    "largeChartUrl": ""
-                    }
-                    </script>
-                </div>
-
-            </div>
         </section>
 
         <section class="flex flex-col gap-4">
-            <h2 class="text-xl font-semibold text-white border-b border-gray-800 pb-2">Piyasa Listesi (Anlık)</h2>
-            <div class="bg-darker rounded-xl shadow-lg border border-gray-800 overflow-hidden h-[400px]">
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-                    {
-                    "colorTheme": "dark",
-                    "dateRange": "12M",
-                    "showChart": false,
-                    "locale": "tr",
-                    "width": "100%",
-                    "height": "100%",
-                    "largeChartUrl": "",
-                    "isTransparent": true,
-                    "showSymbolLogo": true,
-                    "showFloatingTooltip": true,
-                    "tabs": [
-                        {
-                        "title": "Tüm Madenler",
-                        "symbols": [
-                            { "s": "FX_IDC:XAUTRYG", "d": "Gram Altın (TL)" },
-                            { "s": "FX_IDC:XAGTRYG", "d": "Gram Gümüş (TL)" },
-                            { "s": "BIST:ALTIN", "d": "Altın Sertifikası (S1)" },
-                            { "s": "TVC:PLATINUM", "d": "Platin (USD)" },
-                            { "s": "TVC:PALLADIUM", "d": "Paladyum (USD)" },
-                            { "s": "OANDA:XAUUSD", "d": "Ons Altın (USD)" }
-                        ],
-                        "originalTitle": "Madenler"
-                        },
-                        {
-                        "title": "BIST Hisseleri",
-                        "symbols": [
-                            { "s": "BIST:XU100", "d": "BIST 100 Endeksi" },
-                            { "s": "BIST:THYAO", "d": "Türk Hava Yolları" },
-                            { "s": "BIST:TUPRS", "d": "Tüpraş" },
-                            { "s": "BIST:ASELS", "d": "Aselsan" },
-                            { "s": "BIST:KCHOL", "d": "Koç Holding" },
-                            { "s": "BIST:ISCTR", "d": "İş Bankası (C)" },
-                            { "s": "BIST:EREGL", "d": "Erdemir" }
-                        ],
-                        "originalTitle": "BIST"
-                        }
-                    ]
-                    }
-                    </script>
+            <h2 class="text-lg font-semibold text-white border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-list text-brand"></i> Anlık Fiyat Listesi
+            </h2>
+            <div class="bg-darker rounded-xl shadow-lg border border-gray-800 overflow-hidden h-[400px]" id="market-list-container">
                 </div>
-            </div>
         </section>
 
         <section class="flex flex-col gap-4">
-            <h2 class="text-xl font-semibold text-white border-b border-gray-800 pb-2">Kolay Grafik Analizi</h2>
-            <div class="bg-darker rounded-xl shadow-lg border border-gray-800 overflow-hidden h-[500px]">
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js" async>
-                    {
-                    "symbols": [
-                        [
-                        "Gram Altın",
-                        "FX_IDC:XAUTRYG|1D"
-                        ],
-                        [
-                        "Gram Gümüş",
-                        "FX_IDC:XAGTRYG|1D"
-                        ],
-                        [
-                        "Altın Serifikası",
-                        "BIST:ALTIN|1D"
-                        ],
-                        [
-                        "BIST 100",
-                        "BIST:XU100|1D"
-                        ]
-                    ],
-                    "chartOnly": false,
-                    "width": "100%",
-                    "height": "100%",
-                    "locale": "tr",
-                    "colorTheme": "dark",
-                    "autosize": true,
-                    "showVolume": false,
-                    "showMA": false,
-                    "hideDateRanges": false,
-                    "hideMarketStatus": false,
-                    "hideSymbolLogo": false,
-                    "scalePosition": "right",
-                    "scaleMode": "Normal",
-                    "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
-                    "fontSize": "10",
-                    "noTimeScale": false,
-                    "valuesTracking": "1",
-                    "changeMode": "price-and-percent",
-                    "chartType": "area",
-                    "maLineColor": "#2962FF",
-                    "maLineWidth": 1,
-                    "maLength": 9,
-                    "backgroundColor": "rgba(30, 34, 45, 1)",
-                    "lineWidth": 2,
-                    "lineType": 0,
-                    "dateRanges": [
-                        "1d|1",
-                        "1w|15",
-                        "1m|30",
-                        "6m|120",
-                        "1y|1D"
-                    ]
-                    }
-                    </script>
+            <h2 class="text-lg font-semibold text-white border-b border-gray-800 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-chart-area text-purple-500"></i> Portföy Performans Grafiği
+            </h2>
+            <div class="bg-darker rounded-xl shadow-lg border border-gray-800 overflow-hidden h-[500px]" id="chart-container">
                 </div>
-            </div>
-            <div class="text-xs text-gray-500 bg-dark text-center p-2 rounded">
-                <i class="fa-solid fa-circle-info text-brand"></i> Grafiğin sol üstünden incelemek istediğiniz varlığı seçin, sağ üst kısımdaki butonlardan (1G, 1H, 1A, 6A, 1Y) zaman aralığını kolayca değiştirin.
-            </div>
         </section>
 
     </main>
 
     <footer class="bg-darker border-t border-gray-800 mt-auto">
         <div class="container mx-auto px-4 py-6 text-center text-sm text-gray-500">
-            &copy; 2026 VibeMarkets. MyVibeCoder Mimarisi. Veriler <a href="https://tr.tradingview.com/" class="text-brand hover:underline" target="_blank">TradingView</a> tarafından sağlanmaktadır.
+            &copy; 2026 VibeMarkets. MyVibeCoder Mimarisi.
         </div>
     </footer>
 
+    <div id="settingsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm hidden">
+        <div class="bg-darker w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-700 flex flex-col max-h-[90vh]">
+            
+            <div class="p-5 border-b border-gray-800 flex justify-between items-center bg-dark rounded-t-2xl">
+                <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-sliders text-brand mr-2"></i> Piyasaları Özelleştir</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto flex-grow custom-scrollbar">
+                <p class="text-sm text-gray-400 mb-4">Anasayfada görmek istediğiniz ürünleri seçin. Değişiklikler anında yansıyacaktır.</p>
+                
+                <h4 class="text-brand font-semibold mb-3 border-b border-gray-800 pb-1">Kıymetli Madenler</h4>
+                <div id="modal-maden-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+                    </div>
+
+                <h4 class="text-brand font-semibold mb-3 border-b border-gray-800 pb-1">Borsa İstanbul (BIST)</h4>
+                <div id="modal-bist-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    </div>
+            </div>
+            
+            <div class="p-5 border-t border-gray-800 bg-dark rounded-b-2xl flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-5 py-2 rounded-lg font-medium text-gray-400 hover:bg-gray-800 transition-colors">İptal</button>
+                <button onclick="savePreferences()" class="px-5 py-2 rounded-lg font-medium bg-brand text-white hover:bg-blue-600 shadow-lg shadow-blue-900/50 transition-all">Değişiklikleri Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. VERİ MODELİ (Master Ürün Havuzu)
+        const MASTER_LIST = [
+            // Madenler
+            { id: "XAUTRYG", symbol: "FX_IDC:XAUTRYG", name: "Gram Altın (TL)", shortName: "Gr Altın", type: "maden" },
+            { id: "XAGTRYG", symbol: "FX_IDC:XAGTRYG", name: "Gram Gümüş (TL)", shortName: "Gr Gümüş", type: "maden" },
+            { id: "ALTIN_S1", symbol: "BIST:ALTIN", name: "Altın Sertifikası", shortName: "Altın S1", type: "maden" },
+            { id: "PLATINUM", symbol: "TVC:PLATINUM", name: "Platin (USD)", shortName: "Platin", type: "maden" },
+            { id: "PALLADIUM", symbol: "TVC:PALLADIUM", name: "Paladyum (USD)", shortName: "Paladyum", type: "maden" },
+            { id: "XAUUSD", symbol: "OANDA:XAUUSD", name: "Ons Altın (USD)", shortName: "Ons Altın", type: "maden" },
+            
+            // BIST
+            { id: "XU100", symbol: "BIST:XU100", name: "BIST 100 Endeksi", shortName: "BIST 100", type: "bist" },
+            { id: "THYAO", symbol: "BIST:THYAO", name: "Türk Hava Yolları", shortName: "THYAO", type: "bist" },
+            { id: "TUPRS", symbol: "BIST:TUPRS", name: "Tüpraş", shortName: "TUPRS", type: "bist" },
+            { id: "ASELS", symbol: "BIST:ASELS", name: "Aselsan", shortName: "ASELS", type: "bist" },
+            { id: "KCHOL", symbol: "BIST:KCHOL", name: "Koç Holding", shortName: "KCHOL", type: "bist" },
+            { id: "ISCTR", symbol: "BIST:ISCTR", name: "İş Bankası (C)", shortName: "ISCTR", type: "bist" },
+            { id: "EREGL", symbol: "BIST:EREGL", name: "Erdemir", shortName: "EREGL", type: "bist" },
+            { id: "GARAN", symbol: "BIST:GARAN", name: "Garanti BBVA", shortName: "GARAN", type: "bist" },
+            { id: "SASA", symbol: "BIST:SASA", name: "Sasa Polyester", shortName: "SASA", type: "bist" },
+            { id: "HEKTS", symbol: "BIST:HEKTS", name: "Hektaş", shortName: "HEKTS", type: "bist" }
+        ];
+
+        // Varsayılan Seçimler (Kullanıcı siteye ilk girdiğinde)
+        const DEFAULT_FAVORITES = ["XAUTRYG", "XAGTRYG", "ALTIN_S1", "XU100", "THYAO"];
+
+        // 2. DURUM YÖNETİMİ (State Management)
+        function getUserFavorites() {
+            const saved = localStorage.getItem('vibeMarkets_favorites');
+            return saved ? JSON.parse(saved) : DEFAULT_FAVORITES;
+        }
+
+        function getSelectedProducts() {
+            const favIds = getUserFavorites();
+            return MASTER_LIST.filter(p => favIds.includes(p.id));
+        }
+
+        // 3. DİNAMİK WIDGET RENDER MOTORU
+        function injectWidget(containerId, scriptSrc, configObj) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<div class="tradingview-widget-container__widget"></div>';
+            
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = scriptSrc;
+            script.async = true;
+            script.textContent = JSON.stringify(configObj);
+            
+            container.appendChild(script);
+        }
+
+        function renderAllWidgets() {
+            const products = getSelectedProducts();
+            
+            if(products.length === 0) {
+                alert("Lütfen en az bir ürün seçiniz!");
+                return;
+            }
+
+            // A. Ticker Tape (Kayan Yazı) Render
+            const tickerSymbols = products.map(p => ({ proName: p.symbol, title: p.shortName }));
+            injectWidget('ticker-container', "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js", {
+                "symbols": tickerSymbols,
+                "showSymbolLogo": true,
+                "isTransparent": true,
+                "displayMode": "adaptive",
+                "colorTheme": "dark",
+                "locale": "tr"
+            });
+
+            // B. Anlık Liste Render
+            const listSymbols = products.map(p => ({ s: p.symbol, d: p.name }));
+            injectWidget('market-list-container', "https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js", {
+                "colorTheme": "dark",
+                "dateRange": "12M",
+                "showChart": false,
+                "locale": "tr",
+                "width": "100%",
+                "height": "100%",
+                "isTransparent": true,
+                "showSymbolLogo": true,
+                "tabs": [ { "title": "Takip Listem", "symbols": listSymbols } ]
+            });
+
+            // C. Basitleştirilmiş Grafik Render
+            const chartSymbols = products.map(p => [p.shortName, p.symbol + "|1D"]);
+            injectWidget('chart-container', "https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js", {
+                "symbols": chartSymbols,
+                "chartOnly": false,
+                "width": "100%",
+                "height": "100%",
+                "locale": "tr",
+                "colorTheme": "dark",
+                "autosize": true,
+                "scalePosition": "right",
+                "scaleMode": "Normal",
+                "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+                "fontSize": "10",
+                "changeMode": "price-and-percent",
+                "chartType": "area",
+                "maLineColor": "#2962FF",
+                "maLineWidth": 1,
+                "maLength": 9,
+                "backgroundColor": "rgba(30, 34, 45, 1)",
+                "lineWidth": 2,
+                "dateRanges": ["1d|1", "1w|15", "1m|30", "6m|120", "1y|1D"]
+            });
+
+            // D. Mini Kartlar Render (Grid içine çoklu enjeksiyon)
+            const minicardsContainer = document.getElementById('minicards-container');
+            minicardsContainer.innerHTML = ''; // Temizle
+            
+            // Performans için maksimum 5 kart gösterelim (Ekrana sığması için)
+            const displayProducts = products.slice(0, 10); 
+            
+            displayProducts.forEach((p, index) => {
+                // Wrapper oluştur
+                const wrapper = document.createElement('div');
+                wrapper.className = "tradingview-widget-container bg-darker rounded-lg overflow-hidden shadow border border-gray-800";
+                const widgetId = `mini-widget-${index}`;
+                wrapper.id = widgetId;
+                minicardsContainer.appendChild(wrapper);
+
+                injectWidget(widgetId, "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js", {
+                    "symbol": p.symbol,
+                    "width": "100%",
+                    "height": "100%",
+                    "locale": "tr",
+                    "dateRange": "1D",
+                    "colorTheme": "dark",
+                    "isTransparent": true,
+                    "autosize": true
+                });
+            });
+        }
+
+        // 4. MODAL VE ARAYÜZ ETKİLEŞİMLERİ
+        const modal = document.getElementById('settingsModal');
+
+        function populateModal() {
+            const favIds = getUserFavorites();
+            const madenContainer = document.getElementById('modal-maden-list');
+            const bistContainer = document.getElementById('modal-bist-list');
+            
+            madenContainer.innerHTML = '';
+            bistContainer.innerHTML = '';
+
+            MASTER_LIST.forEach(product => {
+                const isChecked = favIds.includes(product.id) ? 'checked' : '';
+                const html = `
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-700 bg-[#1a1e29] cursor-pointer hover:border-brand transition-colors">
+                        <input type="checkbox" value="${product.id}" class="product-checkbox w-5 h-5 accent-brand bg-dark border-gray-600 rounded" ${isChecked}>
+                        <span class="text-sm font-medium text-gray-200">${product.name}</span>
+                    </label>
+                `;
+                
+                if(product.type === 'maden') madenContainer.insertAdjacentHTML('beforeend', html);
+                else bistContainer.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function openModal() {
+            populateModal();
+            modal.classList.remove('hidden');
+            modal.classList.add('modal-enter');
+            setTimeout(() => {
+                modal.classList.remove('modal-enter');
+                modal.classList.add('modal-enter-active');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove('modal-enter-active');
+            modal.classList.add('modal-exit');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('modal-exit');
+            }, 200);
+        }
+
+        function savePreferences() {
+            const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+            const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+            
+            if(selectedIds.length === 0) {
+                alert("Lütfen izlemek için en az 1 ürün seçin!");
+                return;
+            }
+
+            localStorage.setItem('vibeMarkets_favorites', JSON.stringify(selectedIds));
+            closeModal();
+            renderAllWidgets(); // UI'ı yeni verilere göre sıfırdan çiz
+        }
+
+        // 5. BAŞLANGIÇ (Initialize)
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAllWidgets();
+        });
+
+    </script>
 </body>
 </html>
