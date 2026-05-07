@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hedef & Başarı Sistemi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: 'rgba(255, 255, 255, 0.15)',
+                        glassDark: 'rgba(0, 0, 0, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Glassmorphism Classes & Custom Utilities */
+        body {
+            /* Modern, deep animated gradient background */
+            background: linear-gradient(-45deg, #4f46e5, #ec4899, #8b5cf6, #3b82f6);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        .glass-input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .glass-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.5); }
+
+        /* Toast Animation */
+        .toast-enter { animation: slideInUp 0.4s ease forwards; }
+        .toast-leave { animation: slideOutDown 0.4s ease forwards; }
+        
+        @keyframes slideInUp {
+            from { transform: translate(-50%, 100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        @keyframes slideOutDown {
+            from { transform: translate(-50%, 0); opacity: 1; }
+            to { transform: translate(-50%, 100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-white antialiased flex flex-col items-center py-10 px-4 md:px-0">
+
+    <div class="w-full max-w-4xl flex justify-between items-center mb-8 glass-panel px-6 py-4 rounded-2xl">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shadow-inner">
+                <i class="fa-solid fa-star text-yellow-300"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-wide">Yıldız Yolu</h1>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <span class="text-sm font-medium opacity-80" id="currentRoleText">Görünüm: Ebeveyn</span>
+            <button onclick="app.toggleRole()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl transition duration-300 shadow active:scale-95 text-sm font-semibold flex items-center gap-2 border border-white/20">
+                <i class="fa-solid fa-repeat"></i> Rol Değiştir
+            </button>
+        </div>
+    </div>
+
+    <main class="w-full max-w-4xl glass-panel rounded-3xl p-6 md:p-10 relative overflow-hidden">
+        
+        <div id="parentView" class="block transition-opacity duration-500">
+            <div class="flex justify-between items-end border-b border-white/20 pb-6 mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3">
+                        <i class="fa-solid fa-user-tie text-blue-300"></i> Yönetim Paneli
+                    </h2>
+                    <p class="text-white/70 text-sm">Hedefleri belirleyin, süreyi başlatın ve başarıları onaylayın.</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-white/70 mb-1">Toplam Puan</div>
+                    <div class="text-4xl font-bold text-yellow-300 drop-shadow-md" id="adminTotalPoints">0</div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-semibold mb-4 border-b border-white/10 pb-2">Yeni Hedef Ata</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <input type="text" id="goalTitle" placeholder="Örn: Odanı topla, Matematik testini çöz..." class="glass-input w-full px-4 py-3 rounded-xl transition duration-300">
+                    </div>
+                    <div>
+                        <input type="number" id="goalPoints" placeholder="Puan (Örn: 50)" class="glass-input w-full px-4 py-3 rounded-xl transition duration-300" min="1">
+                    </div>
+                    <div>
+                        <button onclick="app.addGoal()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-xl transition duration-300 shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Ekle
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 mb-8 border-l-4 border-l-pink-400">
+                <h3 class="text-lg font-semibold mb-4 border-b border-white/10 pb-2 flex justify-between items-center">
+                    <span><i class="fa-solid fa-stopwatch text-pink-300 mr-2"></i> Hedef Süresi Belirle</span>
+                </h3>
+                <div class="flex items-center gap-4">
+                    <input type="number" id="timerMinutes" placeholder="Dakika" class="glass-input w-24 px-4 py-2 rounded-xl text-center" min="1" value="30">
+                    <button onclick="app.startGlobalTimer()" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-xl transition duration-300 font-semibold shadow active:scale-95">
+                        Süreyi Başlat
+                    </button>
+                    <button onclick="app.stopGlobalTimer()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl transition duration-300 font-semibold shadow active:scale-95 border border-white/20">
+                        Sıfırla
+                    </button>
+                    <span id="adminTimerStatus" class="ml-auto text-sm font-medium text-pink-200">Süre aktif değil</span>
+                </div>
+            </div>
+
+            <h3 class="text-xl font-semibold mb-4 mt-8 flex items-center gap-2">
+                <i class="fa-solid fa-bell text-yellow-300"></i> Onay Bekleyenler
+            </h3>
+            <div id="pendingApprovalList" class="space-y-4 mb-8">
+                </div>
+
+            <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-green-300"></i> Aktif Hedefler
+            </h3>
+            <div id="adminActiveGoals" class="space-y-4">
+                </div>
+        </div>
+
+
+        <div id="childView" class="hidden transition-opacity duration-500">
+            
+            <div class="flex justify-center mb-10 mt-2">
+                <div class="glass-panel px-8 py-4 rounded-3xl border-2 border-white/40 shadow-[0_0_40px_rgba(236,72,153,0.4)] flex flex-col items-center transform transition hover:scale-105">
+                    <div class="text-xs font-semibold uppercase tracking-widest text-pink-200 mb-1">Kalan Süren</div>
+                    <div id="childCountdown" class="text-6xl font-extrabold tracking-tight tabular-nums drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)]">
+                        00:00:00
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-end border-b border-white/20 pb-6 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2 flex items-center gap-3">
+                        <i class="fa-solid fa-rocket text-purple-300"></i> Benim Görevlerim
+                    </h2>
+                    <p class="text-white/70 text-sm">Hedeflerini tamamla, yıldızları topla!</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-white/70 mb-1">Kazandığın Puan</div>
+                    <div class="text-4xl font-bold text-yellow-300 drop-shadow-md" id="childTotalPoints">0</div>
+                </div>
+            </div>
+
+            <div id="childActiveGoals" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                </div>
+            
+            <div id="childEmptyState" class="hidden text-center py-16">
+                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/20">
+                    <i class="fa-solid fa-face-smile-beam text-4xl text-white/50"></i>
+                </div>
+                <h3 class="text-xl font-medium text-white/80">Harika! Tüm görevleri tamamladın.</h3>
+                <p class="text-white/50 mt-2">Yeni hedefler için beklemede kal.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toastContainer" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-3"></div>
+
+    <script>
+        const app = {
+            role: 'parent', // 'parent' or 'child'
+            goals: [],      // { id, title, points, status: 'active' | 'pending_approval' | 'completed' }
+            totalPoints: 0,
+            timerInterval: null,
+            timerSecondsRemaining: 0,
+
+            init() {
+                // Örnek veriler ekleyelim
+                this.goals.push({ id: this.generateId(), title: "Odanı pırıl pırıl yap", points: 20, status: 'active' });
+                this.goals.push({ id: this.generateId(), title: "30 sayfa kitap oku", points: 50, status: 'active' });
+                this.render();
+            },
+
+            generateId() {
+                return Math.random().toString(36).substr(2, 9);
+            },
+
+            toggleRole() {
+                this.role = this.role === 'parent' ? 'child' : 'parent';
+                document.getElementById('currentRoleText').innerText = `Görünüm: ${this.role === 'parent' ? 'Ebeveyn' : 'Çocuk'}`;
+                
+                const parentView = document.getElementById('parentView');
+                const childView = document.getElementById('childView');
+                
+                if (this.role === 'parent') {
+                    childView.classList.add('hidden');
+                    parentView.classList.remove('hidden');
+                    // Animasyon tetikleme
+                    parentView.style.opacity = '0';
+                    setTimeout(() => parentView.style.opacity = '1', 50);
+                } else {
+                    parentView.classList.add('hidden');
+                    childView.classList.remove('hidden');
+                    // Animasyon tetikleme
+                    childView.style.opacity = '0';
+                    setTimeout(() => childView.style.opacity = '1', 50);
+                }
+                
+                this.showToast(`Görünüm değiştirildi: ${this.role === 'parent' ? 'Ebeveyn' : 'Çocuk'}`, 'info');
+                this.render();
+            },
+
+            addGoal() {
+                const titleInput = document.getElementById('goalTitle');
+                const pointsInput = document.getElementById('goalPoints');
+                
+                const title = titleInput.value.trim();
+                const points = parseInt(pointsInput.value);
+
+                // Proaktif: Form Doğrulama (Validation)
+                if (!title) {
+                    this.showToast('Lütfen hedefin adını yazın!', 'error');
+                    titleInput.focus();
+                    return;
+                }
+                if (!points || points <= 0) {
+                    this.showToast('Lütfen geçerli bir puan belirleyin!', 'error');
+                    pointsInput.focus();
+                    return;
+                }
+
+                const newGoal = {
+                    id: this.generateId(),
+                    title: title,
+                    points: points,
+                    status: 'active'
+                };
+
+                this.goals.push(newGoal);
+                
+                titleInput.value = '';
+                pointsInput.value = '';
+                
+                this.showToast('Yeni hedef başarıyla eklendi!', 'success');
+                this.render();
+            },
+
+            // Çocuk görevi tamamladığında (Onaya gönderir)
+            requestApproval(id) {
+                const goal = this.goals.find(g => g.id === id);
+                if (goal && goal.status === 'active') {
+                    goal.status = 'pending_approval';
+                    this.showToast('Görev onaya gönderildi! Ailen kontrol edecek.', 'success');
+                    this.render();
+                }
+            },
+
+            // Ebeveyn görevi onayladığında (Puan eklenir)
+            approveGoal(id) {
+                const goal = this.goals.find(g => g.id === id);
+                if (goal && goal.status === 'pending_approval') {
+                    goal.status = 'completed';
+                    this.totalPoints += goal.points;
+                    this.showToast(`${goal.points} puan çocuğun hesabına eklendi!`, 'success');
+                    this.render();
+                }
+            },
+
+            // Ebeveyn görevi reddettiğinde (Geri aktif olur)
+            rejectGoal(id) {
+                const goal = this.goals.find(g => g.id === id);
+                if (goal && goal.status === 'pending_approval') {
+                    goal.status = 'active';
+                    this.showToast('Görev reddedildi, tekrar çocuğun paneline gönderildi.', 'info');
+                    this.render();
+                }
+            },
+
+            // Görev silme (Sadece aktif görevler için)
+            deleteGoal(id) {
+                this.goals = this.goals.filter(g => g.id !== id);
+                this.showToast('Görev silindi.', 'info');
+                this.render();
+            },
+
+            startGlobalTimer() {
+                const minutes = parseInt(document.getElementById('timerMinutes').value);
+                if (!minutes || minutes <= 0) {
+                    this.showToast('Geçerli bir dakika giriniz.', 'error');
+                    return;
+                }
+
+                clearInterval(this.timerInterval);
+                this.timerSecondsRemaining = minutes * 60;
+                this.showToast('Geri sayım başlatıldı!', 'success');
+                
+                this.timerInterval = setInterval(() => {
+                    this.timerSecondsRemaining--;
+                    this.updateTimerDisplays();
+                    
+                    if (this.timerSecondsRemaining <= 0) {
+                        this.stopGlobalTimer();
+                        this.showToast('Süre doldu!', 'info');
+                    }
+                }, 1000);
+
+                this.updateTimerDisplays();
+            },
+
+            stopGlobalTimer() {
+                clearInterval(this.timerInterval);
+                this.timerSecondsRemaining = 0;
+                this.updateTimerDisplays();
+                document.getElementById('adminTimerStatus').innerText = "Süre durduruldu.";
+            },
+
+            updateTimerDisplays() {
+                const hours = Math.floor(this.timerSecondsRemaining / 3600);
+                const mins = Math.floor((this.timerSecondsRemaining % 3600) / 60);
+                const secs = this.timerSecondsRemaining % 60;
+
+                const formattedTime = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(mins).padStart(2, '0') + ':' + 
+                    String(secs).padStart(2, '0');
+
+                document.getElementById('childCountdown').innerText = formattedTime;
+                
+                if(this.timerSecondsRemaining > 0) {
+                    document.getElementById('adminTimerStatus').innerHTML = `<span class="text-green-300"><i class="fa-solid fa-circle-play animate-pulse mr-1"></i> Aktif: ${formattedTime}</span>`;
+                }
+            },
+
+            render() {
+                // Puanları güncelle
+                document.getElementById('adminTotalPoints').innerText = this.totalPoints;
+                document.getElementById('childTotalPoints').innerText = this.totalPoints;
+
+                // EBEVEYN GÖRÜNÜMÜ RENDER
+                const pendingList = document.getElementById('pendingApprovalList');
+                const adminActiveList = document.getElementById('adminActiveGoals');
+                
+                pendingList.innerHTML = '';
+                adminActiveList.innerHTML = '';
+
+                let hasPending = false;
+                let hasActive = false;
+
+                this.goals.forEach(goal => {
+                    if (goal.status === 'pending_approval') {
+                        hasPending = true;
+                        pendingList.innerHTML += `
+                            <div class="glass-card rounded-xl p-4 flex justify-between items-center border-l-4 border-l-yellow-400">
+                                <div>
+                                    <h4 class="font-semibold text-lg">${goal.title}</h4>
+                                    <span class="text-xs bg-yellow-400/20 text-yellow-300 px-2 py-1 rounded border border-yellow-400/30 font-medium">
+                                        <i class="fa-solid fa-star text-[10px]"></i> ${goal.points} Puan Kazandıracak
+                                    </span>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="app.approveGoal('${goal.id}')" class="bg-green-500 hover:bg-green-600 w-10 h-10 rounded-full flex items-center justify-center transition duration-300 shadow active:scale-95 text-white" title="Onayla">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button onclick="app.rejectGoal('${goal.id}')" class="bg-red-500/80 hover:bg-red-600 w-10 h-10 rounded-full flex items-center justify-center transition duration-300 shadow active:scale-95 text-white" title="Reddet (Eksik)">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (goal.status === 'active') {
+                        hasActive = true;
+                        adminActiveList.innerHTML += `
+                            <div class="glass-panel rounded-xl p-4 flex justify-between items-center border border-white/10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+                                    <h4 class="font-medium">${goal.title}</h4>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="font-bold text-yellow-300 text-sm">${goal.points} Puan</span>
+                                    <button onclick="app.deleteGoal('${goal.id}')" class="text-white/40 hover:text-red-400 transition" title="Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (!hasPending) pendingList.innerHTML = '<p class="text-white/50 text-sm italic">Şu an onay bekleyen görev yok.</p>';
+                if (!hasActive) adminActiveList.innerHTML = '<p class="text-white/50 text-sm italic">Aktif görev bulunmuyor.</p>';
+
+
+                // ÇOCUK GÖRÜNÜMÜ RENDER
+                const childActiveList = document.getElementById('childActiveGoals');
+                const emptyState = document.getElementById('childEmptyState');
+                childActiveList.innerHTML = '';
+                
+                let childHasActive = false;
+
+                this.goals.forEach(goal => {
+                    if (goal.status === 'active') {
+                        childHasActive = true;
+                        childActiveList.innerHTML += `
+                            <div class="glass-card rounded-2xl p-6 group relative overflow-hidden flex flex-col justify-between min-h-[160px]">
+                                <div class="absolute -right-6 -top-6 w-24 h-24 bg-white/5 rounded-full blur-xl group-hover:bg-white/10 transition duration-500"></div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="inline-flex items-center gap-1 bg-yellow-400/20 text-yellow-300 px-3 py-1 rounded-full border border-yellow-400/30 text-xs font-bold shadow-inner">
+                                            <i class="fa-solid fa-star"></i> ${goal.points} PUAN
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl font-bold leading-tight mt-3 text-white/90 group-hover:text-white transition duration-300">${goal.title}</h3>
+                                </div>
+                                
+                                <button onclick="app.requestApproval('${goal.id}')" class="mt-5 w-full bg-white/10 hover:bg-green-500/80 border border-white/20 hover:border-green-400 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 shadow active:scale-95 flex items-center justify-center gap-2 group/btn">
+                                    <i class="fa-regular fa-circle-check text-xl group-hover/btn:scale-110 transition"></i>
+                                    Tamamladım!
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (childHasActive) {
+                    childActiveList.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                } else {
+                    childActiveList.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                }
+            },
+
+            // Profesyonel Uygulama İçi Bildirimler
+            showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                
+                // Tip bazlı renkler
+                let icon = '';
+                let bgClass = '';
+                if(type === 'success') {
+                    icon = '<i class="fa-solid fa-circle-check text-green-400"></i>';
+                    bgClass = 'border-green-500/50 bg-green-900/40';
+                } else if(type === 'error') {
+                    icon = '<i class="fa-solid fa-circle-exclamation text-red-400"></i>';
+                    bgClass = 'border-red-500/50 bg-red-900/40';
+                } else {
+                    icon = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+                    bgClass = 'border-blue-500/50 bg-blue-900/40';
+                }
+
+                toast.className = `toast-enter flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-md border shadow-2xl text-white text-sm font-medium ${bgClass}`;
+                toast.innerHTML = `${icon} <span>${message}</span>`;
+                
+                const container = document.getElementById('toastContainer');
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.remove('toast-enter');
+                    toast.classList.add('toast-leave');
+                    setTimeout(() => toast.remove(), 400); // Animasyon bitişini bekle
+                }, 3000);
+            }
+        };
+
+        // Sayfa yüklendiğinde uygulamayı başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
