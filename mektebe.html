@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kişisel Mektebe</title>
+  <style>
+    :root {
+      --primary-dark: #1a3c34; /* Klasik kütüphane yeşili */
+      --accent-gold: #c5a059;  /* Altın sarısı detaylar */
+      --bg-color: #f4f1ea;     /* Kağıt rengi arka plan */
+      --card-bg: #ffffff;
+      --text-main: #333333;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: var(--primary-dark);
+      color: var(--accent-gold);
+      text-align: center;
+      padding: 30px 20px;
+      border-bottom: 5px solid var(--accent-gold);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
+    header p { margin: 10px 0 0 0; color: #e0e0e0; font-size: 14px; }
+
+    .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+
+    .search-panel {
+      background-color: var(--card-bg);
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border-top: 3px solid var(--primary-dark);
+    }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary-dark); }
+    .form-group input { 
+      width: 100%; padding: 12px; font-size: 15px; border: 1px solid #ccc; 
+      border-radius: 4px; box-sizing: border-box; transition: 0.3s;
+    }
+    .form-group input:focus { border-color: var(--accent-gold); outline: none; box-shadow: 0 0 5px rgba(197, 160, 89, 0.4); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    .btn-container { text-align: right; margin-top: 20px; }
+    
+    button {
+      padding: 12px 30px; font-size: 16px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: 0.3s;
+    }
+    .btn-search { background-color: var(--primary-dark); color: var(--accent-gold); }
+    .btn-search:hover { background-color: #112722; }
+    .btn-clear { background-color: #e0e0e0; color: #333; margin-right: 10px; }
+    .btn-clear:hover { background-color: #cccccc; }
+
+    .loader {
+      display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-gold);
+      border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 30px auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { text-align: center; display: none; color: var(--primary-dark); font-weight: bold; margin-top: 10px; }
+
+    .results-area { margin-top: 30px; }
+    .result-count { font-weight: bold; color: var(--primary-dark); margin-bottom: 15px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 10px;}
+    
+    .book-card {
+      background: var(--card-bg); padding: 15px 20px; margin-bottom: 15px; border-radius: 6px;
+      border-left: 5px solid var(--accent-gold); box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+    }
+    .book-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .book-info h3 { margin: 0 0 5px 0; font-size: 18px; }
+    .book-info h3 a { color: var(--primary-dark); text-decoration: none; }
+    .book-info h3 a:hover { color: var(--accent-gold); text-decoration: underline; }
+    .book-meta { font-size: 13px; color: #777; }
+    .read-btn { background-color: var(--accent-gold); color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;}
+    .read-btn:hover { background-color: #b08d4a; }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📚 Mektebe-i Şamile (Yerel)</h1>
+    <p>Dijital Kütüphanenizde Gelişmiş Arama Yapın</p>
+  </header>
+
+  <div class="container">
+    <div class="search-panel">
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Kitap Adı (Başlık)</label>
+          <input type="text" id="titleInput" placeholder="Örn: İhya-u Ulumiddin...">
+        </div>
+        <div class="form-group">
+          <label>Yazar Adı</label>
+          <input type="text" id="authorInput" placeholder="Örn: Gazali...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Kitap İçeriği / Aranacak Cümle (Tam Metin)</label>
+        <input type="text" id="contentInput" placeholder="Aradığınız kelimeyi veya cümleyi yazın..." onkeypress="if(event.key === 'Enter') executeSearch()">
+      </div>
+      
+      <div class="btn-container">
+        <button class="btn-clear" onclick="clearFields()">Temizle</button>
+        <button class="btn-search" onclick="executeSearch()">🔍 Kütüphanede Ara</button>
+      </div>
+    </div>
+
+    <div class="loader" id="spinner"></div>
+    <div class="loading-text" id="loadingText">Drive indeksleri taranıyor, lütfen bekleyin...</div>
+
+    <div class="results-area" id="resultsArea"></div>
+  </div>
+
+  <script>
+    function clearFields() {
+      document.getElementById('titleInput').value = '';
+      document.getElementById('authorInput').value = '';
+      document.getElementById('contentInput').value = '';
+      document.getElementById('resultsArea').innerHTML = '';
+    }
+
+    function executeSearch() {
+      var params = {
+        title: document.getElementById('titleInput').value,
+        author: document.getElementById('authorInput').value,
+        content: document.getElementById('contentInput').value
+      };
+
+      if (!params.title && !params.author && !params.content) {
+        alert("Lütfen arama yapmak için en az bir alanı doldurun.");
+        return;
+      }
+
+      document.getElementById('spinner').style.display = 'block';
+      document.getElementById('loadingText').style.display = 'block';
+      document.getElementById('resultsArea').innerHTML = '';
+
+      google.script.run
+        .withSuccessHandler(showResults)
+        .advancedSearchInDrive(params);
+    }
+
+    function showResults(data) {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('loadingText').style.display = 'none';
+      
+      var resultsDiv = document.getElementById('resultsArea');
+
+      if (data.error) {
+        resultsDiv.innerHTML = '<div style="color:red; text-align:center; padding:20px;">' + data.error + '</div>';
+        return;
+      }
+
+      var files = data.results;
+      if (files.length === 0) {
+        resultsDiv.innerHTML = '<div style="text-align:center; padding:30px; color:#555; background:white; border-radius:8px;">Aradığınız kriterlere uygun kitap bulunamadı.</div>';
+        return;
+      }
+
+      var html = '<div class="result-count">Toplam ' + files.length + ' adet kitap bulundu</div>';
+      
+      files.forEach(function(file) {
+        html += '<div class="book-card">';
+        html += '  <div class="book-info">';
+        html += '    <h3><a href="' + file.url + '" target="_blank">📄 ' + file.name + '</a></h3>';
+        html += '    <div class="book-meta">PDF Dosyası • Boyut: ' + file.size + '</div>';
+        html += '  </div>';
+        html += '  <a href="' + file.url + '" target="_blank" class="read-btn">Kitabı Aç</a>';
+        html += '</div>';
+      });
+
+      resultsDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
