@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لعبة الكلمات - P2P</title>
+    
+    <!-- Modern Arapça Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- PeerJS P2P Kütüphanesi -->
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+    
+    <!-- İkonlar için FontAwesome (Hafif versiyon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Renk Paleti: Mavi, Kahverengi ve Bej Tonları */
+            --bg-color: #f4f1ea;        /* Açık Bej */
+            --header-bg: #2b5c7a;       /* Şık Mavi */
+            --header-text: #ffffff;
+            --board-bg: #e8e3d8;        /* Koyu Bej / Tahta Arkaplanı */
+            --tile-bg: #d6ae7b;         /* Kahverengi / Altın Tonu */
+            --tile-text: #3e2723;       /* Koyu Kahve */
+            --tile-border: #bcaaa4;
+            --btn-bg: #2b5c7a;
+            --btn-hover: #1f4358;
+            --action-btn-bg: #e5cd9e;   /* Onay butonu için özel renk */
+            
+            /* Puan hücre renkleri (Standart Kelimelik renkleri uyarlaması) */
+            --dl-color: #81d4fa; /* Harf x2 - Açık Mavi */
+            --tl-color: #29b6f6; /* Harf x3 - Mavi */
+            --dw-color: #ffcc80; /* Kelime x2 - Açık Turuncu */
+            --tw-color: #ff9800; /* Kelime x3 - Turuncu */
+            
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+            user-select: none; /* Mobilde yazıları seçmeyi engelle */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Üst Bilgi Çubuğu */
+        .header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .score-board {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .score {
+            background-color: var(--bg-color);
+            color: var(--header-bg);
+            padding: 5px 15px;
+            border-radius: 15px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        /* Oyun Tahtası Alanı */
+        .board-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+            gap: 2px;
+            background-color: var(--board-bg);
+            padding: 4px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .cell {
+            background-color: #fffaf0;
+            border-radius: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(0.7rem, 2.5vw, 1.2rem);
+            font-weight: bold;
+            color: rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* Özel Puan Hücreleri */
+        .cell.dl { background-color: var(--dl-color); color: #fff; }
+        .cell.tl { background-color: var(--tl-color); color: #fff; }
+        .cell.dw { background-color: var(--dw-color); color: #fff; }
+        .cell.tw { background-color: var(--tw-color); color: #fff; }
+        .cell.center { background-color: var(--dw-color); color: #fff; } /* Merkez yıldız */
+
+        /* Oyuncu Harf Dizilimi (Rack) */
+        .rack-container {
+            background-color: #e2d8c3;
+            padding: 15px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .rack {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .tile-slot {
+            width: clamp(40px, 12vw, 55px);
+            height: clamp(40px, 12vw, 55px);
+            background-color: rgba(255,255,255,0.5);
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Harf Taşı (Tile) Tasarımı */
+        .tile {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #e3c18b, var(--tile-bg));
+            border-radius: var(--border-radius);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            font-weight: 800;
+            color: var(--tile-text);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,0.5);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tile-score {
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: clamp(0.5rem, 2vw, 0.7rem);
+            font-weight: bold;
+        }
+
+        /* Alt Kontrol Çubuğu */
+        .controls {
+            background-color: var(--header-bg);
+            padding: 10px 15px 20px 15px; /* iOS safe area için alt boşluk */
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-btn i {
+            font-size: 1.5rem;
+            background-color: rgba(255,255,255,0.1);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+
+        .control-btn:hover, .control-btn:active {
+            color: #fff;
+        }
+
+        .control-btn:hover i {
+            background-color: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        .action-btn {
+            background-color: var(--action-btn-bg);
+            color: var(--tile-text);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .action-btn i {
+            background-color: transparent;
+            font-size: 2rem;
+        }
+        
+        .action-btn:hover i {
+            background-color: transparent;
+        }
+
+        /* P2P Bağlantı Durumu Göstergesi */
+        #connection-status {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            z-index: 100;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="connection-status">جاري الاتصال... (Bağlanıyor...)</div>
+
+    <!-- Üst Bilgi Çubuğu -->
+    <div class="header">
+        <div class="player-info">
+            <i class="fa-solid fa-user-circle fa-lg"></i>
+            <span>أحمد</span> <!-- Ahmet -->
+        </div>
+        
+        <div class="score-board">
+            <div class="score" id="score1">٢٥</div>
+            <span>-</span>
+            <div class="score" id="score2">٥٤</div>
+        </div>
+
+        <div class="player-info">
+            <span>الخصم</span> <!-- Rakip -->
+            <i class="fa-regular fa-user-circle fa-lg"></i>
+        </div>
+    </div>
+
+    <!-- Oyun Tahtası -->
+    <div class="board-container">
+        <div class="board" id="game-board">
+            <!-- JS ile 225 hücre (15x15) buraya oluşturulacak -->
+        </div>
+    </div>
+
+    <!-- Oyuncu Harfleri (Istaka/Rack) -->
+    <div class="rack-container">
+        <div class="rack" id="player-rack">
+            <!-- 7 Adet Harf Yuvası -->
+            <div class="tile-slot"><div class="tile">م<span class="tile-score">٣</span></div></div>
+            <div class="tile-slot"><div class="tile">ر<span class="tile-score">١</span></div></div>
+            <div class="tile-slot"><div class="tile">ح<span class="tile-score">٤</span></div></div>
+            <div class="tile-slot"><div class="tile">ب<span class="tile-score">٢</span></div></div>
+            <div class="tile-slot"><div class="tile">ا<span class="tile-score">١</span></div></div>
+            <div class="tile-slot"></div>
+            <div class="tile-slot"></div>
+        </div>
+    </div>
+
+    <!-- Kontroller -->
+    <div class="controls">
+        <button class="control-btn">
+            <i class="fa-solid fa-ellipsis"></i>
+            <span>المزيد</span> <!-- Daha Fazla -->
+        </button>
+        <button class="control-btn">
+            <i class="fa-regular fa-comment-dots"></i>
+            <span>محادثة</span> <!-- Sohbet -->
+        </button>
+        <button class="control-btn">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> <!-- Çıkış / Geç (Arapça sağdan sola ok) -->
+            <span>خروج</span> 
+        </button>
+        <button class="control-btn">
+            <i class="fa-solid fa-shuffle"></i>
+            <span>خلط</span> <!-- Karıştır -->
+        </button>
+        <button class="control-btn">
+            <i class="fa-solid fa-rotate-left"></i>
+            <span>تراجع</span> <!-- Geri Al -->
+        </button>
+        <button class="control-btn action-btn">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>تأكيد</span> <!-- Onayla -->
+        </button>
+    </div>
+
+    <script>
+        // Tahta kurulumu (Board Initialization)
+        const boardElement = document.getElementById('game-board');
+        const boardSize = 15;
+
+        // Standart Kelimelik / Scrabble özel hücre konumları (Simetrik yapı)
+        const specialCells = {
+            'tw': [[0,0], [0,7], [0,14], [7,0], [7,14], [14,0], [14,7], [14,14]], // Kelime x3
+            'dw': [[1,1], [2,2], [3,3], [4,4], [10,10], [11,11], [12,12], [13,13], [1,13], [2,12], [3,11], [4,10], [10,4], [11,3], [12,2], [13,1]], // Kelime x2
+            'tl': [[1,5], [1,9], [5,1], [5,5], [5,9], [5,13], [9,1], [9,5], [9,9], [9,13], [13,5], [13,9]], // Harf x3
+            'dl': [[0,3], [0,11], [2,6], [2,8], [3,0], [3,7], [3,14], [6,2], [6,6], [6,8], [6,12], [7,3], [7,11], [8,2], [8,6], [8,8], [8,12], [11,0], [11,7], [11,14], [12,6], [12,8], [14,3], [14,11]] // Harf x2
+        };
+
+        function isSpecialCell(type, r, c) {
+            return specialCells[type].some(pos => pos[0] === r && pos[1] === c);
+        }
+
+        // 15x15 ızgarayı oluştur
+        for (let r = 0; r < boardSize; r++) {
+            for (let c = 0; c < boardSize; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+
+                // Merkez hücre kontrolü
+                if (r === 7 && c === 7) {
+                    cell.classList.add('center');
+                    cell.innerHTML = '<i class="fa-solid fa-star"></i>';
+                } 
+                else if (isSpecialCell('tw', r, c)) cell.classList.add('tw');
+                else if (isSpecialCell('dw', r, c)) cell.classList.add('dw');
+                else if (isSpecialCell('tl', r, c)) cell.classList.add('tl');
+                else if (isSpecialCell('dl', r, c)) cell.classList.add('dl');
+
+                // Hücre içine yazılacak Arapça metinler (opsiyonel gösterim için)
+                if(cell.classList.contains('tw')) cell.innerText = '٣ك'; // 3x Kelime
+                else if(cell.classList.contains('dw') && !cell.classList.contains('center')) cell.innerText = '٢ك';
+                else if(cell.classList.contains('tl')) cell.innerText = '٣ح'; // 3x Harf
+                else if(cell.classList.contains('dl')) cell.innerText = '٢ح';
+
+                boardElement.appendChild(cell);
+            }
+        }
+
+        // P2P Skeleton Init (Sonraki aşamada doldurulacak)
+        /*
+        const peer = new Peer();
+        peer.on('open', function(id) {
+            console.log('My peer ID is: ' + id);
+            // document.getElementById('connection-status').style.display = 'block';
+            // document.getElementById('connection-status').innerText = 'ID: ' + id;
+        });
+        */
+    </script>
+</body>
+</html>
