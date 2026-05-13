@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaman Tüneli</title>
+    <style>
+        /* Modern, Şık ve Sade iOS Stili */
+        :root {
+            --bg-color: #f2f2f7;
+            --card-bg: #ffffff;
+            --text-main: #1c1c1e;
+            --text-muted: #8e8e93;
+            --accent-blue: #007aff;
+            --border-color: #e5e5ea;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px 15px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+        .post-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #d1d1d6;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        .username {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .post-image {
+            width: 100%;
+            display: block;
+            background-color: #e5e5ea;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+        .post-content {
+            padding: 15px;
+        }
+        .caption {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .loading {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Akış</h1>
+        </div>
+        <div id="feed-container">
+            <div class="loading">Gönderiler yükleniyor...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modüler (v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // BURAYA KENDI FIREBASE CONFIG BILGILERINI GIRMELISIN
+        const firebaseConfig = {
+            apiKey: "SENIN_API_KEY",
+            authDomain: "SENIN_PROJEN.firebaseapp.com",
+            projectId: "SENIN_PROJEN",
+            storageBucket: "SENIN_PROJEN.appspot.com",
+            messagingSenderId: "ID",
+            appId: "APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const feedContainer = document.getElementById('feed-container');
+
+        // Firestore'dan gönderileri dinle
+        function loadPosts() {
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                feedContainer.innerHTML = ''; // Yükleniyor yazısını temizle
+                if (snapshot.empty) {
+                    feedContainer.innerHTML = '<div class="loading">Henüz gösterilecek bir gönderi yok.</div>';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const postHtml = `
+                        <div class="post-card">
+                            <div class="post-header">
+                                <img src="${data.profilePic || 'default-avatar.png'}" class="profile-pic" alt="Profil">
+                                <div class="username">${data.username}</div>
+                            </div>
+                            <img src="${data.imageUrl}" class="post-image" alt="Gönderi" onerror="this.src='placeholder.jpg'">
+                            <div class="post-content">
+                                <div class="caption"><strong>${data.username}</strong> ${data.caption}</div>
+                                <div class="timestamp">${new Date(data.timestamp).toLocaleString('tr-TR')}</div>
+                            </div>
+                        </div>
+                    `;
+                    feedContainer.innerHTML += postHtml;
+                });
+            }, (error) => {
+                console.error("Veri çekme hatası: ", error);
+                feedContainer.innerHTML = '<div class="loading">Gönderiler yüklenirken bir hata oluştu.</div>';
+            });
+        }
+
+        loadPosts();
+    </script>
+</body>
+</html>
