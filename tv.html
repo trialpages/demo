@@ -56,6 +56,7 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            flex-shrink: 0;
         }
 
         .hamburger {
@@ -83,6 +84,7 @@
             align-items: center;
             gap: 4px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .logo-icon {
@@ -97,7 +99,7 @@
             display: flex;
             flex: 1;
             max-width: 600px;
-            margin: 0 20px;
+            margin: 0 10px;
         }
 
         .search-container input {
@@ -113,10 +115,15 @@
         }
 
         .search-container input:focus {
-            border-color: #1c62b9; /* YouTube Mavi Focus */
+            border-color: #1c62b9;
         }
 
-        /* --- Drawer / Hamburger Menü --- */
+        .header-right {
+            width: 40px; /* Dengeleyici alan */
+            flex-shrink: 0;
+        }
+
+        /* --- Drawer / Hamburger Menü (Accordion Yapısı) --- */
         .drawer-overlay {
             position: fixed;
             top: var(--nav-height);
@@ -138,47 +145,75 @@
         .drawer {
             position: fixed;
             top: var(--nav-height);
-            left: -250px;
-            width: 240px;
+            left: -280px;
+            width: 280px;
             height: calc(100vh - var(--nav-height));
             background-color: var(--bg-secondary);
             z-index: 95;
             transition: left 0.3s ease;
             overflow-y: auto;
-            padding-top: 12px;
+            padding-bottom: 20px;
         }
 
         .drawer.active {
             left: 0;
         }
 
-        .drawer-section {
-            padding-bottom: 12px;
-            margin-bottom: 12px;
+        /* Accordion Stilleri */
+        .accordion {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 16px 20px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.3s;
+            font-size: 1rem;
+            font-weight: 600;
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .drawer-title {
-            padding: 8px 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
+        .accordion:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .accordion:after {
+            content: '\02795'; /* Plus icon */
+            font-size: 13px;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        }
+
+        .accordion.active:after {
+            content: "\2796"; /* Minus icon */
+        }
+
+        .panel {
+            padding: 0;
+            background-color: var(--bg-main);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
         }
 
         .drawer-item {
-            padding: 12px 24px;
+            padding: 12px 24px 12px 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 16px;
             font-size: 0.95rem;
             transition: background-color 0.2s;
+            color: var(--text-secondary);
         }
 
         .drawer-item:hover, .drawer-item.active {
             background-color: var(--bg-hover);
+            color: var(--text-primary);
         }
 
         /* --- Ana İçerik Düzeni --- */
@@ -206,6 +241,7 @@
             width: 100%;
             max-width: 1280px;
             aspect-ratio: 16 / 9;
+            max-height: 45vh; /* Tablet ve Mobilde ekranı işgal etmesini kesin olarak engeller */
             position: relative;
             background-color: #000;
         }
@@ -214,6 +250,7 @@
             width: 100%;
             height: 100%;
             outline: none;
+            object-fit: contain; /* En boy oranını koruyarak sığdırır */
         }
 
         .error-overlay {
@@ -249,7 +286,7 @@
         .player-info img {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
+            border-radius: 8px;
             background-color: var(--bg-secondary);
             object-fit: contain;
             padding: 4px;
@@ -266,46 +303,10 @@
             margin-top: 4px;
         }
 
-        /* --- Etiketler / Ülkeler (Chips) --- */
-        .chips-container {
-            display: flex;
-            overflow-x: auto;
-            padding: 12px 16px;
-            gap: 12px;
-            background-color: var(--bg-main);
-            border-bottom: 1px solid var(--border-color);
-            scrollbar-width: none; /* Firefox */
-        }
-        
-        .chips-container::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
-        }
-
-        .chip {
-            background-color: var(--bg-secondary);
-            color: var(--text-primary);
-            padding: 8px 16px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background-color 0.2s, color 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .chip:hover {
-            background-color: var(--bg-hover);
-        }
-
-        .chip.active {
-            background-color: var(--text-primary);
-            color: var(--bg-main);
-        }
-
-        /* --- Grid (Kanallar) --- */
+        /* --- Liste (Kanallar) --- */
         .content-section {
-            padding: 20px;
-            max-width: 1600px;
+            padding: 16px;
+            max-width: 1000px; /* Okunabilirliği artırmak için max genişlik */
             margin: 0 auto;
             width: 100%;
         }
@@ -317,68 +318,86 @@
             font-size: 1.1rem;
         }
 
-        .channels-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .channel-card {
-            background-color: var(--bg-main);
-            cursor: pointer;
+        /* Zarif Liste Mimarisi */
+        .channels-list {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            transition: transform 0.2s;
+            gap: 8px;
         }
 
-        .channel-card:hover {
-            transform: scale(1.02);
+        .channel-row {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-main);
+            border: 1px solid transparent;
+            border-radius: 8px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
         }
 
-        .card-thumbnail {
-            width: 100%;
-            aspect-ratio: 16 / 9;
+        .channel-row:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--border-color);
+        }
+
+        .row-thumbnail {
+            width: 70px;
+            height: 45px;
             background-color: var(--bg-secondary);
-            border-radius: 12px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            position: relative;
+            margin-right: 16px;
+            flex-shrink: 0;
         }
 
-        .card-thumbnail img {
-            max-width: 60%;
-            max-height: 60%;
+        .row-thumbnail img {
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
         }
 
-        .card-info {
+        .row-info {
+            flex: 1;
             display: flex;
-            gap: 12px;
-            padding: 0 4px;
+            flex-direction: column;
         }
 
-        .card-info h3 {
+        .row-info h3 {
             font-size: 1rem;
             font-weight: 500;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        .row-action {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .channel-row:hover .row-action {
+            opacity: 1;
+            color: var(--accent);
         }
 
         /* --- Responsive Tasarım --- */
         @media (max-width: 768px) {
-            .search-container {
-                display: none; /* Mobilde arama ikonuna dönüştürülebilir, şimdilik gizli/sade */
+            .logo {
+                font-size: 0; /* Mobilde sadece ikon kalsın, arama çubuğuna yer açılsın */
             }
-            .player-section {
-                /* Mobilde video ekranın üstünde kalır */
-                position: sticky;
-                top: var(--nav-height);
+            .logo-icon {
+                font-size: 1.25rem;
+            }
+            .search-container {
+                margin: 0 5px;
+            }
+            .header-right {
+                width: 0;
+                display: none;
             }
         }
     </style>
@@ -396,35 +415,42 @@
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Seçili listede kanal ara..." autocomplete="off">
         </div>
-        <div style="width: 24px;"></div> <!-- Dengeleyici boşluk -->
+        <div class="header-right"></div> 
     </header>
 
-    <!-- Yan Menü (Kategoriler & Diller) -->
+    <!-- Yan Menü (Accordion Yapısı) -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
     <aside class="drawer" id="drawer">
-        <div class="drawer-section">
-            <div class="drawer-title">Kategoriler</div>
+        
+        <button class="accordion">📺 Kategoriler</button>
+        <div class="panel">
             <div class="drawer-item" onclick="loadList('categories/news.m3u', 'Haberler', this)">📰 Haberler</div>
             <div class="drawer-item" onclick="loadList('categories/movies.m3u', 'Filmler', this)">🎬 Filmler</div>
             <div class="drawer-item" onclick="loadList('categories/sports.m3u', 'Spor', this)">⚽ Spor</div>
             <div class="drawer-item" onclick="loadList('categories/music.m3u', 'Müzik', this)">🎵 Müzik</div>
-            <div class="drawer-item" onclick="loadList('categories/kids.m3u', 'Çocuk', this)">🧸 Çocuk</div>
             <div class="drawer-item" onclick="loadList('categories/documentary.m3u', 'Belgesel', this)">🌍 Belgesel</div>
         </div>
-        <div class="drawer-section">
-            <div class="drawer-title">Diller</div>
+
+        <button class="accordion">🗣️ Diller</button>
+        <div class="panel">
             <div class="drawer-item" onclick="loadList('languages/eng.m3u', 'İngilizce', this)">🇬🇧 İngilizce</div>
             <div class="drawer-item" onclick="loadList('languages/ara.m3u', 'Arapça', this)">🇸🇦 Arapça</div>
-            <div class="drawer-item" onclick="loadList('languages/fas.m3u', 'Farsça', this)">🇮🇷 Farsça</div>
             <div class="drawer-item" onclick="loadList('languages/tur.m3u', 'Türkçe', this)">🇹🇷 Türkçe</div>
-            <div class="drawer-item" onclick="loadList('languages/rus.m3u', 'Rusça', this)">🇷🇺 Rusça</div>
+            <div class="drawer-item" onclick="loadList('languages/deu.m3u', 'Almanca', this)">🇩🇪 Almanca</div>
+            <div class="drawer-item" onclick="loadList('languages/fra.m3u', 'Fransızca', this)">🇫🇷 Fransızca</div>
         </div>
+
+        <button class="accordion">🌍 Ülkeler</button>
+        <div class="panel" id="countriesPanel">
+            <!-- JavaScript ile dinamik ve sıralı doldurulacak -->
+        </div>
+
     </aside>
 
     <!-- Ana Akış -->
     <main class="main-layout">
         
-        <!-- Video Oynatıcı (Sticky) -->
+        <!-- Video Oynatıcı (Sticky & Sınırlandırılmış Yükseklik) -->
         <section class="player-section">
             <div class="video-container">
                 <video id="videoPlayer" controls></video>
@@ -442,18 +468,13 @@
             </div>
         </section>
 
-        <!-- Ülkeler Çubuğu -->
-        <nav class="chips-container" id="countriesBar">
-            <!-- JavaScript ile doldurulacak -->
-        </nav>
-
-        <!-- Kanallar Grid Alanı -->
+        <!-- Kanallar Liste Alanı -->
         <section class="content-section">
             <div id="statusMessage" class="status-message">
-                Lütfen üstten bir ülke veya soldaki menüden kategori seçin.
+                Lütfen menüden bir ülke veya kategori seçin.
             </div>
-            <div class="channels-grid" id="channelsGrid">
-                <!-- Kanallar buraya basılacak -->
+            <div class="channels-list" id="channelsList">
+                <!-- Kanallar buraya zarif satırlar olarak basılacak -->
             </div>
         </section>
 
@@ -463,35 +484,55 @@
          2. UYGULAMA MANTIĞI VE HLS MOTORU (VibeCoder Özel Mimarisi)
          ========================================================================== -->
     <script>
-        // Yapılandırma ve Veritabanı
         const BASE_URL = 'https://iptv-org.github.io/iptv/';
         const FALLBACK_LOGO = 'https://via.placeholder.com/300x168/212121/aaaaaa?text=Watch+TV';
         
-        // Stabilite için statik ülke listesi (En çok izlenenler)
-        const COUNTRIES = [
-            { code: 'tr', name: 'Türkiye' },
-            { code: 'us', name: 'Amerika' },
-            { code: 'gb', name: 'İngiltere' },
-            { code: 'de', name: 'Almanya' },
-            { code: 'fr', name: 'Fransa' },
-            { code: 'it', name: 'İtalya' },
-            { code: 'es', name: 'İspanya' },
-            { code: 'ru', name: 'Rusya' },
-            { code: 'sa', name: 'Suudi Arabistan' },
-            { code: 'ir', name: 'İran' },
-            { code: 'az', name: 'Azerbaycan' },
-            { code: 'nl', name: 'Hollanda' },
-            { code: 'gr', name: 'Yunanistan' },
-            { code: 'jp', name: 'Japonya' },
-            { code: 'kr', name: 'Güney Kore' }
+        // Kapsamlı Ülke Veritabanı
+        const COUNTRY_DB = [
+            { code: 'tr', name: '🇹🇷 Türkiye' },
+            { code: 'us', name: '🇺🇸 Amerika Birleşik Devletleri' },
+            // Avrupa Ülkeleri
+            { code: 'de', name: '🇩🇪 Almanya' },
+            { code: 'at', name: '🇦🇹 Avusturya' },
+            { code: 'be', name: '🇧🇪 Belçika' },
+            { code: 'gb', name: '🇬🇧 Birleşik Krallık (İngiltere)' },
+            { code: 'bg', name: '🇧🇬 Bulgaristan' },
+            { code: 'cz', name: '🇨🇿 Çekya' },
+            { code: 'dk', name: '🇩🇰 Danimarka' },
+            { code: 'fi', name: '🇫🇮 Finlandiya' },
+            { code: 'fr', name: '🇫🇷 Fransa' },
+            { code: 'nl', name: '🇳🇱 Hollanda' },
+            { code: 'ie', name: '🇮🇪 İrlanda' },
+            { code: 'es', name: '🇪🇸 İspanya' },
+            { code: 'se', name: '🇸🇪 İsveç' },
+            { code: 'ch', name: '🇨🇭 İsviçre' },
+            { code: 'it', name: '🇮🇹 İtalya' },
+            { code: 'no', name: '🇳🇴 Norveç' },
+            { code: 'pl', name: '🇵🇱 Polonya' },
+            { code: 'pt', name: '🇵🇹 Portekiz' },
+            { code: 'ro', name: '🇷🇴 Romanya' },
+            { code: 'ru', name: '🇷🇺 Rusya' },
+            { code: 'gr', name: '🇬🇷 Yunanistan' },
+            // Arap Ülkeleri
+            { code: 'ae', name: '🇦🇪 Birleşik Arap Emirlikleri' },
+            { code: 'dz', name: '🇩🇿 Cezayir' },
+            { code: 'ma', name: '🇲🇦 Fas' },
+            { code: 'iq', name: '🇮🇶 Irak' },
+            { code: 'qa', name: '🇶🇦 Katar' },
+            { code: 'kw', name: '🇰🇼 Kuveyt' },
+            { code: 'lb', name: '🇱🇧 Lübnan' },
+            { code: 'eg', name: '🇪🇬 Mısır' },
+            { code: 'sa', name: '🇸🇦 Suudi Arabistan' },
+            { code: 'tn', name: '🇹🇳 Tunus' },
+            { code: 'jo', name: '🇯🇴 Ürdün' }
         ];
 
         // DOM Elementleri
         const menuBtn = document.getElementById('menuBtn');
         const drawer = document.getElementById('drawer');
         const drawerOverlay = document.getElementById('drawerOverlay');
-        const countriesBar = document.getElementById('countriesBar');
-        const channelsGrid = document.getElementById('channelsGrid');
+        const countriesPanel = document.getElementById('countriesPanel');
+        const channelsList = document.getElementById('channelsList');
         const statusMessage = document.getElementById('statusMessage');
         const searchInput = document.getElementById('searchInput');
         const logoBtn = document.getElementById('logoBtn');
@@ -502,87 +543,97 @@
         const currentCategory = document.getElementById('currentCategory');
         const currentLogo = document.getElementById('currentLogo');
 
-        // State (Durum) Yönetimi
         let currentChannels = [];
         let hlsInstance = null;
         let activeFilterName = "";
 
         // Uygulama Başlatıcı
         function initApp() {
-            renderCountriesBar();
+            populateCountriesDrawer();
+            setupAccordions();
             setupEventListeners();
-            // Varsayılan olarak Türkiye'yi yükle
-            loadList('countries/tr.m3u', 'Türkiye', document.querySelector('.chip'));
+            
+            // Başlangıçta Türkiye Listesini Yükle (Sahte bir 'this' bağlamıyla)
+            const fakeDrawerItem = document.createElement('div');
+            loadList('countries/tr.m3u', 'Türkiye', fakeDrawerItem);
         }
 
-        // Ülke Butonlarını (Chips) Oluştur
-        function renderCountriesBar() {
-            countriesBar.innerHTML = '';
-            COUNTRIES.forEach(country => {
-                const btn = document.createElement('div');
-                btn.className = 'chip';
-                btn.textContent = country.name;
-                btn.onclick = () => {
-                    // Aktif stili ayarla
-                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                    btn.classList.add('active');
-                    clearDrawerSelection();
-                    loadList(`countries/${country.code}.m3u`, country.name);
-                };
-                countriesBar.appendChild(btn);
+        // Accordion (Açılır Menü) Mantığı
+        function setupAccordions() {
+            const accordions = document.querySelectorAll('.accordion');
+            accordions.forEach(acc => {
+                acc.addEventListener('click', function() {
+                    // Diğerlerini kapatma (opsiyonel, istersen eklenebilir. Şu an bağımsız çalışıyor)
+                    this.classList.toggle('active');
+                    const panel = this.nextElementSibling;
+                    if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                    } else {
+                        // ScrollHeight dinamik olduğu için yüksekliği yeterli seviyede veriyoruz
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+                    }
+                });
             });
         }
 
-        // Olay Dinleyicileri (Event Listeners)
+        // Ülkeleri Hamburger Menüye Doldur
+        function populateCountriesDrawer() {
+            // Alfabetik sıralama (isim bazında)
+            COUNTRY_DB.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+            
+            COUNTRY_DB.forEach(country => {
+                const div = document.createElement('div');
+                div.className = 'drawer-item';
+                div.textContent = country.name;
+                div.onclick = function() {
+                    loadList(`countries/${country.code}.m3u`, country.name.split(' ')[1] || country.name, this);
+                };
+                countriesPanel.appendChild(div);
+            });
+        }
+
+        // Olay Dinleyicileri
         function setupEventListeners() {
-            // Hamburger Menü
             menuBtn.onclick = toggleDrawer;
             drawerOverlay.onclick = toggleDrawer;
 
-            // Logoya tıklayınca varsayılana dön
             logoBtn.onclick = () => {
                 window.scrollTo(0,0);
-                document.querySelector('.chip').click();
             };
 
-            // Arama Motoru (Sadece mevcut liste içinde arar)
+            // Arama Motoru
             searchInput.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase('tr');
                 if(!currentChannels.length) return;
                 
                 const filtered = currentChannels.filter(c => c.name.toLowerCase('tr').includes(term));
-                renderGrid(filtered);
+                renderListView(filtered);
             });
         }
 
-        // Çekmeceyi Aç/Kapat
         function toggleDrawer() {
             drawer.classList.toggle('active');
             drawerOverlay.classList.toggle('active');
         }
 
-        // Menü seçimlerini temizle
         function clearDrawerSelection() {
             document.querySelectorAll('.drawer-item').forEach(el => el.classList.remove('active'));
         }
-        function clearChipsSelection() {
-            document.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
-        }
 
-        // Listeyi Çek ve Parse Et
+        // Listeyi Çek
         async function loadList(endpoint, listName, drawerElement = null) {
-            // UI Güncellemeleri
             activeFilterName = listName;
-            channelsGrid.innerHTML = '';
+            channelsList.innerHTML = '';
             statusMessage.style.display = 'block';
             statusMessage.innerHTML = `<span style="color:var(--text-primary)">${listName}</span> kanalları yükleniyor...`;
             searchInput.value = '';
 
-            if(drawerElement) {
-                clearChipsSelection();
+            if(drawerElement && drawerElement.classList) {
                 clearDrawerSelection();
                 drawerElement.classList.add('active');
-                toggleDrawer(); // Mobilde menüyü kapat
+                if (drawer.classList.contains('active')) {
+                    toggleDrawer(); // Listeyi seçince menüyü kapat
+                }
             }
 
             try {
@@ -593,10 +644,10 @@
                 currentChannels = parseM3U(m3uText);
                 
                 if(currentChannels.length === 0) {
-                    statusMessage.innerHTML = 'Bu kategoride kanal bulunamadı.';
+                    statusMessage.innerHTML = 'Bu kategoride aktif kanal bulunamadı.';
                 } else {
                     statusMessage.style.display = 'none';
-                    renderGrid(currentChannels);
+                    renderListView(currentChannels);
                 }
             } catch (error) {
                 console.error(error);
@@ -604,7 +655,7 @@
             }
         }
 
-        // M3U Ayrıştırıcı (Parser)
+        // M3U Ayrıştırıcı
         function parseM3U(m3uText) {
             const lines = m3uText.split('\n');
             const channels = [];
@@ -612,11 +663,9 @@
 
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-
                 if (line.startsWith('#EXTINF:')) {
                     const logoMatch = line.match(/tvg-logo="([^"]+)"/);
                     currentChannel.logo = logoMatch ? logoMatch[1] : '';
-
                     const nameMatch = line.split(',');
                     currentChannel.name = nameMatch.length > 1 ? nameMatch[1].trim() : 'Bilinmeyen Kanal';
                 } else if (line !== '' && !line.startsWith('#')) {
@@ -630,54 +679,49 @@
             return channels;
         }
 
-        // Grid (Izgara) Sistemine Veri Basma
-        function renderGrid(channels) {
-            channelsGrid.innerHTML = '';
+        // Şık Liste Görünümüne (List View) Veri Basma
+        function renderListView(channels) {
+            channelsList.innerHTML = '';
             
             channels.forEach(channel => {
-                const card = document.createElement('div');
-                card.className = 'channel-card';
+                const row = document.createElement('div');
+                row.className = 'channel-row';
                 
-                // Güvenli Logo Fallback Mimarisi
                 const imgUrl = channel.logo || FALLBACK_LOGO;
                 
-                card.innerHTML = `
-                    <div class="card-thumbnail">
-                        <img src="${imgUrl}" alt="${channel.name}" onerror="this.src='${FALLBACK_LOGO}'">
+                row.innerHTML = `
+                    <div class="row-thumbnail">
+                        <img src="${imgUrl}" alt="Logo" onerror="this.src='${FALLBACK_LOGO}'">
                     </div>
-                    <div class="card-info">
+                    <div class="row-info">
                         <h3>${channel.name}</h3>
                     </div>
+                    <div class="row-action">▶</div>
                 `;
 
-                card.onclick = () => playChannel(channel);
-                channelsGrid.appendChild(card);
+                row.onclick = () => playChannel(channel);
+                channelsList.appendChild(row);
             });
         }
 
-        // HLS.js Video Oynatma Motoru
+        // HLS.js Motoru
         function playChannel(channel) {
-            // Görsel Güncellemeler
             currentTitle.textContent = channel.name;
             currentCategory.textContent = activeFilterName;
             currentLogo.src = channel.logo || FALLBACK_LOGO;
             currentLogo.onerror = function() { this.src = FALLBACK_LOGO; };
             errorOverlay.classList.add('hidden');
 
-            // Scroll to top (Mobilde izlemeyi kolaylaştırmak için)
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (hlsInstance) {
                 hlsInstance.destroy();
             }
 
-            // Safari (Yerel HLS desteği)
             if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
                 videoPlayer.src = channel.url;
                 videoPlayer.play().catch(e => console.log("Oynatma hatası", e));
-            } 
-            // Modern Tarayıcılar (HLS.js)
-            else if (Hls.isSupported()) {
+            } else if (Hls.isSupported()) {
                 hlsInstance = new Hls({
                     maxMaxBufferLength: 20,
                     liveSyncDurationCount: 3
@@ -694,12 +738,7 @@
                     if (data.fatal) {
                         switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
-                                errorOverlay.classList.remove('hidden');
-                                hlsInstance.destroy();
-                                break;
                             case Hls.ErrorTypes.MEDIA_ERROR:
-                                hlsInstance.recoverMediaError();
-                                break;
                             default:
                                 errorOverlay.classList.remove('hidden');
                                 hlsInstance.destroy();
@@ -712,7 +751,6 @@
             }
         }
 
-        // Sistemi Başlat
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
