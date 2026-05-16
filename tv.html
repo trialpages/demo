@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe TV - Canlı Yayın Merkezi</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <style>
+        /* ==========================================================================
+           1. UI/UX STİL AYARLARI (Gömülü CSS)
+           ========================================================================== */
+        :root {
+            --bg-dark: #0f1115;
+            --bg-sidebar: #16181d;
+            --bg-hover: #23272f;
+            --accent: #3b82f6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #2e333d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* Ana Düzen (Flexbox) */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Sol Menü: Kanal Listesi Alanı */
+        .sidebar {
+            width: 320px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .sidebar-header p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+
+        /* Arama Kutusu */
+        .search-container {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container input {
+            width: 100%;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent);
+        }
+
+        /* Kanal Listesi Akış Alanı */
+        .channel-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+
+        .channel-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .channel-list::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .loading-text {
+            padding: 20px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            gap: 12px;
+        }
+
+        .channel-item:hover, .channel-item.active {
+            background-color: var(--bg-hover);
+        }
+
+        .channel-item.active {
+            border-left: 4px solid var(--accent);
+            padding-left: 16px;
+        }
+
+        .channel-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            background-color: var(--bg-dark);
+            object-fit: contain;
+            padding: 2px;
+        }
+
+        .channel-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Sağ Alan: Video Oynatıcı Alanı */
+        .player-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-dark);
+        }
+
+        .player-wrapper {
+            flex: 1;
+            position: relative;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        /* Hata Mesajı Arayüzü (Yayın koptuğunda tetiklenir) */
+        .error-message {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .error-message.hidden {
+            display: none;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .error-message p {
+            color: #ef4444;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Alt Bilgi Barı */
+        .channel-info {
+            padding: 24px 32px;
+            background-color: var(--bg-sidebar);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 100px;
+        }
+
+        .channel-info img {
+            height: 50px;
+            border-radius: 8px;
+        }
+
+        .channel-info h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Mobil Tasarım */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 40vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .player-container {
+                height: 60vh;
+            }
+            
+            .channel-info {
+                height: auto;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Vibe TV 📺</h1>
+                <p>Türkiye Kanalları</p>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Kanal ara..." autocomplete="off">
+            </div>
+
+            <div id="channelList" class="channel-list">
+                <div class="loading-text">Kanallar yükleniyor, lütfen bekleyin...</div>
+            </div>
+        </aside>
+
+        <main class="player-container">
+            <div id="playerWrapper" class="player-wrapper">
+                <video id="videoPlayer" controls autoplay></video>
+                <div id="errorMessage" class="error-message hidden">
+                    <span class="error-icon">⚠️</span>
+                    <p>Bu kanalın yayını şu an çevrimdışı veya desteklenmiyor.</p>
+                </div>
+            </div>
+            <div class="channel-info" id="currentChannelInfo">
+                <img src="" id="currentLogo" alt="" class="hidden">
+                <h2 id="currentChannelName">İzlemek için bir kanal seçin</h2>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const CONFIG = {
+            // iptv-org Türkiye m3u resmi listesi
+            playlistUrl: 'https://iptv-org.github.io/iptv/countries/tr.m3u',
+            fallbackLogo: 'https://via.placeholder.com/40x40/16181d/94a3b8?text=TV'
+        };
+
+        const channelListEl = document.getElementById('channelList');
+        const searchInput = document.getElementById('searchInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const errorMessage = document.getElementById('errorMessage');
+        const currentChannelName = document.getElementById('currentChannelName');
+        const currentLogo = document.getElementById('currentLogo');
+
+        let allChannels = [];
+        let hlsInstance = null;
+
+        // Uygulamayı Başlat
+        async function initApp() {
+            try {
+                const rawM3uData = await fetchPlaylist(CONFIG.playlistUrl);
+                allChannels = parseM3U(rawM3uData);
+                
+                renderChannelList(allChannels);
+                setupSearch();
+            } catch (error) {
+                console.error("Yükleme hatası:", error);
+                channelListEl.innerHTML = `<div class="loading-text" style="color: #ef4444;">Listeler yüklenemedi. Bağlantınızı kontrol edin.</div>`;
+            }
+        }
+
+        // M3U Verisini Çek
+        async function fetchPlaylist(url) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.text();
+        }
+
+        // Metin tabanlı M3U dosyasını parse et ve obje dizisine çevir
+        function parseM3U(m3uText) {
+            const lines = m3uText.split('\n');
+            const channels = [];
+            let currentChannel = {};
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+
+                if (line.startsWith('#EXTINF:')) {
+                    const logoMatch = line.match(/tvg-logo="([^"]+)"/);
+                    currentChannel.logo = logoMatch ? logoMatch[1] : CONFIG.fallbackLogo;
+
+                    const nameMatch = line.split(',');
+                    currentChannel.name = nameMatch.length > 1 ? nameMatch[1].trim() : 'Bilinmeyen Kanal';
+                } else if (line !== '' && !line.startsWith('#')) {
+                    currentChannel.url = line;
+                    
+                    if (currentChannel.name && currentChannel.url) {
+                        channels.push({...currentChannel});
+                    }
+                    currentChannel = {};
+                }
+            }
+
+            // Kanalları A'dan Z'ye sırala
+            return channels.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+        }
+
+        // Kanalları Arayüze Bas
+        function renderChannelList(channels) {
+            channelListEl.innerHTML = '';
+
+            if (channels.length === 0) {
+                channelListEl.innerHTML = '<div class="loading-text">Kanal bulunamadı.</div>';
+                return;
+            }
+
+            channels.forEach(channel => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'channel-item';
+                
+                const logoImg = document.createElement('img');
+                logoImg.className = 'channel-logo';
+                logoImg.src = channel.logo;
+                logoImg.onerror = () => { logoImg.src = CONFIG.fallbackLogo; };
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'channel-name';
+                nameSpan.textContent = channel.name;
+
+                itemDiv.appendChild(logoImg);
+                itemDiv.appendChild(nameSpan);
+
+                itemDiv.addEventListener('click', () => {
+                    document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+                    itemDiv.classList.add('active');
+                    playChannel(channel);
+                });
+
+                channelListEl.appendChild(itemDiv);
+            });
+        }
+
+        // Real-time Arama Motoru
+        function setupSearch() {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase('tr');
+                const filteredChannels = allChannels.filter(channel => 
+                    channel.name.toLowerCase('tr').includes(searchTerm)
+                );
+                renderChannelList(filteredChannels);
+            });
+        }
+
+        // Kanalları Akış Motoruna Bağla (HLS Entegrasyonu)
+        function playChannel(channel) {
+            currentChannelName.textContent = channel.name;
+            currentLogo.src = channel.logo;
+            currentLogo.classList.remove('hidden');
+            errorMessage.classList.add('hidden'); 
+
+            if (hlsInstance) {
+                hlsInstance.destroy();
+            }
+
+            // Safari / iOS yerel desteği için
+            if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                videoPlayer.src = channel.url;
+                videoPlayer.play().catch(() => {});
+            } 
+            // Chrome, Edge, Firefox (HLS.js) için
+            else if (Hls.isSupported()) {
+                hlsInstance = new Hls({
+                    maxMaxBufferLength: 15
+                });
+                
+                hlsInstance.loadSource(channel.url);
+                hlsInstance.attachMedia(videoPlayer);
+                
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+                    videoPlayer.play().catch(() => {});
+                });
+
+                // Gelişmiş Kök Neden Hata Yakalama Sistemi
+                hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) {
+                        switch (data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                showPlayerError();
+                                hlsInstance.destroy();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hlsInstance.recoverMediaError();
+                                break;
+                            default:
+                                showPlayerError();
+                                hlsInstance.destroy();
+                                break;
+                        }
+                    }
+                });
+            } else {
+                alert("Tarayıcınız bu teknolojiyi desteklemiyor.");
+            }
+        }
+
+        function showPlayerError() {
+            errorMessage.classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
