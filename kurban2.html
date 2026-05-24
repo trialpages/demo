@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kurban Organizasyon Sistemi</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body{
+      background:#f3f4f6;
+    }
+
+    .glass{
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(10px);
+    }
+
+    .fade{
+      animation: fade .4s ease;
+    }
+
+    @keyframes fade{
+      from{
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .slot-full{
+      background:#e5e7eb!important;
+      border-color:#9ca3af!important;
+      color:#6b7280!important;
+      cursor:not-allowed;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen">
+
+  <!-- TOPBAR -->
+  <header class="bg-emerald-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+
+      <div>
+        <h1 class="text-2xl font-bold">
+          Kurban Organizasyon Otomasyonu
+        </h1>
+
+        <p class="text-sm text-emerald-100">
+          Profesyonel Mandıracılık ve Kesim Yönetim Sistemi
+        </p>
+      </div>
+
+      <button
+        class="bg-white text-emerald-800 px-5 py-2 rounded-xl font-semibold hover:scale-105 transition"
+      >
+        Google ile Giriş
+      </button>
+
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="bg-gradient-to-r from-emerald-900 to-emerald-700 text-white">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+
+      <div class="grid lg:grid-cols-2 gap-8 items-center">
+
+        <div>
+          <h2 class="text-4xl font-bold leading-tight">
+            Güvenilir ve Profesyonel
+            <span class="text-yellow-300">
+              Kurban Organizasyonu
+            </span>
+          </h2>
+
+          <p class="mt-5 text-lg text-emerald-100 leading-relaxed">
+            Büyükbaş ve küçükbaş kurban seçimlerinizi online olarak gerçekleştirin.
+            Hisse durumlarını canlı takip edin, kesim saatini öğrenin,
+            kurban bilgilerinizi anlık görüntüleyin.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+
+            <div class="bg-white/10 px-4 py-3 rounded-xl">
+              ✔ Canlı Hisse Takibi
+            </div>
+
+            <div class="bg-white/10 px-4 py-3 rounded-xl">
+              ✔ Kesim Saati Planlaması
+            </div>
+
+            <div class="bg-white/10 px-4 py-3 rounded-xl">
+              ✔ Mobil Uyumlu Sistem
+            </div>
+
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl p-6 text-gray-800 shadow-2xl">
+
+          <h3 class="text-2xl font-bold mb-5">
+            Hızlı Kurban Seçimi
+          </h3>
+
+          <!-- HAYVAN TÜRÜ -->
+          <div class="mb-5">
+
+            <label class="font-semibold block mb-2">
+              Hayvan Türü
+            </label>
+
+            <div class="flex gap-3">
+
+              <button onclick="selectType('buyukbas')" id="buyukbasBtn"
+                class="flex-1 bg-emerald-700 text-white py-3 rounded-xl font-semibold">
+                Büyükbaş
+              </button>
+
+              <button onclick="selectType('kucukbas')" id="kucukbasBtn"
+                class="flex-1 bg-gray-200 py-3 rounded-xl font-semibold">
+                Küçükbaş
+              </button>
+
+            </div>
+          </div>
+
+          <!-- GÜN -->
+          <div class="mb-5">
+
+            <label class="font-semibold block mb-2">
+              Kesim Günü
+            </label>
+
+            <div class="grid grid-cols-3 gap-3">
+
+              <button onclick="selectDay(1)"
+                class="dayBtn bg-white border py-3 rounded-xl font-semibold hover:bg-emerald-50">
+                1. Gün
+              </button>
+
+              <button onclick="selectDay(2)"
+                class="dayBtn bg-white border py-3 rounded-xl font-semibold hover:bg-emerald-50">
+                2. Gün
+              </button>
+
+              <button onclick="selectDay(3)"
+                class="dayBtn bg-white border py-3 rounded-xl font-semibold hover:bg-emerald-50">
+                3. Gün
+              </button>
+
+            </div>
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl">
+            <div class="font-bold text-amber-800">
+              Bilgilendirme
+            </div>
+
+            <p class="text-sm mt-2 text-gray-700 leading-relaxed">
+              Kesim sırası otomatik planlanmaktadır.
+              Hisseler doldukça sistem anlık güncellenir.
+              Kesim sonrası et dağıtımı SMS ile bildirilecektir.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ANA -->
+  <main class="max-w-7xl mx-auto px-4 py-10">
+
+    <!-- İSTATİSTİK -->
+    <section class="grid md:grid-cols-4 gap-5 mb-10">
+
+      <div class="bg-white rounded-3xl p-6 shadow">
+        <div class="text-4xl font-bold text-emerald-700">
+          124
+        </div>
+        <div class="mt-2 text-gray-600">
+          Toplam Büyükbaş
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow">
+        <div class="text-4xl font-bold text-emerald-700">
+          318
+        </div>
+        <div class="mt-2 text-gray-600">
+          Küçükbaş
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow">
+        <div class="text-4xl font-bold text-emerald-700">
+          652
+        </div>
+        <div class="mt-2 text-gray-600">
+          Dolu Hisse
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl p-6 shadow">
+        <div class="text-4xl font-bold text-emerald-700">
+          %94
+        </div>
+        <div class="mt-2 text-gray-600">
+          Memnuniyet
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SONUÇLAR -->
+    <section>
+
+      <div class="flex items-center justify-between mb-5">
+
+        <h2 class="text-3xl font-bold">
+          Uygun Kurbanlıklar
+        </h2>
+
+        <div class="text-sm bg-white px-4 py-2 rounded-xl shadow">
+          Canlı Hisse Sistemi Aktif
+        </div>
+
+      </div>
+
+      <div id="cards" class="grid lg:grid-cols-3 gap-6"></div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-emerald-900 text-white mt-16">
+
+    <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-8">
+
+      <div>
+        <h3 class="font-bold text-xl mb-4">
+          Kurban Sistemi
+        </h3>
+
+        <p class="text-emerald-100 text-sm leading-relaxed">
+          Profesyonel kurban organizasyonu ve online hisse yönetimi platformu.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-semibold mb-4">
+          Özellikler
+        </h4>
+
+        <ul class="space-y-2 text-sm text-emerald-100">
+          <li>Canlı hisse takibi</li>
+          <li>Kesim saat sistemi</li>
+          <li>SMS bilgilendirme</li>
+          <li>Online ödeme altyapısı</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold mb-4">
+          Organizasyon
+        </h4>
+
+        <ul class="space-y-2 text-sm text-emerald-100">
+          <li>Veteriner kontrolü</li>
+          <li>İslami usule uygun kesim</li>
+          <li>Soğuk zincir koruma</li>
+          <li>Paketleme sistemi</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold mb-4">
+          Destek
+        </h4>
+
+        <ul class="space-y-2 text-sm text-emerald-100">
+          <li>7/24 destek hattı</li>
+          <li>Canlı durum sorgulama</li>
+          <li>WhatsApp bildirimleri</li>
+          <li>PDF hisse belgesi</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </footer>
+
+<script>
+
+let currentType = "buyukbas";
+let currentDay = 1;
+
+const buyukbasData = [
+  {
+    id:1,
+    price:"35.000 ₺",
+    weight:"290 KG Et",
+    date:"1. Gün",
+    time:"09:00 - 10:00",
+    shares:[
+      "Ah*** Ka***",
+      "Me*** Yı***",
+      null,
+      null,
+      "Ha*** De***",
+      null,
+      null
+    ]
+  },
+
+  {
+    id:2,
+    price:"50.000 ₺",
+    weight:"340 KG Et",
+    date:"1. Gün",
+    time:"10:30 - 12:00",
+    shares:[
+      "Os*** Çe***",
+      "Mu*** Al***",
+      "Yu*** Ko***",
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+
+  {
+    id:3,
+    price:"75.000 ₺",
+    weight:"420 KG Et",
+    date:"1. Gün",
+    time:"13:00 - 15:00",
+    shares:[
+      "Fa*** De***",
+      "Ah*** Ta***",
+      "İs*** Ya***",
+      "Ha*** Ay***",
+      "Me*** Ar***",
+      null,
+      null
+    ]
+  }
+];
+
+const kucukbasData = [
+  {
+    id:11,
+    price:"18.500 ₺",
+    weight:"26 KG Et",
+    date:"1. Gün",
+    time:"09:30",
+    owner:null
+  },
+
+  {
+    id:12,
+    price:"22.000 ₺",
+    weight:"31 KG Et",
+    date:"1. Gün",
+    time:"11:00",
+    owner:"Ah*** Ka***"
+  },
+
+  {
+    id:13,
+    price:"25.000 ₺",
+    weight:"34 KG Et",
+    date:"1. Gün",
+    time:"14:00",
+    owner:null
+  }
+];
+
+function selectType(type){
+
+  currentType = type;
+
+  document.getElementById("buyukbasBtn")
+    .className = type === "buyukbas"
+    ? "flex-1 bg-emerald-700 text-white py-3 rounded-xl font-semibold"
+    : "flex-1 bg-gray-200 py-3 rounded-xl font-semibold";
+
+  document.getElementById("kucukbasBtn")
+    .className = type === "kucukbas"
+    ? "flex-1 bg-emerald-700 text-white py-3 rounded-xl font-semibold"
+    : "flex-1 bg-gray-200 py-3 rounded-xl font-semibold";
+
+  renderCards();
+}
+
+function selectDay(day){
+  currentDay = day;
+
+  document.querySelectorAll(".dayBtn").forEach(btn=>{
+    btn.classList.remove("bg-emerald-700","text-white");
+  });
+
+  event.target.classList.add("bg-emerald-700","text-white");
+
+  renderCards();
+}
+
+function renderCards(){
+
+  const cards = document.getElementById("cards");
+
+  cards.innerHTML = "";
+
+  if(currentType === "buyukbas"){
+
+    buyukbasData.forEach(item=>{
+
+      let dolu = item.shares.filter(x=>x !== null).length;
+
+      cards.innerHTML += `
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden fade">
+
+          <div class="bg-emerald-700 text-white p-5">
+
+            <div class="flex justify-between items-center">
+
+              <div>
+                <div class="text-sm opacity-80">
+                  Büyükbaş Kurbanlık
+                </div>
+
+                <div class="text-3xl font-bold mt-1">
+                  ${item.price}
+                </div>
+              </div>
+
+              <div class="bg-white/20 px-4 py-2 rounded-xl text-sm">
+                ${item.weight}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="p-5">
+
+            <div class="grid grid-cols-2 gap-4 mb-5">
+
+              <div class="bg-gray-100 p-4 rounded-2xl">
+                <div class="text-sm text-gray-500">
+                  Kesim Günü
+                </div>
+
+                <div class="font-bold mt-1">
+                  ${item.date}
+                </div>
+              </div>
+
+              <div class="bg-gray-100 p-4 rounded-2xl">
+                <div class="text-sm text-gray-500">
+                  Kesim Saati
+                </div>
+
+                <div class="font-bold mt-1">
+                  ${item.time}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mb-4">
+
+              <div class="flex justify-between mb-2">
+
+                <div class="font-semibold">
+                  Hisse Durumu
+                </div>
+
+                <div class="text-sm text-gray-500">
+                  ${dolu}/7 Dolu
+                </div>
+
+              </div>
+
+              <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div class="bg-emerald-600 h-3"
+                  style="width:${(dolu/7)*100}%">
+                </div>
+              </div>
+
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+
+              ${item.shares.map((s,index)=>`
+
+                <button
+                  class="
+                  p-3 rounded-2xl border text-sm font-semibold
+                  ${s
+                    ? 'slot-full'
+                    : 'bg-emerald-50 border-emerald-300 hover:bg-emerald-100'}
+                  "
+                  ${s ? 'disabled' : ''}
+                  onclick="fillShare(${item.id},${index})"
+                >
+
+                  ${s ? s : 'Boş Hisse'}
+
+                </button>
+
+              `).join("")}
+
+            </div>
+
+            <button
+              class="w-full mt-5 bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-2xl font-bold transition"
+            >
+              Kurban Bilgilerini Görüntüle
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    });
+
+  } else {
+
+    kucukbasData.forEach(item=>{
+
+      cards.innerHTML += `
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden fade">
+
+          <div class="bg-amber-600 text-white p-5">
+
+            <div class="flex justify-between items-center">
+
+              <div>
+                <div class="text-sm opacity-80">
+                  Küçükbaş Kurbanlık
+                </div>
+
+                <div class="text-3xl font-bold mt-1">
+                  ${item.price}
+                </div>
+              </div>
+
+              <div class="bg-white/20 px-4 py-2 rounded-xl text-sm">
+                ${item.weight}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="p-5">
+
+            <div class="grid grid-cols-2 gap-4 mb-5">
+
+              <div class="bg-gray-100 p-4 rounded-2xl">
+                <div class="text-sm text-gray-500">
+                  Kesim Günü
+                </div>
+
+                <div class="font-bold mt-1">
+                  ${item.date}
+                </div>
+              </div>
+
+              <div class="bg-gray-100 p-4 rounded-2xl">
+                <div class="text-sm text-gray-500">
+                  Kesim Saati
+                </div>
+
+                <div class="font-bold mt-1">
+                  ${item.time}
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mb-5">
+
+              ${
+                item.owner
+                ?
+                `
+                  <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl font-semibold">
+                    Satıldı • ${item.owner}
+                  </div>
+                `
+                :
+                `
+                  <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 p-4 rounded-2xl font-semibold">
+                    Müsait
+                  </div>
+                `
+              }
+
+            </div>
+
+            <button
+              class="
+              w-full py-3 rounded-2xl font-bold transition
+              ${item.owner
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-amber-600 hover:bg-amber-700 text-white'}
+              "
+              ${item.owner ? 'disabled' : ''}
+            >
+              ${item.owner ? 'Satıldı' : 'Kurbanı Seç'}
+            </button>
+
+            <button
+              class="w-full mt-3 bg-gray-100 hover:bg-gray-200 py-3 rounded-2xl font-bold"
+            >
+              Kurban Bilgilerini Görüntüle
+            </button>
+
+          </div>
+
+        </div>
+      `;
+    });
+
+  }
+
+}
+
+function fillShare(id,index){
+
+  const animal = buyukbasData.find(x=>x.id === id);
+
+  if(!animal.shares[index]){
+
+    animal.shares[index] = "Si*** Ka***";
+
+    renderCards();
+  }
+
+}
+
+renderCards();
+
+</script>
+
+</body>
+</html>
