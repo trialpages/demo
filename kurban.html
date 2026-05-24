@@ -3,36 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mandıra Profesyonel Kurban Otomasyonu</title>
+    <title>Kurban Otomasyonu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 900: '#14532d' }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .step-transition { transition: all 0.3s ease-in-out; }
-        .hide { display: none !important; }
-        .toast-enter { transform: translateY(100%); opacity: 0; }
-        .toast-active { transform: translateY(0); opacity: 1; }
+        body { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh; }
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,1); }
+        .step-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 1; transform: translateY(0); }
+        .step-hidden { opacity: 0; transform: translateY(20px); pointer-events: none; position: absolute; visibility: hidden; }
+        .toast-enter { transform: translateY(150%) scale(0.9); opacity: 0; }
+        .toast-active { transform: translateY(0) scale(1); opacity: 1; }
+        
+        /* Custom Scrollbar for elegant look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 antialiased flex flex-col relative overflow-x-hidden">
 
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="app.resetFlow()">
-                <i class="fa-solid fa-cow text-2xl text-emerald-600"></i>
-                <h1 class="font-bold text-xl tracking-tight text-slate-800">Has Mandıra <span class="text-sm font-normal text-slate-500">Kurban Sistemi</span></h1>
+    <header class="glass-header sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="app.resetFlow()">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-cow text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-2xl tracking-tight text-slate-800 leading-none">Has Mandıra</h1>
+                    <p class="text-xs font-medium text-brand-600 uppercase tracking-widest mt-1">Kurban Otomasyonu</p>
+                </div>
             </div>
             <div id="auth-container">
-                <button id="btn-login" onclick="app.simulateGoogleLogin()" class="flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg shadow-sm transition font-medium text-sm">
-                    <i class="fa-brands fa-google text-red-500"></i> Google ile Giriş Yap
+                <button id="btn-login" onclick="app.simulateGoogleLogin()" class="flex items-center gap-3 bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md text-slate-700 px-5 py-2.5 rounded-xl transition-all font-semibold text-sm group">
+                    <i class="fa-brands fa-google text-red-500 group-hover:scale-110 transition-transform"></i> Google ile Giriş
                 </button>
-                <div id="user-profile" class="hide flex items-center gap-3">
+                <div id="user-profile" class="hidden flex items-center gap-4">
                     <div class="text-right">
-                        <p id="user-name" class="text-sm font-semibold text-slate-800"></p>
-                        <p class="text-xs text-slate-500 cursor-pointer hover:text-red-500" onclick="app.logout()">Çıkış Yap</p>
+                        <p id="user-name" class="text-sm font-bold text-slate-800"></p>
+                        <p class="text-xs text-slate-500 cursor-pointer hover:text-red-500 transition-colors font-medium" onclick="app.logout()">Çıkış Yap</p>
                     </div>
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold border border-emerald-200">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-bold border border-white shadow-sm">
                         <i class="fa-solid fa-user"></i>
                     </div>
                 </div>
@@ -40,141 +65,181 @@
         </div>
     </header>
 
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+    <main class="flex-grow max-w-7xl mx-auto px-6 py-12 w-full relative">
         
-        <div id="step-indicator" class="flex items-center justify-center mb-8 text-sm font-medium hide">
-            <span id="ind-1" class="text-emerald-600">1. Tür</span>
-            <i class="fa-solid fa-chevron-right text-slate-300 mx-3 text-xs"></i>
-            <span id="ind-2" class="text-slate-400">2. Gün</span>
-            <i class="fa-solid fa-chevron-right text-slate-300 mx-3 text-xs"></i>
-            <span id="ind-3" class="text-slate-400">3. Fiyat</span>
-            <i class="fa-solid fa-chevron-right text-slate-300 mx-3 text-xs"></i>
-            <span id="ind-4" class="text-slate-400">4. Seçim</span>
+        <div id="stepper-container" class="max-w-3xl mx-auto mb-16 hidden">
+            <div class="flex items-center justify-between relative">
+                <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-slate-200 rounded-full -z-10"></div>
+                <div id="progress-bar" class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-brand-500 rounded-full -z-10 transition-all duration-500 w-0"></div>
+                
+                <div class="step-node flex flex-col items-center gap-2" id="node-1">
+                    <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/30 transition-colors duration-300">1</div>
+                    <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Tür</span>
+                </div>
+                <div class="step-node flex flex-col items-center gap-2" id="node-2">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold transition-colors duration-300">2</div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gün</span>
+                </div>
+                <div class="step-node flex flex-col items-center gap-2" id="node-3">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold transition-colors duration-300">3</div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Fiyat</span>
+                </div>
+                <div class="step-node flex flex-col items-center gap-2" id="node-4">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold transition-colors duration-300">4</div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Seçim</span>
+                </div>
+            </div>
         </div>
 
-        <section id="step-1" class="step-transition">
-            <h2 class="text-2xl font-bold text-center mb-6">Kurban Türünü Seçiniz</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                <div onclick="app.selectType('buyukbas')" class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-slate-200 p-8 cursor-pointer transition text-center group">
-                    <div class="w-20 h-20 mx-auto bg-slate-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-emerald-50 transition">
-                        <i class="fa-solid fa-cow text-4xl text-slate-600 group-hover:text-emerald-600"></i>
+        <div class="relative w-full">
+            <section id="step-1" class="step-transition w-full">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl font-extrabold text-slate-800 mb-4 tracking-tight">Kurban Türünü Seçiniz</h2>
+                    <p class="text-slate-500 font-medium">İşleme başlamak için lütfen tercih ettiğiniz kurbanlık türünü belirleyin.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div onclick="app.selectType('buyukbas')" class="glass-card rounded-3xl p-10 cursor-pointer group hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-28 h-28 mx-auto bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:shadow-md transition-all duration-300 border border-slate-100">
+                                <i class="fa-solid fa-cow text-6xl text-slate-700 group-hover:text-brand-600 transition-colors"></i>
+                            </div>
+                            <h3 class="text-3xl font-extrabold mb-3 text-slate-800">Büyükbaş</h3>
+                            <p class="text-slate-500 font-medium leading-relaxed">7 kişilik ortak katılımlar.<br>Özel fiyat grupları ve planlanmış kesim saatleri.</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Büyükbaş</h3>
-                    <p class="text-slate-500 text-sm">7 Hisseli katılımlar. Fiyat grubuna göre özel kesim saatleri.</p>
-                </div>
-                <div onclick="app.selectType('kucukbas')" class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-slate-200 p-8 cursor-pointer transition text-center group">
-                    <div class="w-20 h-20 mx-auto bg-slate-50 rounded-full flex items-center justify-center mb-4 group-hover:bg-emerald-50 transition">
-                        <i class="fa-solid fa-sheep text-4xl text-slate-600 group-hover:text-emerald-600"></i>
+                    <div onclick="app.selectType('kucukbas')" class="glass-card rounded-3xl p-10 cursor-pointer group hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-br from-brand-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div class="relative z-10">
+                            <div class="w-28 h-28 mx-auto bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:shadow-md transition-all duration-300 border border-slate-100">
+                                <i class="fa-solid fa-sheep text-6xl text-slate-700 group-hover:text-brand-600 transition-colors"></i>
+                            </div>
+                            <h3 class="text-3xl font-extrabold mb-3 text-slate-800">Küçükbaş</h3>
+                            <p class="text-slate-500 font-medium leading-relaxed">Tek kişilik tam mülkiyet.<br>Belirlenmiş gün ve özel kesim randevuları.</p>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-bold mb-2">Küçükbaş</h3>
-                    <p class="text-slate-500 text-sm">Tek kişilik özel seçimler. Belirlenmiş gün ve kesim saatleri.</p>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="step-2" class="step-transition hide">
-            <div class="flex items-center gap-4 mb-6 justify-center">
-                <button onclick="app.goBack(1)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left"></i> Geri</button>
-                <h2 class="text-2xl font-bold">Hangi Gün Kesim İstiyorsunuz?</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <div onclick="app.selectDay(1)" class="bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 p-6 cursor-pointer transition text-center hover:border-emerald-500">
-                    <h3 class="text-2xl font-bold text-emerald-600 mb-1">1. Gün</h3>
-                    <p class="text-slate-500">Bayramın ilk günü (Yoğun)</p>
+            <section id="step-2" class="step-transition step-hidden w-full">
+                <div class="text-center mb-10 relative">
+                    <button onclick="app.goBack(1)" class="absolute left-0 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors font-semibold bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Geri
+                    </button>
+                    <h2 class="text-4xl font-extrabold text-slate-800 mb-2">Kesim Günü</h2>
+                    <p class="text-slate-500 font-medium">Hangi gün işlem yapılmasını istersiniz?</p>
                 </div>
-                <div onclick="app.selectDay(2)" class="bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 p-6 cursor-pointer transition text-center hover:border-emerald-500">
-                    <h3 class="text-2xl font-bold text-emerald-600 mb-1">2. Gün</h3>
-                    <p class="text-slate-500">Bayramın ikinci günü (Sakin)</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+                    <div onclick="app.selectDay(1)" class="glass-card rounded-3xl p-8 cursor-pointer group hover:border-brand-500 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-extrabold text-slate-800 mb-1 group-hover:text-brand-600 transition-colors">1. Gün</h3>
+                                <p class="text-slate-500 font-medium">Bayramın ilk günü (Yoğun)</p>
+                            </div>
+                            <div class="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-brand-50 transition-colors border border-slate-100">
+                                <i class="fa-regular fa-calendar-check text-2xl text-slate-400 group-hover:text-brand-500"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div onclick="app.selectDay(2)" class="glass-card rounded-3xl p-8 cursor-pointer group hover:border-brand-500 hover:shadow-xl transition-all duration-300">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-3xl font-extrabold text-slate-800 mb-1 group-hover:text-brand-600 transition-colors">2. Gün</h3>
+                                <p class="text-slate-500 font-medium">Bayramın ikinci günü (Sakin)</p>
+                            </div>
+                            <div class="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-brand-50 transition-colors border border-slate-100">
+                                <i class="fa-regular fa-calendar-days text-2xl text-slate-400 group-hover:text-brand-500"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="step-3" class="step-transition hide">
-            <div class="flex items-center gap-4 mb-6 justify-center">
-                <button onclick="app.goBack(2)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left"></i> Geri</button>
-                <h2 class="text-2xl font-bold">Fiyat Grubunu Seçiniz</h2>
-            </div>
-            <div id="price-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <section id="step-3" class="step-transition step-hidden w-full">
+                <div class="text-center mb-10 relative">
+                    <button onclick="app.goBack(2)" class="absolute left-0 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors font-semibold bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-100">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Geri
+                    </button>
+                    <h2 class="text-4xl font-extrabold text-slate-800 mb-2">Fiyat Grubu</h2>
+                    <p class="text-slate-500 font-medium">Size uygun bütçe aralığını belirleyin.</p>
                 </div>
-        </section>
+                <div id="price-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    </div>
+            </section>
 
-        <section id="step-4" class="step-transition hide">
-            <div class="flex items-center justify-between mb-6">
-                <button onclick="app.goBack(3)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left"></i> Fiyatlara Dön</button>
-                <h2 class="text-2xl font-bold" id="selection-title">Kurbanlık Listesi</h2>
-                <div class="w-20"></div> </div>
-            
-            <div id="animals-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                </div>
-        </section>
-
+            <section id="step-4" class="step-transition step-hidden w-full">
+                <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <button onclick="app.goBack(3)" class="text-slate-500 hover:text-brand-600 transition-colors font-semibold flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Fiyatlara Dön
+                    </button>
+                    <div class="text-center">
+                        <h2 class="text-2xl font-extrabold text-slate-800" id="selection-title">Kurbanlık Listesi</h2>
+                        <p class="text-sm text-brand-600 font-bold uppercase tracking-wider" id="selection-subtitle"></p>
+                    </div>
+                    <div class="w-24"></div> </div>
+                
+                <div id="animals-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    </div>
+            </section>
+        </div>
     </main>
 
-    <div id="details-modal" class="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center hide opacity-0 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 transform scale-95 transition-transform" id="modal-content">
-            <div class="flex justify-between items-start mb-4">
-                <h3 class="text-xl font-bold text-slate-800 border-b-2 border-emerald-500 pb-1">Kurban Bilgileri</h3>
-                <button onclick="app.closeModal()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div id="modal-body" class="space-y-4">
+    <div id="details-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-1 transform scale-95 transition-transform duration-300" id="modal-content">
+            <div class="bg-white rounded-[1.4rem] p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-extrabold text-slate-800">Kurban Detayları</h3>
+                    <button onclick="app.closeModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-500 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
                 </div>
-            <div class="mt-6 text-center">
-                <button onclick="app.closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium py-2 rounded-lg transition">Kapat</button>
+                <div id="modal-body" class="space-y-3">
+                    </div>
+                <div class="mt-8">
+                    <button onclick="app.closeModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition-colors shadow-lg shadow-slate-900/20">Anladım, Kapat</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all duration-300 toast-enter">
-        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span id="toast-msg" class="font-medium">İşlem başarılı.</span>
+    <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-50 transition-all duration-400 toast-enter border border-slate-700/50 backdrop-blur-md">
+        <div id="toast-icon-bg" class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center">
+            <i id="toast-icon" class="fa-solid fa-check text-brand-400 text-sm"></i>
+        </div>
+        <span id="toast-msg" class="font-medium text-sm tracking-wide">İşlem başarılı.</span>
     </div>
 
     <script>
-        // --- 1. MOCK DATA GENERATOR ---
-        // (İleride Firebase'den gelecek verinin sahte hali)
         const generateMockData = () => {
             const data = { buyukbas: [], kucukbas: [] };
             const buyukbasPrices = [35000, 50000, 75000];
             const kucukbasPrices = [12000, 15000, 18000];
             const times = ["08:00 - 09:30", "10:00 - 11:30", "12:00 - 13:30", "14:00 - 15:30"];
             
-            // Büyükbaş Üretimi
             let idCounter = 1;
             buyukbasPrices.forEach(price => {
                 for (let day = 1; day <= 2; day++) {
                     for (let i = 0; i < 4; i++) {
-                        // Rastgele dolu hisseler (simülasyon)
                         let shares = Array(7).fill(null);
                         if (Math.random() > 0.3) {
                             shares[0] = { name: "Ahmet Yılmaz" };
                             shares[1] = { name: "Mehmet Demir" };
                             if(Math.random() > 0.5) shares[2] = { name: "Ayşe Kaya" };
                         }
-                        
                         data.buyukbas.push({
-                            id: `BB-${idCounter++}`,
-                            type: 'buyukbas',
-                            priceGroup: price,
-                            day: day,
-                            time: times[i % times.length],
-                            estimatedWeight: price === 35000 ? "250-280 kg" : price === 50000 ? "300-330 kg" : "400+ kg",
-                            shares: shares
+                            id: `BB-${idCounter++}`, type: 'buyukbas', priceGroup: price, day: day, time: times[i % times.length],
+                            estimatedWeight: price === 35000 ? "250-280 kg" : price === 50000 ? "300-330 kg" : "400+ kg", shares: shares
                         });
                     }
                 }
             });
 
-            // Küçükbaş Üretimi
             idCounter = 1;
             kucukbasPrices.forEach(price => {
                 for (let day = 1; day <= 2; day++) {
                     for (let i = 0; i < 5; i++) {
                         data.kucukbas.push({
-                            id: `KB-${idCounter++}`,
-                            type: 'kucukbas',
-                            priceGroup: price,
-                            day: day,
-                            time: times[i % times.length],
+                            id: `KB-${idCounter++}`, type: 'kucukbas', priceGroup: price, day: day, time: times[i % times.length],
                             estimatedWeight: price === 12000 ? "20-25 kg" : price === 15000 ? "26-30 kg" : "32+ kg",
                             owner: Math.random() > 0.7 ? { name: "Caner Kılıç" } : null
                         });
@@ -186,101 +251,89 @@
 
         const db = generateMockData();
 
-        // --- 2. STATE MANAGEMENT ---
         const app = {
-            state: {
-                user: null, // { name: "Kullanıcı Adı" }
-                currentStep: 1,
-                selectedType: null, // 'buyukbas' | 'kucukbas'
-                selectedDay: null,
-                selectedPrice: null
-            },
+            state: { user: null, currentStep: 1, selectedType: null, selectedDay: null, selectedPrice: null },
 
-            // --- 3. AUTHENTICATION (Simulated) ---
             simulateGoogleLogin: function() {
-                // Firebase Login simülasyonu
                 this.state.user = { name: "Müşteri Kullanıcı" };
-                document.getElementById('btn-login').classList.add('hide');
-                document.getElementById('user-profile').classList.remove('hide');
+                document.getElementById('btn-login').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
                 document.getElementById('user-name').innerText = this.state.user.name;
-                this.showToast("Google ile başarıyla giriş yapıldı.", "success");
+                this.showToast("Sisteme güvenli giriş yapıldı.", "success");
             },
 
             logout: function() {
                 this.state.user = null;
-                document.getElementById('btn-login').classList.remove('hide');
-                document.getElementById('user-profile').classList.add('hide');
+                document.getElementById('btn-login').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
                 this.resetFlow();
-                this.showToast("Çıkış yapıldı.", "info");
+                this.showToast("Oturum kapatıldı.", "info");
             },
 
-            // --- 4. WIZARD FLOW CONTROL ---
-            selectType: function(type) {
-                this.state.selectedType = type;
-                this.goToStep(2);
-            },
-            
-            selectDay: function(day) {
-                this.state.selectedDay = day;
-                this.renderPrices();
-                this.goToStep(3);
-            },
-
-            selectPrice: function(price) {
-                this.state.selectedPrice = price;
-                this.renderAnimals();
-                this.goToStep(4);
-            },
-
-            goBack: function(step) {
-                this.goToStep(step);
-            },
-
-            resetFlow: function() {
-                this.state.selectedType = null;
-                this.state.selectedDay = null;
-                this.state.selectedPrice = null;
-                this.goToStep(1);
-            },
+            selectType: function(type) { this.state.selectedType = type; this.goToStep(2); },
+            selectDay: function(day) { this.state.selectedDay = day; this.renderPrices(); this.goToStep(3); },
+            selectPrice: function(price) { this.state.selectedPrice = price; this.renderAnimals(); this.goToStep(4); },
+            goBack: function(step) { this.goToStep(step); },
+            resetFlow: function() { this.state.selectedType = null; this.state.selectedDay = null; this.state.selectedPrice = null; this.goToStep(1); },
 
             goToStep: function(stepNum) {
                 this.state.currentStep = stepNum;
-                // Tüm adımları gizle
+                
+                // Hide all steps properly for absolute positioning layout
                 [1, 2, 3, 4].forEach(s => {
-                    document.getElementById(`step-${s}`).classList.add('hide');
-                    if(document.getElementById(`ind-${s}`)) {
-                        document.getElementById(`ind-${s}`).className = s === stepNum ? "text-emerald-600 font-bold" : (s < stepNum ? "text-slate-800" : "text-slate-400");
+                    const el = document.getElementById(`step-${s}`);
+                    if (s === stepNum) {
+                        el.classList.remove('step-hidden');
+                    } else {
+                        el.classList.add('step-hidden');
                     }
                 });
-                
-                // İndikatörü 1. adımda gizle, diğerlerinde göster
-                const indicator = document.getElementById('step-indicator');
-                stepNum > 1 ? indicator.classList.remove('hide') : indicator.classList.add('hide');
 
-                // İlgili adımı göster
-                document.getElementById(`step-${stepNum}`).classList.remove('hide');
+                // Stepper Logic Update
+                const stepper = document.getElementById('stepper-container');
+                const progressBar = document.getElementById('progress-bar');
+                
+                if (stepNum > 1) {
+                    stepper.classList.remove('hidden');
+                    const progressPercentages = { 2: '33%', 3: '66%', 4: '100%' };
+                    progressBar.style.width = progressPercentages[stepNum] || '0%';
+
+                    [1, 2, 3, 4].forEach(s => {
+                        const node = document.getElementById(`node-${s}`).children[0];
+                        if (s <= stepNum) {
+                            node.className = "w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold shadow-md shadow-brand-500/30 transition-colors duration-300";
+                        } else {
+                            node.className = "w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold transition-colors duration-300";
+                        }
+                    });
+                } else {
+                    stepper.classList.add('hidden');
+                }
             },
 
-            // --- 5. RENDER FUNCTIONS ---
             renderPrices: function() {
                 const container = document.getElementById('price-container');
                 container.innerHTML = '';
-                
-                // Seçilen türe göre uygun fiyatları benzersiz olarak bul
                 const availableData = db[this.state.selectedType].filter(item => item.day === this.state.selectedDay);
                 const prices = [...new Set(availableData.map(item => item.priceGroup))].sort((a,b) => a-b);
 
-                prices.forEach(price => {
+                prices.forEach((price, index) => {
                     const el = document.createElement('div');
-                    el.className = "bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 p-6 cursor-pointer transition text-center hover:border-emerald-500 relative overflow-hidden group";
+                    const isPremium = index === prices.length - 1; // En yüksek fiyat için premium stil
+                    const bgClass = isPremium ? 'bg-slate-900 text-white' : 'glass-card text-slate-800';
+                    const textClass = isPremium ? 'text-white' : 'text-slate-800';
+                    const subTextClass = isPremium ? 'text-slate-400' : 'text-slate-500';
+                    
+                    el.className = `${bgClass} rounded-3xl p-8 cursor-pointer group hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 text-center relative overflow-hidden border ${isPremium ? 'border-slate-800' : 'border-slate-100 hover:border-brand-300'}`;
                     el.onclick = () => this.selectPrice(price);
                     
-                    const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(price);
+                    const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(price);
                     
                     el.innerHTML = `
-                        <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
-                        <h3 class="text-3xl font-bold text-slate-800 mb-2">${priceFormatted}</h3>
-                        <p class="text-slate-500 text-sm">Tıklayarak uygun saatleri ve kurbanları gör</p>
+                        ${isPremium ? '<div class="absolute top-0 right-0 bg-brand-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Popüler Seçim</div>' : ''}
+                        <h3 class="text-4xl font-extrabold mb-2 ${textClass}">${priceFormatted}</h3>
+                        <p class="${subTextClass} font-medium text-sm">Tıklayarak uygun kurbanlıkları listele</p>
+                        <div class="mt-6 w-12 h-1 bg-${isPremium ? 'brand-500' : 'slate-200'} mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
                     `;
                     container.appendChild(el);
                 });
@@ -292,151 +345,132 @@
                 
                 const titleStr = this.state.selectedType === 'buyukbas' ? 'Büyükbaş Hisseleri' : 'Küçükbaş Kurbanlar';
                 const dayStr = this.state.selectedDay + ". Gün";
-                const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(this.state.selectedPrice);
-                document.getElementById('selection-title').innerText = `${titleStr} - ${dayStr} (${priceFormatted})`;
+                const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(this.state.selectedPrice);
+                
+                document.getElementById('selection-title').innerText = titleStr;
+                document.getElementById('selection-subtitle').innerText = `${dayStr} • ${priceFormatted}`;
 
-                const animals = db[this.state.selectedType].filter(item => 
-                    item.day === this.state.selectedDay && item.priceGroup === this.state.selectedPrice
-                );
+                const animals = db[this.state.selectedType].filter(item => item.day === this.state.selectedDay && item.priceGroup === this.state.selectedPrice);
 
                 animals.forEach(animal => {
                     const card = document.createElement('div');
-                    card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col";
+                    card.className = "glass-card rounded-3xl p-6 flex flex-col hover:shadow-xl hover:border-slate-300 transition-all duration-300 group";
                     
                     let shareHtml = '';
-                    
                     if (this.state.selectedType === 'buyukbas') {
                         const filledCount = animal.shares.filter(s => s !== null).length;
                         const isFull = filledCount === 7;
                         
                         let slots = animal.shares.map((share, index) => {
                             if (share) {
-                                return `<div class="bg-slate-100 border border-slate-200 rounded p-2 text-xs font-medium text-slate-600 flex items-center justify-center gap-1 cursor-not-allowed" title="Dolu">
-                                            <i class="fa-solid fa-user-lock text-slate-400"></i> ${this.maskName(share.name)}
+                                return `<div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-500 flex items-center justify-center gap-2 cursor-not-allowed">
+                                            <i class="fa-solid fa-lock text-slate-300"></i> <span class="truncate">${this.maskName(share.name)}</span>
                                         </div>`;
                             } else {
-                                return `<div onclick="app.buyShare('${animal.id}', ${index})" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded p-2 text-xs font-medium text-emerald-700 flex items-center justify-center gap-1 cursor-pointer transition" title="Hisse Seç">
-                                            <i class="fa-solid fa-plus"></i> Seç
+                                return `<div onclick="app.buyShare('${animal.id}', ${index})" class="bg-white border-2 border-brand-100 hover:border-brand-500 hover:bg-brand-50 rounded-xl p-2.5 text-xs font-bold text-brand-600 flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm">
+                                            <i class="fa-solid fa-plus"></i> Hisse Al
                                         </div>`;
                             }
                         }).join('');
 
                         shareHtml = `
-                            <div class="mt-4 mb-2 flex justify-between items-center text-sm">
-                                <span class="font-semibold text-slate-700">Durum:</span>
-                                <span class="text-xs ${isFull ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700'} px-2 py-1 rounded-full font-bold">
-                                    ${filledCount}/7 Dolu
-                                </span>
+                            <div class="mt-5 mb-3 flex justify-between items-center">
+                                <span class="font-bold text-slate-700 text-sm">Ortaklık Durumu</span>
+                                <div class="flex items-center gap-1.5">
+                                    <div class="w-2 h-2 rounded-full ${isFull ? 'bg-red-500' : 'bg-brand-500'} animate-pulse"></div>
+                                    <span class="text-xs font-bold ${isFull ? 'text-red-600' : 'text-brand-600'} uppercase tracking-wider">${filledCount}/7 Dolu</span>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 mb-4 flex-grow">
+                            <div class="grid grid-cols-2 gap-3 mb-2 flex-grow">
                                 ${slots}
                             </div>
                         `;
                     } else {
-                        // Küçükbaş mantığı
                         const isSold = animal.owner !== null;
                         shareHtml = `
-                            <div class="mt-4 flex-grow flex items-center justify-center">
+                            <div class="mt-6 flex-grow flex flex-col justify-end">
                                 ${isSold 
-                                    ? `<div class="w-full bg-slate-100 text-slate-500 py-3 rounded-lg text-center font-medium cursor-not-allowed"><i class="fa-solid fa-lock mr-2"></i> Satıldı (${this.maskName(animal.owner.name)})</div>` 
-                                    : `<button onclick="app.buySingle('${animal.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg text-center font-medium transition shadow-sm"><i class="fa-solid fa-cart-shopping mr-2"></i> Kurbanı Seç</button>`
+                                    ? `<div class="w-full bg-slate-50 border border-slate-200 text-slate-400 py-4 rounded-xl text-center font-bold flex items-center justify-center gap-2 cursor-not-allowed"><i class="fa-solid fa-lock"></i> Satıldı (${this.maskName(animal.owner.name)})</div>` 
+                                    : `<button onclick="app.buySingle('${animal.id}')" class="w-full bg-slate-900 hover:bg-brand-600 text-white py-4 rounded-xl text-center font-bold transition-colors duration-300 shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2"><i class="fa-solid fa-cart-shopping"></i> Kurbanı Seç</button>`
                                 }
                             </div>
                         `;
                     }
 
                     card.innerHTML = `
-                        <div class="flex justify-between items-start mb-3 border-b border-slate-100 pb-3">
-                            <div>
-                                <h4 class="font-bold text-lg text-slate-800">Küpe No: ${animal.id}</h4>
-                                <p class="text-sm text-slate-500"><i class="fa-regular fa-clock text-emerald-500 w-4"></i> ${animal.time}</p>
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center group-hover:bg-brand-50 transition-colors">
+                                    <i class="fa-solid ${this.state.selectedType === 'buyukbas' ? 'fa-cow' : 'fa-sheep'} text-xl text-slate-400 group-hover:text-brand-500"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-lg text-slate-800 tracking-tight">${animal.id}</h4>
+                                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mt-0.5"><i class="fa-regular fa-clock mr-1"></i> ${animal.time}</p>
+                                </div>
                             </div>
-                            <button onclick="app.showDetails('${animal.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded transition">Detaylar</button>
+                            <button onclick="app.showDetails('${animal.id}')" class="text-xs font-bold bg-white border border-slate-200 hover:border-brand-500 hover:text-brand-600 text-slate-600 px-4 py-2 rounded-lg transition-all shadow-sm">İncele</button>
                         </div>
+                        <div class="w-full h-px bg-slate-100"></div>
                         ${shareHtml}
                     `;
                     container.appendChild(card);
                 });
             },
 
-            // --- 6. BUSINESS LOGIC & HELPERS ---
             buyShare: function(animalId, shareIndex) {
-                if (!this.state.user) {
-                    this.showToast("Hisse seçmek için lütfen Google ile giriş yapınız.", "error");
-                    return;
-                }
-                
-                // MOCK Veri güncelleme (Gerçekte Firebase Update)
+                if (!this.state.user) return this.showToast("İşlem için sisteme giriş yapmalısınız.", "error");
                 const animal = db.buyukbas.find(a => a.id === animalId);
                 animal.shares[shareIndex] = { name: this.state.user.name };
-                
-                this.showToast(`${animalId} nolu kurbandan hisse başarıyla alındı!`, "success");
-                this.renderAnimals(); // Arayüzü yenile
+                this.showToast(`${animalId} numaralı kurbandan hisse alındı.`, "success");
+                this.renderAnimals();
             },
 
             buySingle: function(animalId) {
-                if (!this.state.user) {
-                    this.showToast("Kurban seçmek için lütfen Google ile giriş yapınız.", "error");
-                    return;
-                }
-
+                if (!this.state.user) return this.showToast("İşlem için sisteme giriş yapmalısınız.", "error");
                 const animal = db.kucukbas.find(a => a.id === animalId);
                 animal.owner = { name: this.state.user.name };
-                
-                this.showToast(`${animalId} nolu kurban başarıyla seçildi!`, "success");
-                this.renderAnimals(); // Arayüzü yenile
+                this.showToast(`${animalId} numaralı kurban ayrıldı.`, "success");
+                this.renderAnimals();
             },
 
             maskName: function(fullName) {
                 if (!fullName) return "";
-                return fullName.split(' ').map(word => {
-                    if (word.length <= 1) return word;
-                    return word[0] + '***';
-                }).join(' ');
+                return fullName.split(' ').map(word => word.length <= 1 ? word : word[0] + '***').join(' ');
             },
 
             showDetails: function(animalId) {
                 const animal = db[this.state.selectedType].find(a => a.id === animalId);
                 if (!animal) return;
-
-                const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(animal.priceGroup);
+                const priceFormatted = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits:0 }).format(animal.priceGroup);
                 
                 document.getElementById('modal-body').innerHTML = `
-                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                        <i class="fa-solid fa-tag text-emerald-600 w-5"></i>
-                        <div>
-                            <p class="text-xs text-slate-500">Birim/Hisse Fiyatı</p>
-                            <p class="font-semibold text-slate-800">${priceFormatted}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <i class="fa-solid fa-tag text-brand-500 mb-1"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Birim Fiyatı</p>
+                            <p class="font-extrabold text-lg text-slate-800">${priceFormatted}</p>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                        <i class="fa-solid fa-weight-scale text-emerald-600 w-5"></i>
-                        <div>
-                            <p class="text-xs text-slate-500">Tahmini Et Kilosu</p>
-                            <p class="font-semibold text-slate-800">${animal.estimatedWeight}</p>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <i class="fa-solid fa-weight-scale text-brand-500 mb-1"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tahmini Et</p>
+                            <p class="font-extrabold text-lg text-slate-800">${animal.estimatedWeight}</p>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                        <i class="fa-regular fa-calendar-check text-emerald-600 w-5"></i>
-                        <div>
-                            <p class="text-xs text-slate-500">Kesim Tarihi</p>
-                            <p class="font-semibold text-slate-800">Bayramın ${animal.day}. Günü</p>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <i class="fa-regular fa-calendar-check text-brand-500 mb-1"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tarih</p>
+                            <p class="font-extrabold text-lg text-slate-800">Bayramın ${animal.day}. Günü</p>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
-                        <i class="fa-regular fa-clock text-emerald-600 w-5"></i>
-                        <div>
-                            <p class="text-xs text-slate-500">Kesim Saati</p>
-                            <p class="font-semibold text-slate-800">${animal.time} Arası</p>
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-1">
+                            <i class="fa-regular fa-clock text-brand-500 mb-1"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kesim Aralığı</p>
+                            <p class="font-extrabold text-lg text-slate-800">${animal.time}</p>
                         </div>
                     </div>
                 `;
                 
                 const modal = document.getElementById('details-modal');
                 const content = document.getElementById('modal-content');
-                
-                modal.classList.remove('hide');
-                // Kısa gecikme animasyonun çalışmasını sağlar
+                modal.classList.remove('hidden');
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     content.classList.remove('scale-95');
@@ -446,35 +480,30 @@
             closeModal: function() {
                 const modal = document.getElementById('details-modal');
                 const content = document.getElementById('modal-content');
-                
                 modal.classList.add('opacity-0');
                 content.classList.add('scale-95');
-                
-                setTimeout(() => {
-                    modal.classList.add('hide');
-                }, 300); // Transition süresi ile aynı
+                setTimeout(() => { modal.classList.add('hidden'); }, 300);
             },
 
             showToast: function(message, type = "success") {
                 const toast = document.getElementById('toast');
                 const icon = document.getElementById('toast-icon');
+                const iconBg = document.getElementById('toast-icon-bg');
                 document.getElementById('toast-msg').innerText = message;
 
                 if(type === "error") {
-                    toast.className = "fixed bottom-4 right-4 bg-red-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all duration-300";
-                    icon.className = "fa-solid fa-circle-exclamation text-red-400";
+                    iconBg.className = "w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center";
+                    icon.className = "fa-solid fa-exclamation text-red-400 text-sm";
                 } else if(type === "info") {
-                    toast.className = "fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all duration-300";
-                    icon.className = "fa-solid fa-circle-info text-blue-400";
+                    iconBg.className = "w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center";
+                    icon.className = "fa-solid fa-info text-blue-400 text-sm";
                 } else {
-                    toast.className = "fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3 z-50 transition-all duration-300";
-                    icon.className = "fa-solid fa-circle-check text-emerald-400";
+                    iconBg.className = "w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center";
+                    icon.className = "fa-solid fa-check text-brand-400 text-sm";
                 }
 
                 toast.classList.remove('toast-enter');
                 toast.classList.add('toast-active');
-
-                // 3 saniye sonra gizle
                 setTimeout(() => {
                     toast.classList.remove('toast-active');
                     toast.classList.add('toast-enter');
