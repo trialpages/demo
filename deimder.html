@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEİMDER - Dokuz Eylül İlahiyat Fakültesi Mezunları ve Mensupları Derneği</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        // Tailwind Konfigürasyonu ve Renk Paleti (Logolardan alınan tonlar)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            dark: '#185d60',   // DEÜ İlahiyat Koyu Yeşil
+                            light: '#008b9c',  // DEİMDER Açık Camgöbeği
+                            accent: '#e6f4f5'  // Çok açık fon rengi
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Glassmorphism Temel Sınıfı */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Sayfa geçiş animasyonu */
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Arka plan deseni */
+        body {
+            background: linear-gradient(135deg, #f0f8f9 0%, #e0eef0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Slider geçişi */
+        .slider-slide { transition: opacity 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased overflow-x-hidden relative">
+
+    <div id="public-view" class="flex-grow flex flex-col">
+        
+        <nav class="glass-header fixed w-full z-50 top-0 transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-24">
+                    <div class="flex items-center gap-4 cursor-pointer" onclick="navigate('home')">
+                        <img src="462244361_3235119276622721_4243276606937010257_n.jpg" alt="DEÜ Logo" class="h-16 w-auto drop-shadow-md rounded-full">
+                        <img src="499929028_122097948470888937_2257428136706621366_n.jpg" alt="DEİMDER Logo" class="h-16 w-auto drop-shadow-md rounded-full">
+                        <div class="hidden lg:block ml-2 border-l-2 border-brand-light pl-4">
+                            <h1 class="text-lg font-bold text-brand-dark leading-tight">DEİMDER</h1>
+                            <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Mezunlar Derneği</p>
+                        </div>
+                    </div>
+
+                    <div class="hidden md:flex items-center space-x-1">
+                        <button onclick="navigate('home')" class="nav-link px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-brand-light hover:bg-white/50 transition">Anasayfa</button>
+                        
+                        <div class="relative group">
+                            <button class="nav-link flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-brand-light hover:bg-white/50 transition">
+                                Hakkımızda <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </button>
+                            <div class="absolute left-0 mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-left glass-panel rounded-xl overflow-hidden shadow-xl">
+                                <button onclick="navigate('hakkimizda-misyon')" class="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-brand-light hover:text-white transition">Misyon & Vizyon</button>
+                                <button onclick="navigate('hakkimizda-kurullar')" class="block w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-brand-light hover:text-white transition">Yönetim ve Kurullar</button>
+                            </div>
+                        </div>
+
+                        <button onclick="navigate('faaliyetler')" class="nav-link px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-brand-light hover:bg-white/50 transition">Faaliyetlerimiz</button>
+                        <button onclick="navigate('mezun-bankasi')" class="nav-link px-4 py-2 rounded-lg text-sm font-semibold text-gray-700 hover:text-brand-light hover:bg-white/50 transition">Mezun Bilgi Bankası</button>
+                        <button onclick="navigate('iletisim')" class="nav-link px-4 py-2 rounded-lg text-sm font-semibold text-white bg-brand-light hover:bg-brand-dark shadow-md hover:shadow-lg transition">İletişim</button>
+                    </div>
+
+                    <div class="md:hidden flex items-center">
+                        <button id="mobile-menu-btn" class="text-gray-700 hover:text-brand-dark focus:outline-none p-2">
+                            <i class="fa-solid fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/50">
+                <div class="px-4 pt-2 pb-6 space-y-2">
+                    <button onclick="navigateMobile('home')" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-white/50">Anasayfa</button>
+                    <div class="space-y-1">
+                        <span class="block px-3 py-2 text-base font-bold text-brand-dark border-b border-gray-200">Hakkımızda</span>
+                        <button onclick="navigateMobile('hakkimizda-misyon')" class="block w-full text-left pl-6 py-2 text-sm text-gray-600 hover:text-brand-light">Misyon & Vizyon</button>
+                        <button onclick="navigateMobile('hakkimizda-kurullar')" class="block w-full text-left pl-6 py-2 text-sm text-gray-600 hover:text-brand-light">Yönetim ve Kurullar</button>
+                    </div>
+                    <button onclick="navigateMobile('faaliyetler')" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-white/50">Faaliyetlerimiz</button>
+                    <button onclick="navigateMobile('mezun-bankasi')" class="block w-full text-left px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-white/50">Mezun Bilgi Bankası</button>
+                    <button onclick="navigateMobile('iletisim')" class="block w-full text-center mt-4 px-3 py-3 rounded-md text-base font-medium text-white bg-brand-light shadow-md">İletişim</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-grow pt-24 pb-12 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div id="page-home" class="page-section fade-in">
+                <div class="relative w-full h-[60vh] min-h-[400px] rounded-2xl overflow-hidden shadow-2xl mb-12 group glass-panel p-2">
+                    <div class="relative w-full h-full rounded-xl overflow-hidden" id="slider-container">
+                        </div>
+                    <button onclick="prevSlide()" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/60 backdrop-blur-sm text-brand-dark w-12 h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button onclick="nextSlide()" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/60 backdrop-blur-sm text-brand-dark w-12 h-12 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10" id="slider-dots"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-brand-light/20">
+                            <h3 class="text-xl font-bold text-brand-dark"><i class="fa-solid fa-bullhorn mr-2"></i>Duyurular</h3>
+                            <span class="bg-brand-light text-white text-xs px-2 py-1 rounded-full">Yeni</span>
+                        </div>
+                        <ul class="space-y-4 flex-grow">
+                            <li class="flex gap-3 cursor-pointer group">
+                                <div class="w-16 h-16 rounded-lg bg-brand-accent flex-shrink-0 flex flex-col items-center justify-center text-brand-dark">
+                                    <span class="font-bold text-lg">15</span>
+                                    <span class="text-xs">Ekim</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 group-hover:text-brand-light transition">2026 Olağan Genel Kurul Toplantısı</h4>
+                                    <p class="text-sm text-gray-500 line-clamp-2">Derneğimizin olağan genel kurulu dernek merkezimizde yapılacaktır...</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-3 cursor-pointer group">
+                                <div class="w-16 h-16 rounded-lg bg-brand-accent flex-shrink-0 flex flex-col items-center justify-center text-brand-dark">
+                                    <span class="font-bold text-lg">02</span>
+                                    <span class="text-xs">Kasım</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800 group-hover:text-brand-light transition">Burs Başvuruları Başladı</h4>
+                                    <p class="text-sm text-gray-500 line-clamp-2">İlahiyat fakültesi öğrencilerine yönelik destek bursu detayları...</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="mt-4 w-full text-center text-sm font-semibold text-brand-light hover:text-brand-dark">Tüm Duyurular <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-brand-light/20">
+                            <h3 class="text-xl font-bold text-brand-dark"><i class="fa-regular fa-newspaper mr-2"></i>Haberler</h3>
+                        </div>
+                        <div class="space-y-4 flex-grow">
+                            <div class="group cursor-pointer">
+                                <div class="h-32 w-full rounded-xl bg-gray-200 overflow-hidden mb-2">
+                                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=400" alt="Haber" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                </div>
+                                <h4 class="font-semibold text-gray-800 group-hover:text-brand-light transition">Geleneksel İftar Yemeğimiz Gerçekleşti</h4>
+                                <p class="text-sm text-gray-500 mt-1">Geniş katılımla gerçekleşen iftar programımızda mezunlarımız hasret giderdi.</p>
+                            </div>
+                        </div>
+                        <button class="mt-4 w-full text-center text-sm font-semibold text-brand-light hover:text-brand-dark">Tüm Haberler <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col h-full hover:-translate-y-1 transition-transform duration-300">
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-brand-light/20">
+                            <h3 class="text-xl font-bold text-brand-dark"><i class="fa-regular fa-calendar-check mr-2"></i>Yaklaşan Etkinlikler</h3>
+                        </div>
+                        <ul class="space-y-4 flex-grow">
+                             <li class="bg-white/40 rounded-xl p-3 border border-white/50">
+                                <h4 class="font-bold text-gray-800">Akademik Kariyer Söyleşileri #1</h4>
+                                <div class="flex justify-between items-center mt-2 text-sm text-gray-600">
+                                    <span><i class="fa-regular fa-clock mr-1"></i> 20:00</span>
+                                    <span><i class="fa-solid fa-location-dot mr-1"></i> Çevrimiçi (Zoom)</span>
+                                </div>
+                            </li>
+                            <li class="bg-white/40 rounded-xl p-3 border border-white/50">
+                                <h4 class="font-bold text-gray-800">Kitap Tahlili: İslam Düşünce Tarihi</h4>
+                                <div class="flex justify-between items-center mt-2 text-sm text-gray-600">
+                                    <span><i class="fa-regular fa-clock mr-1"></i> 14:00</span>
+                                    <span><i class="fa-solid fa-location-dot mr-1"></i> Dernek Merkezi</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <button onclick="navigate('faaliyetler')" class="mt-4 w-full text-center text-sm font-semibold text-brand-light hover:text-brand-dark">Tüm Etkinlikler <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                    </div>
+                </div>
+
+                <div class="mt-8 glass-panel rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-brand-dark/10 to-brand-light/10">
+                    <div class="mb-4 md:mb-0 md:mr-6">
+                        <h3 class="text-2xl font-bold text-brand-dark mb-2">Aramıza Katılın, Ağımızı Güçlendirelim!</h3>
+                        <p class="text-gray-600">Mezun Bilgi Bankasına kaydolarak hem dönem arkadaşlarınızla iletişimde kalın hem de dernek faaliyetlerinden öncelikli haberdar olun.</p>
+                    </div>
+                    <button onclick="navigate('mezun-bankasi')" class="whitespace-nowrap px-8 py-4 bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:bg-brand-light hover:shadow-xl transition transform hover:-translate-y-1">
+                        Bilgi Bankasına Kayıt Ol <i class="fa-solid fa-user-plus ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-hakkimizda-misyon" class="page-section fade-in hidden">
+                <div class="glass-panel rounded-3xl p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-6 border-b-2 border-brand-light inline-block pb-2">Misyonumuz ve Vizyonumuz</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-12 mt-8">
+                        <div>
+                            <div class="text-brand-light mb-4"><i class="fa-solid fa-bullseye text-4xl"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Misyonumuz</h3>
+                            <p class="text-gray-600 leading-relaxed text-lg">
+                                Dokuz Eylül Üniversitesi İlahiyat Fakültesi mezunları ve mensupları arasında dayanışmayı sağlamak, akademik ve kültürel işbirliklerini geliştirmek. Fakültemizin değerlerini yaşatarak topluma faydalı projeler üretmek ve öğrencilerimize maddi/manevi destek sağlamaktır.
+                            </p>
+                        </div>
+                        <div>
+                            <div class="text-brand-dark mb-4"><i class="fa-solid fa-eye text-4xl"></i></div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4">Vizyonumuz</h3>
+                            <p class="text-gray-600 leading-relaxed text-lg">
+                                Ulusal ve uluslararası düzeyde etkin, ilahiyat alanındaki güncel gelişmelere yön veren, mezun ağının gücüyle referans alınan, kurumsallaşmış ve yenilikçi bir sivil toplum kuruluşu olmak.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-hakkimizda-kurullar" class="page-section fade-in hidden">
+                <div class="glass-panel rounded-3xl p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-8 border-b-2 border-brand-light inline-block pb-2">Yönetim ve Kurullar</h2>
+                    
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 bg-white/50 p-3 rounded-lg border-l-4 border-brand-dark">Yönetim Kurulu</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                        <div class="bg-white/60 rounded-xl p-6 flex items-center space-x-4 border border-white/50">
+                            <div class="w-16 h-16 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-xl text-gray-500"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Dr. Ahmet Yılmaz</h4>
+                                <p class="text-sm text-brand-light font-medium">Yönetim Kurulu Başkanı</p>
+                            </div>
+                        </div>
+                        </div>
+
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 bg-white/50 p-3 rounded-lg border-l-4 border-brand-light">Denetim Kurulu</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white/60 rounded-xl p-6 flex items-center space-x-4 border border-white/50">
+                            <div class="w-16 h-16 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-xl text-gray-500"><i class="fa-solid fa-user"></i></div>
+                            <div>
+                                <h4 class="font-bold text-gray-900">Mehmet Demir</h4>
+                                <p class="text-sm text-brand-light font-medium">Denetim Kurulu Başkanı</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-faaliyetler" class="page-section fade-in hidden">
+                <div class="glass-panel rounded-3xl p-8 md:p-12">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-3xl font-bold text-brand-dark border-b-2 border-brand-light inline-block pb-2">Faaliyetlerimiz</h2>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-white/40 border border-white/50 rounded-2xl overflow-hidden flex flex-col md:flex-row hover:bg-white/60 transition group cursor-pointer">
+                            <div class="md:w-1/3 h-48 md:h-auto bg-gray-200 relative overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&q=80&w=600" alt="Faaliyet" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-2 left-2 bg-brand-dark text-white text-xs px-2 py-1 rounded">Sempozyum</div>
+                            </div>
+                            <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex text-sm text-gray-500 mb-2 gap-4">
+                                        <span><i class="fa-regular fa-calendar mr-1"></i> 12 Mayıs 2026</span>
+                                        <span><i class="fa-solid fa-location-dot mr-1"></i> DEÜ İlahiyat Konferans Salonu</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-brand-light transition">İslam Düşüncesinde Yenilik Sempozyumu</h3>
+                                    <p class="text-gray-600 line-clamp-2">Akademisyenlerimizin ve mezunlarımızın katılımıyla güncel meselelerin tartışıldığı verimli bir sempozyum gerçekleştirdik...</p>
+                                </div>
+                                <div class="mt-4 text-right">
+                                    <button class="text-brand-dark font-semibold text-sm hover:underline">Detayları İncele <i class="fa-solid fa-arrow-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/40 border border-white/50 rounded-2xl overflow-hidden flex flex-col md:flex-row hover:bg-white/60 transition group cursor-pointer">
+                            <div class="md:w-1/3 h-48 md:h-auto bg-gray-200 relative overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1528605105345-5344ea20e269?auto=format&fit=crop&q=80&w=600" alt="Faaliyet" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute top-2 left-2 bg-brand-light text-white text-xs px-2 py-1 rounded">Eğitim</div>
+                            </div>
+                            <div class="p-6 md:w-2/3 flex flex-col justify-between">
+                                <div>
+                                    <div class="flex text-sm text-gray-500 mb-2 gap-4">
+                                        <span><i class="fa-regular fa-calendar mr-1"></i> 05 Nisan 2026</span>
+                                        <span><i class="fa-solid fa-location-dot mr-1"></i> Dernek Merkezi</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-brand-light transition">Öğretmen Adayları İçin Formasyon Atölyesi</h3>
+                                    <p class="text-gray-600 line-clamp-2">Fakültemiz son sınıf öğrencilerine yönelik düzenlenen atölye çalışmasında tecrübeli mezunlarımız deneyimlerini aktardı...</p>
+                                </div>
+                                <div class="mt-4 text-right">
+                                    <button class="text-brand-dark font-semibold text-sm hover:underline">Detayları İncele <i class="fa-solid fa-arrow-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-mezun-bankasi" class="page-section fade-in hidden">
+                <div class="max-w-3xl mx-auto glass-panel rounded-3xl p-8 md:p-12">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-light/20 text-brand-dark mb-4">
+                            <i class="fa-solid fa-user-graduate text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-brand-dark mb-2">Mezun Bilgi Bankası</h2>
+                        <p class="text-gray-600">Ağımıza katılmak ve iletişimde kalmak için lütfen aşağıdaki formu eksiksiz doldurunuz.</p>
+                    </div>
+
+                    <form onsubmit="event.preventDefault(); alert('Form Firebase altyapısı eklendiğinde kaydedilecektir.');" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Ad Soyad *</label>
+                                <input type="text" required class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light focus:bg-white transition shadow-inner placeholder-gray-400" placeholder="Örn: Ali Yılmaz">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Mezuniyet Yılı *</label>
+                                <input type="number" min="1966" max="2026" required class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light focus:bg-white transition shadow-inner placeholder-gray-400" placeholder="Örn: 2015">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Şu Anki Görevi / Mesleği</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light focus:bg-white transition shadow-inner placeholder-gray-400" placeholder="Örn: Din Kültürü Öğretmeni">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Telefon Numarası</label>
+                                <input type="tel" class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light focus:bg-white transition shadow-inner placeholder-gray-400" placeholder="05XX XXX XX XX">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Kısa Özgeçmiş</label>
+                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light focus:bg-white transition shadow-inner placeholder-gray-400 resize-none" placeholder="Kendinizden kısaca bahsediniz..."></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Fotoğraf Yükle</label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-brand-light/30 border-dashed rounded-xl bg-white/30 hover:bg-white/50 transition cursor-pointer">
+                                <div class="space-y-1 text-center">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
+                                    <div class="flex text-sm text-gray-600 justify-center">
+                                        <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-brand-light hover:text-brand-dark focus-within:outline-none px-2 py-1 shadow-sm">
+                                            <span>Dosya Seç</span>
+                                            <input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*">
+                                        </label>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG (Maks 5MB)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:bg-brand-light transition duration-300">
+                            Kaydı Tamamla
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="page-iletisim" class="page-section fade-in hidden">
+                <div class="glass-panel rounded-3xl p-8 md:p-12">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-8 border-b-2 border-brand-light inline-block pb-2">İletişim</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Bize Mesaj Gönderin</h3>
+                            <form onsubmit="event.preventDefault(); alert('Mesajınız alınmıştır.');" class="space-y-4">
+                                <div>
+                                    <input type="text" required class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light transition shadow-inner" placeholder="Adınız Soyadınız">
+                                </div>
+                                <div>
+                                    <input type="email" required class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light transition shadow-inner" placeholder="E-Posta Adresiniz">
+                                </div>
+                                <div>
+                                    <textarea rows="5" required class="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/50 focus:outline-none focus:ring-2 focus:ring-brand-light transition shadow-inner resize-none" placeholder="Mesajınız..."></textarea>
+                                </div>
+                                <button type="submit" class="w-full py-3 bg-brand-light text-white font-bold rounded-xl shadow-md hover:bg-brand-dark transition">Gönder <i class="fa-regular fa-paper-plane ml-2"></i></button>
+                            </form>
+                        </div>
+
+                        <div class="bg-brand-dark text-white rounded-2xl p-8 shadow-xl flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+                            
+                            <h3 class="text-2xl font-bold mb-6 relative z-10">İletişim Bilgileri</h3>
+                            
+                            <ul class="space-y-6 relative z-10">
+                                <li class="flex items-start">
+                                    <i class="fa-solid fa-location-dot mt-1 text-brand-accent text-xl w-8"></i>
+                                    <div>
+                                        <h4 class="font-bold text-lg mb-1">Adres</h4>
+                                        <p class="text-brand-accent/80 leading-relaxed">İzmir, Türkiye (Açık adres buraya girilecek)</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa-solid fa-phone text-brand-accent text-xl w-8"></i>
+                                    <div>
+                                        <h4 class="font-bold text-lg">Telefon</h4>
+                                        <p class="text-brand-accent/80">+90 232 XXX XX XX</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fa-solid fa-envelope text-brand-accent text-xl w-8"></i>
+                                    <div>
+                                        <h4 class="font-bold text-lg">E-Posta</h4>
+                                        <p class="text-brand-accent/80">bilgi@deimder.org.tr</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="glass-header mt-auto border-t border-white/50 pt-8 pb-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0 text-center md:text-left">
+                    <h3 class="font-bold text-brand-dark text-lg">DEİMDER</h3>
+                    <p class="text-sm text-gray-500">Tüm hakları saklıdır &copy; 2026</p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-dark hover:bg-brand-light hover:text-white shadow-md transition transform hover:scale-110"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-dark hover:bg-brand-light hover:text-white shadow-md transition transform hover:scale-110"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-dark hover:bg-brand-light hover:text-white shadow-md transition transform hover:scale-110"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-brand-dark hover:bg-brand-light hover:text-white shadow-md transition transform hover:scale-110"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="admin-view" class="hidden min-h-screen w-full bg-slate-100 flex flex-col md:flex-row fade-in z-[100] absolute inset-0">
+        <div class="w-full md:w-64 bg-brand-dark text-white p-6 flex flex-col">
+            <div class="flex items-center gap-3 mb-10 border-b border-white/20 pb-4">
+                <i class="fa-solid fa-shield-halved text-2xl"></i>
+                <h2 class="text-xl font-bold">DEİMDER Admin</h2>
+            </div>
+            
+            <nav class="flex-grow space-y-2">
+                <button class="w-full flex items-center gap-3 px-4 py-3 bg-brand-light/40 rounded-lg text-left transition"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg text-left transition"><i class="fa-solid fa-images"></i> Slider Yönetimi</button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg text-left transition"><i class="fa-solid fa-bullhorn"></i> Duyurular & Haberler</button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg text-left transition"><i class="fa-regular fa-calendar-check"></i> Faaliyetler</button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/10 rounded-lg text-left transition"><i class="fa-solid fa-users"></i> Mezun Kayıtları</button>
+            </nav>
+
+            <div class="mt-auto pt-4 border-t border-white/20">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <p class="text-sm font-bold">Admin</p>
+                        <p class="text-xs text-brand-accent/70">Yönetici</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminPanel()" class="w-full py-2 bg-red-500/80 hover:bg-red-500 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Siteye Dön
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-grow p-8 overflow-y-auto">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard - Veri Girişi</h1>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Yeni Slider Ekle</h3>
+                <form class="space-y-4" onsubmit="event.preventDefault(); alert('Slider eklendi! (Simülasyon)');">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1">Resim URL (Görsel)</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-light outline-none" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-600 mb-1">Bağlantı Linki (Tıklanınca açılacak)</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-light outline-none" placeholder="/faaliyetler">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-600 mb-1">Slider Üzerindeki Mesaj / Başlık</label>
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-light outline-none" placeholder="Büyük İftar Buluşması...">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-6 py-2 bg-brand-dark text-white rounded-lg hover:bg-brand-light transition">Slider'a Ekle</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Yeni Duyuru / Haber</h3>
+                    <form class="space-y-4">
+                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none" placeholder="Başlık">
+                        <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none resize-none" placeholder="Özet Metin"></textarea>
+                        <button type="button" class="px-4 py-2 bg-brand-light text-white rounded-lg hover:bg-brand-dark transition text-sm">Yayınla</button>
+                    </form>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Sistem Özeti</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">145</p>
+                                <p class="text-xs text-gray-500">Kayıtlı Mezun</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"><i class="fa-regular fa-envelope"></i></div>
+                            <div>
+                                <p class="text-2xl font-bold text-gray-800">12</p>
+                                <p class="text-xs text-gray-500">Yeni Mesaj</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="toggleAdminPanel()" id="admin-trigger-btn" class="fixed bottom-6 right-6 bg-gray-900 text-white px-4 py-3 rounded-full shadow-2xl hover:bg-brand-dark transition-all z-50 flex items-center gap-2 text-sm font-bold border-2 border-white/20 glass-panel">
+        <i class="fa-solid fa-lock"></i> Admin Paneli
+    </button>
+
+
+    <script>
+        // --- 1. SPA YÖNLENDİRME (ROUTING) ---
+        function navigate(pageId) {
+            // Tüm bölümleri gizle
+            document.querySelectorAll('.page-section').forEach(el => {
+                el.classList.add('hidden');
+            });
+            // İlgili bölümü göster
+            document.getElementById('page-' + pageId).classList.remove('hidden');
+            // Sayfayı yukarı kaydır
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- 2. MOBİL MENÜ MANTIĞI ---
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        function navigateMobile(pageId) {
+            navigate(pageId);
+            mobileMenu.classList.add('hidden'); // Menüyü kapat
+        }
+
+        // --- 3. DİNAMİK SLIDER MANTIĞI ---
+        const sliderData = [
+            {
+                image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200',
+                title: 'İlahiyat Fakültesi Mezunları Büyük Buluşması',
+                link: 'faaliyetler'
+            },
+            {
+                image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+                title: 'Bilgi Bankamıza Katılın, İletişimde Kalalım',
+                link: 'mezun-bankasi'
+            },
+            {
+                image: 'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6?auto=format&fit=crop&q=80&w=1200',
+                title: 'Eğitime Destek: Yeni Dönem Burs Başvuruları',
+                link: 'home'
+            }
+        ];
+
+        let currentSlideIndex = 0;
+        const sliderContainer = document.getElementById('slider-container');
+        const sliderDotsContainer = document.getElementById('slider-dots');
+
+        function initSlider() {
+            sliderData.forEach((slide, index) => {
+                // Slayt Elemanı
+                const slideEl = document.createElement('div');
+                slideEl.className = `absolute inset-0 slider-slide ${index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
+                slideEl.id = `slide-${index}`;
+                slideEl.innerHTML = `
+                    <div class="absolute inset-0 bg-black/40 z-10"></div> <img src="${slide.image}" class="w-full h-full object-cover" alt="${slide.title}">
+                    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-6 cursor-pointer" onclick="navigate('${slide.link}')">
+                        <h2 class="text-3xl md:text-5xl font-bold text-white drop-shadow-lg mb-6">${slide.title}</h2>
+                        <span class="px-6 py-2 bg-brand-light/80 hover:bg-brand-light text-white rounded-full backdrop-blur-sm transition border border-white/30 shadow-lg">Detaylar İçin Tıklayın</span>
+                    </div>
+                `;
+                sliderContainer.appendChild(slideEl);
+
+                // Nokta (Dot)
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition-all ${index === 0 ? 'bg-white scale-125' : 'bg-white/50 hover:bg-white/80'}`;
+                dot.onclick = () => goToSlide(index);
+                sliderDotsContainer.appendChild(dot);
+            });
+        }
+
+        function updateSliderUI() {
+            const slides = sliderContainer.children;
+            const dots = sliderDotsContainer.children;
+
+            for (let i = 0; i < slides.length; i++) {
+                if (i === currentSlideIndex) {
+                    slides[i].classList.replace('opacity-0', 'opacity-100');
+                    slides[i].classList.replace('z-0', 'z-10');
+                    dots[i].classList.replace('bg-white/50', 'bg-white');
+                    dots[i].classList.add('scale-125');
+                } else {
+                    slides[i].classList.replace('opacity-100', 'opacity-0');
+                    slides[i].classList.replace('z-10', 'z-0');
+                    dots[i].classList.replace('bg-white', 'bg-white/50');
+                    dots[i].classList.remove('scale-125');
+                }
+            }
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % sliderData.length;
+            updateSliderUI();
+        }
+
+        function prevSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + sliderData.length) % sliderData.length;
+            updateSliderUI();
+        }
+
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            updateSliderUI();
+        }
+
+        // Otomatik kaydırma
+        setInterval(nextSlide, 5000); 
+        initSlider();
+
+        // --- 4. ADMIN PANELİ TOGGLE (DEMO) ---
+        function toggleAdminPanel() {
+            const publicView = document.getElementById('public-view');
+            const adminView = document.getElementById('admin-view');
+            const toggleBtn = document.getElementById('admin-trigger-btn');
+
+            if (adminView.classList.contains('hidden')) {
+                // Admin'e geç
+                publicView.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                adminView.classList.add('flex');
+                toggleBtn.classList.add('hidden'); // Butonu gizle, admin sidebar'da dönüş butonu var
+                window.scrollTo(0,0);
+            } else {
+                // Siteye dön
+                adminView.classList.add('hidden');
+                adminView.classList.remove('flex');
+                publicView.classList.remove('hidden');
+                toggleBtn.classList.remove('hidden');
+                window.scrollTo(0,0);
+            }
+        }
+
+    </script>
+</body>
+</html>
