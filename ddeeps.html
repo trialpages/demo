@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEİMDER - Dokuz Eylül İlahiyat Fakültesi Mezunları ve Mensupları Derneği</title>
+    <meta name="description" content="Dokuz Eylül Üniversitesi İlahiyat Fakültesi Mezunları ve Mensupları Derneği - DEİMDER">
+    <style>
+        :root {
+            --deu-dark: #0d1b2a;
+            --deu-blue: #1b3a5c;
+            --deu-mid: #1f4d7a;
+            --deu-light: #2c6faa;
+            --gold: #b8943a;
+            --gold-light: #d4b85c;
+            --gold-pale: #f0e6cc;
+            --cream: #fdfaf3;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-bg-strong: rgba(255, 255, 255, 0.75);
+            --glass-bg-dark: rgba(13, 27, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.35);
+            --glass-border-strong: rgba(255, 255, 255, 0.55);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --glass-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+            --text-dark: #1a1a2e;
+            --text-mid: #3a3a50;
+            --text-light: #6b6b80;
+            --radius-sm: 10px;
+            --radius: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-heading: Georgia, 'Times New Roman', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #e8edf5 0%, #f0f2f7 25%, #fdfaf3 50%, #f0f2f7 75%, #e8edf5 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px;
+            right: -150px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(184, 148, 58, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -180px;
+            left: -120px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(27, 58, 92, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .site-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            position: sticky;
+            top: 12px;
+            z-index: 100;
+            margin-top: 16px;
+            border-radius: var(--radius-lg);
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border-strong);
+            box-shadow: var(--glass-shadow);
+            padding: 0 24px;
+            transition: var(--transition);
+        }
+        .header.scrolled {
+            box-shadow: var(--glass-shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            min-height: 72px;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .logos-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+        .logo-svg {
+            height: 48px;
+            width: auto;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .logo-svg.deu-logo {
+            height: 44px;
+        }
+        .logo-svg.deimder-logo {
+            height: 46px;
+        }
+        .logo-divider {
+            width: 1px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.12);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .site-title-area {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .site-title-main {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--deu-dark);
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+        }
+        .site-title-sub {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .nav-item {
+            position: relative;
+            list-style: none;
+        }
+        .nav-link {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 25px;
+            transition: var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+            letter-spacing: -0.2px;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(27, 58, 92, 0.08);
+            color: var(--deu-blue);
+        }
+        .nav-link.active {
+            font-weight: 600;
+            background: rgba(27, 58, 92, 0.12);
+        }
+
+        /* Dropdown */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border-strong);
+            border-radius: var(--radius);
+            box-shadow: var(--glass-shadow-lg);
+            min-width: 210px;
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 200;
+            list-style: none;
+        }
+        .nav-item:hover .dropdown-menu,
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(4px);
+        }
+        .dropdown-link {
+            display: block;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            transition: var(--transition);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+            text-align: left;
+        }
+        .dropdown-link:hover {
+            background: rgba(27, 58, 92, 0.07);
+            color: var(--deu-blue);
+        }
+
+        /* Hamburger */
+        .hamburger-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 300;
+            border-radius: 8px;
+        }
+        .hamburger-btn span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: var(--deu-dark);
+            border-radius: 3px;
+            transition: var(--transition);
+            transform-origin: center;
+        }
+        .hamburger-btn.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger-btn.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger-btn.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Mobile nav */
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .mobile-nav-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .mobile-nav-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            max-width: 85vw;
+            height: 100vh;
+            background: var(--white);
+            z-index: 250;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 80px 20px 30px;
+            overflow-y: auto;
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
+            border-radius: 20px 0 0 20px;
+        }
+        .mobile-nav-panel.open {
+            right: 0;
+        }
+        .mobile-nav-link {
+            display: block;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+            width: 100%;
+            text-align: left;
+        }
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background: rgba(27, 58, 92, 0.07);
+            color: var(--deu-blue);
+        }
+        .mobile-submenu {
+            margin-left: 16px;
+            border-left: 2px solid rgba(27, 58, 92, 0.15);
+            padding-left: 8px;
+            display: none;
+        }
+        .mobile-submenu.open {
+            display: block;
+        }
+        .mobile-sub-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mobile-sub-toggle::after {
+            content: '▾';
+            font-size: 0.7rem;
+            transition: transform 0.3s;
+        }
+        .mobile-sub-toggle.expanded::after {
+            transform: rotate(180deg);
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            margin-top: 24px;
+            min-height: 60vh;
+        }
+        .page-section {
+            display: none;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .page-section.active {
+            display: block;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== SLIDER ========== */
+        .slider-container {
+            position: relative;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--glass-shadow-lg);
+            aspect-ratio: 16/6;
+            max-height: 420px;
+            background: var(--deu-dark);
+            margin-bottom: 32px;
+            border: 1px solid var(--glass-border);
+        }
+        .slider-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+        .slider-slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(13, 27, 42, 0.85) 0%, rgba(13, 27, 42, 0.2) 50%, rgba(13, 27, 42, 0.05) 100%);
+        }
+        .slider-caption {
+            position: relative;
+            z-index: 2;
+            padding: 32px 40px;
+            color: #fff;
+            max-width: 650px;
+        }
+        .slider-caption h2 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            letter-spacing: -0.5px;
+        }
+        .slider-caption p {
+            font-size: 1rem;
+            opacity: 0.9;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 16px;
+            right: 24px;
+            z-index: 3;
+            display: flex;
+            gap: 8px;
+        }
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            padding: 0;
+        }
+        .slider-dot.active {
+            background: #fff;
+            transform: scale(1.3);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+        .slider-arrows {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .slider-arrows:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        .slider-prev {
+            left: 16px;
+        }
+        .slider-next {
+            right: 16px;
+        }
+
+        /* ========== CARDS GRID ========== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--glass-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--glass-shadow-lg);
+            border-color: var(--glass-border-strong);
+        }
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 14px;
+            background: rgba(27, 58, 92, 0.08);
+        }
+        .card h3 {
+            font-family: var(--font-heading);
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+            color: var(--deu-dark);
+        }
+        .card p {
+            font-size: 0.88rem;
+            color: var(--text-mid);
+            line-height: 1.5;
+        }
+        .card-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            background: rgba(184, 148, 58, 0.15);
+            color: #8b6914;
+        }
+        .card-list {
+            list-style: none;
+            margin-top: 8px;
+        }
+        .card-list li {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.85rem;
+            color: var(--text-mid);
+        }
+        .card-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* ========== GLASS PANELS ========== */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--glass-shadow);
+            margin-bottom: 24px;
+        }
+        .glass-panel h2 {
+            font-family: var(--font-heading);
+            color: var(--deu-dark);
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+        }
+        .glass-panel h3 {
+            font-family: var(--font-heading);
+            color: var(--deu-blue);
+            margin-bottom: 8px;
+        }
+
+        /* ========== FORMS ========== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+            color: var(--text-dark);
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--deu-light);
+            box-shadow: 0 0 0 3px rgba(44, 111, 170, 0.12);
+            background: #fff;
+        }
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-family: inherit;
+            letter-spacing: -0.2px;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: var(--deu-blue);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--deu-mid);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 58, 92, 0.3);
+        }
+        .btn-gold {
+            background: var(--gold);
+            color: #fff;
+        }
+        .btn-gold:hover {
+            background: #a07d2e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 148, 58, 0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--deu-blue);
+            color: var(--deu-blue);
+        }
+        .btn-outline:hover {
+            background: var(--deu-blue);
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+        }
+        .btn-danger {
+            background: #c0392b;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #a93226;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border-strong);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: 32px 24px 20px;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .social-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(27, 58, 92, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--deu-dark);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .social-icon:hover {
+            background: var(--deu-blue);
+            color: #fff;
+            transform: translateY(-3px);
+            border-color: var(--deu-blue);
+        }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            font-size: 0.85rem;
+        }
+        .footer-links a {
+            color: var(--text-mid);
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .footer-links a:hover {
+            color: var(--deu-blue);
+        }
+        .footer-copy {
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+
+        /* ========== ADMIN PANEL ========== */
+        .admin-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 400;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--deu-dark);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-toggle-btn:hover {
+            background: #000;
+            transform: scale(1.08);
+        }
+        .admin-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 500;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .admin-panel-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -520px;
+            width: 500px;
+            max-width: 92vw;
+            height: 100vh;
+            background: #f8f9fb;
+            z-index: 550;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-panel.open {
+            right: 0;
+        }
+        .admin-header {
+            padding: 20px 24px;
+            background: var(--deu-dark);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .admin-header h3 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+        }
+        .admin-close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        .admin-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            overflow-x: auto;
+            background: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            position: sticky;
+            top: 60px;
+            z-index: 9;
+        }
+        .admin-tab {
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            background: transparent;
+            transition: var(--transition);
+            font-family: inherit;
+            color: var(--text-mid);
+        }
+        .admin-tab:hover {
+            background: #f0f0f5;
+        }
+        .admin-tab.active {
+            background: var(--deu-blue);
+            color: #fff;
+            border-color: var(--deu-blue);
+        }
+        .admin-body {
+            padding: 20px 24px;
+            flex: 1;
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+            animation: fadeSlideIn 0.3s ease;
+        }
+        .admin-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+        }
+        .admin-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .admin-card-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .admin-card-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .main-nav {
+                display: none;
+            }
+            .hamburger-btn {
+                display: flex;
+            }
+            .slider-caption h2 {
+                font-size: 1.3rem;
+            }
+            .slider-caption p {
+                font-size: 0.85rem;
+            }
+            .slider-caption {
+                padding: 20px 24px;
+            }
+            .slider-container {
+                aspect-ratio: 16/8;
+                max-height: 300px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .logos-area {
+                gap: 10px;
+            }
+            .logo-svg {
+                height: 36px;
+            }
+            .logo-svg.deu-logo {
+                height: 32px;
+            }
+            .logo-svg.deimder-logo {
+                height: 34px;
+            }
+            .site-title-main {
+                font-size: 0.85rem;
+            }
+            .site-title-sub {
+                font-size: 0.62rem;
+            }
+            .logo-divider {
+                height: 26px;
+            }
+        }
+        @media (max-width: 600px) {
+            .header {
+                padding: 0 12px;
+                border-radius: var(--radius);
+                top: 6px;
+                margin-top: 8px;
+            }
+            .header-inner {
+                min-height: 56px;
+                padding: 6px 0;
+                gap: 6px;
+            }
+            .slider-container {
+                aspect-ratio: 16/10;
+                max-height: 220px;
+                border-radius: var(--radius);
+            }
+            .slider-caption h2 {
+                font-size: 1rem;
+            }
+            .slider-caption p {
+                font-size: 0.75rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .slider-caption {
+                padding: 14px 16px;
+            }
+            .slider-arrows {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            .glass-panel {
+                padding: 16px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .site-title-main {
+                font-size: 0.72rem;
+            }
+            .site-title-sub {
+                font-size: 0.55rem;
+                letter-spacing: 0.8px;
+            }
+            .logo-svg {
+                height: 28px;
+            }
+            .logo-svg.deu-logo {
+                height: 26px;
+            }
+            .logo-svg.deimder-logo {
+                height: 28px;
+            }
+            .logo-divider {
+                height: 20px;
+            }
+            .logos-area {
+                gap: 6px;
+            }
+            .admin-panel {
+                width: 100%;
+                max-width: 100vw;
+                right: -105vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="site-wrapper">
+        <!-- ==================== HEADER ==================== -->
+        <header class="header" id="header">
+            <div class="header-inner">
+                <div class="logos-area">
+                    <!-- DEU İlahiyat Fakültesi Logosu SVG -->
+                    <svg class="logo-svg deu-logo" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="136" height="46" rx="8" fill="none" stroke="#1b3a5c" stroke-width="2.5"/>
+                        <text x="70" y="22" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="16" fill="#1b3a5c" letter-spacing="2">DOKUZ EYLÜL</text>
+                        <text x="70" y="40" text-anchor="middle" font-family="Georgia,serif" font-weight="600" font-size="11" fill="#b8943a" letter-spacing="3">İLAHİYAT FAKÜLTESİ</text>
+                    </svg>
+                    <span class="logo-divider"></span>
+                    <!-- DEİMDER Logosu SVG -->
+                    <svg class="logo-svg deimder-logo" viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="deimderGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#1b3a5c"/>
+                                <stop offset="100%" stop-color="#0d1b2a"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="2" y="6" width="156" height="38" rx="19" fill="url(#deimderGrad)"/>
+                        <text x="80" y="23" text-anchor="middle" font-family="Georgia,serif" font-weight="900" font-size="15" fill="#fff" letter-spacing="2">DEİMDER</text>
+                        <text x="80" y="38" text-anchor="middle" font-family="sans-serif" font-weight="400" font-size="7" fill="#d4b85c" letter-spacing="1.5">MEZUNLAR VE MENSUPLAR DERNEĞİ</text>
+                    </svg>
+                </div>
+                <!-- Desktop Navigation -->
+                <nav>
+                    <ul class="main-nav" id="mainNav">
+                        <li class="nav-item"><button class="nav-link active" data-page="anasayfa">Anasayfa</button></li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-page="hakkimizda">Hakkımızda ▾</button>
+                            <ul class="dropdown-menu">
+                                <li><button class="dropdown-link" data-page="biz-kimiz">Biz Kimiz</button></li>
+                                <li><button class="dropdown-link" data-page="misyon-vizyon">Misyon & Vizyon</button></li>
+                                <li><button class="dropdown-link" data-page="kurullar">Yönetim ve Kurullar</button></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><button class="nav-link" data-page="faaliyetler">Faaliyetlerimiz</button></li>
+                        <li class="nav-item"><button class="nav-link" data-page="mezun-bilgi">Mezun Bilgi Bankası</button></li>
+                        <li class="nav-item"><button class="nav-link" data-page="iletisim">İletişim</button></li>
+                    </ul>
+                </nav>
+                <!-- Hamburger -->
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menü">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+        <div class="mobile-nav-panel" id="mobileNavPanel">
+            <button class="mobile-nav-link active" data-page="anasayfa">Anasayfa</button>
+            <button class="mobile-nav-link mobile-sub-toggle" id="mobileSubToggle" data-page="hakkimizda">Hakkımızda</button>
+            <div class="mobile-submenu" id="mobileSubmenu">
+                <button class="mobile-nav-link" data-page="biz-kimiz">Biz Kimiz</button>
+                <button class="mobile-nav-link" data-page="misyon-vizyon">Misyon & Vizyon</button>
+                <button class="mobile-nav-link" data-page="kurullar">Yönetim ve Kurullar</button>
+            </div>
+            <button class="mobile-nav-link" data-page="faaliyetler">Faaliyetlerimiz</button>
+            <button class="mobile-nav-link" data-page="mezun-bilgi">Mezun Bilgi Bankası</button>
+            <button class="mobile-nav-link" data-page="iletisim">İletişim</button>
+        </div>
+
+        <!-- ==================== MAIN CONTENT ==================== -->
+        <main class="main-content" id="mainContent">
+
+            <!-- ANA SAYFA -->
+            <section class="page-section active" id="page-anasayfa">
+                <!-- Slider -->
+                <div class="slider-container" id="sliderContainer">
+                    <div class="slider-track" id="sliderTrack"></div>
+                    <button class="slider-arrows slider-prev" id="sliderPrev">◂</button>
+                    <button class="slider-arrows slider-next" id="sliderNext">▸</button>
+                    <div class="slider-dots" id="sliderDots"></div>
+                </div>
+                <!-- Cards Grid -->
+                <div class="cards-grid" id="homeCards">
+                    <!-- Duyurular Card -->
+                    <div class="card" data-page="duyurular-detay">
+                        <div class="card-icon">📢</div>
+                        <span class="card-badge">Güncel</span>
+                        <h3>Duyurular</h3>
+                        <p>Derneğimizden son gelişmeler ve önemli duyuruları takip edin.</p>
+                        <ul class="card-list" id="homeDuyurularList"></ul>
+                    </div>
+                    <!-- Haberler Card -->
+                    <div class="card" data-page="haberler-detay">
+                        <div class="card-icon">📰</div>
+                        <span class="card-badge">Haberler</span>
+                        <h3>Haberler</h3>
+                        <p>Dernek faaliyetlerimiz ve ilahiyat camiasından haberler.</p>
+                        <ul class="card-list" id="homeHaberlerList"></ul>
+                    </div>
+                    <!-- Etkinlikler Card -->
+                    <div class="card" data-page="faaliyetler">
+                        <div class="card-icon">📅</div>
+                        <span class="card-badge">Etkinlikler</span>
+                        <h3>Etkinlikler</h3>
+                        <p>Yaklaşan etkinliklerimizi keşfedin, katılım sağlayın.</p>
+                        <ul class="card-list" id="homeEtkinliklerList"></ul>
+                    </div>
+                    <!-- Mezun Bilgi Bankası Card -->
+                    <div class="card" data-page="mezun-bilgi">
+                        <div class="card-icon">🎓</div>
+                        <span class="card-badge">Mezunlar</span>
+                        <h3>Mezun Bilgi Bankası</h3>
+                        <p>Mezunlarımızın kayıtlarını inceleyin, iletişim ağını genişletin.</p>
+                        <ul class="card-list" id="homeMezunlarList"></ul>
+                    </div>
+                </div>
+                <!-- Son eklenen etkinlikler özet -->
+                <div class="glass-panel" id="homeEtkinlikOzet"></div>
+            </section>
+
+            <!-- HAKKIMIZDA (genel) -->
+            <section class="page-section" id="page-hakkimizda">
+                <div class="glass-panel">
+                    <h2>Hakkımızda</h2>
+                    <p>Dokuz Eylül Üniversitesi İlahiyat Fakültesi Mezunları ve Mensupları Derneği (DEİMDER), fakültemizden mezun olan ve fakültemizde görev yapan mensuplarımız arasında dayanışmayı güçlendirmek, mesleki gelişime katkıda bulunmak ve ortak değerlerimizi yaşatmak amacıyla kurulmuştur.</p>
+                    <p style="margin-top:12px;">Alt menülerden derneğimiz hakkında detaylı bilgilere ulaşabilirsiniz.</p>
+                </div>
+            </section>
+
+            <!-- BİZ KİMİZ -->
+            <section class="page-section" id="page-biz-kimiz">
+                <div class="glass-panel" id="contentBizKimiz"></div>
+            </section>
+
+            <!-- MİSYON VİZYON -->
+            <section class="page-section" id="page-misyon-vizyon">
+                <div class="glass-panel" id="contentMisyonVizyon"></div>
+            </section>
+
+            <!-- KURULLAR -->
+            <section class="page-section" id="page-kurullar">
+                <div class="glass-panel" id="contentKurullar"></div>
+            </section>
+
+            <!-- FAALİYETLER -->
+            <section class="page-section" id="page-faaliyetler">
+                <div class="glass-panel">
+                    <h2>Faaliyetlerimiz & Etkinlikler</h2>
+                    <div id="faaliyetlerList"></div>
+                </div>
+            </section>
+            <!-- Faaliyet Detay -->
+            <section class="page-section" id="page-faaliyet-detay">
+                <div class="glass-panel" id="faaliyetDetayContent"></div>
+            </section>
+
+            <!-- MEZUN BİLGİ BANKASI -->
+            <section class="page-section" id="page-mezun-bilgi">
+                <div class="glass-panel">
+                    <h2>Mezun Bilgi Bankası</h2>
+                    <p style="margin-bottom:16px;">Mezunlarımızın kayıtlarını burada görüntüleyebilirsiniz. Kaydınızı eklemek için aşağıdaki formu doldurun.</p>
+                    <div id="mezunlarList"></div>
+                </div>
+                <div class="glass-panel">
+                    <h3>📝 Mezun Kayıt Formu</h3>
+                    <form id="mezunForm">
+                        <div class="form-group"><label>Ad Soyad *</label><input type="text" class="form-input" id="mezunAdSoyad" required></div>
+                        <div class="form-group"><label>Mezuniyet Tarihi *</label><input type="text" class="form-input" id="mezunTarih" placeholder="Örn: 2018" required></div>
+                        <div class="form-group"><label>Görevi / Unvanı</label><input type="text" class="form-input" id="mezunGorev" placeholder="Örn: İmam-Hatip, Öğretmen, Akademisyen"></div>
+                        <div class="form-group"><label>Kısa Özgeçmiş</label><textarea class="form-input" id="mezunOzgecmis" rows="3"></textarea></div>
+                        <div class="form-group"><label>Fotoğraf URL (opsiyonel)</label><input type="url" class="form-input" id="mezunFoto" placeholder="https://..."></div>
+                        <button type="submit" class="btn btn-primary">Kaydı Gönder</button>
+                    </form>
+                    <p id="mezunFormMesaj" style="margin-top:10px;font-weight:600;"></p>
+                </div>
+            </section>
+
+            <!-- İLETİŞİM -->
+            <section class="page-section" id="page-iletisim">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" class="contact-grid">
+                    <div class="glass-panel">
+                        <h3>📍 Adres</h3>
+                        <p>Dokuz Eylül Üniversitesi İlahiyat Fakültesi<br>DEİMDER Dernek Ofisi<br>İzmir / Türkiye</p>
+                        <p style="margin-top:12px;"><strong>📧 E-posta:</strong> iletisim@deimder.org.tr</p>
+                        <p><strong>📞 Telefon:</strong> +90 (232) XXX XX XX</p>
+                        <div style="margin-top:16px;border-radius:12px;overflow:hidden;height:200px;background:#e0e0e0;display:flex;align-items:center;justify-content:center;color:#888;">
+                            🗺️ Harita (Firebase entegrasyonu ile eklenecek)
+                        </div>
+                    </div>
+                    <div class="glass-panel">
+                        <h3>✉️ İletişim Formu</h3>
+                        <form id="iletisimForm">
+                            <div class="form-group"><label>Adınız *</label><input type="text" class="form-input" id="iletisimAd" required></div>
+                            <div class="form-group"><label>E-posta *</label><input type="email" class="form-input" id="iletisimEmail" required></div>
+                            <div class="form-group"><label>Mesajınız *</label><textarea class="form-input" id="iletisimMesaj" rows="4" required></textarea></div>
+                            <button type="submit" class="btn btn-gold">Gönder</button>
+                        </form>
+                        <p id="iletisimFormMesaj" style="margin-top:10px;font-weight:600;"></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DUYURULAR DETAY -->
+            <section class="page-section" id="page-duyurular-detay">
+                <div class="glass-panel"><h2>📢 Tüm Duyurular</h2><div id="duyurularFullList"></div></div>
+            </section>
+            <!-- HABERLER DETAY -->
+            <section class="page-section" id="page-haberler-detay">
+                <div class="glass-panel"><h2>📰 Tüm Haberler</h2><div id="haberlerFullList"></div></div>
+            </section>
+        </main>
+
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="footer">
+            <div class="social-icons">
+                <a class="social-icon" title="Twitter/X">𝕏</a>
+                <a class="social-icon" title="Facebook">ⓕ</a>
+                <a class="social-icon" title="Instagram">📷</a>
+                <a class="social-icon" title="YouTube">▶</a>
+                <a class="social-icon" title="LinkedIn">🔗</a>
+            </div>
+            <div class="footer-links">
+                <a data-page="anasayfa">Anasayfa</a>
+                <a data-page="hakkimizda">Hakkımızda</a>
+                <a data-page="faaliyetler">Faaliyetler</a>
+                <a data-page="mezun-bilgi">Mezun Bilgi Bankası</a>
+                <a data-page="iletisim">İletişim</a>
+            </div>
+            <p class="footer-copy">© 2026 DEİMDER - Dokuz Eylül İlahiyat Fakültesi Mezunları ve Mensupları Derneği. Tüm hakları saklıdır.</p>
+        </footer>
+    </div>
+
+    <!-- ==================== ADMIN PANEL TOGGLE ==================== -->
+    <button class="admin-toggle-btn" id="adminToggleBtn" title="Yönetim Paneli">⚙️</button>
+
+    <!-- ==================== ADMIN PANEL ==================== -->
+    <div class="admin-panel-overlay" id="adminOverlay"></div>
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h3>⚙️ Yönetim Paneli</h3>
+            <button class="admin-close" id="adminClose">✕</button>
+        </div>
+        <div class="admin-tabs" id="adminTabs">
+            <button class="admin-tab active" data-admin-tab="slider">Slider</button>
+            <button class="admin-tab" data-admin-tab="duyurular">Duyurular</button>
+            <button class="admin-tab" data-admin-tab="haberler">Haberler</button>
+            <button class="admin-tab" data-admin-tab="etkinlikler">Etkinlikler</button>
+            <button class="admin-tab" data-admin-tab="mezunlar">Mezunlar</button>
+            <button class="admin-tab" data-admin-tab="sayfalar">Sayfalar</button>
+            <button class="admin-tab" data-admin-tab="iletisim-mesajlar">Mesajlar</button>
+        </div>
+        <div class="admin-body" id="adminBody">
+            <!-- Slider Yönetimi -->
+            <div class="admin-section active" id="admin-slider">
+                <h4 style="margin-bottom:12px;">Slider Yönetimi</h4>
+                <div id="adminSliderList"></div>
+                <button class="btn btn-primary btn-sm" id="adminSliderEkle" style="margin-top:8px;">+ Yeni Slayt Ekle</button>
+                <div id="adminSliderForm" style="display:none;margin-top:12px;padding:12px;background:#fff;border-radius:12px;border:1px solid #e8e8e8;">
+                    <input type="hidden" id="sliderEditId">
+                    <div class="form-group"><label>Görsel URL</label><input type="url" class="form-input" id="sliderImg" placeholder="https://... veya boş bırakın (gradyan kullanılır)"></div>
+                    <div class="form-group"><label>Başlık</label><input type="text" class="form-input" id="sliderBaslik"></div>
+                    <div class="form-group"><label>Mesaj</label><input type="text" class="form-input" id="sliderMesaj"></div>
+                    <div class="form-group"><label>Link (sayfa adı)</label><input type="text" class="form-input" id="sliderLink" placeholder="Örn: faaliyetler"></div>
+                    <button class="btn btn-primary btn-sm" id="adminSliderKaydet">Kaydet</button>
+                    <button class="btn btn-outline btn-sm" id="adminSliderIptal">İptal</button>
+                </div>
+            </div>
+            <!-- Duyurular Yönetimi -->
+            <div class="admin-section" id="admin-duyurular">
+                <h4 style="margin-bottom:12px;">Duyuru Yönetimi</h4>
+                <div id="adminDuyurularList"></div>
+                <button class="btn btn-primary btn-sm" id="adminDuyuruEkle">+ Yeni Duyuru</button>
+                <div id="adminDuyuruForm" style="display:none;margin-top:12px;padding:12px;background:#fff;border-radius:12px;border:1px solid #e8e8e8;">
+                    <input type="hidden" id="duyuruEditId">
+                    <div class="form-group"><label>Başlık</label><input type="text" class="form-input" id="duyuruBaslik"></div>
+                    <div class="form-group"><label>İçerik</label><textarea class="form-input" id="duyuruIcerik" rows="3"></textarea></div>
+                    <button class="btn btn-primary btn-sm" id="adminDuyuruKaydet">Kaydet</button>
+                    <button class="btn btn-outline btn-sm" id="adminDuyuruIptal">İptal</button>
+                </div>
+            </div>
+            <!-- Haberler Yönetimi -->
+            <div class="admin-section" id="admin-haberler">
+                <h4 style="margin-bottom:12px;">Haber Yönetimi</h4>
+                <div id="adminHaberlerList"></div>
+                <button class="btn btn-primary btn-sm" id="adminHaberEkle">+ Yeni Haber</button>
+                <div id="adminHaberForm" style="display:none;margin-top:12px;padding:12px;background:#fff;border-radius:12px;border:1px solid #e8e8e8;">
+                    <input type="hidden" id="haberEditId">
+                    <div class="form-group"><label>Başlık</label><input type="text" class="form-input" id="haberBaslik"></div>
+                    <div class="form-group"><label>Özet</label><textarea class="form-input" id="haberOzet" rows="3"></textarea></div>
+                    <button class="btn btn-primary btn-sm" id="adminHaberKaydet">Kaydet</button>
+                    <button class="btn btn-outline btn-sm" id="adminHaberIptal">İptal</button>
+                </div>
+            </div>
+            <!-- Etkinlikler Yönetimi -->
+            <div class="admin-section" id="admin-etkinlikler">
+                <h4 style="margin-bottom:12px;">Etkinlik Yönetimi</h4>
+                <div id="adminEtkinliklerList"></div>
+                <button class="btn btn-primary btn-sm" id="adminEtkinlikEkle">+ Yeni Etkinlik</button>
+                <div id="adminEtkinlikForm" style="display:none;margin-top:12px;padding:12px;background:#fff;border-radius:12px;border:1px solid #e8e8e8;">
+                    <input type="hidden" id="etkinlikEditId">
+                    <div class="form-group"><label>Başlık</label><input type="text" class="form-input" id="etkinlikBaslik"></div>
+                    <div class="form-group"><label>Tarih</label><input type="text" class="form-input" id="etkinlikTarih" placeholder="Örn: 15 Haziran 2026"></div>
+                    <div class="form-group"><label>Özet</label><textarea class="form-input" id="etkinlikOzet" rows="3"></textarea></div>
+                    <div class="form-group"><label>Detay (tam metin)</label><textarea class="form-input" id="etkinlikDetay" rows="4"></textarea></div>
+                    <div class="form-group"><label>Görsel URL (opsiyonel)</label><input type="url" class="form-input" id="etkinlikGorsel"></div>
+                    <button class="btn btn-primary btn-sm" id="adminEtkinlikKaydet">Kaydet</button>
+                    <button class="btn btn-outline btn-sm" id="adminEtkinlikIptal">İptal</button>
+                </div>
+            </div>
+            <!-- Mezunlar Yönetimi -->
+            <div class="admin-section" id="admin-mezunlar">
+                <h4 style="margin-bottom:12px;">Mezun Kayıtları</h4>
+                <div id="adminMezunlarList"></div>
+            </div>
+            <!-- Sayfalar Yönetimi -->
+            <div class="admin-section" id="admin-sayfalar">
+                <h4 style="margin-bottom:12px;">Sayfa İçerik Yönetimi</h4>
+                <div class="form-group"><label><strong>Biz Kimiz</strong> sayfa içeriği</label><textarea class="form-input" id="sayfaBizKimiz" rows="6"></textarea></div>
+                <div class="form-group"><label><strong>Misyon & Vizyon</strong> sayfa içeriği</label><textarea class="form-input" id="sayfaMisyonVizyon" rows="6"></textarea></div>
+                <div class="form-group"><label><strong>Yönetim ve Kurullar</strong> sayfa içeriği</label><textarea class="form-input" id="sayfaKurullar" rows="6"></textarea></div>
+                <button class="btn btn-primary" id="adminSayfalarKaydet">Tüm Sayfaları Kaydet</button>
+                <p id="sayfalarMesaj" style="margin-top:8px;font-weight:600;"></p>
+            </div>
+            <!-- İletişim Mesajları -->
+            <div class="admin-section" id="admin-iletisim-mesajlar">
+                <h4 style="margin-bottom:12px;">Gelen İletişim Mesajları</h4>
+                <div id="adminIletisimMesajlar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ============ DATA STORE (localStorage) ============
+            const STORAGE_KEY = 'deimder_data';
+            let appData = {
+                slider: [],
+                duyurular: [],
+                haberler: [],
+                etkinlikler: [],
+                mezunlar: [],
+                iletisimMesajlari: [],
+                sayfalar: {
+                    bizKimiz: '',
+                    misyonVizyon: '',
+                    kurullar: ''
+                }
+            };
+
+            function loadData() {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    try { appData = JSON.parse(raw); } catch (e) { initDefaultData();
+                        saveData(); }
+                } else {
+                    initDefaultData();
+                    saveData();
+                }
+                // Ensure all keys exist
+                if (!appData.slider) appData.slider = [];
+                if (!appData.duyurular) appData.duyurular = [];
+                if (!appData.haberler) appData.haberler = [];
+                if (!appData.etkinlikler) appData.etkinlikler = [];
+                if (!appData.mezunlar) appData.mezunlar = [];
+                if (!appData.iletisimMesajlari) appData.iletisimMesajlari = [];
+                if (!appData.sayfalar) appData.sayfalar = { bizKimiz: '', misyonVizyon: '', kurullar: '' };
+            }
+
+            function saveData() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            }
+
+            function initDefaultData() {
+                appData.slider = [
+                    { id: 1, img: '', baslik: 'DEİMDER\'e Hoş Geldiniz',
+                        mesaj: 'Dokuz Eylül İlahiyat Fakültesi mezun ve mensuplarını bir araya getiren ortak platform.',
+                        link: 'hakkimizda' },
+                    { id: 2, img: '', baslik: '2026 Mezunlar Buluşması',
+                        mesaj: 'Bu yılki geleneksel buluşmamız için hazırlıklar başladı. Detaylar için tıklayın.',
+                        link: 'faaliyetler' },
+                    { id: 3, img: '', baslik: 'Bilgi Bankası Yayında',
+                        mesaj: 'Mezun bilgi bankamıza kaydınızı ekleyerek iletişim ağımıza katılın.', link: 'mezun-bilgi' },
+                ];
+                appData.duyurular = [
+                    { id: 1, baslik: 'Genel Kurul Toplantısı',
+                        icerik: '2026 yılı olağan genel kurul toplantımız 20 Temmuz 2026 tarihinde DEÜ İlahiyat Fakültesi konferans salonunda gerçekleştirilecektir.',
+                        tarih: '2026-06-01' },
+                    { id: 2, baslik: 'Aidat Duyurusu',
+                        icerik: '2026 yılı dernek aidatlarının 31 Ağustos 2026 tarihine kadar yatırılması gerekmektedir.', tarih: '2026-05-20' },
+                ];
+                appData.haberler = [
+                    { id: 1, baslik: 'DEİMDER\'den İftar Programı',
+                        icerik: 'Derneğimiz tarafından düzenlenen geleneksel iftar programı bu yıl da yoğun katılımla gerçekleşti.',
+                        tarih: '2026-04-15' },
+                    { id: 2, baslik: 'Yeni Dönem Yönetim Kurulu Belirlendi',
+                        icerik: 'Yapılan seçimler sonucunda yeni yönetim kurulu üyelerimiz belirlenmiş ve görev dağılımı yapılmıştır.',
+                        tarih: '2026-03-10' },
+                ];
+                appData.etkinlikler = [
+                    { id: 1, baslik: 'Mezunlar Pikniği 2026', tarih: '25 Haziran 2026',
+                        ozet: 'Geleneksel mezunlar pikniğimiz bu yıl İzmir Buca\'da gerçekleşecek.',
+                        detay: 'Tüm mezunlarımız ve aileleri davetlidir. Piknik alanında mangal, çay ve ikramlar derneğimiz tarafından karşılanacaktır. Saat 11:00\'de başlayacak etkinliğimiz akşam 18:00\'e kadar devam edecektir.',
+                        gorsel: '' },
+                    { id: 2, baslik: 'Kariyer Günleri Paneli', tarih: '10 Mayıs 2026',
+                        ozet: 'İlahiyat mezunları için kariyer fırsatları paneli düzenleniyor.',
+                        detay: 'Panelde Diyanet İşleri Başkanlığı, MEB ve özel sektörden konuşmacılar yer alacak. Mezunlarımızın iş imkanları hakkında bilgi sahibi olabileceği bu etkinliğe tüm öğrenci ve mezunlar davetlidir.',
+                        gorsel: '' },
+                    { id: 3, baslik: 'Kur\'an-ı Kerim Tilavet Gecesi', tarih: '3 Nisan 2026',
+                        ozet: 'Fakültemiz mescidinde Kur\'an-ı Kerim tilavet gecesi düzenlendi.',
+                        detay: 'Hafız mezunlarımızın katılımıyla gerçekleşen gecede duygusal anlar yaşandı. Programa 200\'den fazla kişi katılım gösterdi.',
+                        gorsel: '' },
+                ];
+                appData.mezunlar = [
+                    { id: 1, adSoyad: 'Prof. Dr. Ahmet Yılmaz', mezuniyetTarihi: '1995', gorev: 'Akademisyen',
+                        ozgecmis: 'DEÜ İlahiyat Fakültesi\'nden 1995 yılında mezun oldu. Aynı fakültede öğretim üyesi olarak görev yapmaktadır.',
+                        foto: '' },
+                    { id: 2, adSoyad: 'Mehmet Kaya', mezuniyetTarihi: '2010', gorev: 'İmam-Hatip',
+                        ozgecmis: '2010 yılında mezun olduktan sonra İzmir il müftülüğü bünyesinde çeşitli camilerde görev yaptı.',
+                        foto: '' },
+                    { id: 3, adSoyad: 'Ayşe Demir', mezuniyetTarihi: '2018', gorev: 'Din Kültürü Öğretmeni',
+                        ozgecmis: '2018 mezunu olup İzmir\'de bir lisede Din Kültürü ve Ahlak Bilgisi öğretmeni olarak çalışmaktadır.',
+                        foto: '' },
+                ];
+                appData.sayfalar = {
+                    bizKimiz: '<h3>Biz Kimiz</h3><p>Dokuz Eylül Üniversitesi İlahiyat Fakültesi Mezunları ve Mensupları Derneği (DEİMDER), 2010 yılında İzmir\'de kurulmuş olup, fakültemizden mezun olan ve halen fakültemizde görev yapan akademik ve idari personeli bir çatı altında toplamayı amaçlayan bir sivil toplum kuruluşudur.</p><p>Derneğimiz; üyeleri arasında dayanışma ve yardımlaşmayı güçlendirmek, mesleki ve akademik gelişime katkı sağlamak, sosyal ve kültürel faaliyetler düzenlemek ve fakülte ile mezunlar arasındaki bağı canlı tutmak için çalışmaktadır.</p>',
+                    misyonVizyon: '<h3>Misyonumuz</h3><p>DEÜ İlahiyat Fakültesi mezun ve mensupları arasında güçlü bir dayanışma ağı oluşturarak; üyelerimizin mesleki, akademik ve sosyal gelişimlerine katkıda bulunmak, ortak değerler etrafında birleştirici faaliyetler yürütmek ve topluma faydalı bireyler yetiştirilmesine destek olmaktır.</p><h3>Vizyonumuz</h3><p>Türkiye\'de ilahiyat fakültesi mezunları ve mensupları arasında en etkin, en kapsayıcı ve en saygın sivil toplum kuruluşu olmak; üyelerimizin her alanda gelişimine öncülük etmek ve toplumsal değerlere katkı sağlayan bir referans noktası haline gelmektir.</p>',
+                    kurullar: '<h3>Yönetim ve Kurullar</h3><p><strong>Yönetim Kurulu:</strong> Derneğimizin en üst karar organı olup 7 asil üyeden oluşur. Başkan, Başkan Yardımcısı, Genel Sekreter, Sayman ve üyelerden oluşur.</p><p><strong>Denetleme Kurulu:</strong> Derneğin mali ve idari işlemlerini denetlemekle görevli 3 kişilik kuruldur.</p><p><strong>Bilim ve Danışma Kurulu:</strong> Akademik faaliyetlerin planlanması ve yürütülmesinde danışmanlık yapan, alanında uzman üyelerden oluşan kuruldur.</p>'
+                };
+            }
+
+            // ============ UI STATE ============
+            let currentPage = 'anasayfa';
+            let currentSliderIndex = 0;
+            let sliderInterval = null;
+            let adminCurrentTab = 'slider';
+
+            // ============ DOM REFS ============
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            // ============ NAVIGATION ============
+            function navigateTo(page) {
+                currentPage = page;
+                // Update desktop nav
+                $$('.nav-link').forEach(el => el.classList.remove('active'));
+                const desktopLink = document.querySelector(`.nav-link[data-page="${page}"]`);
+                if (desktopLink) desktopLink.classList.add('active');
+                // Update mobile nav
+                $$('.mobile-nav-link').forEach(el => el.classList.remove('active'));
+                const mobileLink = document.querySelector(`.mobile-nav-link[data-page="${page}"]`);
+                if (mobileLink) mobileLink.classList.add('active');
+                // Show page section
+                $$('.page-section').forEach(s => s.classList.remove('active'));
+                const section = document.getElementById('page-' + page);
+                if (section) section.classList.add('active');
+                else document.getElementById('page-anasayfa').classList.add('active');
+                // Render page content
+                renderPageContent(page);
+                // Close mobile nav
+                closeMobileNav();
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Update URL hash
+                window.location.hash = page;
+            }
+
+            function renderPageContent(page) {
+                // Render dynamic content based on page
+                if (page === 'biz-kimiz') {
+                    document.getElementById('contentBizKimiz').innerHTML = appData.sayfalar.bizKimiz ||
+                        '<p>İçerik henüz eklenmedi.</p>';
+                }
+                if (page === 'misyon-vizyon') {
+                    document.getElementById('contentMisyonVizyon').innerHTML = appData.sayfalar.misyonVizyon ||
+                        '<p>İçerik henüz eklenmedi.</p>';
+                }
+                if (page === 'kurullar') {
+                    document.getElementById('contentKurullar').innerHTML = appData.sayfalar.kurullar ||
+                        '<p>İçerik henüz eklenmedi.</p>';
+                }
+                if (page === 'faaliyetler') {
+                    renderFaaliyetlerList();
+                }
+                if (page === 'mezun-bilgi') {
+                    renderMezunlarList();
+                }
+                if (page === 'duyurular-detay') {
+                    renderDuyurularFull();
+                }
+                if (page === 'haberler-detay') {
+                    renderHaberlerFull();
+                }
+            }
+
+            // ============ SLIDER ============
+            function renderSlider() {
+                const track = document.getElementById('sliderTrack');
+                const dots = document.getElementById('sliderDots');
+                if (!track || !dots) return;
+                const slides = appData.slider;
+                if (slides.length === 0) {
+                    track.innerHTML =
+                        '<div class="slider-slide" style="background:linear-gradient(135deg,#1b3a5c,#0d1b2a);"><div class="slider-caption"><h2>DEİMDER</h2><p>Slider\'a henüz içerik eklenmemiş.</p></div></div>';
+                    dots.innerHTML = '';
+                    return;
+                }
+                track.innerHTML = slides.map((s, i) => {
+                    const bgStyle = s.img ?
+                        `background-image:url(${s.img});background-size:cover;background-position:center;` :
+                        `background:linear-gradient(${135 + i * 40}deg, #1b3a5c ${i*10}%, #0d1b2a 60%, #b8943a 100%);`;
+                    return `<div class="slider-slide" style="${bgStyle}" data-link="${s.link || ''}" data-index="${i}">
+                <div class="slider-caption"><h2>${s.baslik}</h2><p>${s.mesaj}</p></div></div>`;
+                }).join('');
+                dots.innerHTML = slides.map((_, i) =>
+                    `<button class="slider-dot${i===currentSliderIndex?' active':''}" data-index="${i}"></button>`
+                ).join('');
+                // Clamp index
+                if (currentSliderIndex >= slides.length) currentSliderIndex = 0;
+                updateSliderPosition();
+                // Click handlers
+                document.querySelectorAll('.slider-slide').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const link = this.getAttribute('data-link');
+                        if (link && link.trim()) navigateTo(link.trim());
+                    });
+                });
+                document.querySelectorAll('.slider-dot').forEach(dot => {
+                    dot.addEventListener('click', function() {
+                        currentSliderIndex = parseInt(this.getAttribute('data-index'));
+                        updateSliderPosition();
+                        resetSliderAutoplay();
+                    });
+                });
+            }
+
+            function updateSliderPosition() {
+                const track = document.getElementById('sliderTrack');
+                if (track) track.style.transform = `translateX(-${currentSliderIndex * 100}%)`;
+                document.querySelectorAll('.slider-dot').forEach(d => d.classList.remove('active'));
+                const activeDot = document.querySelector(`.slider-dot[data-index="${currentSliderIndex}"]`);
+                if (activeDot) activeDot.classList.add('active');
+            }
+
+            function nextSlide() {
+                const len = appData.slider.length || 1;
+                currentSliderIndex = (currentSliderIndex + 1) % len;
+                updateSliderPosition();
+            }
+
+            function prevSlide() {
+                const len = appData.slider.length || 1;
+                currentSliderIndex = (currentSliderIndex - 1 + len) % len;
+                updateSliderPosition();
+            }
+
+            function resetSliderAutoplay() {
+                if (sliderInterval) clearInterval(sliderInterval);
+                sliderInterval = setInterval(nextSlide, 5000);
+            }
+
+            // ============ HOME CARDS LISTS ============
+            function renderHomeCards() {
+                // Duyurular
+                const dList = document.getElementById('homeDuyurularList');
+                if (dList) dList.innerHTML = appData.duyurular.slice(0, 3).map(d =>
+                    `<li>📌 ${d.baslik}</li>`).join('') || '<li>Henüz duyuru yok.</li>';
+                // Haberler
+                const hList = document.getElementById('homeHaberlerList');
+                if (hList) hList.innerHTML = appData.haberler.slice(0, 3).map(h =>
+                    `<li>📰 ${h.baslik}</li>`).join('') || '<li>Henüz haber yok.</li>';
+                // Etkinlikler
+                const eList = document.getElementById('homeEtkinliklerList');
+                if (eList) eList.innerHTML = appData.etkinlikler.slice(0, 3).map(e =>
+                    `<li>📅 ${e.tarih} - ${e.baslik}</li>`).join('') || '<li>Henüz etkinlik yok.</li>';
+                // Mezunlar
+                const mList = document.getElementById('homeMezunlarList');
+                if (mList) mList.innerHTML = appData.mezunlar.slice(0, 3).map(m =>
+                    `<li>🎓 ${m.adSoyad} (${m.mezuniyetTarihi})</li>`).join('') || '<li>Henüz kayıt yok.</li>';
+                // Etkinlik özet paneli
+                const ozetPanel = document.getElementById('homeEtkinlikOzet');
+                if (ozetPanel && appData.etkinlikler.length > 0) {
+                    const sonEtkinlik = appData.etkinlikler[appData.etkinlikler.length - 1];
+                    ozetPanel.innerHTML =
+                        `<h3>🗓️ Son Etkinlik: ${sonEtkinlik.baslik}</h3><p>📅 ${sonEtkinlik.tarih}</p><p>${sonEtkinlik.ozet}</p><button class="btn btn-outline btn-sm" data-page="faaliyet-detay" data-etkinlik-id="${sonEtkinlik.id}">Detayları Gör</button>`;
+                    ozetPanel.querySelector('button')?.addEventListener('click', function() {
+                        const eid = parseInt(this.getAttribute('data-etkinlik-id'));
+                        openFaaliyetDetay(eid);
+                    });
+                }
+            }
+
+            function renderDuyurularFull() {
+                const container = document.getElementById('duyurularFullList');
+                if (!container) return;
+                container.innerHTML = appData.duyurular.length === 0 ? '<p>Henüz duyuru yok.</p>' :
+                    appData.duyurular.map(d =>
+                        `<div class="admin-card"><div class="admin-card-title">📌 ${d.baslik}</div><p style="font-size:0.85rem;">${d.icerik}</p><small style="color:#888;">${d.tarih || ''}</small></div>`
+                    ).join('');
+            }
+
+            function renderHaberlerFull() {
+                const container = document.getElementById('haberlerFullList');
+                if (!container) return;
+                container.innerHTML = appData.haberler.length === 0 ? '<p>Henüz haber yok.</p>' :
+                    appData.haberler.map(h =>
+                        `<div class="admin-card"><div class="admin-card-title">📰 ${h.baslik}</div><p style="font-size:0.85rem;">${h.icerik}</p><small style="color:#888;">${h.tarih || ''}</small></div>`
+                    ).join('');
+            }
+
+            function renderFaaliyetlerList() {
+                const container = document.getElementById('faaliyetlerList');
+                if (!container) return;
+                container.innerHTML = appData.etkinlikler.length === 0 ? '<p>Henüz etkinlik yok.</p>' :
+                    appData.etkinlikler.map(e => `
+                <div class="admin-card" style="cursor:pointer;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;" data-etkinlik-id="${e.id}">
+                    <div style="width:120px;height:90px;border-radius:10px;flex-shrink:0;${e.gorsel?`background-image:url(${e.gorsel});background-size:cover;background-position:center;`:'background:linear-gradient(135deg,#1b3a5c,#b8943a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;'}">${e.gorsel?'':'📅'}</div>
+                    <div style="flex:1;min-width:200px;">
+                        <div class="admin-card-title">${e.baslik}</div>
+                        <p style="font-size:0.82rem;color:#888;">📅 ${e.tarih}</p>
+                        <p style="font-size:0.88rem;">${e.ozet}</p>
+                        <button class="btn btn-outline btn-sm" style="margin-top:6px;">Detay →</button>
+                    </div>
+                </div>`).join('');
+                // Click handlers
+                container.querySelectorAll('.admin-card').forEach(card => {
+                    card.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'BUTTON') return;
+                        const eid = parseInt(this.getAttribute('data-etkinlik-id'));
+                        openFaaliyetDetay(eid);
+                    });
+                    card.querySelector('button')?.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const eid = parseInt(card.getAttribute('data-etkinlik-id'));
+                        openFaaliyetDetay(eid);
+                    });
+                });
+            }
+
+            function openFaaliyetDetay(eid) {
+                const etkinlik = appData.etkinlikler.find(e => e.id === eid);
+                if (!etkinlik) return;
+                const container = document.getElementById('faaliyetDetayContent');
+                if (!container) return;
+                container.innerHTML = `
+            <button class="btn btn-outline btn-sm" style="margin-bottom:12px;" id="faaliyetGeriBtn">← Geri</button>
+            ${etkinlik.gorsel?`<div style="width:100%;height:250px;border-radius:16px;background-image:url(${etkinlik.gorsel});background-size:cover;background-position:center;margin-bottom:16px;"></div>`:''}
+            <h2>${etkinlik.baslik}</h2>
+            <p style="color:#888;">📅 ${etkinlik.tarih}</p>
+            <p style="margin-top:12px;font-size:1rem;">${etkinlik.ozet}</p>
+            <div style="margin-top:16px;padding:16px;background:rgba(0,0,0,0.02);border-radius:12px;">${etkinlik.detay}</div>`;
+                document.getElementById('faaliyetGeriBtn')?.addEventListener('click', () => navigateTo(
+                'faaliyetler'));
+                navigateTo('faaliyet-detay');
+            }
+
+            function renderMezunlarList() {
+                const container = document.getElementById('mezunlarList');
+                if (!container) return;
+                container.innerHTML = appData.mezunlar.length === 0 ? '<p>Henüz mezun kaydı yok.</p>' :
+                    appData.mezunlar.map(m => `
+                <div class="admin-card" style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+                    <div style="width:70px;height:70px;border-radius:50%;flex-shrink:0;${m.foto?`background-image:url(${m.foto});background-size:cover;background-position:center;`:'background:linear-gradient(135deg,#1b3a5c,#b8943a);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;font-weight:bold;'}">${m.foto?'':m.adSoyad.charAt(0).toUpperCase()}</div>
+                    <div style="flex:1;min-width:180px;">
+                        <strong>${m.adSoyad}</strong>
+                        <p style="font-size:0.8rem;color:#888;">🎓 Mezuniyet: ${m.mezuniyetTarihi} | ${m.gorev || 'Belirtilmemiş'}</p>
+                        <p style="font-size:0.85rem;">${m.ozgecmis || ''}</p>
+                    </div>
+                </div>`).join('');
+            }
+
+            // ============ MOBILE NAV ============
+            function openMobileNav() {
+                document.getElementById('mobileNavPanel').classList.add('open');
+                document.getElementById('mobileNavOverlay').classList.add('show');
+                document.getElementById('hamburgerBtn').classList.add('open');
+            }
+
+            function closeMobileNav() {
+                document.getElementById('mobileNavPanel').classList.remove('open');
+                document.getElementById('mobileNavOverlay').classList.remove('show');
+                document.getElementById('hamburgerBtn').classList.remove('open');
+                document.getElementById('mobileSubmenu').classList.remove('open');
+                document.getElementById('mobileSubToggle').classList.remove('expanded');
+            }
+
+            // ============ ADMIN PANEL ============
+            function openAdminPanel() {
+                document.getElementById('adminPanel').classList.add('open');
+                document.getElementById('adminOverlay').classList.add('show');
+                renderAdminTab(adminCurrentTab);
+            }
+
+            function closeAdminPanel() {
+                document.getElementById('adminPanel').classList.remove('open');
+                document.getElementById('adminOverlay').classList.remove('show');
+                // Refresh public UI
+                refreshAllUI();
+            }
+
+            function switchAdminTab(tab) {
+                adminCurrentTab = tab;
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector(`.admin-tab[data-admin-tab="${tab}"]`)?.classList.add('active');
+                document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('admin-' + tab)?.classList.add('active');
+                renderAdminTab(tab);
+            }
+
+            function renderAdminTab(tab) {
+                switch (tab) {
+                    case 'slider':
+                        renderAdminSlider();
+                        break;
+                    case 'duyurular':
+                        renderAdminDuyurular();
+                        break;
+                    case 'haberler':
+                        renderAdminHaberler();
+                        break;
+                    case 'etkinlikler':
+                        renderAdminEtkinlikler();
+                        break;
+                    case 'mezunlar':
+                        renderAdminMezunlar();
+                        break;
+                    case 'sayfalar':
+                        renderAdminSayfalar();
+                        break;
+                    case 'iletisim-mesajlar':
+                        renderAdminIletisimMesajlar();
+                        break;
+                }
+            }
+
+            function renderAdminSlider() {
+                const list = document.getElementById('adminSliderList');
+                list.innerHTML = appData.slider.length === 0 ? '<div class="empty-state">Henüz slayt eklenmemiş.</div>' :
+                    appData.slider.map(s => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">${s.baslik}</span>
+                        <div class="admin-card-actions">
+                            <button class="btn btn-outline btn-sm admin-slider-duzenle" data-id="${s.id}">Düzenle</button>
+                            <button class="btn btn-danger btn-sm admin-slider-sil" data-id="${s.id}">Sil</button>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem;">${s.mesaj}</p>
+                </div>`).join('');
+                // Event listeners
+                list.querySelectorAll('.admin-slider-duzenle').forEach(btn => {
+                    btn.addEventListener('click', () => editSlider(parseInt(btn.getAttribute('data-id'))));
+                });
+                list.querySelectorAll('.admin-slider-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.getAttribute('data-id'));
+                        appData.slider = appData.slider.filter(s => s.id !== id);
+                        saveData();
+                        renderAdminSlider();
+                        refreshAllUI();
+                    });
+                });
+            }
+
+            function editSlider(id) {
+                const slide = appData.slider.find(s => s.id === id);
+                if (!slide) return;
+                document.getElementById('sliderEditId').value = slide.id;
+                document.getElementById('sliderImg').value = slide.img || '';
+                document.getElementById('sliderBaslik').value = slide.baslik || '';
+                document.getElementById('sliderMesaj').value = slide.mesaj || '';
+                document.getElementById('sliderLink').value = slide.link || '';
+                document.getElementById('adminSliderForm').style.display = 'block';
+            }
+
+            function resetSliderForm() {
+                document.getElementById('sliderEditId').value = '';
+                document.getElementById('sliderImg').value = '';
+                document.getElementById('sliderBaslik').value = '';
+                document.getElementById('sliderMesaj').value = '';
+                document.getElementById('sliderLink').value = '';
+                document.getElementById('adminSliderForm').style.display = 'none';
+            }
+
+            function saveSlider() {
+                const editId = document.getElementById('sliderEditId').value;
+                const data = {
+                    img: document.getElementById('sliderImg').value,
+                    baslik: document.getElementById('sliderBaslik').value || 'Başlıksız',
+                    mesaj: document.getElementById('sliderMesaj').value || '',
+                    link: document.getElementById('sliderLink').value || '',
+                };
+                if (editId) {
+                    const idx = appData.slider.findIndex(s => s.id === parseInt(editId));
+                    if (idx >= 0) { appData.slider[idx] = { ...appData.slider[idx], ...data }; }
+                } else {
+                    const newId = appData.slider.length > 0 ? Math.max(...appData.slider.map(s => s.id)) + 1 : 1;
+                    appData.slider.push({ id: newId, ...data });
+                }
+                saveData();
+                resetSliderForm();
+                renderAdminSlider();
+                refreshAllUI();
+            }
+
+            // Duyurular admin
+            function renderAdminDuyurular() {
+                const list = document.getElementById('adminDuyurularList');
+                list.innerHTML = appData.duyurular.length === 0 ?
+                    '<div class="empty-state">Henüz duyuru eklenmemiş.</div>' :
+                    appData.duyurular.map(d => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">📌 ${d.baslik}</span>
+                        <div class="admin-card-actions">
+                            <button class="btn btn-outline btn-sm admin-duyuru-duzenle" data-id="${d.id}">Düzenle</button>
+                            <button class="btn btn-danger btn-sm admin-duyuru-sil" data-id="${d.id}">Sil</button>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem;">${d.icerik}</p>
+                </div>`).join('');
+                list.querySelectorAll('.admin-duyuru-duzenle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const d = appData.duyurular.find(x => x.id === parseInt(btn.getAttribute(
+                            'data-id')));
+                        if (!d) return;
+                        document.getElementById('duyuruEditId').value = d.id;
+                        document.getElementById('duyuruBaslik').value = d.baslik;
+                        document.getElementById('duyuruIcerik').value = d.icerik;
+                        document.getElementById('adminDuyuruForm').style.display = 'block';
+                    });
+                });
+                list.querySelectorAll('.admin-duyuru-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        appData.duyurular = appData.duyurular.filter(x => x.id !== parseInt(btn
+                            .getAttribute('data-id')));
+                        saveData();
+                        renderAdminDuyurular();
+                        refreshAllUI();
+                    });
+                });
+            }
+
+            function saveDuyuru() {
+                const editId = document.getElementById('duyuruEditId').value;
+                const data = {
+                    baslik: document.getElementById('duyuruBaslik').value || 'Başlıksız',
+                    icerik: document.getElementById('duyuruIcerik').value || '',
+                    tarih: new Date().toISOString().split('T')[0],
+                };
+                if (editId) {
+                    const idx = appData.duyurular.findIndex(d => d.id === parseInt(editId));
+                    if (idx >= 0) appData.duyurular[idx] = { ...appData.duyurular[idx], ...data };
+                } else {
+                    const newId = appData.duyurular.length > 0 ? Math.max(...appData.duyurular.map(d => d.id)) + 1 :
+                        1;
+                    appData.duyurular.push({ id: newId, ...data });
+                }
+                saveData();
+                document.getElementById('adminDuyuruForm').style.display = 'none';
+                document.getElementById('duyuruEditId').value = '';
+                document.getElementById('duyuruBaslik').value = '';
+                document.getElementById('duyuruIcerik').value = '';
+                renderAdminDuyurular();
+                refreshAllUI();
+            }
+
+            // Haberler admin
+            function renderAdminHaberler() {
+                const list = document.getElementById('adminHaberlerList');
+                list.innerHTML = appData.haberler.length === 0 ? '<div class="empty-state">Henüz haber eklenmemiş.</div>' :
+                    appData.haberler.map(h => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">📰 ${h.baslik}</span>
+                        <div class="admin-card-actions">
+                            <button class="btn btn-outline btn-sm admin-haber-duzenle" data-id="${h.id}">Düzenle</button>
+                            <button class="btn btn-danger btn-sm admin-haber-sil" data-id="${h.id}">Sil</button>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem;">${h.icerik}</p>
+                </div>`).join('');
+                list.querySelectorAll('.admin-haber-duzenle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const h = appData.haberler.find(x => x.id === parseInt(btn.getAttribute(
+                        'data-id')));
+                        if (!h) return;
+                        document.getElementById('haberEditId').value = h.id;
+                        document.getElementById('haberBaslik').value = h.baslik;
+                        document.getElementById('haberOzet').value = h.icerik;
+                        document.getElementById('adminHaberForm').style.display = 'block';
+                    });
+                });
+                list.querySelectorAll('.admin-haber-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        appData.haberler = appData.haberler.filter(x => x.id !== parseInt(btn.getAttribute(
+                            'data-id')));
+                        saveData();
+                        renderAdminHaberler();
+                        refreshAllUI();
+                    });
+                });
+            }
+
+            function saveHaber() {
+                const editId = document.getElementById('haberEditId').value;
+                const data = {
+                    baslik: document.getElementById('haberBaslik').value || 'Başlıksız',
+                    icerik: document.getElementById('haberOzet').value || '',
+                    tarih: new Date().toISOString().split('T')[0],
+                };
+                if (editId) {
+                    const idx = appData.haberler.findIndex(h => h.id === parseInt(editId));
+                    if (idx >= 0) appData.haberler[idx] = { ...appData.haberler[idx], ...data };
+                } else {
+                    const newId = appData.haberler.length > 0 ? Math.max(...appData.haberler.map(h => h.id)) + 1 : 1;
+                    appData.haberler.push({ id: newId, ...data });
+                }
+                saveData();
+                document.getElementById('adminHaberForm').style.display = 'none';
+                document.getElementById('haberEditId').value = '';
+                document.getElementById('haberBaslik').value = '';
+                document.getElementById('haberOzet').value = '';
+                renderAdminHaberler();
+                refreshAllUI();
+            }
+
+            // Etkinlikler admin
+            function renderAdminEtkinlikler() {
+                const list = document.getElementById('adminEtkinliklerList');
+                list.innerHTML = appData.etkinlikler.length === 0 ?
+                    '<div class="empty-state">Henüz etkinlik eklenmemiş.</div>' :
+                    appData.etkinlikler.map(e => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">📅 ${e.baslik} <small style="color:#888;">(${e.tarih})</small></span>
+                        <div class="admin-card-actions">
+                            <button class="btn btn-outline btn-sm admin-etkinlik-duzenle" data-id="${e.id}">Düzenle</button>
+                            <button class="btn btn-danger btn-sm admin-etkinlik-sil" data-id="${e.id}">Sil</button>
+                        </div>
+                    </div>
+                    <p style="font-size:0.82rem;">${e.ozet}</p>
+                </div>`).join('');
+                list.querySelectorAll('.admin-etkinlik-duzenle').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const e = appData.etkinlikler.find(x => x.id === parseInt(btn.getAttribute(
+                            'data-id')));
+                        if (!e) return;
+                        document.getElementById('etkinlikEditId').value = e.id;
+                        document.getElementById('etkinlikBaslik').value = e.baslik;
+                        document.getElementById('etkinlikTarih').value = e.tarih;
+                        document.getElementById('etkinlikOzet').value = e.ozet;
+                        document.getElementById('etkinlikDetay').value = e.detay || '';
+                        document.getElementById('etkinlikGorsel').value = e.gorsel || '';
+                        document.getElementById('adminEtkinlikForm').style.display = 'block';
+                    });
+                });
+                list.querySelectorAll('.admin-etkinlik-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        appData.etkinlikler = appData.etkinlikler.filter(x => x.id !== parseInt(btn
+                            .getAttribute('data-id')));
+                        saveData();
+                        renderAdminEtkinlikler();
+                        refreshAllUI();
+                    });
+                });
+            }
+
+            function saveEtkinlik() {
+                const editId = document.getElementById('etkinlikEditId').value;
+                const data = {
+                    baslik: document.getElementById('etkinlikBaslik').value || 'Başlıksız',
+                    tarih: document.getElementById('etkinlikTarih').value || '',
+                    ozet: document.getElementById('etkinlikOzet').value || '',
+                    detay: document.getElementById('etkinlikDetay').value || '',
+                    gorsel: document.getElementById('etkinlikGorsel').value || '',
+                };
+                if (editId) {
+                    const idx = appData.etkinlikler.findIndex(e => e.id === parseInt(editId));
+                    if (idx >= 0) appData.etkinlikler[idx] = { ...appData.etkinlikler[idx], ...data };
+                } else {
+                    const newId = appData.etkinlikler.length > 0 ? Math.max(...appData.etkinlikler.map(e => e.id)) + 1 :
+                        1;
+                    appData.etkinlikler.push({ id: newId, ...data });
+                }
+                saveData();
+                document.getElementById('adminEtkinlikForm').style.display = 'none';
+                document.getElementById('etkinlikEditId').value = '';
+                document.getElementById('etkinlikBaslik').value = '';
+                document.getElementById('etkinlikTarih').value = '';
+                document.getElementById('etkinlikOzet').value = '';
+                document.getElementById('etkinlikDetay').value = '';
+                document.getElementById('etkinlikGorsel').value = '';
+                renderAdminEtkinlikler();
+                refreshAllUI();
+            }
+
+            // Mezunlar admin
+            function renderAdminMezunlar() {
+                const list = document.getElementById('adminMezunlarList');
+                list.innerHTML = appData.mezunlar.length === 0 ?
+                    '<div class="empty-state">Henüz mezun kaydı yok.</div>' :
+                    appData.mezunlar.map(m => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">🎓 ${m.adSoyad}</span>
+                        <button class="btn btn-danger btn-sm admin-mezun-sil" data-id="${m.id}">Sil</button>
+                    </div>
+                    <p style="font-size:0.82rem;">Mezuniyet: ${m.mezuniyetTarihi} | ${m.gorev || ''}</p>
+                </div>`).join('');
+                list.querySelectorAll('.admin-mezun-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        appData.mezunlar = appData.mezunlar.filter(x => x.id !== parseInt(btn.getAttribute(
+                            'data-id')));
+                        saveData();
+                        renderAdminMezunlar();
+                        refreshAllUI();
+                    });
+                });
+            }
+
+            // Sayfalar admin
+            function renderAdminSayfalar() {
+                document.getElementById('sayfaBizKimiz').value = appData.sayfalar.bizKimiz || '';
+                document.getElementById('sayfaMisyonVizyon').value = appData.sayfalar.misyonVizyon || '';
+                document.getElementById('sayfaKurullar').value = appData.sayfalar.kurullar || '';
+            }
+
+            function saveSayfalar() {
+                appData.sayfalar.bizKimiz = document.getElementById('sayfaBizKimiz').value;
+                appData.sayfalar.misyonVizyon = document.getElementById('sayfaMisyonVizyon').value;
+                appData.sayfalar.kurullar = document.getElementById('sayfaKurullar').value;
+                saveData();
+                document.getElementById('sayfalarMesaj').textContent = '✅ Sayfalar başarıyla kaydedildi!';
+                setTimeout(() => { document.getElementById('sayfalarMesaj').textContent = ''; }, 2500);
+                refreshAllUI();
+            }
+
+            // İletişim mesajları admin
+            function renderAdminIletisimMesajlar() {
+                const container = document.getElementById('adminIletisimMesajlar');
+                container.innerHTML = appData.iletisimMesajlari.length === 0 ?
+                    '<div class="empty-state">Henüz mesaj gelmemiş.</div>' :
+                    appData.iletisimMesajlari.map((m, i) => `
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">✉️ ${m.ad} (${m.email})</span>
+                        <button class="btn btn-danger btn-sm admin-mesaj-sil" data-index="${i}">Sil</button>
+                    </div>
+                    <p style="font-size:0.85rem;">${m.mesaj}</p>
+                    <small style="color:#888;">${m.tarih || ''}</small>
+                </div>`).join('');
+                container.querySelectorAll('.admin-mesaj-sil').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.getAttribute('data-index'));
+                        appData.iletisimMesajlari.splice(idx, 1);
+                        saveData();
+                        renderAdminIletisimMesajlar();
+                    });
+                });
+            }
+
+            function refreshAllUI() {
+                renderSlider();
+                resetSliderAutoplay();
+                renderHomeCards();
+                renderPageContent(currentPage);
+                if (currentPage === 'faaliyetler') renderFaaliyetlerList();
+                if (currentPage === 'mezun-bilgi') renderMezunlarList();
+                if (currentPage === 'duyurular-detay') renderDuyurularFull();
+                if (currentPage === 'haberler-detay') renderHaberlerFull();
+                if (currentPage === 'biz-kimiz') document.getElementById('contentBizKimiz').innerHTML = appData.sayfalar
+                    .bizKimiz || '<p>İçerik henüz eklenmedi.</p>';
+                if (currentPage === 'misyon-vizyon') document.getElementById('contentMisyonVizyon').innerHTML = appData
+                    .sayfalar.misyonVizyon || '<p>İçerik henüz eklenmedi.</p>';
+                if (currentPage === 'kurullar') document.getElementById('contentKurullar').innerHTML = appData.sayfalar
+                    .kurullar || '<p>İçerik henüz eklenmedi.</p>';
+            }
+
+            // ============ EVENT LISTENERS ============
+            function initEventListeners() {
+                // Desktop nav links
+                document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const page = this.getAttribute('data-page');
+                        if (page) navigateTo(page);
+                    });
+                });
+                // Dropdown links
+                document.querySelectorAll('.dropdown-link[data-page]').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const page = this.getAttribute('data-page');
+                        if (page) navigateTo(page);
+                    });
+                });
+                // Mobile nav links
+                document.querySelectorAll('.mobile-nav-link[data-page]').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        const page = this.getAttribute('data-page');
+                        if (page && page !== 'hakkimizda') navigateTo(page);
+                    });
+                });
+                // Mobile sub toggle
+                document.getElementById('mobileSubToggle')?.addEventListener('click', function() {
+                    const submenu = document.getElementById('mobileSubmenu');
+                    const isOpen = submenu.classList.contains('open');
+                    if (isOpen) {
+                        submenu.classList.remove('open');
+                        this.classList.remove('expanded');
+                    } else {
+                        submenu.classList.add('open');
+                        this.classList.add('expanded');
+                    }
+                });
+                // Hamburger
+                document.getElementById('hamburgerBtn')?.addEventListener('click', function() {
+                    const panel = document.getElementById('mobileNavPanel');
+                    if (panel.classList.contains('open')) closeMobileNav();
+                    else openMobileNav();
+                });
+                document.getElementById('mobileNavOverlay')?.addEventListener('click', closeMobileNav);
+                // Slider arrows
+                document.getElementById('sliderPrev')?.addEventListener('click', () => { prevSlide();
+                    resetSliderAutoplay(); });
+                document.getElementById('sliderNext')?.addEventListener('click', () => { nextSlide();
+                    resetSliderAutoplay(); });
+                // Cards click
+                document.querySelectorAll('.card[data-page]').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const page = this.getAttribute('data-page');
+                        if (page) navigateTo(page);
+                    });
+                });
+                // Footer links
+                document.querySelectorAll('.footer-links a[data-page]').forEach(a => {
+                    a.addEventListener('click', function() {
+                        const page = this.getAttribute('data-page');
+                        if (page) navigateTo(page);
+                    });
+                });
+                // Admin toggle
+                document.getElementById('adminToggleBtn')?.addEventListener('click', openAdminPanel);
+                document.getElementById('adminClose')?.addEventListener('click', closeAdminPanel);
+                document.getElementById('adminOverlay')?.addEventListener('click', closeAdminPanel);
+                // Admin tabs
+                document.querySelectorAll('.admin-tab').forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        switchAdminTab(this.getAttribute('data-admin-tab'));
+                    });
+                });
+                // Admin Slider
+                document.getElementById('adminSliderEkle')?.addEventListener('click', () => {
+                    resetSliderForm();
+                    document.getElementById('adminSliderForm').style.display = 'block';
+                });
+                document.getElementById('adminSliderKaydet')?.addEventListener('click', saveSlider);
+                document.getElementById('adminSliderIptal')?.addEventListener('click', resetSliderForm);
+                // Admin Duyuru
+                document.getElementById('adminDuyuruEkle')?.addEventListener('click', () => {
+                    document.getElementById('duyuruEditId').value = '';
+                    document.getElementById('duyuruBaslik').value = '';
+                    document.getElementById('duyuruIcerik').value = '';
+                    document.getElementById('adminDuyuruForm').style.display = 'block';
+                });
+                document.getElementById('adminDuyuruKaydet')?.addEventListener('click', saveDuyuru);
+                document.getElementById('adminDuyuruIptal')?.addEventListener('click', () => {
+                    document.getElementById('adminDuyuruForm').style.display = 'none';
+                });
+                // Admin Haber
+                document.getElementById('adminHaberEkle')?.addEventListener('click', () => {
+                    document.getElementById('haberEditId').value = '';
+                    document.getElementById('haberBaslik').value = '';
+                    document.getElementById('haberOzet').value = '';
+                    document.getElementById('adminHaberForm').style.display = 'block';
+                });
+                document.getElementById('adminHaberKaydet')?.addEventListener('click', saveHaber);
+                document.getElementById('adminHaberIptal')?.addEventListener('click', () => {
+                    document.getElementById('adminHaberForm').style.display = 'none';
+                });
+                // Admin Etkinlik
+                document.getElementById('adminEtkinlikEkle')?.addEventListener('click', () => {
+                    document.getElementById('etkinlikEditId').value = '';
+                    document.getElementById('etkinlikBaslik').value = '';
+                    document.getElementById('etkinlikTarih').value = '';
+                    document.getElementById('etkinlikOzet').value = '';
+                    document.getElementById('etkinlikDetay').value = '';
+                    document.getElementById('etkinlikGorsel').value = '';
+                    document.getElementById('adminEtkinlikForm').style.display = 'block';
+                });
+                document.getElementById('adminEtkinlikKaydet')?.addEventListener('click', saveEtkinlik);
+                document.getElementById('adminEtkinlikIptal')?.addEventListener('click', () => {
+                    document.getElementById('adminEtkinlikForm').style.display = 'none';
+                });
+                // Admin Sayfalar
+                document.getElementById('adminSayfalarKaydet')?.addEventListener('click', saveSayfalar);
+                // Mezun form
+                document.getElementById('mezunForm')?.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const newId = appData.mezunlar.length > 0 ? Math.max(...appData.mezunlar.map(m => m.id)) + 1 :
+                        1;
+                    appData.mezunlar.push({
+                        id: newId,
+                        adSoyad: document.getElementById('mezunAdSoyad').value,
+                        mezuniyetTarihi: document.getElementById('mezunTarih').value,
+                        gorev: document.getElementById('mezunGorev').value,
+                        ozgecmis: document.getElementById('mezunOzgecmis').value,
+                        foto: document.getElementById('mezunFoto').value,
+                    });
+                    saveData();
+                    document.getElementById('mezunForm').reset();
+                    document.getElementById('mezunFormMesaj').textContent =
+                        '✅ Kaydınız başarıyla eklenmiştir!';
+                    setTimeout(() => { document.getElementById('mezunFormMesaj').textContent = ''; }, 3000);
+                    refreshAllUI();
+                });
+                // İletişim form
+                document.getElementById('iletisimForm')?.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    appData.iletisimMesajlari.push({
+                        ad: document.getElementById('iletisimAd').value,
+                        email: document.getElementById('iletisimEmail').value,
+                        mesaj: document.getElementById('iletisimMesaj').value,
+                        tarih: new Date().toISOString().split('T')[0],
+                    });
+                    saveData();
+                    document.getElementById('iletisimForm').reset();
+                    document.getElementById('iletisimFormMesaj').textContent =
+                        '✅ Mesajınız başarıyla gönderildi!';
+                    setTimeout(() => { document.getElementById('iletisimFormMesaj').textContent = ''; }, 3000);
+                });
+                // Header scroll effect
+                window.addEventListener('scroll', () => {
+                    const header = document.getElementById('header');
+                    if (window.scrollY > 30) header.classList.add('scrolled');
+                    else header.classList.remove('scrolled');
+                });
+                // Keyboard ESC to close panels
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeMobileNav();
+                        closeAdminPanel();
+                    }
+                });
+                // Handle hash navigation
+                window.addEventListener('hashchange', () => {
+                    const hash = window.location.hash.replace('#', '');
+                    if (hash && document.getElementById('page-' + hash)) navigateTo(hash);
+                });
+            }
+
+            // ============ INIT ============
+            function init() {
+                loadData();
+                initEventListeners();
+                renderSlider();
+                resetSliderAutoplay();
+                renderHomeCards();
+                // Handle initial hash
+                const hash = window.location.hash.replace('#', '');
+                if (hash && document.getElementById('page-' + hash)) {
+                    navigateTo(hash);
+                } else {
+                    navigateTo('anasayfa');
+                }
+                console.log('✅ DEİMDER sitesi başarıyla yüklendi. Demo veriler hazır.');
+                console.log('⚙️ Yönetim paneline sağ alttaki dişli butonundan erişebilirsiniz.');
+                console.log('📦 Tüm veriler localStorage\'da saklanmaktadır. Firebase entegrasyonu için hazır.');
+            }
+
+            // Start
+            document.addEventListener('DOMContentLoaded', init);
+        })();
+    </script>
+</body>
+</html>
